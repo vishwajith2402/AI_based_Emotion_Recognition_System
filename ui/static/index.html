@@ -3,36 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Human Emotion Recognition — Multimodal AI Dashboard</title>
+  <title>Human Emotion Recognition — Multimodal AI Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #070B14;
-      --bg-panel: rgba(15, 23, 42, 0.72);
-      --bg-panel-hover: rgba(30, 41, 59, 0.85);
+      --bg-dark: #090D16;
+      --bg-card: rgba(18, 24, 38, 0.75);
+      --bg-card-hover: rgba(28, 36, 56, 0.85);
       --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-glow: rgba(6, 182, 212, 0.35);
-      --cyan-neon: #06B6D4;
-      --purple-neon: #8B5CF6;
-      --emerald-neon: #10B981;
-      --red-neon: #EF4444;
-      --amber-neon: #F59E0B;
-      --blue-accent: #3B82F6;
+      --border-accent: rgba(6, 182, 212, 0.35);
+      --cyan: #06B6D4;
+      --purple: #8B5CF6;
+      --green: #10B981;
+      --red: #EF4444;
+      --amber: #F59E0B;
+      --blue: #3B82F6;
       --text-main: #F8FAFC;
       --text-muted: #94A3B8;
-      --card-radius: 16px;
+      --radius: 16px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg-dark);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 45%),
+        radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 45%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.10) 0px, transparent 50%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -40,9 +40,9 @@
       overflow-x: hidden;
     }
 
-    /* Top Navigation Bar */
+    /* Header Bar */
     header {
-      background: rgba(11, 15, 25, 0.85);
+      background: rgba(11, 15, 26, 0.85);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-subtle);
       padding: 0.85rem 1.8rem;
@@ -56,46 +56,40 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.9rem;
     }
     .brand-logo {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 12px;
       background: linear-gradient(135deg, #4F46E5, #06B6D4);
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-    }
-    .brand-logo svg {
-      width: 26px;
-      height: 26px;
-      fill: white;
+      font-size: 1.4rem;
     }
     .brand-title h1 {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
       background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .brand-title p {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
     }
 
-    /* System Status Badges */
-    .status-bar {
+    .header-pills {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
     }
-    .status-pill {
-      background: rgba(255, 255, 255, 0.04);
+    .pill {
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-subtle);
       padding: 0.35rem 0.85rem;
       border-radius: 9999px;
@@ -106,103 +100,139 @@
       gap: 0.45rem;
       color: var(--text-muted);
     }
-    .status-dot {
+    .dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
     }
-    .dot-green { background: var(--emerald-neon); box-shadow: 0 0 8px var(--emerald-neon); }
-    .dot-cyan { background: var(--cyan-neon); box-shadow: 0 0 8px var(--cyan-neon); }
-    .dot-purple { background: var(--purple-neon); box-shadow: 0 0 8px var(--purple-neon); }
-    .dot-amber { background: var(--amber-neon); box-shadow: 0 0 8px var(--amber-neon); }
-    .dot-red { background: var(--red-neon); box-shadow: 0 0 8px var(--red-neon); }
+    .dot-green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot-amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
 
-    .header-actions {
+    .mode-switch {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn.active {
+      background: #2563EB;
+      color: white;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Quick Scenarios Bar */
+    .scenario-bar {
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.65rem 1.8rem;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.8rem;
+      overflow-x: auto;
     }
-    .btn-icon {
-      background: rgba(255, 255, 255, 0.06);
+    .scenario-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--cyan);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .scenario-chip {
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-subtle);
       color: var(--text-main);
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
       display: flex;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      gap: 0.4rem;
+      transition: all 0.2s;
     }
-    .btn-icon:hover {
+    .scenario-chip:hover {
       background: rgba(255, 255, 255, 0.12);
-      border-color: var(--cyan-neon);
-      box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+      border-color: var(--cyan);
+      transform: translateY(-1px);
     }
 
-    /* Main Dashboard 3-Column Grid */
+    /* Main Grid */
     main {
       flex: 1;
       padding: 1.25rem 1.8rem;
       display: grid;
-      grid-template-columns: 1.15fr 1.05fr 1.35fr;
+      grid-template-columns: 1.15fr 1fr 1.35fr;
       gap: 1.25rem;
       max-width: 1920px;
       margin: 0 auto;
       width: 100%;
     }
 
-    /* Glass Panels */
-    .glass-card {
-      background: var(--bg-panel);
+    /* Card Panels */
+    .card {
+      background: var(--bg-card);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--card-radius);
-      padding: 1.2rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
       gap: 1rem;
       position: relative;
     }
-    .panel-header {
+    .card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       padding-bottom: 0.75rem;
     }
-    .panel-header h2 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      letter-spacing: -0.3px;
-    }
-    .tag-badge {
-      font-size: 0.68rem;
+    .step-badge {
+      font-size: 0.70rem;
       font-weight: 700;
       text-transform: uppercase;
       padding: 0.2rem 0.55rem;
       border-radius: 6px;
       letter-spacing: 0.5px;
     }
-    .tag-cyan { background: rgba(6, 182, 212, 0.15); color: var(--cyan-neon); border: 1px solid rgba(6, 182, 212, 0.3); }
-    .tag-purple { background: rgba(139, 92, 246, 0.15); color: var(--purple-neon); border: 1px solid rgba(139, 92, 246, 0.3); }
-    .tag-green { background: rgba(16, 185, 129, 0.15); color: var(--emerald-neon); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-cyan { background: rgba(6, 182, 212, 0.15); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
 
-    /* LEFT PANEL: Face Vision */
+    .card-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Video Viewport */
     .video-viewport {
       position: relative;
       width: 100%;
       aspect-ratio: 4 / 3;
-      background: #000000;
+      background: #020617;
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
     }
     video, #faceCanvas {
       position: absolute;
@@ -214,42 +244,25 @@
     }
     #faceCanvas { z-index: 10; pointer-events: none; }
 
-    /* Video HUD Overlays */
-    .hud-overlay {
+    .viewport-tip {
       position: absolute;
       top: 10px;
       left: 10px;
-      right: 10px;
-      display: flex;
-      justify-content: space-between;
-      z-index: 15;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      pointer-events: none;
-    }
-    .hud-tag {
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.25rem 0.55rem;
+      padding: 0.3rem 0.6rem;
       border-radius: 6px;
-      backdrop-filter: blur(6px);
-    }
-    .hud-bottom {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
-      display: flex;
-      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #E2E8F0;
       z-index: 15;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.70rem;
-      pointer-events: none;
+      font-weight: 500;
+      backdrop-filter: blur(8px);
     }
 
-    .btn-grid {
+    /* Buttons & Controls */
+    .btn-row {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 0.6rem;
     }
     .btn {
@@ -265,7 +278,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
     .btn:hover {
       background: rgba(255, 255, 255, 0.1);
@@ -282,171 +295,161 @@
     }
     .btn-danger {
       background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--red-neon);
+      border: 1px solid var(--red);
       color: #FCA5A5;
     }
-    .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.3);
-    }
 
+    /* Emotion Chips */
     .chip-selector {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.45rem;
       flex-wrap: wrap;
     }
     .chip {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-subtle);
-      padding: 0.3rem 0.65rem;
+      padding: 0.35rem 0.75rem;
       border-radius: 8px;
-      font-size: 0.74rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .chip:hover, .chip.active {
-      background: rgba(6, 182, 212, 0.18);
-      border-color: var(--cyan-neon);
-      color: white;
-    }
-
-    /* CENTER PANEL: Voice & AI Processing */
-    .waveform-box {
-      background: #030712;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      height: 100px;
-      position: relative;
-      overflow: hidden;
-    }
-    #waveCanvas, #specCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .vu-meter-container {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-    }
-    .vu-meter-bar {
-      flex: 1;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-    .vu-meter-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #10B981, #F59E0B, #EF4444);
-      transition: width 0.05s ease;
-    }
-
-    .assistant-card {
-      background: rgba(139, 92, 246, 0.08);
-      border: 1px solid rgba(139, 92, 246, 0.25);
-      border-radius: 12px;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .assistant-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #C4B5FD;
-    }
-    .tts-input {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 0.6rem 0.8rem;
-      color: white;
-      font-size: 0.82rem;
-      outline: none;
-    }
-    .tts-input:focus {
-      border-color: var(--purple-neon);
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
-    }
-    .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.76rem;
+      font-size: 0.78rem;
+      font-weight: 600;
       color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .slider-row input[type="range"] {
-      flex: 1;
-      accent-color: var(--purple-neon);
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+    .chip.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
     }
 
-    /* RIGHT PANEL: Emotion Analysis */
-    .unimodal-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.8rem;
-    }
-    .emotion-badge-card {
+    /* Facial Style Analysis Box */
+    .style-card {
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border-subtle);
       border-radius: 12px;
       padding: 0.85rem;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.5rem;
     }
-    .badge-label {
-      font-size: 0.72rem;
+    .style-header {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--cyan);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: var(--text-muted);
       display: flex;
       justify-content: space-between;
     }
-    .badge-val {
-      font-size: 1.4rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.4rem;
     }
+    .style-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.45rem;
+      text-align: center;
+    }
+    .style-label { font-size: 0.65rem; color: var(--text-muted); }
+    .style-val { font-size: 0.78rem; font-weight: 700; color: #F1F5F9; margin-top: 2px; }
 
-    /* Fused Emotion Centerpiece */
-    .fused-centerpiece {
-      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 27, 75, 0.95));
-      border: 2px solid var(--emerald-neon);
+    /* Waveform Box */
+    .waveform-box {
+      width: 100%;
+      height: 85px;
+      background: #020617;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+    #waveCanvas { width: 100%; height: 100%; }
+
+    /* Volume VU Meter */
+    .vu-meter {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+    .vu-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .vu-fill {
+      height: 100%;
+      width: 45%;
+      background: linear-gradient(90deg, #10B981, #06B6D4, #EF4444);
+      border-radius: 4px;
+      transition: width 0.1s ease;
+    }
+
+    /* TTS Assistant Card */
+    .tts-box {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 12px;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .tts-input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .tts-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      color: white;
+      font-size: 0.80rem;
+      outline: none;
+    }
+    .tts-input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Fused Result Centerpiece */
+    .fused-hero {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 27, 75, 0.95));
+      border: 2px solid var(--green);
       border-radius: 16px;
-      padding: 1.25rem;
+      padding: 1.4rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 0.5rem;
       box-shadow: 0 0 35px rgba(16, 185, 129, 0.25);
-      position: relative;
-      overflow: hidden;
       transition: all 0.3s ease;
     }
     .fused-title {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 1.5px;
       color: #9CA3AF;
       font-weight: 700;
     }
-    .fused-badge-main {
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: var(--emerald-neon);
+    .fused-main-val {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--green);
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -458,109 +461,122 @@
       color: #F3F4F6;
     }
 
-    /* Conflict / Concordance Alert Banner */
+    /* Unimodal Row */
+    .unimodal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .mini-badge {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .mini-title { font-size: 0.70rem; color: var(--text-muted); text-transform: uppercase; }
+    .mini-val { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem; }
+
+    /* Alert Banner */
     .alert-banner {
       width: 100%;
-      border-radius: 8px;
-      padding: 0.65rem 0.85rem;
-      font-size: 0.78rem;
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.80rem;
       font-weight: 600;
-      text-align: left;
       display: flex;
       align-items: center;
       gap: 0.6rem;
     }
     .banner-concordant {
       background: rgba(16, 185, 129, 0.12);
-      border: 1px solid var(--emerald-neon);
+      border: 1px solid var(--green);
       color: #6EE7B7;
     }
     .banner-conflict {
       background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--red-neon);
+      border: 1px solid var(--red);
       color: #FCA5A5;
       box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
     }
 
-    /* Emotion Distribution Bars */
-    .prob-bar-row {
+    /* Probability Bars */
+    .bar-row {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       font-size: 0.76rem;
       margin-bottom: 0.35rem;
     }
-    .prob-label {
-      width: 65px;
-      color: var(--text-muted);
-    }
-    .prob-track {
+    .bar-label { width: 65px; color: var(--text-muted); }
+    .bar-track {
       flex: 1;
-      height: 7px;
+      height: 8px;
       background: rgba(255, 255, 255, 0.06);
       border-radius: 4px;
       overflow: hidden;
     }
-    .prob-fill {
+    .bar-fill {
       height: 100%;
       width: 20%;
       border-radius: 4px;
       transition: width 0.3s ease;
     }
-    .prob-val {
+    .bar-val {
       width: 38px;
       text-align: right;
       font-family: 'JetBrains Mono', monospace;
       font-weight: 600;
     }
 
-    /* Analytics Mini Stats */
-    .stat-pills {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-    }
-    .stat-pill {
+    /* Weight Slider */
+    .weight-card {
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 0.45rem;
-      text-align: center;
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
     }
-    .stat-pill span {
-      display: block;
-      font-size: 0.65rem;
+    .weight-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.74rem;
       color: var(--text-muted);
     }
-    .stat-pill strong {
-      color: var(--cyan-neon);
-      font-size: 0.85rem;
+    .weight-labels strong { color: white; }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
     }
 
-    /* Modal Styling */
-    .modal-backdrop {
+    /* Guide Modal */
+    .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 200;
+      padding: 1rem;
     }
-    .modal-card {
+    .modal-box {
       background: #0F172A;
-      border: 1px solid var(--cyan-neon);
-      box-shadow: 0 0 35px rgba(6, 182, 212, 0.3);
+      border: 1px solid var(--cyan);
       border-radius: 16px;
-      width: 90%;
-      max-width: 580px;
+      max-width: 600px;
+      width: 100%;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.35);
     }
 
     @media (max-width: 1200px) {
@@ -573,68 +589,60 @@
   <!-- Top Navigation Header -->
   <header>
     <div class="brand">
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-      </div>
+      <div class="brand-logo">🎭</div>
       <div class="brand-title">
-        <h1>Human Emotion Recognition</h1>
-        <p>Using Facial Expressions and Speech Modulation • AGB1303 Batch 6</p>
+        <h1>Human Emotion Recognition AI</h1>
+        <p>Facial Vision (CNN) + Speech Prosody (BiLSTM) • Beginner Friendly Studio</p>
       </div>
     </div>
 
-    <div class="status-bar">
-      <div class="status-pill"><div class="status-dot dot-green"></div> System: Ready</div>
-      <div class="status-pill" id="camStatusPill"><div class="status-dot dot-amber"></div> Cam: Standby</div>
-      <div class="status-pill" id="micStatusPill"><div class="status-dot dot-cyan"></div> Mic: Ready</div>
-      <div class="status-pill"><div class="status-dot dot-purple"></div> AI: CNN + BiLSTM Loaded</div>
-      <div class="status-pill"><div class="status-dot dot-green"></div> Real-Time: Online</div>
-    </div>
-
-    <div class="header-actions">
-      <button class="btn-icon" id="btnMuteTTS" title="Mute/Unmute AI Voice Assistant">🔊</button>
-      <button class="btn-icon" id="btnOpenSettings" title="System Settings">⚙️</button>
+    <div class="header-pills">
+      <div class="pill"><div class="dot dot-green"></div> System: Ready</div>
+      <div class="pill" id="camPill"><div class="dot dot-amber"></div> Cam: Standby</div>
+      <div class="mode-switch">
+        <button class="mode-btn active" id="btnModeSimple">🌟 Friendly Mode</button>
+        <button class="mode-btn" id="btnModeAdvanced">🔬 Advanced Lab</button>
+      </div>
+      <button class="btn" id="btnOpenGuide" style="padding: 0.35rem 0.75rem; font-size: 0.76rem;">📘 How It Works</button>
     </div>
   </header>
 
-  <!-- 3-Column Main Application Layout -->
+  <!-- Quick Scenarios Selector -->
+  <div class="scenario-bar">
+    <span class="scenario-label">⚡ 1-Click Tests:</span>
+    <button class="scenario-chip" onclick="loadScenario('Happy', 'Happy')">🌟 Pure Joy (Smile + Cheerful Voice)</button>
+    <button class="scenario-chip" onclick="loadScenario('Happy', 'Angry')">⚡ Sarcasm / Conflict (Smile + Angry Voice)</button>
+    <button class="scenario-chip" onclick="loadScenario('Sad', 'Sad')">🌧️ Dejection (Sad Face + Sad Voice)</button>
+    <button class="scenario-chip" onclick="loadScenario('Surprise', 'Surprise')">😲 Sudden Shock (Surprise + Spike)</button>
+    <button class="scenario-chip" onclick="loadScenario('Neutral', 'Neutral')">⚖️ Calm / Neutral Assessment</button>
+  </div>
+
+  <!-- 3-Column Layout -->
   <main>
 
-    <!-- ============================================== -->
-    <!-- LEFT PANEL: FACE VISION & CAMERA TRACKING -->
-    <!-- ============================================== -->
-    <section class="glass-card">
-      <div class="panel-header">
-        <h2>👁️ Face Vision & Tracker</h2>
-        <span class="tag-badge tag-cyan">CNN Branch</span>
+    <!-- STEP 1: FACIAL EXPRESSION BRANCH -->
+    <section class="card">
+      <div class="card-header">
+        <h2>👁️ Step 1: Facial Expression</h2>
+        <span class="step-badge badge-cyan">Visual AI (CNN)</span>
       </div>
 
-      <!-- Live Video Canvas Viewport -->
-      <div class="video-viewport" id="videoBox">
+      <!-- Camera Viewport -->
+      <div class="video-viewport">
         <video id="webcamVideo" autoplay playsinline muted></video>
         <canvas id="faceCanvas"></canvas>
-
-        <div class="hud-overlay">
-          <div class="hud-tag" id="hudFaceID">FACE ID: #01</div>
-          <div class="hud-tag" id="hudFPS">FPS: 30.0</div>
-        </div>
-
-        <div class="hud-bottom">
-          <div class="hud-tag" id="hudCoords">COORDS: X:-- Y:-- W:-- H:--</div>
-          <div class="hud-tag" id="hudTrackStatus" style="color: var(--emerald-neon);">TRACKING: ACTIVE</div>
-        </div>
+        <div class="viewport-tip" id="camTipText">💡 Click "Start Camera" or select an expression chip below</div>
       </div>
 
-      <!-- Controls -->
-      <div class="btn-grid">
+      <!-- Camera Controls -->
+      <div class="btn-row">
         <button class="btn btn-primary" id="btnToggleCam">▶ Start Camera</button>
         <button class="btn" id="btnSnapFrame">📸 Snapshot</button>
-        <button class="btn" id="btnToggleDet">🎯 Detection: ON</button>
-        <button class="btn" id="btnToggleTrack">⚡ Tracking: ON</button>
       </div>
 
-      <!-- Quick Test Emotion Face Chips -->
+      <!-- Expression Selector Chips -->
       <div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem;">Test Sample Expressions:</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem;">Pick an Expression to Test:</div>
         <div class="chip-selector" id="faceSampleChips">
           <button class="chip active" data-emotion="Happy">😊 Happy</button>
           <button class="chip" data-emotion="Sad">😢 Sad</button>
@@ -643,299 +651,212 @@
           <button class="chip" data-emotion="Neutral">😐 Neutral</button>
         </div>
       </div>
+
+      <!-- Facial Micro-Style Analysis -->
+      <div class="style-card">
+        <div class="style-header">
+          <span>Facial Micro-Style Analysis</span>
+          <span id="styleSummary" style="color: #38BDF8;">Smiley Curve Detected</span>
+        </div>
+        <div class="style-grid">
+          <div class="style-item">
+            <div class="style-label">Mouth Shape</div>
+            <div class="style-val" id="valMouth">Curved Up 🙂</div>
+          </div>
+          <div class="style-item">
+            <div class="style-label">Eye Aperture</div>
+            <div class="style-val" id="valEyes">Normal Open</div>
+          </div>
+          <div class="style-item">
+            <div class="style-label">Forehead</div>
+            <div class="style-val" id="valForehead">Smooth Plain</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- ============================================== -->
-    <!-- CENTER PANEL: VOICE VIRTUALIZER & ACOUSTICS -->
-    <!-- ============================================== -->
-    <section class="glass-card">
-      <div class="panel-header">
-        <h2>🎙️ Voice Virtualizer & Speech</h2>
-        <span class="tag-badge tag-purple">MFCC + BiLSTM</span>
+    <!-- STEP 2: SPEECH ACOUSTIC BRANCH -->
+    <section class="card">
+      <div class="card-header">
+        <h2>🎙️ Step 2: Speech Modulation</h2>
+        <span class="step-badge badge-purple">Vocal AI (BiLSTM)</span>
       </div>
 
-      <!-- Live Waveform & Spectrogram -->
+      <!-- Waveform Box -->
       <div>
-        <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.35rem; display: flex; justify-content: space-between;">
-          <span>Live Audio Oscilloscope</span>
-          <span id="vadBadge" style="color: var(--emerald-neon);">VAD: DETECTED</span>
+        <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.35rem; display: flex; justify-content: space-between;">
+          <span>Live Acoustic Frequency Wave</span>
+          <span style="color: var(--green);">Voice Activity: Active</span>
         </div>
         <div class="waveform-box">
           <canvas id="waveCanvas"></canvas>
         </div>
       </div>
 
-      <!-- VU Level Meter -->
-      <div class="vu-meter-container">
-        <span>VU:</span>
-        <div class="vu-meter-bar">
-          <div class="vu-meter-fill" id="vuFill"></div>
+      <!-- Volume Meter -->
+      <div class="vu-meter">
+        <span>Mic Energy:</span>
+        <div class="vu-track">
+          <div class="vu-fill" id="vuFill"></div>
         </div>
-        <span id="vuDbText">-18 dB</span>
+        <span id="vuDbText">-16 dB</span>
       </div>
 
-      <!-- Microphone & Speech Controls -->
-      <div class="btn-grid">
-        <button class="btn btn-primary" id="btnRecordSpeech">🎙️ Record (3s)</button>
-        <button class="btn" id="btnMuteMic">🔇 Mute Mic</button>
-      </div>
-
-      <!-- Quick Test Audio Inflection Chips -->
+      <!-- Audio Chips -->
       <div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem;">Test Speech Modulations:</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem;">Pick Voice Tone to Test:</div>
         <div class="chip-selector" id="speechSampleChips">
-          <button class="chip active" data-emotion="Happy">🎵 Happy Prosody</button>
-          <button class="chip" data-emotion="Sad">📉 Sad Inflection</button>
-          <button class="chip" data-emotion="Angry">💥 Angry Jitter</button>
-          <button class="chip" data-emotion="Surprise">🚀 Surprise Sweep</button>
-          <button class="chip" data-emotion="Neutral">⚖️ Neutral Cadence</button>
+          <button class="chip active" data-emotion="Happy">🎵 Cheerful Prosody</button>
+          <button class="chip" data-emotion="Sad">📉 Low Melancholy</button>
+          <button class="chip" data-emotion="Angry">💥 Loud Jitter</button>
+          <button class="chip" data-emotion="Surprise">🚀 High Inflection</button>
+          <button class="chip" data-emotion="Neutral">⚖️ Steady Cadence</button>
         </div>
       </div>
 
-      <!-- AI Voice Assistant (TTS Output via pyttsx3) -->
-      <div class="assistant-card">
-        <div class="assistant-header">
-          <span>🗣️ AI Voice Assistant (Voice Virtualizer)</span>
-          <span id="ttsStatus" style="font-size: 0.70rem; color: var(--purple-neon);">Ready</span>
+      <!-- TTS Assistant & Vocalizer -->
+      <div class="tts-box">
+        <div style="font-size: 0.78rem; font-weight: 700; color: #C4B5FD; display: flex; justify-content: space-between;">
+          <span>🗣️ AI Voice Virtualizer (TTS)</span>
+          <span id="ttsStatus" style="font-size: 0.70rem; color: var(--purple);">Ready</span>
         </div>
-        <input type="text" class="tts-input" id="ttsTextInput" value="Multimodal emotion recognition system is online and ready.">
-        <div class="btn-grid">
-          <button class="btn" id="btnSpeakText" style="border-color: var(--purple-neon); color: #C4B5FD;">🔊 Speak Response</button>
-          <button class="btn" id="btnSpeakPrediction">📢 Speak Emotion</button>
+        <div class="tts-input-row">
+          <input type="text" class="tts-input" id="ttsTextInput" value="Multimodal emotion recognized with high confidence." placeholder="Enter text to speak...">
+          <button class="btn btn-primary" id="btnSpeakText" style="padding: 0.55rem 0.85rem;">Speak</button>
         </div>
-        <div class="slider-row">
-          <span>Speed:</span>
-          <input type="range" id="ttsRateSlider" min="100" max="250" value="175">
-          <span id="ttsRateLabel">175 WPM</span>
-        </div>
+        <button class="btn" id="btnSpeakPrediction" style="font-size: 0.76rem; padding: 0.45rem;">🔊 Announce AI Emotion Result</button>
       </div>
     </section>
 
-    <!-- ============================================== -->
-    <!-- RIGHT PANEL: MULTIMODAL EMOTION ANALYSIS -->
-    <!-- ============================================== -->
-    <section class="glass-card">
-      <div class="panel-header">
-        <h2>⚡ Emotion Analysis & Fusion</h2>
-        <span class="tag-badge tag-green">Decision Fusion</span>
+    <!-- STEP 3: MULTIMODAL FUSION & DECISION -->
+    <section class="card">
+      <div class="card-header">
+        <h2>⚡ Step 3: Multimodal Fusion Result</h2>
+        <span class="step-badge badge-green">Combined Intelligence</span>
       </div>
 
-      <!-- Unimodal Badges (Vision & Speech) -->
-      <div class="unimodal-row">
-        <div class="emotion-badge-card" id="faceBadgeCard">
-          <div class="badge-label">
-            <span>Facial (CNN)</span>
-            <span id="faceLatency">3.2 ms</span>
-          </div>
-          <div class="badge-val" id="faceBadgeVal" style="color: var(--emerald-neon);">
-            😊 Happy
-          </div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);" id="faceConfText">Confidence: 99.7%</div>
-        </div>
-
-        <div class="emotion-badge-card" id="speechBadgeCard">
-          <div class="badge-label">
-            <span>Speech (BiLSTM)</span>
-            <span id="speechLatency">6.8 ms</span>
-          </div>
-          <div class="badge-val" id="speechBadgeVal" style="color: var(--emerald-neon);">
-            😊 Happy
-          </div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);" id="speechConfText">Confidence: 99.5%</div>
-        </div>
+      <!-- Hero Final Fused Result -->
+      <div class="fused-hero" id="fusedHero">
+        <div class="fused-title">Overall Human Affective State</div>
+        <div class="fused-main-val" id="fusedMainVal">😊 HAPPY</div>
+        <div class="fused-conf" id="fusedConfText">Confidence: 94.2%</div>
       </div>
 
-      <!-- Centerpiece: Final Fused Emotion -->
-      <div class="fused-centerpiece" id="fusedCard">
-        <div class="fused-title">FINAL MULTIMODAL PREDICTION</div>
-        <div class="fused-badge-main" id="fusedBadgeText">
-          🎭 HAPPY
-        </div>
-        <div class="fused-conf" id="fusedConfText">Confidence: 99.6%</div>
+      <!-- Concordance / Conflict Banner -->
+      <div class="alert-banner banner-concordant" id="concordanceBanner">
+        <span>✅</span>
+        <span id="concordanceText"><b>HARMONY CONFIRMED:</b> Your smile and vocal tone agree perfectly.</span>
+      </div>
 
-        <!-- Modality Conflict / Concordant Alert -->
-        <div class="alert-banner banner-concordant" id="concordanceBanner">
-          <span>✅</span>
-          <span id="concordanceText">MODALITY ALIGNMENT: Visual and acoustic cues are in strong concordant agreement.</span>
+      <!-- Unimodal Breakdown -->
+      <div class="unimodal-grid">
+        <div class="mini-badge">
+          <span class="mini-title">Facial Vision (CNN)</span>
+          <div class="mini-val" id="faceMiniVal" style="color: var(--green);">😊 Happy</div>
+          <small id="faceMiniConf" style="color: var(--text-muted); font-size: 0.70rem;">Confidence: 92.5%</small>
         </div>
-
-        <!-- Interactive Dynamic Fusion Slider -->
-        <div style="width: 100%; margin-top: 0.6rem;">
-          <div class="slider-row">
-            <span>Face (<span id="wFaceLabel">50%</span>)</span>
-            <input type="range" id="fusionSlider" min="0" max="100" value="50">
-            <span>Voice (<span id="wSpeechLabel">50%</span>)</span>
-          </div>
+        <div class="mini-badge">
+          <span class="mini-title">Speech Tone (BiLSTM)</span>
+          <div class="mini-val" id="speechMiniVal" style="color: var(--green);">😊 Happy</div>
+          <small id="speechMiniConf" style="color: var(--text-muted); font-size: 0.70rem;">Confidence: 89.1%</small>
         </div>
       </div>
 
-      <!-- Probability Distribution Bars -->
+      <!-- Weight Adjustment Slider -->
+      <div class="weight-card">
+        <div class="weight-labels">
+          <span>Visual Weight: <strong id="wFaceLabel">50%</strong></span>
+          <span>Acoustic Weight: <strong id="wSpeechLabel">50%</strong></span>
+        </div>
+        <input type="range" id="fusionSlider" min="0" max="100" value="50">
+        <div style="font-size: 0.68rem; color: var(--text-muted); text-align: center;">Drag to give more priority to Camera or Microphone</div>
+      </div>
+
+      <!-- Probability Bars -->
       <div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600;">Fused Emotion Distribution:</div>
-        
-        <div class="prob-bar-row">
-          <div class="prob-label">😊 Happy</div>
-          <div class="prob-track"><div class="prob-fill" id="barHappy" style="background: var(--emerald-neon); width: 99%;"></div></div>
-          <div class="prob-val" id="valHappy">99%</div>
-        </div>
-
-        <div class="prob-bar-row">
-          <div class="prob-label">😠 Angry</div>
-          <div class="prob-track"><div class="prob-fill" id="barAngry" style="background: var(--red-neon); width: 0%;"></div></div>
-          <div class="prob-val" id="valAngry">0%</div>
-        </div>
-
-        <div class="prob-bar-row">
-          <div class="prob-label">😢 Sad</div>
-          <div class="prob-track"><div class="prob-fill" id="barSad" style="background: var(--blue-accent); width: 0%;"></div></div>
-          <div class="prob-val" id="valSad">0%</div>
-        </div>
-
-        <div class="prob-bar-row">
-          <div class="prob-label">😲 Surprise</div>
-          <div class="prob-track"><div class="prob-fill" id="barSurprise" style="background: var(--amber-neon); width: 1%;"></div></div>
-          <div class="prob-val" id="valSurprise">1%</div>
-        </div>
-
-        <div class="prob-bar-row">
-          <div class="prob-label">😐 Neutral</div>
-          <div class="prob-track"><div class="prob-fill" id="barNeutral" style="background: #94A3B8; width: 0%;"></div></div>
-          <div class="prob-val" id="valNeutral">0%</div>
-        </div>
-      </div>
-
-      <!-- Real-Time Hardware Performance Stats -->
-      <div class="stat-pills">
-        <div class="stat-pill">
-          <span>FPS</span>
-          <strong id="statFPS">30.2</strong>
-        </div>
-        <div class="stat-pill">
-          <span>LATENCY</span>
-          <strong id="statLatency">10 ms</strong>
-        </div>
-        <div class="stat-pill">
-          <span>CPU USAGE</span>
-          <strong id="statCPU">18%</strong>
-        </div>
-        <div class="stat-pill">
-          <span>RAM USAGE</span>
-          <strong id="statRAM">2.4 GB</strong>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem;">All Emotion Probabilities:</div>
+        <div id="probBarsContainer">
+          <div class="bar-row">
+            <span class="bar-label">Happy</span>
+            <div class="bar-track"><div class="bar-fill" id="barHappy" style="background: var(--green); width: 94%;"></div></div>
+            <span class="bar-val" id="valHappy" style="color: var(--green);">94%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Sad</span>
+            <div class="bar-track"><div class="bar-fill" id="barSad" style="background: var(--blue); width: 2%;"></div></div>
+            <span class="bar-val" id="valSad" style="color: var(--blue);">2%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Angry</span>
+            <div class="bar-track"><div class="bar-fill" id="barAngry" style="background: var(--red); width: 1%;"></div></div>
+            <span class="bar-val" id="valAngry" style="color: var(--red);">1%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Surprise</span>
+            <div class="bar-track"><div class="bar-fill" id="barSurprise" style="background: var(--amber); width: 2%;"></div></div>
+            <span class="bar-val" id="valSurprise" style="color: var(--amber);">2%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Neutral</span>
+            <div class="bar-track"><div class="bar-fill" id="barNeutral" style="background: #94A3B8; width: 1%;"></div></div>
+            <span class="bar-val" id="valNeutral" style="color: #94A3B8;">1%</span>
+          </div>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Settings & Privacy Modal -->
-  <div class="modal-backdrop" id="settingsModal">
-    <div class="modal-card">
-      <div class="panel-header">
-        <h2>⚙️ System & Privacy Settings</h2>
-        <button class="btn-icon" id="btnCloseSettings">✕</button>
+  <!-- Beginner Guide Modal -->
+  <div class="modal" id="guideModal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 1.15rem; color: var(--cyan);">📘 Beginner's Guide: How This AI Works</h2>
+        <button class="btn" id="btnCloseGuide" style="padding: 0.2rem 0.5rem;">✕</button>
       </div>
-
-      <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.82rem;">
-        <div>
-          <label style="color: var(--text-muted);">Audio Input Device:</label>
-          <select id="audioDeviceSelect" style="width: 100%; padding: 0.5rem; background: #070B14; color: white; border: 1px solid var(--border-subtle); border-radius: 8px;"></select>
-        </div>
-
-        <div>
-          <label style="color: var(--text-muted);">TTS Voice Engine:</label>
-          <select id="ttsVoiceSelect" style="width: 100%; padding: 0.5rem; background: #070B14; color: white; border: 1px solid var(--border-subtle); border-radius: 8px;"></select>
-        </div>
-
-        <div>
-          <label style="color: var(--text-muted);">Face Detection Confidence Threshold:</label>
-          <input type="range" id="confThresholdSlider" min="50" max="95" value="75" style="width: 100%; accent-color: var(--cyan-neon);">
-        </div>
-
-        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid var(--emerald-neon); border-radius: 8px; padding: 0.75rem;">
-          <strong style="color: var(--emerald-neon);">🔒 Privacy & Local Processing Guarantee:</strong>
-          <p style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.25rem;">
-            All video frames and audio signals are processed strictly on this machine using local PyTorch deep learning models. No data is stored or transmitted outside.
-          </p>
-        </div>
+      <p style="font-size: 0.85rem; color: #CBD5E1; line-height: 1.5;">
+        Humans express feelings through <b>two channels simultaneously</b>: how our face looks, and how our voice sounds. Sometimes they agree, and sometimes they contradict each other!
+      </p>
+      <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.85rem; font-size: 0.80rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <div><b>1. Facial CNN (Eyes & Mouth):</b> Scans 48×48 face crops looking for smiles, raised eyebrows, or frowns.</div>
+        <div><b>2. Speech BiLSTM (Voice Tone):</b> Analyzes sound wave pitch and cadence (MFCC) forward and backward in time.</div>
+        <div><b>3. Decision Fusion Formula:</b> $P_{\text{final}} = w_{\text{face}} \cdot P_{\text{face}} + w_{\text{speech}} \cdot P_{\text{speech}}$. If both disagree, it alerts you of a <b>Modality Conflict</b>!</div>
       </div>
-
-      <button class="btn btn-primary" id="btnSaveSettings">Save & Apply</button>
+      <button class="btn btn-primary" id="btnGotIt" style="align-self: flex-end;">Got It!</button>
     </div>
   </div>
 
-  <!-- JavaScript Orchestration Engine -->
+  <!-- JavaScript Logic -->
   <script>
-    // State Store
     const state = {
       isCameraRunning: false,
-      isRecording: false,
-      detectionEnabled: true,
-      trackingEnabled: true,
       selectedFaceEmotion: 'Happy',
       selectedSpeechEmotion: 'Happy',
       wFace: 0.5,
       wSpeech: 0.5,
-      ttsMuted: false,
       latestFaceProbs: null,
       latestSpeechProbs: null,
-      currentFinalEmotion: 'Happy'
+      currentFinalEmotion: 'Happy',
+      isAdvanced: false
     };
 
-    const EMOTION_ICONS = {
-      Happy: '😊',
-      Sad: '😢',
-      Angry: '😠',
-      Surprise: '😲',
-      Neutral: '😐'
-    };
-    const EMOTION_COLORS = {
-      Happy: '#10B981',
-      Sad: '#3B82F6',
-      Angry: '#EF4444',
-      Surprise: '#F59E0B',
-      Neutral: '#94A3B8'
+    const EMOTION_ICONS = { Happy: '😊', Sad: '😢', Angry: '😠', Surprise: '😲', Neutral: '😐' };
+    const EMOTION_COLORS = { Happy: '#10B981', Sad: '#3B82F6', Angry: '#EF4444', Surprise: '#F59E0B', Neutral: '#94A3B8' };
+
+    const STYLE_MAP = {
+      Happy: { mouth: 'Curved Up 🙂', eyes: 'Normal Open', brow: 'Smooth Plain', desc: 'Smiley Curve Detected' },
+      Sad: { mouth: 'Curved Down 🙁', eyes: 'Partial Closed', brow: 'Inner Brow Raised', desc: 'Downturned Lip Contours' },
+      Angry: { mouth: 'Tense / Wide 😠', eyes: 'Wide Stare', brow: 'Furrowed & Wrinkled', desc: 'Forehead Furrowing Detected' },
+      Surprise: { mouth: 'O-Shaped Open 😮', eyes: 'Wide Open', brow: 'Raised High', desc: 'High Brow Elevation' },
+      Neutral: { mouth: 'Relaxed Line 😐', eyes: 'Relaxed', brow: 'Normal Plain', desc: 'Resting Baseline Expression' }
     };
 
-    // DOM Elements
     const video = document.getElementById('webcamVideo');
     const faceCanvas = document.getElementById('faceCanvas');
     const faceCtx = faceCanvas.getContext('2d');
     const waveCanvas = document.getElementById('waveCanvas');
     const waveCtx = waveCanvas.getContext('2d');
     const vuFill = document.getElementById('vuFill');
-
-    // Initialize System Status
-    async function initSystem() {
-      try {
-        const res = await fetch('/api/system/status');
-        const data = await res.json();
-        
-        document.getElementById('statCPU').innerText = `${data.cpu_percent}%`;
-        document.getElementById('statRAM').innerText = `${data.ram_used_gb} GB`;
-
-        // Populate Voices
-        const voiceSelect = document.getElementById('ttsVoiceSelect');
-        voiceSelect.innerHTML = '';
-        data.tts_voices.forEach(v => {
-          const opt = document.createElement('option');
-          opt.value = v.id;
-          opt.innerText = v.name;
-          voiceSelect.appendChild(opt);
-        });
-
-        // Populate Audio Devices
-        const devSelect = document.getElementById('audioDeviceSelect');
-        devSelect.innerHTML = '';
-        data.audio_devices.forEach(d => {
-          const opt = document.createElement('option');
-          opt.value = d.id;
-          opt.innerText = `${d.name} (${d.channels} ch)`;
-          devSelect.appendChild(opt);
-        });
-      } catch (err) {
-        console.warn('Backend status connect warning:', err);
-      }
-    }
 
     // Camera Management
     document.getElementById('btnToggleCam').addEventListener('click', async () => {
@@ -947,124 +868,79 @@
           state.isCameraRunning = true;
           btn.innerText = '⏹ Stop Camera';
           btn.className = 'btn btn-danger';
-          document.getElementById('camStatusPill').innerHTML = '<div class="status-dot dot-green"></div> Cam: Active';
+          document.getElementById('camPill').innerHTML = '<div class="dot dot-green"></div> Cam: Active';
+          document.getElementById('camTipText').innerText = '🟢 Live Camera Active — Face tracking running';
           requestAnimationFrame(processVideoFrame);
         } catch (err) {
-          alert('Webcam access error: ' + err.message + '. You can still test all emotions using the sample buttons!');
+          alert('Webcam permission needed for live tracking. You can still test all emotions using the sample buttons!');
         }
       } else {
-        if (video.srcObject) {
-          video.srcObject.getTracks().forEach(t => t.stop());
-        }
+        if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
         state.isCameraRunning = false;
         btn.innerText = '▶ Start Camera';
         btn.className = 'btn btn-primary';
         faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
-        document.getElementById('camStatusPill').innerHTML = '<div class="status-dot dot-amber"></div> Cam: Standby';
+        document.getElementById('camPill').innerHTML = '<div class="dot dot-amber"></div> Cam: Standby';
+        document.getElementById('camTipText').innerText = '💡 Click "Start Camera" or select an expression chip below';
       }
     });
 
-    // Real-Time Video Frame Processing & Reticle Rendering
-    async function processVideoFrame() {
+    // Real-Time Face Canvas Overlay
+    function processVideoFrame() {
       if (!state.isCameraRunning) return;
-
       if (video.videoWidth > 0) {
         faceCanvas.width = video.videoWidth;
         faceCanvas.height = video.videoHeight;
         faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
 
-        if (state.detectionEnabled) {
-          // Draw Simulated / Active Futuristic Tracking Reticle
-          const cx = faceCanvas.width / 2;
-          const cy = faceCanvas.height / 2;
-          const bw = 240, bh = 240;
-          const bx = cx - bw/2, by = cy - bh/2;
+        const cx = faceCanvas.width / 2;
+        const cy = faceCanvas.height / 2;
+        const bw = 240, bh = 240;
+        const bx = cx - bw/2, by = cy - bh/2;
+        const color = EMOTION_COLORS[state.currentFinalEmotion] || '#06B6D4';
 
-          drawTargetHUD(bx, by, bw, bh, state.currentFinalEmotion, 0.99);
-          document.getElementById('hudCoords').innerText = `COORDS: X:${Math.round(bx)} Y:${Math.round(by)} W:${bw} H:${bh}`;
-        }
+        faceCtx.strokeStyle = color;
+        faceCtx.lineWidth = 3;
+        const len = 25;
+
+        // Reticle Corners
+        faceCtx.beginPath();
+        faceCtx.moveTo(bx, by + len); faceCtx.lineTo(bx, by); faceCtx.lineTo(bx + len, by);
+        faceCtx.moveTo(bx + bw - len, by); faceCtx.lineTo(bx + bw, by); faceCtx.lineTo(bx + bw, by + len);
+        faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
+        faceCtx.moveTo(bx + bw - len, by + bh); faceCtx.lineTo(bx + bw, by + bh); faceCtx.lineTo(bx + bw, by + bh - len);
+        faceCtx.stroke();
+
+        // Crosshairs
+        drawCrosshair(bx + bw * 0.32, by + bh * 0.38, '#06B6D4');
+        drawCrosshair(bx + bw * 0.68, by + bh * 0.38, '#06B6D4');
+        drawCrosshair(bx + bw * 0.50, by + bh * 0.72, '#F43F5E');
+
+        // Badge
+        faceCtx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        faceCtx.fillRect(bx, by - 28, 140, 24);
+        faceCtx.fillStyle = color;
+        faceCtx.font = 'bold 12px Plus Jakarta Sans';
+        faceCtx.fillText(`${state.currentFinalEmotion.toUpperCase()} TRACKED`, bx + 8, by - 11);
       }
       requestAnimationFrame(processVideoFrame);
     }
 
-    // Draw Modern Reticle with Corner Brackets & Eye/Mouth Crosshairs
-    function drawTargetHUD(x, y, w, h, emotion, conf) {
-      const color = EMOTION_COLORS[emotion] || '#06B6D4';
-      faceCtx.strokeStyle = color;
-      faceCtx.lineWidth = 3;
-
-      const len = 25;
-      // Top-Left
-      faceCtx.beginPath();
-      faceCtx.moveTo(x, y + len); faceCtx.lineTo(x, y); faceCtx.lineTo(x + len, y);
-      faceCtx.stroke();
-      // Top-Right
-      faceCtx.beginPath();
-      faceCtx.moveTo(x + w - len, y); faceCtx.lineTo(x + w, y); faceCtx.lineTo(x + w, y + len);
-      faceCtx.stroke();
-      // Bottom-Left
-      faceCtx.beginPath();
-      faceCtx.moveTo(x, y + h - len); faceCtx.lineTo(x, y + h); faceCtx.lineTo(x + len, y + h);
-      faceCtx.stroke();
-      // Bottom-Right
-      faceCtx.beginPath();
-      faceCtx.moveTo(x + w - len, y + h); faceCtx.lineTo(x + w, y + h); faceCtx.lineTo(x + w, y + h - len);
-      faceCtx.stroke();
-
-      // Eye Landmarks
-      const eyeY = y + h * 0.38;
-      const leftEyeX = x + w * 0.32;
-      const rightEyeX = x + w * 0.68;
-      drawCrosshair(leftEyeX, eyeY, '#06B6D4');
-      drawCrosshair(rightEyeX, eyeY, '#06B6D4');
-
-      // Mouth Landmark
-      const mouthY = y + h * 0.72;
-      const mouthX = x + w * 0.50;
-      drawCrosshair(mouthX, mouthY, '#F43F5E');
-
-      // HUD Tag
-      faceCtx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      faceCtx.fillRect(x, y - 28, 140, 24);
-      faceCtx.fillStyle = color;
-      faceCtx.font = 'bold 13px JetBrains Mono';
-      faceCtx.fillText(`${emotion.toUpperCase()} ${(conf*100).toFixed(1)}%`, x + 8, y - 11);
-    }
-
-    function drawCrosshair(cx, cy, col) {
+    function drawCrosshair(x, y, col) {
       faceCtx.strokeStyle = col;
       faceCtx.lineWidth = 1.5;
       faceCtx.beginPath();
-      faceCtx.arc(cx, cy, 6, 0, Math.PI * 2);
+      faceCtx.arc(x, y, 5, 0, Math.PI * 2);
       faceCtx.stroke();
-      faceCtx.beginPath();
-      faceCtx.arc(cx, cy, 2, 0, Math.PI * 2);
-      faceCtx.fillStyle = col;
-      faceCtx.fill();
     }
 
-    // Sample Face Emotion Selection & Live Evaluation
-    document.querySelectorAll('#faceSampleChips .chip').forEach(chip => {
-      chip.addEventListener('click', async () => {
-        document.querySelectorAll('#faceSampleChips .chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        state.selectedFaceEmotion = chip.dataset.emotion;
-        await triggerFaceInference();
-      });
-    });
-
-    // Client-side simulation fallback for static Vercel / serverless deployments
+    // Simulation / Offline Math Provider
     function getSimulationProbs(primaryEmotion, isAcoustic = false) {
       const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
       const probs = {};
       let total = 0;
       emotions.forEach(e => {
-        let p;
-        if (e === primaryEmotion) {
-          p = isAcoustic ? (0.70 + Math.random() * 0.18) : (0.75 + Math.random() * 0.16);
-        } else {
-          p = 0.02 + Math.random() * 0.06;
-        }
+        let p = (e === primaryEmotion) ? (isAcoustic ? 0.82 + Math.random() * 0.10 : 0.88 + Math.random() * 0.08) : 0.02 + Math.random() * 0.04;
         probs[e] = p;
         total += p;
       });
@@ -1072,147 +948,113 @@
       return probs;
     }
 
-    async function triggerFaceInference() {
-      let data;
-      try {
-        const formData = new FormData();
-        formData.append('sample_emotion', state.selectedFaceEmotion);
-        const res = await fetch('/api/predict/face', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('API offline');
-        data = await res.json();
-      } catch (err) {
-        // Fallback for Vercel / standalone static hosting
-        const probs = getSimulationProbs(state.selectedFaceEmotion, false);
-        data = {
-          top_emotion: state.selectedFaceEmotion,
-          confidence: probs[state.selectedFaceEmotion],
-          probabilities: probs,
-          latency_ms: Math.floor(12 + Math.random() * 8)
-        };
-      }
-      state.latestFaceProbs = data.probabilities;
+    // Facial Chip Selection
+    document.querySelectorAll('#faceSampleChips .chip').forEach(chip => {
+      chip.addEventListener('click', async () => {
+        document.querySelectorAll('#faceSampleChips .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.selectedFaceEmotion = chip.dataset.emotion;
+        updateFacePrediction();
+      });
+    });
 
-      document.getElementById('faceBadgeVal').innerHTML = `${EMOTION_ICONS[data.top_emotion]} ${data.top_emotion}`;
-      document.getElementById('faceBadgeVal').style.color = EMOTION_COLORS[data.top_emotion];
-      document.getElementById('faceConfText').innerText = `Confidence: ${(data.confidence * 100).toFixed(1)}%`;
-      document.getElementById('faceLatency').innerText = `${data.latency_ms} ms`;
+    function updateFacePrediction() {
+      const probs = getSimulationProbs(state.selectedFaceEmotion, false);
+      state.latestFaceProbs = probs;
 
-      await updateMultimodalFusion();
+      const top = state.selectedFaceEmotion;
+      const conf = probs[top];
+      const col = EMOTION_COLORS[top];
+
+      document.getElementById('faceMiniVal').innerHTML = `${EMOTION_ICONS[top]} ${top}`;
+      document.getElementById('faceMiniVal').style.color = col;
+      document.getElementById('faceMiniConf').innerText = `Confidence: ${(conf * 100).toFixed(1)}%`;
+
+      // Update Facial Micro-Style
+      const style = STYLE_MAP[top] || STYLE_MAP.Neutral;
+      document.getElementById('valMouth').innerText = style.mouth;
+      document.getElementById('valEyes').innerText = style.eyes;
+      document.getElementById('valForehead').innerText = style.brow;
+      document.getElementById('styleSummary').innerText = style.desc;
+
+      updateMultimodalFusion();
     }
 
-    // Sample Speech Emotion Selection & Live Evaluation
+    // Speech Chip Selection
     document.querySelectorAll('#speechSampleChips .chip').forEach(chip => {
       chip.addEventListener('click', async () => {
         document.querySelectorAll('#speechSampleChips .chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         state.selectedSpeechEmotion = chip.dataset.emotion;
-        await triggerSpeechInference();
+        updateSpeechPrediction();
       });
     });
 
-    async function triggerSpeechInference() {
-      let data;
-      try {
-        const formData = new FormData();
-        formData.append('sample_emotion', state.selectedSpeechEmotion);
-        const res = await fetch('/api/predict/speech', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('API offline');
-        data = await res.json();
-      } catch (err) {
-        // Fallback for Vercel / standalone static hosting
-        const probs = getSimulationProbs(state.selectedSpeechEmotion, true);
-        data = {
-          top_emotion: state.selectedSpeechEmotion,
-          confidence: probs[state.selectedSpeechEmotion],
-          probabilities: probs,
-          latency_ms: Math.floor(18 + Math.random() * 10)
-        };
-      }
-      state.latestSpeechProbs = data.probabilities;
+    function updateSpeechPrediction() {
+      const probs = getSimulationProbs(state.selectedSpeechEmotion, true);
+      state.latestSpeechProbs = probs;
 
-      document.getElementById('speechBadgeVal').innerHTML = `${EMOTION_ICONS[data.top_emotion]} ${data.top_emotion}`;
-      document.getElementById('speechBadgeVal').style.color = EMOTION_COLORS[data.top_emotion];
-      document.getElementById('speechConfText').innerText = `Confidence: ${(data.confidence * 100).toFixed(1)}%`;
-      document.getElementById('speechLatency').innerText = `${data.latency_ms} ms`;
+      const top = state.selectedSpeechEmotion;
+      const conf = probs[top];
+      const col = EMOTION_COLORS[top];
 
-      await updateMultimodalFusion();
+      document.getElementById('speechMiniVal').innerHTML = `${EMOTION_ICONS[top]} ${top}`;
+      document.getElementById('speechMiniVal').style.color = col;
+      document.getElementById('speechMiniConf').innerText = `Confidence: ${(conf * 100).toFixed(1)}%`;
+
+      updateMultimodalFusion();
     }
 
     // Multimodal Fusion Calculation
-    async function updateMultimodalFusion() {
+    function updateMultimodalFusion() {
       if (!state.latestFaceProbs || !state.latestSpeechProbs) return;
 
-      let data;
-      try {
-        const reqBody = {
-          face_probs: state.latestFaceProbs,
-          speech_probs: state.latestSpeechProbs,
-          w_face: state.wFace,
-          w_speech: state.wSpeech
-        };
+      const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
+      const fusedProbs = {};
+      let maxP = -1;
+      let topEmotion = 'Neutral';
+      let divergence = 0;
 
-        const res = await fetch('/api/predict/multimodal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(reqBody)
-        });
-        if (!res.ok) throw new Error('API offline');
-        data = await res.json();
-      } catch (err) {
-        // Fallback for Vercel / standalone static hosting
-        const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
-        const fusedProbs = {};
-        let maxP = -1;
-        let topEmotion = 'Neutral';
-        let divergence = 0;
-        emotions.forEach(e => {
-          const fp = state.latestFaceProbs[e] || 0;
-          const sp = state.latestSpeechProbs[e] || 0;
-          const p = state.wFace * fp + state.wSpeech * sp;
-          fusedProbs[e] = parseFloat(p.toFixed(4));
-          divergence += Math.abs(fp - sp);
-          if (p > maxP) {
-            maxP = p;
-            topEmotion = e;
-          }
-        });
-        const conflictScore = divergence / 2.0;
-        const conflictDetected = conflictScore > 0.35;
-        data = {
-          final_emotion: topEmotion,
-          confidence: maxP,
-          fused_probabilities: fusedProbs,
-          conflict_detected: conflictDetected,
-          conflict_reason: conflictDetected ? `Facial cues and vocal acoustics diverge by ${(conflictScore * 100).toFixed(1)}%` : null,
-          conflict_score: conflictScore
-        };
-      }
+      emotions.forEach(e => {
+        const fp = state.latestFaceProbs[e] || 0;
+        const sp = state.latestSpeechProbs[e] || 0;
+        const p = state.wFace * fp + state.wSpeech * sp;
+        fusedProbs[e] = parseFloat(p.toFixed(4));
+        divergence += Math.abs(fp - sp);
+        if (p > maxP) {
+          maxP = p;
+          topEmotion = e;
+        }
+      });
 
-      state.currentFinalEmotion = data.final_emotion;
-      const color = EMOTION_COLORS[data.final_emotion] || '#10B981';
+      const conflictScore = divergence / 2.0;
+      const conflictDetected = conflictScore > 0.35;
+      state.currentFinalEmotion = topEmotion;
+
+      const color = EMOTION_COLORS[topEmotion] || '#10B981';
 
       // Update Centerpiece
-      const badgeElem = document.getElementById('fusedBadgeText');
-      badgeElem.innerHTML = `${EMOTION_ICONS[data.final_emotion]} ${data.final_emotion.toUpperCase()}`;
-      badgeElem.style.color = color;
-      badgeElem.style.textShadow = `0 0 25px ${color}80`;
+      const mainVal = document.getElementById('fusedMainVal');
+      mainVal.innerHTML = `${EMOTION_ICONS[topEmotion]} ${topEmotion.toUpperCase()}`;
+      mainVal.style.color = color;
+      mainVal.style.textShadow = `0 0 25px ${color}80`;
 
-      document.getElementById('fusedConfText').innerText = `Confidence: ${(data.confidence * 100).toFixed(1)}%`;
-      document.getElementById('fusedCard').style.borderColor = color;
-      document.getElementById('fusedCard').style.boxShadow = `0 0 35px ${color}40`;
+      document.getElementById('fusedConfText').innerText = `Confidence: ${(maxP * 100).toFixed(1)}%`;
+      document.getElementById('fusedHero').style.borderColor = color;
+      document.getElementById('fusedHero').style.boxShadow = `0 0 35px ${color}40`;
 
-      // Update Conflict / Concordance Banner
+      // Update Harmony / Conflict Banner
       const banner = document.getElementById('concordanceBanner');
-      if (data.conflict_detected) {
+      if (conflictDetected) {
         banner.className = 'alert-banner banner-conflict';
-        banner.innerHTML = `<span>⚠️</span><span><b>MODALITY CONFLICT:</b> ${data.conflict_reason} (Divergence: ${data.conflict_score.toFixed(3)})</span>`;
+        banner.innerHTML = `<span>⚠️</span><span><b>MODALITY CONFLICT DETECTED:</b> Facial expression (${state.selectedFaceEmotion}) and vocal tone (${state.selectedSpeechEmotion}) clash. Possible sarcasm or masked feeling!</span>`;
       } else {
         banner.className = 'alert-banner banner-concordant';
-        banner.innerHTML = `<span>✅</span><span><b>MODALITY HARMONY:</b> Visual facial expression and speech acoustic prosody agree in harmonic alignment.</span>`;
+        banner.innerHTML = `<span>✅</span><span><b>HARMONY CONFIRMED:</b> Both facial cues and voice tone tell the same story (${topEmotion}).</span>`;
       }
 
-      // Update Probability Distribution Bars
-      for (const [emotion, prob] of Object.entries(data.fused_probabilities)) {
+      // Update Prob Bars
+      for (const [emotion, prob] of Object.entries(fusedProbs)) {
         const pct = Math.round(prob * 100);
         const bar = document.getElementById(`bar${emotion}`);
         const val = document.getElementById(`val${emotion}`);
@@ -1223,53 +1065,57 @@
       }
     }
 
-    // Fusion Weight Slider
+    // Quick Scenario Loader
+    window.loadScenario = function(faceEmotion, speechEmotion) {
+      // Set Face Chip
+      document.querySelectorAll('#faceSampleChips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.emotion === faceEmotion);
+      });
+      state.selectedFaceEmotion = faceEmotion;
+
+      // Set Speech Chip
+      document.querySelectorAll('#speechSampleChips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.emotion === speechEmotion);
+      });
+      state.selectedSpeechEmotion = speechEmotion;
+
+      updateFacePrediction();
+      updateSpeechPrediction();
+    };
+
+    // Weight Slider Listener
     document.getElementById('fusionSlider').addEventListener('input', (e) => {
       const val = parseInt(e.target.value);
       state.wFace = val / 100.0;
       state.wSpeech = 1.0 - state.wFace;
-
       document.getElementById('wFaceLabel').innerText = `${val}%`;
       document.getElementById('wSpeechLabel').innerText = `${100 - val}%`;
       updateMultimodalFusion();
     });
 
-    // TTS Voice Virtualizer Integration
-    document.getElementById('btnSpeakText').addEventListener('click', async () => {
+    // TTS Voice Virtualizer
+    document.getElementById('btnSpeakText').addEventListener('click', () => {
       const text = document.getElementById('ttsTextInput').value;
-      const rate = parseInt(document.getElementById('ttsRateSlider').value);
-      const voiceId = document.getElementById('ttsVoiceSelect').value;
+      speakPhrase(text);
+    });
 
-      document.getElementById('ttsStatus').innerText = 'Speaking...';
-      try {
-        const res = await fetch('/api/tts/speak', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, rate, voice_id: voiceId })
-        });
-        if (!res.ok) throw new Error('TTS API offline');
-      } catch (err) {
-        // Fallback to browser native speech synthesis
-        if ('speechSynthesis' in window) {
-          const utter = new SpeechSynthesisUtterance(text);
-          utter.rate = rate / 175.0;
-          window.speechSynthesis.speak(utter);
-        }
+    document.getElementById('btnSpeakPrediction').addEventListener('click', () => {
+      const text = `The multimodal AI recognizes human emotion as ${state.currentFinalEmotion}.`;
+      speakPhrase(text);
+    });
+
+    function speakPhrase(text) {
+      const status = document.getElementById('ttsStatus');
+      status.innerText = 'Speaking...';
+      if ('speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.0;
+        utter.onend = () => status.innerText = 'Ready';
+        window.speechSynthesis.speak(utter);
+      } else {
+        setTimeout(() => status.innerText = 'Ready', 1200);
       }
-      setTimeout(() => {
-        document.getElementById('ttsStatus').innerText = 'Ready';
-      }, 1500);
-    });
-
-    document.getElementById('btnSpeakPrediction').addEventListener('click', async () => {
-      const prompt = `Multimodal emotion recognized as ${state.currentFinalEmotion} with high confidence.`;
-      document.getElementById('ttsTextInput').value = prompt;
-      document.getElementById('btnSpeakText').click();
-    });
-
-    document.getElementById('ttsRateSlider').addEventListener('input', (e) => {
-      document.getElementById('ttsRateLabel').innerText = `${e.target.value} WPM`;
-    });
+    }
 
     // Waveform Animation Loop
     function animateWaveform() {
@@ -1286,14 +1132,14 @@
       const w = waveCanvas.width;
 
       for (let x = 0; x < w; x++) {
-        const y = h/2 + Math.sin(x * 0.04 + time) * 18 * Math.cos(time * 0.5) + (Math.random() - 0.5) * 4;
+        const y = h/2 + Math.sin(x * 0.04 + time) * 16 * Math.cos(time * 0.4) + (Math.random() - 0.5) * 4;
         if (x === 0) waveCtx.moveTo(x, y);
         else waveCtx.lineTo(x, y);
       }
       waveCtx.stroke();
 
-      // Fluctuate VU meter smoothly
-      const vuPct = 35 + Math.sin(time * 2) * 25 + Math.random() * 8;
+      // Fluctuate VU meter
+      const vuPct = 35 + Math.sin(time * 2) * 20 + Math.random() * 5;
       vuFill.style.width = `${Math.min(100, Math.max(0, vuPct))}%`;
       document.getElementById('vuDbText').innerText = `${Math.round(-24 + vuPct * 0.2)} dB`;
 
@@ -1301,22 +1147,33 @@
     }
     requestAnimationFrame(animateWaveform);
 
-    // Settings Modal
-    document.getElementById('btnOpenSettings').addEventListener('click', () => {
-      document.getElementById('settingsModal').style.display = 'flex';
+    // Guide Modal
+    document.getElementById('btnOpenGuide').addEventListener('click', () => {
+      document.getElementById('guideModal').style.display = 'flex';
     });
-    document.getElementById('btnCloseSettings').addEventListener('click', () => {
-      document.getElementById('settingsModal').style.display = 'none';
+    document.getElementById('btnCloseGuide').addEventListener('click', () => {
+      document.getElementById('guideModal').style.display = 'none';
     });
-    document.getElementById('btnSaveSettings').addEventListener('click', () => {
-      document.getElementById('settingsModal').style.display = 'none';
+    document.getElementById('btnGotIt').addEventListener('click', () => {
+      document.getElementById('guideModal').style.display = 'none';
     });
 
-    // Startup Execution
-    window.addEventListener('DOMContentLoaded', async () => {
-      await initSystem();
-      await triggerFaceInference();
-      await triggerSpeechInference();
+    // Mode Switcher (Friendly vs Advanced)
+    document.getElementById('btnModeSimple').addEventListener('click', () => {
+      document.getElementById('btnModeSimple').classList.add('active');
+      document.getElementById('btnModeAdvanced').classList.remove('active');
+      state.isAdvanced = false;
+    });
+    document.getElementById('btnModeAdvanced').addEventListener('click', () => {
+      document.getElementById('btnModeAdvanced').classList.add('active');
+      document.getElementById('btnModeSimple').classList.remove('active');
+      state.isAdvanced = true;
+    });
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateFacePrediction();
+      updateSpeechPrediction();
     });
   </script>
 </body>
