@@ -1,0 +1,11 @@
+# Ignore Python runtime files on Vercel so it builds as a static web app
+requirements.txt
+packages.txt
+*.py
+models/
+src/
+data/
+reports/
+scripts/
+demo_samples/
+__pycache__/
