@@ -241,8 +241,33 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    video.mirrored, #faceCanvas.mirrored {
+      transform: scaleX(-1);
     }
     #faceCanvas { z-index: 10; pointer-events: none; }
+
+    .hud-overlay {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 20;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.70rem;
+      pointer-events: none;
+    }
+    .hud-tag {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      backdrop-filter: blur(8px);
+      color: #E2E8F0;
+    }
 
     .viewport-tip {
       position: absolute;
@@ -629,15 +654,20 @@
 
       <!-- Camera Viewport -->
       <div class="video-viewport">
-        <video id="webcamVideo" autoplay playsinline muted></video>
-        <canvas id="faceCanvas"></canvas>
+        <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
+        <canvas id="faceCanvas" class="mirrored"></canvas>
         <div class="viewport-tip" id="camTipText">💡 Click "Start Camera" or select an expression chip below</div>
+        <div class="hud-overlay" id="camHudOverlay" style="display: none;">
+          <span class="hud-tag" id="hudTrackStatus">🟢 FACE: SEARCHING</span>
+          <span class="hud-tag" id="hudCoords">COORDS: X:-- Y:--</span>
+        </div>
       </div>
 
       <!-- Camera Controls -->
-      <div class="btn-row">
+      <div class="btn-row" style="grid-template-columns: 1.2fr 1fr 1fr;">
         <button class="btn btn-primary" id="btnToggleCam">▶ Start Camera</button>
-        <button class="btn" id="btnSnapFrame">📸 Snapshot</button>
+        <button class="btn" id="btnFlipCam" title="Switch between normal and mirror view">🪞 View: Mirrored</button>
+        <button class="btn" id="btnToggleTrack" title="Toggle real-time face tracking reticle">🎯 Tracking: ON</button>
       </div>
 
       <!-- Expression Selector Chips -->
@@ -858,6 +888,27 @@
     const waveCtx = waveCanvas.getContext('2d');
     const vuFill = document.getElementById('vuFill');
 
+    // Real-Time Dynamic Face Tracker State
+    const tracker = {
+      enabled: true,
+      isMirrored: true,
+      x: 0,
+      y: 0,
+      w: 220,
+      h: 240,
+      targetX: 0,
+      targetY: 0,
+      targetW: 220,
+      targetH: 240,
+      isLocked: false,
+      lastDetectTime: 0,
+      sampleCanvas: document.createElement('canvas'),
+      nativeDetector: ('FaceDetector' in window) ? new FaceDetector({ fastMode: true, maxDetectedFaces: 1 }) : null
+    };
+    tracker.sampleCanvas.width = 64;
+    tracker.sampleCanvas.height = 48;
+    const sampleCtx = tracker.sampleCanvas.getContext('2d', { willReadFrequently: true });
+
     // Camera Management
     document.getElementById('btnToggleCam').addEventListener('click', async () => {
       const btn = document.getElementById('btnToggleCam');
@@ -870,6 +921,7 @@
           btn.className = 'btn btn-danger';
           document.getElementById('camPill').innerHTML = '<div class="dot dot-green"></div> Cam: Active';
           document.getElementById('camTipText').innerText = '🟢 Live Camera Active — Face tracking running';
+          document.getElementById('camHudOverlay').style.display = tracker.enabled ? 'flex' : 'none';
           requestAnimationFrame(processVideoFrame);
         } catch (err) {
           alert('Webcam permission needed for live tracking. You can still test all emotions using the sample buttons!');
@@ -882,10 +934,108 @@
         faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
         document.getElementById('camPill').innerHTML = '<div class="dot dot-amber"></div> Cam: Standby';
         document.getElementById('camTipText').innerText = '💡 Click "Start Camera" or select an expression chip below';
+        document.getElementById('camHudOverlay').style.display = 'none';
       }
     });
 
-    // Real-Time Face Canvas Overlay
+    // Flip Camera View (Mirror vs Normal)
+    document.getElementById('btnFlipCam').addEventListener('click', () => {
+      tracker.isMirrored = !tracker.isMirrored;
+      video.classList.toggle('mirrored', tracker.isMirrored);
+      faceCanvas.classList.toggle('mirrored', tracker.isMirrored);
+      document.getElementById('btnFlipCam').innerText = tracker.isMirrored ? '🪞 View: Mirrored' : '📷 View: Normal';
+    });
+
+    // Toggle Real-Time Tracking Reticle
+    document.getElementById('btnToggleTrack').addEventListener('click', () => {
+      tracker.enabled = !tracker.enabled;
+      document.getElementById('btnToggleTrack').innerText = tracker.enabled ? '🎯 Tracking: ON' : '🎯 Tracking: OFF';
+      document.getElementById('camHudOverlay').style.display = (tracker.enabled && state.isCameraRunning) ? 'flex' : 'none';
+      if (!tracker.enabled) {
+        faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
+      }
+    });
+
+    // Dynamic Face Detection Algorithm
+    function detectFacePosition() {
+      const now = performance.now();
+      if (now - tracker.lastDetectTime < 80) return; // ~12 detections per second
+      tracker.lastDetectTime = now;
+
+      if (tracker.nativeDetector) {
+        tracker.nativeDetector.detect(video).then(faces => {
+          if (faces && faces.length > 0) {
+            const box = faces[0].boundingBox;
+            tracker.targetW = Math.max(160, Math.min(box.width, faceCanvas.width * 0.75));
+            tracker.targetH = tracker.targetW * 1.15;
+            tracker.targetX = box.x;
+            tracker.targetY = box.y;
+            tracker.isLocked = true;
+          } else {
+            fallbackSkinTracker();
+          }
+        }).catch(() => fallbackSkinTracker());
+      } else {
+        fallbackSkinTracker();
+      }
+    }
+
+    function fallbackSkinTracker() {
+      try {
+        sampleCtx.drawImage(video, 0, 0, 64, 48);
+        const imgData = sampleCtx.getImageData(0, 0, 64, 48).data;
+        let sumX = 0, sumY = 0, count = 0;
+        let minX = 64, maxX = 0, minY = 48, maxY = 0;
+
+        for (let y = 6; y < 42; y += 2) {
+          for (let x = 6; x < 58; x += 2) {
+            const idx = (y * 64 + x) * 4;
+            const r = imgData[idx];
+            const g = imgData[idx + 1];
+            const b = imgData[idx + 2];
+
+            // Skin Chrominance detection
+            if (r > 75 && g > 40 && b > 20 && r > g && r > b && (r - g) > 12 && (r - b) > 12) {
+              sumX += x;
+              sumY += y;
+              count++;
+              if (x < minX) minX = x;
+              if (x > maxX) maxX = x;
+              if (y < minY) minY = y;
+              if (y > maxY) maxY = y;
+            }
+          }
+        }
+
+        if (count > 25) {
+          const avgX = sumX / count;
+          const avgY = sumY / count;
+          const scaleX = faceCanvas.width / 64;
+          const scaleY = faceCanvas.height / 48;
+
+          const detectedW = Math.max(180, Math.min(faceCanvas.width * 0.7, (maxX - minX + 8) * scaleX * 1.5));
+          const detectedH = detectedW * 1.15;
+
+          tracker.targetW = detectedW;
+          tracker.targetH = detectedH;
+          tracker.targetX = (avgX * scaleX) - detectedW / 2;
+          tracker.targetY = (avgY * scaleY) - detectedH / 2;
+          tracker.isLocked = true;
+        } else {
+          // If no face found in frame, smoothly park in the center
+          const defW = 220, defH = 240;
+          tracker.targetW = defW;
+          tracker.targetH = defH;
+          tracker.targetX = (faceCanvas.width - defW) / 2;
+          tracker.targetY = (faceCanvas.height - defH) / 2;
+          tracker.isLocked = false;
+        }
+      } catch (e) {
+        tracker.isLocked = false;
+      }
+    }
+
+    // Real-Time Face Canvas Overlay & Dynamic Tracker Loop
     function processVideoFrame() {
       if (!state.isCameraRunning) return;
       if (video.videoWidth > 0) {
@@ -893,37 +1043,62 @@
         faceCanvas.height = video.videoHeight;
         faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
 
-        const cx = faceCanvas.width / 2;
-        const cy = faceCanvas.height / 2;
-        const bw = 240, bh = 240;
-        const bx = cx - bw/2, by = cy - bh/2;
-        const color = EMOTION_COLORS[state.currentFinalEmotion] || '#06B6D4';
+        if (tracker.enabled) {
+          detectFacePosition();
 
-        faceCtx.strokeStyle = color;
-        faceCtx.lineWidth = 3;
-        const len = 25;
+          // Smooth Spring Easing for fluid tracking
+          tracker.x += (tracker.targetX - tracker.x) * 0.25;
+          tracker.y += (tracker.targetY - tracker.y) * 0.25;
+          tracker.w += (tracker.targetW - tracker.w) * 0.25;
+          tracker.h += (tracker.targetH - tracker.h) * 0.25;
 
-        // Reticle Corners
-        faceCtx.beginPath();
-        faceCtx.moveTo(bx, by + len); faceCtx.lineTo(bx, by); faceCtx.lineTo(bx + len, by);
-        faceCtx.moveTo(bx + bw - len, by); faceCtx.lineTo(bx + bw, by); faceCtx.lineTo(bx + bw, by + len);
-        faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
-        faceCtx.moveTo(bx + bw - len, by + bh); faceCtx.lineTo(bx + bw, by + bh); faceCtx.lineTo(bx + bw, by + bh - len);
-        faceCtx.stroke();
+          drawTrackingReticle(tracker.x, tracker.y, tracker.w, tracker.h, state.currentFinalEmotion, tracker.isLocked);
 
-        // Crosshairs
+          // Update HUD Coordinates
+          const hudCoords = document.getElementById('hudCoords');
+          const hudStatus = document.getElementById('hudTrackStatus');
+          if (hudCoords && hudStatus) {
+            hudCoords.innerText = `X:${Math.round(tracker.x)} Y:${Math.round(tracker.y)} SIZE:${Math.round(tracker.w)}`;
+            hudStatus.innerText = tracker.isLocked ? '🟢 FACE LOCKED' : '🟡 SEARCHING...';
+            hudStatus.style.color = tracker.isLocked ? '#10B981' : '#F59E0B';
+          }
+        }
+      }
+      requestAnimationFrame(processVideoFrame);
+    }
+
+    // Draw Modern Adaptive Reticle with Corner Brackets & Eye/Mouth Crosshairs
+    function drawTrackingReticle(bx, by, bw, bh, emotion, isLocked) {
+      const color = isLocked ? (EMOTION_COLORS[emotion] || '#06B6D4') : '#F59E0B';
+      faceCtx.strokeStyle = color;
+      faceCtx.lineWidth = 3;
+      const len = Math.max(18, bw * 0.12);
+
+      // Target Corner Brackets
+      faceCtx.beginPath();
+      // Top-Left
+      faceCtx.moveTo(bx, by + len); faceCtx.lineTo(bx, by); faceCtx.lineTo(bx + len, by);
+      // Top-Right
+      faceCtx.moveTo(bx + bw - len, by); faceCtx.lineTo(bx + bw, by); faceCtx.lineTo(bx + bw, by + len);
+      // Bottom-Left
+      faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
+      // Bottom-Right
+      faceCtx.moveTo(bx + bw - len, by + bh); faceCtx.lineTo(bx + bw, by + bh); faceCtx.lineTo(bx + bw, by + bh - len);
+      faceCtx.stroke();
+
+      // Feature Landmarks (Eyes & Mouth Crosshairs)
+      if (isLocked) {
         drawCrosshair(bx + bw * 0.32, by + bh * 0.38, '#06B6D4');
         drawCrosshair(bx + bw * 0.68, by + bh * 0.38, '#06B6D4');
         drawCrosshair(bx + bw * 0.50, by + bh * 0.72, '#F43F5E');
 
-        // Badge
+        // Bounding Box Header
         faceCtx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-        faceCtx.fillRect(bx, by - 28, 140, 24);
+        faceCtx.fillRect(bx, by - 26, Math.min(150, bw), 22);
         faceCtx.fillStyle = color;
-        faceCtx.font = 'bold 12px Plus Jakarta Sans';
-        faceCtx.fillText(`${state.currentFinalEmotion.toUpperCase()} TRACKED`, bx + 8, by - 11);
+        faceCtx.font = 'bold 11px Plus Jakarta Sans';
+        faceCtx.fillText(`${emotion.toUpperCase()} TRACKED`, bx + 6, by - 10);
       }
-      requestAnimationFrame(processVideoFrame);
     }
 
     function drawCrosshair(x, y, col) {
