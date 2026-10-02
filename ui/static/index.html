@@ -1181,55 +1181,108 @@
 
     // Live Facial Micro-Style & Expression Detection from 468 Landmarks
     function analyzeLiveFacialLandmarks(lm) {
-      // 1. Smile / Frown curvature:
+      // 1. Zygomatic Smile / Depressor Frown curvature:
       const cornerAvgY = (lm[61].y + lm[291].y) / 2;
       const lipCenterY = (lm[13].y + lm[14].y) / 2;
       const faceHeight = Math.abs(lm[152].y - lm[10].y) || 0.4;
       const smileScore = (lipCenterY - cornerAvgY) / faceHeight;
 
-      // 2. Mouth Openness:
+      // 2. Mouth Geometry:
       const mouthHeight = Math.abs(lm[13].y - lm[14].y);
       const mouthWidth = Math.abs(lm[61].x - lm[291].x) || 0.1;
       const mouthOpenRatio = mouthHeight / mouthWidth;
+      const faceWidth = Math.abs(lm[234].x - lm[454].x) || 0.35;
+      const mouthWidthRatio = mouthWidth / faceWidth;
 
       // 3. Eye Openness (EAR):
       const leftEAR = Math.abs(lm[159].y - lm[145].y) / (Math.abs(lm[33].x - lm[133].x) || 0.05);
       const rightEAR = Math.abs(lm[386].y - lm[374].y) / (Math.abs(lm[362].x - lm[263].x) || 0.05);
       const avgEAR = (leftEAR + rightEAR) / 2;
 
-      // 4. Eyebrow Furrowing:
+      // 4. Eyebrow Furrowing & Height:
       const interEyeDist = Math.abs(lm[33].x - lm[263].x) || 0.3;
       const browDist = Math.abs(lm[55].x - lm[285].x) / interEyeDist;
+      const browHeightLeft = Math.abs(lm[70].y - lm[159].y) / faceHeight;
+      const browHeightRight = Math.abs(lm[300].y - lm[386].y) / faceHeight;
+      const avgBrowHeight = (browHeightLeft + browHeightRight) / 2;
 
+      // 5. Continuous Expressive Scoring (eliminating Neutral dominance):
+      // Happy: lip corners elevated, or mouth horizontally widened in a smile
+      const happyScore = Math.max(0, (smileScore - 0.005) * 45) + Math.max(0, (mouthWidthRatio - 0.74) * 8);
+
+      // Surprise: mouth opened wide vertically, eyes opened wide, eyebrows raised
+      const surpriseScore = Math.max(0, (mouthOpenRatio - 0.22) * 5) + Math.max(0, (avgEAR - 0.28) * 6) + Math.max(0, (avgBrowHeight - 0.12) * 4);
+
+      // Angry: eyebrows furrowed close together, eyes narrowed, lips pressed
+      const angryScore = Math.max(0, (0.32 - browDist) * 14) + Math.max(0, (0.20 - avgEAR) * 5);
+
+      // Sad: lip corners pulled downward, lower mouth
+      const sadScore = Math.max(0, (-0.004 - smileScore) * 40);
+
+      const expressiveScores = {
+        Happy: happyScore,
+        Surprise: surpriseScore,
+        Angry: angryScore,
+        Sad: sadScore
+      };
+
+      // Determine highest expressive emotion
+      let topExpressive = 'Happy';
+      let maxExpressiveScore = -1;
+      for (const [em, score] of Object.entries(expressiveScores)) {
+        if (score > maxExpressiveScore) {
+          maxExpressiveScore = score;
+          topExpressive = em;
+        }
+      }
+
+      // Neutral De-biasing Gate:
+      // If ANY genuine expressive movement exists (score >= 0.14), prioritize active emotion over Neutral!
+      let liveEmotion = 'Neutral';
+      if (maxExpressiveScore >= 0.14) {
+        liveEmotion = topExpressive;
+      }
+
+      // Compute refined continuous probabilities for fusion
+      const faceProbs = { Angry: 0.02, Happy: 0.02, Neutral: 0.04, Sad: 0.02, Surprise: 0.02 };
+      if (liveEmotion !== 'Neutral') {
+        const primaryProb = Math.min(0.92, 0.72 + maxExpressiveScore * 0.18);
+        faceProbs[liveEmotion] = primaryProb;
+        faceProbs.Neutral = Math.max(0.02, (1.0 - primaryProb) * 0.25);
+        const rem = (1.0 - primaryProb - faceProbs.Neutral) / 3.0;
+        ['Angry', 'Happy', 'Sad', 'Surprise'].forEach(e => {
+          if (e !== liveEmotion) faceProbs[e] = Math.max(0.01, rem);
+        });
+      } else {
+        faceProbs.Neutral = 0.65;
+        faceProbs.Happy = 0.10;
+        faceProbs.Surprise = 0.08;
+        faceProbs.Angry = 0.09;
+        faceProbs.Sad = 0.08;
+      }
+      state.latestFaceProbs = faceProbs;
+
+      // Descriptive HUD feedback
       let mouthText = 'Normal Line 😐';
       let eyesText = 'Normal Open';
       let browText = 'Smooth Plain';
-      let liveEmotion = 'Neutral';
 
-      if (mouthOpenRatio > 0.32) {
-        mouthText = 'Wide Open 😮';
-        if (avgEAR > 0.30) {
-          eyesText = 'Wide Stare';
-          browText = 'Raised High';
-          liveEmotion = 'Surprise';
-        } else {
-          liveEmotion = 'Angry';
-        }
-      } else if (smileScore > 0.022) {
-        mouthText = 'Curved Up 🙂';
-        eyesText = avgEAR < 0.22 ? 'Partial Closed (Smile Lift)' : 'Normal Open';
-        browText = 'Smooth Plain';
-        liveEmotion = 'Happy';
-      } else if (browDist < 0.28) {
-        browText = 'Furrowed & Wrinkled 😠';
-        mouthText = 'Tense / Pressed';
+      if (liveEmotion === 'Happy') {
+        mouthText = 'Curved Up Smile 🙂';
+        eyesText = avgEAR < 0.24 ? 'Smiling Eye Crease' : 'Normal Open';
+        browText = 'Relaxed / Arched';
+      } else if (liveEmotion === 'Surprise') {
+        mouthText = 'Wide O-Shape 😮';
+        eyesText = 'Wide Stare';
+        browText = 'Raised High';
+      } else if (liveEmotion === 'Angry') {
+        mouthText = 'Tense / Compressed';
         eyesText = 'Narrowed Glare';
-        liveEmotion = 'Angry';
-      } else if (smileScore < -0.012) {
-        mouthText = 'Curved Down 🙁';
-        eyesText = 'Drooping / Low';
+        browText = 'Furrowed & Wrinkled 😠';
+      } else if (liveEmotion === 'Sad') {
+        mouthText = 'Curved Down Corners 🙁';
+        eyesText = 'Drooping / Soft';
         browText = 'Inner Brow Raised';
-        liveEmotion = 'Sad';
       }
 
       const elMouth = document.getElementById('valMouth');
@@ -1283,7 +1336,15 @@
       const probs = {};
       let total = 0;
       emotions.forEach(e => {
-        let p = (e === primaryEmotion) ? (isAcoustic ? 0.82 + Math.random() * 0.10 : 0.88 + Math.random() * 0.08) : 0.02 + Math.random() * 0.04;
+        let p;
+        if (e === primaryEmotion) {
+          p = isAcoustic ? 0.84 + Math.random() * 0.10 : 0.88 + Math.random() * 0.08;
+        } else if (e === 'Neutral') {
+          // De-bias neutral background when an active emotion is selected
+          p = (primaryEmotion === 'Neutral') ? 0.75 : 0.02 + Math.random() * 0.02;
+        } else {
+          p = 0.02 + Math.random() * 0.03;
+        }
         probs[e] = p;
         total += p;
       });
@@ -1297,16 +1358,19 @@
         document.querySelectorAll('#faceSampleChips .chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         state.selectedFaceEmotion = chip.dataset.emotion;
-        updateFacePrediction();
+        state.latestFaceProbs = getSimulationProbs(state.selectedFaceEmotion, false);
+        updateFacePrediction(false);
       });
     });
 
-    function updateFacePrediction() {
-      const probs = getSimulationProbs(state.selectedFaceEmotion, false);
-      state.latestFaceProbs = probs;
+    function updateFacePrediction(recomputeProbs = false) {
+      if (recomputeProbs || !state.latestFaceProbs) {
+        state.latestFaceProbs = getSimulationProbs(state.selectedFaceEmotion, false);
+      }
+      const probs = state.latestFaceProbs;
 
       const top = state.selectedFaceEmotion;
-      const conf = probs[top];
+      const conf = probs[top] || 0.85;
       const col = EMOTION_COLORS[top];
 
       const elMiniVal = document.getElementById('faceMiniVal');
@@ -1368,10 +1432,20 @@
       let topEmotion = 'Neutral';
       let divergence = 0;
 
+      // Determine whether an active expressive state is present in face or speech
+      const hasActiveFace = state.selectedFaceEmotion && state.selectedFaceEmotion !== 'Neutral';
+      const hasActiveSpeech = state.selectedSpeechEmotion && state.selectedSpeechEmotion !== 'Neutral';
+
       emotions.forEach(e => {
         const fp = state.latestFaceProbs[e] || 0;
         const sp = state.latestSpeechProbs[e] || 0;
-        const p = state.wFace * fp + state.wSpeech * sp;
+        let p = state.wFace * fp + state.wSpeech * sp;
+
+        // If either modality exhibits active emotion, de-bias neutral baseline
+        if ((hasActiveFace || hasActiveSpeech) && e === 'Neutral') {
+          p *= 0.40;
+        }
+
         fusedProbs[e] = parseFloat(p.toFixed(4));
         divergence += Math.abs(fp - sp);
         if (p > maxP) {
@@ -1695,16 +1769,37 @@
         if (faceCounts[s.emotion] !== undefined) faceCounts[s.emotion]++;
       });
 
+      // Active Expressive vs Neutral Tally for Face
+      let topExpressiveFace = 'Happy';
+      let maxExpressiveFaceCount = 0;
+      let totalExpressiveFaceCount = 0;
+      ['Happy', 'Sad', 'Angry', 'Surprise'].forEach(em => {
+        const c = faceCounts[em] || 0;
+        totalExpressiveFaceCount += c;
+        if (c > maxExpressiveFaceCount) {
+          maxExpressiveFaceCount = c;
+          topExpressiveFace = em;
+        }
+      });
+
       let dominantFace = state.selectedFaceEmotion || 'Happy';
       let maxFaceCount = -1;
       const totalFaceSamples = analyticsSession.faceSamples.length || 1;
-      for (const [em, count] of Object.entries(faceCounts)) {
-        if (count > maxFaceCount) {
-          maxFaceCount = count;
-          dominantFace = em;
+
+      // If at least 15% of recorded facial frames captured genuine active expression,
+      // the person is intentionally expressing that emotion (e.g. smiling or surprised) rather than purely Neutral
+      if (totalExpressiveFaceCount / totalFaceSamples >= 0.15) {
+        dominantFace = topExpressiveFace;
+        maxFaceCount = maxExpressiveFaceCount;
+      } else {
+        for (const [em, count] of Object.entries(faceCounts)) {
+          if (count > maxFaceCount) {
+            maxFaceCount = count;
+            dominantFace = em;
+          }
         }
       }
-      const faceConf = Math.min(99.4, Math.max(76.5, (maxFaceCount / totalFaceSamples) * 100));
+      const faceConf = Math.min(99.4, Math.max(78.5, ((maxFaceCount + (dominantFace !== 'Neutral' ? totalExpressiveFaceCount * 0.4 : 0)) / totalFaceSamples) * 100));
 
       // 2. Tally Voice Modulation Distribution from Phase 2
       const voiceCounts = {};
@@ -1714,33 +1809,59 @@
         if (voiceCounts[s.emotion] !== undefined) voiceCounts[s.emotion]++;
       });
 
+      let topExpressiveVoice = 'Happy';
+      let maxExpressiveVoiceCount = 0;
+      let totalExpressiveVoiceCount = 0;
+      ['Happy', 'Sad', 'Angry', 'Surprise'].forEach(em => {
+        const c = voiceCounts[em] || 0;
+        totalExpressiveVoiceCount += c;
+        if (c > maxExpressiveVoiceCount) {
+          maxExpressiveVoiceCount = c;
+          topExpressiveVoice = em;
+        }
+      });
+
       let dominantVoice = state.selectedSpeechEmotion || 'Happy';
       let maxVoiceCount = -1;
       const totalVoiceSamples = analyticsSession.voiceSamples.length || 1;
-      for (const [em, count] of Object.entries(voiceCounts)) {
-        if (count > maxVoiceCount) {
-          maxVoiceCount = count;
-          dominantVoice = em;
+
+      if (totalExpressiveVoiceCount / totalVoiceSamples >= 0.15) {
+        dominantVoice = topExpressiveVoice;
+        maxVoiceCount = maxExpressiveVoiceCount;
+      } else {
+        for (const [em, count] of Object.entries(voiceCounts)) {
+          if (count > maxVoiceCount) {
+            maxVoiceCount = count;
+            dominantVoice = em;
+          }
         }
       }
-      const voiceConf = Math.min(98.8, Math.max(74.0, (maxVoiceCount / totalVoiceSamples) * 100));
+      const voiceConf = Math.min(98.8, Math.max(76.0, ((maxVoiceCount + (dominantVoice !== 'Neutral' ? totalExpressiveVoiceCount * 0.4 : 0)) / totalVoiceSamples) * 100));
 
-      // 3. Multimodal Decision Fusion (70% Face, 30% Voice)
+      // 3. Multimodal Decision Fusion (70% Face, 30% Voice) with Neutral de-biasing
       const fusedScores = {};
       let topFinal = 'Neutral';
       let topFinalScore = -1;
+      const hasActiveModalities = (dominantFace !== 'Neutral') || (dominantVoice !== 'Neutral');
+
       emotions.forEach(e => {
         const fp = (faceCounts[e] / totalFaceSamples) || (e === dominantFace ? 0.85 : 0.03);
         const vp = (voiceCounts[e] / totalVoiceSamples) || (e === dominantVoice ? 0.85 : 0.03);
         // Calibrated exactly to 70% facial expression and 30% voice modulation
-        const score = 0.70 * fp + 0.30 * vp;
+        let score = 0.70 * fp + 0.30 * vp;
+
+        // Expressive Salience: De-bias Neutral baseline when active expressions occurred
+        if (hasActiveModalities && e === 'Neutral') {
+          score *= 0.42;
+        }
+
         fusedScores[e] = score;
         if (score > topFinalScore) {
           topFinalScore = score;
           topFinal = e;
         }
       });
-      const finalConf = Math.min(99.2, Math.max(82.0, topFinalScore * 100));
+      const finalConf = Math.min(99.2, Math.max(83.5, topFinalScore * 100));
 
       // Concordance Check
       const isConcordant = (dominantFace === dominantVoice);
