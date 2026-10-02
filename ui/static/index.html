@@ -176,16 +176,22 @@
       transform: translateY(-1px);
     }
 
-    /* Main Grid */
+    /* Main Grid - Clean 2-Column Responsive Layout */
     main {
       flex: 1;
-      padding: 1.25rem 1.8rem;
+      padding: 1.5rem 2rem;
       display: grid;
-      grid-template-columns: 1.15fr 1fr 1.35fr;
-      gap: 1.25rem;
-      max-width: 1920px;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 1.5rem;
+      max-width: 1350px;
       margin: 0 auto;
       width: 100%;
+    }
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+      }
     }
 
     /* Card Panels */
@@ -620,40 +626,24 @@
     <div class="brand">
       <div class="brand-logo">🎭</div>
       <div class="brand-title">
-        <h1>Human Emotion Recognition AI</h1>
-        <p>Facial Vision (CNN) + Speech Prosody (BiLSTM) • Beginner Friendly Studio</p>
+        <h1>AI Emotion Recognition</h1>
+        <p>70% Facial Expression + 30% Voice Modulation Analysis</p>
       </div>
     </div>
 
     <div class="header-pills">
-      <div class="pill"><div class="dot dot-green"></div> System: Ready</div>
       <div class="pill" id="camPill"><div class="dot dot-amber"></div> Cam: Standby</div>
-      <div class="mode-switch">
-        <button class="mode-btn active" id="btnModeSimple">🌟 Friendly Mode</button>
-        <button class="mode-btn" id="btnModeAdvanced">🔬 Advanced Lab</button>
-      </div>
-      <button class="btn btn-primary" id="btnStartAnalyticsHeader" style="padding: 0.35rem 0.85rem; font-size: 0.76rem; background: linear-gradient(135deg, #10B981, #06B6D4); font-weight: 700; border: none; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);">⏱️ Start Analytics (30s)</button>
-      <button class="btn" id="btnOpenGuide" style="padding: 0.35rem 0.75rem; font-size: 0.76rem;">📘 How It Works</button>
+      <button class="btn btn-primary" id="btnStartAnalyticsHeader" style="padding: 0.4rem 0.95rem; font-size: 0.8rem; background: linear-gradient(135deg, #10B981, #06B6D4); font-weight: 700; border: none; border-radius: 8px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); cursor: pointer;">⏱️ Start Analytics (30s)</button>
+      <button class="btn" id="btnOpenGuide" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">📘 Guide</button>
     </div>
   </header>
 
-  <!-- Quick Scenarios Selector -->
-  <div class="scenario-bar">
-    <button class="scenario-chip" id="btnStartAnalytics" style="background: linear-gradient(135deg, #059669, #0284C7); border: none; font-weight: 700; color: white; box-shadow: 0 0 15px rgba(5, 150, 105, 0.4);">⏱️ Start Analytics (30s)</button>
-    <span class="scenario-label" style="margin-left: 0.4rem;">⚡ 1-Click Tests:</span>
-    <button class="scenario-chip" onclick="loadScenario('Happy', 'Happy')">🌟 Pure Joy (Smile + Cheerful Voice)</button>
-    <button class="scenario-chip" onclick="loadScenario('Happy', 'Angry')">⚡ Sarcasm / Conflict (Smile + Angry Voice)</button>
-    <button class="scenario-chip" onclick="loadScenario('Sad', 'Sad')">🌧️ Dejection (Sad Face + Sad Voice)</button>
-    <button class="scenario-chip" onclick="loadScenario('Surprise', 'Surprise')">😲 Sudden Shock (Surprise + Spike)</button>
-    <button class="scenario-chip" onclick="loadScenario('Neutral', 'Neutral')">⚖️ Calm / Neutral Assessment</button>
-  </div>
-
   <!-- 30-Second Multimodal Analytics HUD Banner -->
-  <div id="analyticsBanner" style="display: none; background: rgba(15, 23, 42, 0.95); border: 2px solid var(--cyan); border-radius: 14px; margin: 0.8rem 1.8rem 0; padding: 1rem 1.4rem; box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);">
+  <div id="analyticsBanner" style="display: none; background: rgba(15, 23, 42, 0.95); border: 2px solid var(--cyan); border-radius: 14px; margin: 1rem auto 0; max-width: 1350px; width: calc(100% - 4rem); padding: 1rem 1.4rem; box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
         <span id="analyticsPhaseBadge" style="background: rgba(6, 182, 212, 0.2); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.75rem; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
-          📷 PHASE 1: TRACKING FACIAL EXPRESSION
+          📷 PHASE 1: TRACKING FACIAL EXPRESSION (70% WEIGHT)
         </span>
         <span id="analyticsStatusText" style="font-size: 0.84rem; font-weight: 600; color: #F8FAFC;">
           Please look into the camera and express naturally (0s - 15s)
@@ -666,141 +656,82 @@
         <button class="btn btn-danger" id="btnCancelAnalytics" style="padding: 0.3rem 0.65rem; font-size: 0.72rem;">Stop</button>
       </div>
     </div>
-    <!-- Dual Progress Bar: 0-15s (Face) and 15-30s (Voice) -->
+    <!-- Dual Progress Bar: 0-15s (Face - 70% Weight) and 15-30s (Voice - 30% Weight) -->
     <div style="height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 6px; overflow: hidden; display: flex; position: relative;">
       <div id="analyticsProgressFace" style="height: 100%; width: 0%; background: linear-gradient(90deg, #06B6D4, #3B82F6); transition: width 0.1s linear;"></div>
       <div id="analyticsProgressVoice" style="height: 100%; width: 0%; background: linear-gradient(90deg, #8B5CF6, #EC4899); transition: width 0.1s linear;"></div>
-      <!-- Center divider mark at 15s -->
       <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, 0.4);"></div>
     </div>
-    <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-muted); margin-top: 0.35rem;">
-      <span>0s: Facial Expression Tracking (CNN)</span>
-      <span style="color: var(--cyan);">15s: Voice Modulation Tracking (BiLSTM)</span>
-      <span>30s: Multimodal Result</span>
+    <div style="display: flex; justify-content: space-between; font-size: 0.70rem; color: var(--text-muted); margin-top: 0.35rem;">
+      <span>0s: Facial Expression Tracking (70% Weight)</span>
+      <span style="color: var(--cyan);">15s: Voice Modulation Tracking (30% Weight)</span>
+      <span>30s: Final Fused Verdict</span>
     </div>
   </div>
 
-  <!-- 3-Column Layout -->
+  <!-- Clean 2-Column Responsive Layout -->
   <main>
 
-    <!-- STEP 1: FACIAL EXPRESSION BRANCH -->
+    <!-- COLUMN 1: LIVE INPUTS (CAMERA & MICROPHONE) -->
     <section class="card">
       <div class="card-header">
-        <h2>👁️ Step 1: Facial Expression</h2>
-        <span class="step-badge badge-cyan">Visual AI (CNN)</span>
+        <h2>📷 Camera & Face Tracking</h2>
+        <span class="step-badge badge-cyan">Face: 70% Weight</span>
       </div>
 
-      <!-- Camera Viewport -->
+      <!-- Camera Viewport with Black & White Mesh Tracking -->
       <div class="video-viewport">
         <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
         <canvas id="faceCanvas" class="mirrored"></canvas>
-        <div class="viewport-tip" id="camTipText">💡 Click "Start Camera" or select an expression chip below</div>
+        <div class="viewport-tip" id="camTipText">💡 Click "Start Camera" to track facial expression</div>
         <div class="hud-overlay" id="camHudOverlay" style="display: none;">
           <span class="hud-tag" id="hudTrackStatus">🟢 468-PT MESH: SEARCHING</span>
           <span class="hud-tag" id="hudCoords">COORDS: X:-- Y:--</span>
         </div>
       </div>
 
-      <!-- Camera Controls -->
-      <div class="btn-row" style="grid-template-columns: 1.2fr 1fr 1.2fr;">
+      <!-- Simple Camera Controls -->
+      <div class="btn-row" style="grid-template-columns: 1fr 1fr;">
         <button class="btn btn-primary" id="btnToggleCam">▶ Start Camera</button>
-        <button class="btn" id="btnFlipCam" title="Switch between normal and mirror view">🪞 View: Mirrored</button>
-        <button class="btn" id="btnToggleMesh" title="Cycle through 468-pt Face Mesh styles">🕸️ Mesh: B&W Lines & Dots</button>
+        <button class="btn" id="btnFlipCam" title="Switch between normal and mirror view">🪞 Flip Mirror</button>
       </div>
 
-      <!-- Expression Selector Chips -->
-      <div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem;">Pick an Expression to Test:</div>
-        <div class="chip-selector" id="faceSampleChips">
-          <button class="chip active" data-emotion="Happy">😊 Happy</button>
-          <button class="chip" data-emotion="Sad">😢 Sad</button>
-          <button class="chip" data-emotion="Angry">😠 Angry</button>
-          <button class="chip" data-emotion="Surprise">😲 Surprise</button>
-          <button class="chip" data-emotion="Neutral">😐 Neutral</button>
+      <!-- Voice Modulation Section -->
+      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.75rem; margin-top: 0.25rem;">
+        <div class="card-header" style="border: none; padding-bottom: 0.4rem;">
+          <h2 style="font-size: 0.95rem;">🎙️ Voice Modulation Tracking</h2>
+          <span class="step-badge badge-purple">Voice: 30% Weight</span>
         </div>
-      </div>
-
-      <!-- Facial Micro-Style Analysis -->
-      <div class="style-card">
-        <div class="style-header">
-          <span>Facial Micro-Style Analysis</span>
-          <span id="styleSummary" style="color: #38BDF8;">Smiley Curve Detected</span>
-        </div>
-        <div class="style-grid">
-          <div class="style-item">
-            <div class="style-label">Mouth Shape</div>
-            <div class="style-val" id="valMouth">Curved Up 🙂</div>
-          </div>
-          <div class="style-item">
-            <div class="style-label">Eye Aperture</div>
-            <div class="style-val" id="valEyes">Normal Open</div>
-          </div>
-          <div class="style-item">
-            <div class="style-label">Forehead</div>
-            <div class="style-val" id="valForehead">Smooth Plain</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 2: SPEECH ACOUSTIC BRANCH -->
-    <section class="card">
-      <div class="card-header">
-        <h2>🎙️ Step 2: Speech Modulation</h2>
-        <span class="step-badge badge-purple">Vocal AI (BiLSTM)</span>
-      </div>
-
-      <!-- Waveform Box -->
-      <div>
-        <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.35rem; display: flex; justify-content: space-between;">
-          <span>Live Acoustic Frequency Wave</span>
-          <span style="color: var(--green);">Voice Activity: Active</span>
-        </div>
-        <div class="waveform-box">
+        <!-- Live Waveform -->
+        <div class="waveform-box" style="height: 60px;">
           <canvas id="waveCanvas"></canvas>
         </div>
-      </div>
-
-      <!-- Volume Meter -->
-      <div class="vu-meter">
-        <span>Mic Energy:</span>
-        <div class="vu-track">
-          <div class="vu-fill" id="vuFill"></div>
+        <!-- Volume Meter -->
+        <div class="vu-meter" style="margin-top: 0.5rem;">
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Mic Input:</span>
+          <div class="vu-track">
+            <div class="vu-fill" id="vuFill"></div>
+          </div>
+          <span id="vuDbText" style="font-size: 0.72rem;">-16 dB</span>
         </div>
-        <span id="vuDbText">-16 dB</span>
-      </div>
-
-      <!-- Audio Chips -->
-      <div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.45rem;">Pick Voice Tone to Test:</div>
-        <div class="chip-selector" id="speechSampleChips">
-          <button class="chip active" data-emotion="Happy">🎵 Cheerful Prosody</button>
-          <button class="chip" data-emotion="Sad">📉 Low Melancholy</button>
-          <button class="chip" data-emotion="Angry">💥 Loud Jitter</button>
-          <button class="chip" data-emotion="Surprise">🚀 High Inflection</button>
-          <button class="chip" data-emotion="Neutral">⚖️ Steady Cadence</button>
-        </div>
-      </div>
-
-      <!-- TTS Assistant & Vocalizer -->
-      <div class="tts-box">
-        <div style="font-size: 0.78rem; font-weight: 700; color: #C4B5FD; display: flex; justify-content: space-between;">
-          <span>🗣️ AI Voice Virtualizer (TTS)</span>
-          <span id="ttsStatus" style="font-size: 0.70rem; color: var(--purple);">Ready</span>
-        </div>
-        <div class="tts-input-row">
-          <input type="text" class="tts-input" id="ttsTextInput" value="Multimodal emotion recognized with high confidence." placeholder="Enter text to speak...">
-          <button class="btn btn-primary" id="btnSpeakText" style="padding: 0.55rem 0.85rem;">Speak</button>
-        </div>
-        <button class="btn" id="btnSpeakPrediction" style="font-size: 0.76rem; padding: 0.45rem;">🔊 Announce AI Emotion Result</button>
       </div>
     </section>
 
-    <!-- STEP 3: MULTIMODAL FUSION & DECISION -->
+    <!-- COLUMN 2: EMOTION RESULT & 30s ASSESSMENT -->
     <section class="card">
       <div class="card-header">
-        <h2>⚡ Step 3: Multimodal Fusion Result</h2>
-        <span class="step-badge badge-green">Combined Intelligence</span>
+        <h2>⚡ Emotion Result & Analytics</h2>
+        <span class="step-badge badge-green">Unified AI</span>
+      </div>
+
+      <!-- Prominent 30-Second Analytics Assessment Card -->
+      <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.12)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 1rem; text-align: center;">
+        <button class="btn btn-primary" id="btnStartAnalytics" style="width: 100%; padding: 0.85rem 1rem; font-size: 1.05rem; font-weight: 800; background: linear-gradient(135deg, #10B981, #06B6D4); border: none; border-radius: 10px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          ⏱️ Start 30-Second Analytics
+        </button>
+        <div style="font-size: 0.72rem; color: #94A3B8; margin-top: 0.45rem; line-height: 1.4;">
+          Evaluates <b>15s Face Expression (70%)</b> + <b>15s Voice Modulation (30%)</b>
+        </div>
       </div>
 
       <!-- Hero Final Fused Result -->
@@ -808,41 +739,34 @@
         <div class="fused-title">Overall Human Affective State</div>
         <div class="fused-main-val" id="fusedMainVal">😊 HAPPY</div>
         <div class="fused-conf" id="fusedConfText">Confidence: 94.2%</div>
+        <div style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 0.2rem 0.75rem; font-size: 0.72rem; font-weight: 700; color: #38BDF8; margin-top: 0.2rem;">
+          ⚖️ Weightage: 70% Facial Expression + 30% Voice Modulation
+        </div>
       </div>
 
       <!-- Concordance / Conflict Banner -->
       <div class="alert-banner banner-concordant" id="concordanceBanner">
         <span>✅</span>
-        <span id="concordanceText"><b>HARMONY CONFIRMED:</b> Your smile and vocal tone agree perfectly.</span>
+        <span id="concordanceText"><b>HARMONY CONFIRMED:</b> Face expression and vocal modulation agree.</span>
       </div>
 
-      <!-- Unimodal Breakdown -->
+      <!-- Two-Channel Breakdown Grid -->
       <div class="unimodal-grid">
         <div class="mini-badge">
-          <span class="mini-title">Facial Vision (CNN)</span>
+          <span class="mini-title">Facial Expression (70%)</span>
           <div class="mini-val" id="faceMiniVal" style="color: var(--green);">😊 Happy</div>
           <small id="faceMiniConf" style="color: var(--text-muted); font-size: 0.70rem;">Confidence: 92.5%</small>
         </div>
         <div class="mini-badge">
-          <span class="mini-title">Speech Tone (BiLSTM)</span>
-          <div class="mini-val" id="speechMiniVal" style="color: var(--green);">😊 Happy</div>
+          <span class="mini-title">Voice Modulation (30%)</span>
+          <div class="mini-val" id="speechMiniVal" style="color: var(--green);">🎵 Happy</div>
           <small id="speechMiniConf" style="color: var(--text-muted); font-size: 0.70rem;">Confidence: 89.1%</small>
         </div>
       </div>
 
-      <!-- Weight Adjustment Slider -->
-      <div class="weight-card">
-        <div class="weight-labels">
-          <span>Visual Weight: <strong id="wFaceLabel">50%</strong></span>
-          <span>Acoustic Weight: <strong id="wSpeechLabel">50%</strong></span>
-        </div>
-        <input type="range" id="fusionSlider" min="0" max="100" value="50">
-        <div style="font-size: 0.68rem; color: var(--text-muted); text-align: center;">Drag to give more priority to Camera or Microphone</div>
-      </div>
-
       <!-- Probability Bars -->
       <div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem;">All Emotion Probabilities:</div>
+        <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600;">Emotion Probabilities (70/30 Fused):</div>
         <div id="probBarsContainer">
           <div class="bar-row">
             <span class="bar-label">Happy</span>
@@ -871,6 +795,21 @@
           </div>
         </div>
       </div>
+
+      <!-- Collapsible Quick Test Presets (Clean and Uncluttered) -->
+      <details style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.6rem 0.85rem; font-size: 0.76rem;">
+        <summary style="cursor: pointer; color: var(--cyan); font-weight: 700;">🧪 Optional: Test Presets (Click to expand)</summary>
+        <div style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="font-size: 0.70rem; color: var(--text-muted);">Simulate expressions without camera/mic:</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Happy', 'Happy')">🌟 Joy</button>
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Happy', 'Angry')">⚡ Sarcasm</button>
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Sad', 'Sad')">🌧️ Sadness</button>
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Surprise', 'Surprise')">😲 Surprise</button>
+            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Neutral', 'Neutral')">⚖️ Neutral</button>
+          </div>
+        </div>
+      </details>
     </section>
 
   </main>
@@ -913,6 +852,9 @@
         <div id="repFinalConf" style="font-size: 1.05rem; font-weight: 700; color: #F3F4F6;">
           Overall Confidence: 94.2%
         </div>
+        <div style="display: inline-block; background: rgba(6, 182, 212, 0.15); border: 1px solid var(--cyan); border-radius: 20px; padding: 0.2rem 0.75rem; font-size: 0.72rem; font-weight: 700; color: var(--cyan); margin-top: 0.4rem;">
+          ⚖️ Calibrated Weightage: 70% Face Expression + 30% Voice Modulation
+        </div>
       </div>
 
       <!-- Two Phase Breakdown Grid -->
@@ -920,7 +862,7 @@
         <!-- Phase 1: Face -->
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.85rem;">
           <div style="font-size: 0.72rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 0.4rem;">
-            📷 Phase 1: Face (0s - 15s)
+            📷 Phase 1: Face (0s - 15s) • 70% Weight
           </div>
           <div style="font-size: 1.1rem; font-weight: 700;" id="repFaceEmotion">😊 Happy (92.5%)</div>
           <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.4rem;" id="repFaceStyle">
@@ -931,7 +873,7 @@
         <!-- Phase 2: Voice -->
         <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.85rem;">
           <div style="font-size: 0.72rem; font-weight: 700; color: var(--purple); text-transform: uppercase; margin-bottom: 0.4rem;">
-            🎙️ Phase 2: Voice (15s - 30s)
+            🎙️ Phase 2: Voice (15s - 30s) • 30% Weight
           </div>
           <div style="font-size: 1.1rem; font-weight: 700;" id="repVoiceEmotion">🎵 Happy (88.4%)</div>
           <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.4rem;" id="repVoiceCadence">
@@ -963,8 +905,8 @@
       isCameraRunning: false,
       selectedFaceEmotion: 'Happy',
       selectedSpeechEmotion: 'Happy',
-      wFace: 0.5,
-      wSpeech: 0.5,
+      wFace: 0.70,
+      wSpeech: 0.30,
       latestFaceProbs: null,
       latestSpeechProbs: null,
       currentFinalEmotion: 'Happy',
@@ -1072,21 +1014,24 @@
     // Toggle 468-Point Mesh Styles
     const meshStyles = ['bw_mesh', 'bw_dots', 'bw_contours', 'box_only', 'off'];
     let meshStyleIdx = 0;
-    document.getElementById('btnToggleMesh').addEventListener('click', () => {
-      meshStyleIdx = (meshStyleIdx + 1) % meshStyles.length;
-      tracker.meshStyle = meshStyles[meshStyleIdx];
-      const labels = {
-        bw_mesh: '🕸️ Mesh: B&W Lines & Dots',
-        bw_dots: '⚪ Mesh: B&W Dots Only',
-        bw_contours: '✨ Mesh: B&W Contours',
-        box_only: '🎯 Reticle Box Only',
-        off: '🚫 Mesh: Hidden'
-      };
-      document.getElementById('btnToggleMesh').innerText = labels[tracker.meshStyle];
-      if (tracker.meshStyle === 'off') {
-        faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
-      }
-    });
+    const btnToggleMesh = document.getElementById('btnToggleMesh');
+    if (btnToggleMesh) {
+      btnToggleMesh.addEventListener('click', () => {
+        meshStyleIdx = (meshStyleIdx + 1) % meshStyles.length;
+        tracker.meshStyle = meshStyles[meshStyleIdx];
+        const labels = {
+          bw_mesh: '🕸️ Mesh: B&W Lines & Dots',
+          bw_dots: '⚪ Mesh: B&W Dots Only',
+          bw_contours: '✨ Mesh: B&W Contours',
+          box_only: '🎯 Reticle Box Only',
+          off: '🚫 Mesh: Hidden'
+        };
+        btnToggleMesh.innerText = labels[tracker.meshStyle];
+        if (tracker.meshStyle === 'off') {
+          faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
+        }
+      });
+    }
 
     // Real-Time Frame Loop
     async function processVideoFrame() {
@@ -1287,10 +1232,14 @@
         liveEmotion = 'Sad';
       }
 
-      document.getElementById('valMouth').innerText = mouthText;
-      document.getElementById('valEyes').innerText = eyesText;
-      document.getElementById('valForehead').innerText = browText;
-      document.getElementById('styleSummary').innerText = `${liveEmotion} Features Active`;
+      const elMouth = document.getElementById('valMouth');
+      const elEyes = document.getElementById('valEyes');
+      const elForehead = document.getElementById('valForehead');
+      const elSummary = document.getElementById('styleSummary');
+      if (elMouth) elMouth.innerText = mouthText;
+      if (elEyes) elEyes.innerText = eyesText;
+      if (elForehead) elForehead.innerText = browText;
+      if (elSummary) elSummary.innerText = `${liveEmotion} Features Active`;
 
       // Update Visual Prediction if emotion changed
       if (state.selectedFaceEmotion !== liveEmotion) {
@@ -1360,16 +1309,26 @@
       const conf = probs[top];
       const col = EMOTION_COLORS[top];
 
-      document.getElementById('faceMiniVal').innerHTML = `${EMOTION_ICONS[top]} ${top}`;
-      document.getElementById('faceMiniVal').style.color = col;
-      document.getElementById('faceMiniConf').innerText = `Confidence: ${(conf * 100).toFixed(1)}%`;
+      const elMiniVal = document.getElementById('faceMiniVal');
+      const elMiniConf = document.getElementById('faceMiniConf');
+      if (elMiniVal) {
+        elMiniVal.innerHTML = `${EMOTION_ICONS[top]} ${top}`;
+        elMiniVal.style.color = col;
+      }
+      if (elMiniConf) {
+        elMiniConf.innerText = `Confidence: ${(conf * 100).toFixed(1)}%`;
+      }
 
-      // Update Facial Micro-Style
+      // Update Facial Micro-Style if elements present
       const style = STYLE_MAP[top] || STYLE_MAP.Neutral;
-      document.getElementById('valMouth').innerText = style.mouth;
-      document.getElementById('valEyes').innerText = style.eyes;
-      document.getElementById('valForehead').innerText = style.brow;
-      document.getElementById('styleSummary').innerText = style.desc;
+      const elMouth = document.getElementById('valMouth');
+      const elEyes = document.getElementById('valEyes');
+      const elForehead = document.getElementById('valForehead');
+      const elSummary = document.getElementById('styleSummary');
+      if (elMouth) elMouth.innerText = style.mouth;
+      if (elEyes) elEyes.innerText = style.eyes;
+      if (elForehead) elForehead.innerText = style.brow;
+      if (elSummary) elSummary.innerText = style.desc;
 
       updateMultimodalFusion();
     }
@@ -1477,37 +1436,48 @@
       updateSpeechPrediction();
     };
 
-    // Weight Slider Listener
-    document.getElementById('fusionSlider').addEventListener('input', (e) => {
-      const val = parseInt(e.target.value);
-      state.wFace = val / 100.0;
-      state.wSpeech = 1.0 - state.wFace;
-      document.getElementById('wFaceLabel').innerText = `${val}%`;
-      document.getElementById('wSpeechLabel').innerText = `${100 - val}%`;
-      updateMultimodalFusion();
-    });
+    // Weight Slider Listener (if present)
+    const elSlider = document.getElementById('fusionSlider');
+    if (elSlider) {
+      elSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        state.wFace = val / 100.0;
+        state.wSpeech = 1.0 - state.wFace;
+        const wFaceLabel = document.getElementById('wFaceLabel');
+        const wSpeechLabel = document.getElementById('wSpeechLabel');
+        if (wFaceLabel) wFaceLabel.innerText = `${val}%`;
+        if (wSpeechLabel) wSpeechLabel.innerText = `${100 - val}%`;
+        updateMultimodalFusion();
+      });
+    }
 
-    // TTS Voice Virtualizer
-    document.getElementById('btnSpeakText').addEventListener('click', () => {
-      const text = document.getElementById('ttsTextInput').value;
-      speakPhrase(text);
-    });
+    // TTS Voice Virtualizer (if present)
+    const elBtnSpeakText = document.getElementById('btnSpeakText');
+    if (elBtnSpeakText) {
+      elBtnSpeakText.addEventListener('click', () => {
+        const textInput = document.getElementById('ttsTextInput');
+        if (textInput) speakPhrase(textInput.value);
+      });
+    }
 
-    document.getElementById('btnSpeakPrediction').addEventListener('click', () => {
-      const text = `The multimodal AI recognizes human emotion as ${state.currentFinalEmotion}.`;
-      speakPhrase(text);
-    });
+    const elBtnSpeakPred = document.getElementById('btnSpeakPrediction');
+    if (elBtnSpeakPred) {
+      elBtnSpeakPred.addEventListener('click', () => {
+        const text = `The multimodal AI recognizes human emotion as ${state.currentFinalEmotion}.`;
+        speakPhrase(text);
+      });
+    }
 
     function speakPhrase(text) {
       const status = document.getElementById('ttsStatus');
-      status.innerText = 'Speaking...';
+      if (status) status.innerText = 'Speaking...';
       if ('speechSynthesis' in window) {
         const utter = new SpeechSynthesisUtterance(text);
         utter.rate = 1.0;
-        utter.onend = () => status.innerText = 'Ready';
+        utter.onend = () => { if (status) status.innerText = 'Ready'; };
         window.speechSynthesis.speak(utter);
       } else {
-        setTimeout(() => status.innerText = 'Ready', 1200);
+        setTimeout(() => { if (status) status.innerText = 'Ready'; }, 1200);
       }
     }
 
@@ -1535,34 +1505,50 @@
       // Fluctuate VU meter
       const vuPct = 35 + Math.sin(time * 2) * 20 + Math.random() * 5;
       vuFill.style.width = `${Math.min(100, Math.max(0, vuPct))}%`;
-      document.getElementById('vuDbText').innerText = `${Math.round(-24 + vuPct * 0.2)} dB`;
+      const vuText = document.getElementById('vuDbText');
+      if (vuText) vuText.innerText = `${Math.round(-24 + vuPct * 0.2)} dB`;
 
       requestAnimationFrame(animateWaveform);
     }
     requestAnimationFrame(animateWaveform);
 
     // Guide Modal
-    document.getElementById('btnOpenGuide').addEventListener('click', () => {
-      document.getElementById('guideModal').style.display = 'flex';
-    });
-    document.getElementById('btnCloseGuide').addEventListener('click', () => {
-      document.getElementById('guideModal').style.display = 'none';
-    });
-    document.getElementById('btnGotIt').addEventListener('click', () => {
-      document.getElementById('guideModal').style.display = 'none';
-    });
+    const btnOpenGuide = document.getElementById('btnOpenGuide');
+    if (btnOpenGuide) {
+      btnOpenGuide.addEventListener('click', () => {
+        document.getElementById('guideModal').style.display = 'flex';
+      });
+    }
+    const btnCloseGuide = document.getElementById('btnCloseGuide');
+    if (btnCloseGuide) {
+      btnCloseGuide.addEventListener('click', () => {
+        document.getElementById('guideModal').style.display = 'none';
+      });
+    }
+    const btnGotIt = document.getElementById('btnGotIt');
+    if (btnGotIt) {
+      btnGotIt.addEventListener('click', () => {
+        document.getElementById('guideModal').style.display = 'none';
+      });
+    }
 
-    // Mode Switcher (Friendly vs Advanced)
-    document.getElementById('btnModeSimple').addEventListener('click', () => {
-      document.getElementById('btnModeSimple').classList.add('active');
-      document.getElementById('btnModeAdvanced').classList.remove('active');
-      state.isAdvanced = false;
-    });
-    document.getElementById('btnModeAdvanced').addEventListener('click', () => {
-      document.getElementById('btnModeAdvanced').classList.add('active');
-      document.getElementById('btnModeSimple').classList.remove('active');
-      state.isAdvanced = true;
-    });
+    // Mode Switcher (if present)
+    const btnSimple = document.getElementById('btnModeSimple');
+    const btnAdvanced = document.getElementById('btnModeAdvanced');
+    if (btnSimple) {
+      btnSimple.addEventListener('click', () => {
+        btnSimple.classList.add('active');
+        if (btnAdvanced) btnAdvanced.classList.remove('active');
+        state.isAdvanced = false;
+      });
+    }
+    if (btnAdvanced) {
+      btnAdvanced.addEventListener('click', () => {
+        btnAdvanced.classList.add('active');
+        if (btnSimple) btnSimple.classList.remove('active');
+        state.isAdvanced = true;
+      });
+    }
 
     // ==========================================
     // 30-SECOND MULTIMODAL ANALYTICS CONTROLLER
@@ -1617,7 +1603,7 @@
       elProgressFace.style.width = '0%';
       elProgressVoice.style.width = '0%';
 
-      speakPhrase('Starting 30-second multimodal analytics. Phase 1: Tracking facial expressions. Please look at the camera.');
+      speakPhrase('Starting 30-second multimodal analytics. Phase 1: Tracking facial expressions with 70 percent weightage. Please look into the camera.');
 
       // 4. Start 100ms assessment tick
       analyticsSession.timerId = setInterval(onAnalyticsTick, 100);
@@ -1631,11 +1617,11 @@
       elAnalyticsTimer.innerText = `${remainingTotal.toFixed(1)}s`;
 
       if (elapsed < analyticsSession.phase1Duration) {
-        // --- PHASE 1: FACIAL EXPRESSION TRACKING (0s - 15s) ---
+        // --- PHASE 1: FACIAL EXPRESSION TRACKING (0s - 15s) • 70% WEIGHT ---
         analyticsSession.currentPhase = 1;
         const faceRemaining = Math.max(0, analyticsSession.phase1Duration - elapsed);
-        elAnalyticsBadge.innerHTML = `📷 PHASE 1: TRACKING FACIAL EXPRESSION (${faceRemaining.toFixed(1)}s left)`;
-        elAnalyticsStatus.innerText = `Tracking 468 facial mesh landmarks, micro-expressions & eye/mouth geometry... (${state.selectedFaceEmotion})`;
+        elAnalyticsBadge.innerHTML = `📷 PHASE 1: TRACKING FACIAL EXPRESSION (70% WEIGHT • ${faceRemaining.toFixed(1)}s left)`;
+        elAnalyticsStatus.innerText = `Tracking 468 facial mesh landmarks & micro-expressions (70% weight)... (${state.selectedFaceEmotion})`;
 
         const facePct = (elapsed / analyticsSession.phase1Duration) * 50;
         elProgressFace.style.width = `${facePct}%`;
@@ -1649,20 +1635,20 @@
         });
 
       } else if (elapsed >= analyticsSession.phase1Duration && elapsed < analyticsSession.totalDuration) {
-        // --- PHASE 2: VOICE MODULATION TRACKING (15s - 30s) ---
+        // --- PHASE 2: VOICE MODULATION TRACKING (15s - 30s) • 30% WEIGHT ---
         analyticsSession.currentPhase = 2;
         const voiceRemaining = Math.max(0, analyticsSession.totalDuration - elapsed);
 
         if (!analyticsSession.announcedPhase2) {
           analyticsSession.announcedPhase2 = true;
-          speakPhrase('Phase 1 complete. Phase 2: Tracking voice modulation. Please speak or vocalize now.');
+          speakPhrase('Phase 1 complete. Phase 2: Tracking voice modulation with 30 percent weightage. Please speak or vocalize now.');
         }
 
-        elAnalyticsBadge.innerHTML = `🎙️ PHASE 2: TRACKING VOICE MODULATION (${voiceRemaining.toFixed(1)}s left)`;
+        elAnalyticsBadge.innerHTML = `🎙️ PHASE 2: TRACKING VOICE MODULATION (30% WEIGHT • ${voiceRemaining.toFixed(1)}s left)`;
         elAnalyticsBadge.style.color = '#C084FC';
         elAnalyticsBadge.style.borderColor = '#8B5CF6';
         elAnalyticsBadge.style.background = 'rgba(139, 92, 246, 0.25)';
-        elAnalyticsStatus.innerText = `Tracking acoustic prosody, vocal pitch, frequency modulation & cadence... (${state.selectedSpeechEmotion})`;
+        elAnalyticsStatus.innerText = `Tracking vocal pitch, frequency modulation & prosody (30% weight)... (${state.selectedSpeechEmotion})`;
 
         elProgressFace.style.width = '50%';
         const voicePct = ((elapsed - analyticsSession.phase1Duration) / (analyticsSession.totalDuration - analyticsSession.phase1Duration)) * 50;
@@ -1686,7 +1672,7 @@
         elAnalyticsBadge.style.color = '#10B981';
         elAnalyticsBadge.style.borderColor = '#10B981';
         elAnalyticsBadge.style.background = 'rgba(16, 185, 129, 0.2)';
-        elAnalyticsStatus.innerText = 'Computing final multimodal fusion verdict...';
+        elAnalyticsStatus.innerText = 'Computing 70% Face + 30% Voice multimodal fusion...';
 
         finishAnalyticsSession();
       }
@@ -1739,14 +1725,15 @@
       }
       const voiceConf = Math.min(98.8, Math.max(74.0, (maxVoiceCount / totalVoiceSamples) * 100));
 
-      // 3. Multimodal Decision Fusion (55% Face, 45% Voice)
+      // 3. Multimodal Decision Fusion (70% Face, 30% Voice)
       const fusedScores = {};
       let topFinal = 'Neutral';
       let topFinalScore = -1;
       emotions.forEach(e => {
         const fp = (faceCounts[e] / totalFaceSamples) || (e === dominantFace ? 0.85 : 0.03);
         const vp = (voiceCounts[e] / totalVoiceSamples) || (e === dominantVoice ? 0.85 : 0.03);
-        const score = 0.55 * fp + 0.45 * vp;
+        // Calibrated exactly to 70% facial expression and 30% voice modulation
+        const score = 0.70 * fp + 0.30 * vp;
         fusedScores[e] = score;
         if (score > topFinalScore) {
           topFinalScore = score;
@@ -1762,23 +1749,49 @@
       // 4. Update Main Centerpiece Display
       state.currentFinalEmotion = topFinal;
       const mainVal = document.getElementById('fusedMainVal');
-      mainVal.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()}`;
-      mainVal.style.color = color;
-      mainVal.style.textShadow = `0 0 25px ${color}80`;
-      document.getElementById('fusedConfText').innerText = `Confidence: ${finalConf.toFixed(1)}% (30s Session)`;
-      document.getElementById('fusedHero').style.borderColor = color;
-      document.getElementById('fusedHero').style.boxShadow = `0 0 35px ${color}40`;
+      if (mainVal) {
+        mainVal.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()}`;
+        mainVal.style.color = color;
+        mainVal.style.textShadow = `0 0 25px ${color}80`;
+      }
+      const fusedConf = document.getElementById('fusedConfText');
+      if (fusedConf) fusedConf.innerText = `Confidence: ${finalConf.toFixed(1)}% (70% Face + 30% Voice)`;
+      const fusedHero = document.getElementById('fusedHero');
+      if (fusedHero) {
+        fusedHero.style.borderColor = color;
+        fusedHero.style.boxShadow = `0 0 35px ${color}40`;
+      }
+
+      // Update Probability Bars
+      for (const [emotion, prob] of Object.entries(fusedScores)) {
+        const pct = Math.round(prob * 100);
+        const bar = document.getElementById(`bar${emotion}`);
+        const val = document.getElementById(`val${emotion}`);
+        if (bar && val) {
+          bar.style.width = `${pct}%`;
+          val.innerText = `${pct}%`;
+        }
+      }
 
       // 5. Populate and Display the 30-Second Multimodal Analytics Report Modal
-      document.getElementById('repFinalEmotion').innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()}`;
-      document.getElementById('repFinalEmotion').style.color = color;
-      document.getElementById('repFinalConf').innerText = `Overall Multimodal Confidence: ${finalConf.toFixed(1)}% • Assessment: 300 Frames Evaluated`;
+      const repFinal = document.getElementById('repFinalEmotion');
+      if (repFinal) {
+        repFinal.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()}`;
+        repFinal.style.color = color;
+      }
+      const repConf = document.getElementById('repFinalConf');
+      if (repConf) {
+        repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted: 70% Face + 30% Voice`;
+      }
 
-      document.getElementById('repFaceEmotion').innerHTML = `${EMOTION_ICONS[dominantFace]} ${dominantFace} (${faceConf.toFixed(1)}%)`;
+      const repFace = document.getElementById('repFaceEmotion');
+      if (repFace) repFace.innerHTML = `${EMOTION_ICONS[dominantFace]} ${dominantFace} (${faceConf.toFixed(1)}%)`;
       const faceStyle = STYLE_MAP[dominantFace] || STYLE_MAP.Neutral;
-      document.getElementById('repFaceStyle').innerText = `Mouth: ${faceStyle.mouth} | Eyes: ${faceStyle.eyes} | Brow: ${faceStyle.brow}`;
+      const repFStyle = document.getElementById('repFaceStyle');
+      if (repFStyle) repFStyle.innerText = `Mouth: ${faceStyle.mouth} | Eyes: ${faceStyle.eyes} | Brow: ${faceStyle.brow}`;
 
-      document.getElementById('repVoiceEmotion').innerHTML = `🎵 ${dominantVoice} (${voiceConf.toFixed(1)}%)`;
+      const repVoice = document.getElementById('repVoiceEmotion');
+      if (repVoice) repVoice.innerHTML = `🎵 ${dominantVoice} (${voiceConf.toFixed(1)}%)`;
       const voiceCadences = {
         Happy: 'Prosody: Cheerful Upbeat | Dynamic Pitch: High Harmonic | Energy: -15 dB',
         Sad: 'Prosody: Subdued Melancholy | Pitch: Low Monotone | Energy: -28 dB',
@@ -1786,26 +1799,35 @@
         Surprise: 'Prosody: Sharp Rising Spike | Dynamic Range: Extreme | Energy: -12 dB',
         Neutral: 'Prosody: Stable Cadence | Inflection: Balanced | Energy: -18 dB'
       };
-      document.getElementById('repVoiceCadence').innerText = voiceCadences[dominantVoice] || voiceCadences.Neutral;
+      const repCadence = document.getElementById('repVoiceCadence');
+      if (repCadence) repCadence.innerText = voiceCadences[dominantVoice] || voiceCadences.Neutral;
 
       const elCongruence = document.getElementById('repCongruence');
       const elDiagnostic = document.getElementById('repDiagnostic');
 
       if (isConcordant) {
-        elCongruence.className = 'alert-banner banner-concordant';
-        elCongruence.innerHTML = `✅ <b>Harmonic Concordance Confirmed:</b> Both facial expression and vocal prosody are aligned on <b>${topFinal}</b>. High cognitive-emotional coherence.`;
-        elDiagnostic.innerHTML = `<b>Diagnostic Summary:</b> Over the 30-second assessment, Phase 1 (0s–15s visual facial geometry) and Phase 2 (15s–30s vocal acoustic prosody) demonstrated strong mutual agreement (${topFinal}). Multimodal confidence peaked at ${finalConf.toFixed(1)}%.`;
+        if (elCongruence) {
+          elCongruence.className = 'alert-banner banner-concordant';
+          elCongruence.innerHTML = `✅ <b>Harmonic Concordance Confirmed:</b> Both facial expression and vocal prosody are aligned on <b>${topFinal}</b>. High cognitive-emotional coherence.`;
+        }
+        if (elDiagnostic) {
+          elDiagnostic.innerHTML = `<b>Diagnostic Summary:</b> Over the 30-second assessment, Phase 1 (0s–15s visual facial geometry, 70% weight) and Phase 2 (15s–30s vocal acoustic prosody, 30% weight) demonstrated strong mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`;
+        }
       } else {
-        elCongruence.className = 'alert-banner banner-conflict';
-        elCongruence.innerHTML = `⚠️ <b>Modality Divergence Detected:</b> Face expresses <b>${dominantFace}</b> while vocal tone indicates <b>${dominantVoice}</b>. Possible sarcastic inflection or concealed emotional affect!`;
-        elDiagnostic.innerHTML = `<b>Diagnostic Summary:</b> The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%). Multimodal fusion resolved to ${topFinal} at ${finalConf.toFixed(1)}%.`;
+        if (elCongruence) {
+          elCongruence.className = 'alert-banner banner-conflict';
+          elCongruence.innerHTML = `⚠️ <b>Modality Divergence Detected:</b> Face expresses <b>${dominantFace}</b> (70% weight) while vocal tone indicates <b>${dominantVoice}</b> (30% weight). Possible masked or sarcastic affect!`;
+        }
+        if (elDiagnostic) {
+          elDiagnostic.innerHTML = `<b>Diagnostic Summary:</b> The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%, 70% weight), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%, 30% weight). Multimodal decision fusion weighted to ${topFinal} at ${finalConf.toFixed(1)}%.`;
+        }
       }
 
       // Open Modal
-      elReportModal.style.display = 'flex';
+      if (elReportModal) elReportModal.style.display = 'flex';
 
       // Announce final verdict via speech synthesis
-      const speechMsg = `30-second multimodal analytics complete. The final emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence. ${isConcordant ? 'Facial expressions and vocal tone are in harmonic agreement.' : 'Cross-modality divergence was detected between face and voice.'}`;
+      const speechMsg = `30-second multimodal analytics complete. The final recognized emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence, weighted 70 percent on facial expression and 30 percent on vocal modulation. ${isConcordant ? 'Facial expressions and vocal tone are in harmonic agreement.' : 'Cross-modality divergence was detected between face and voice.'}`;
       speakPhrase(speechMsg);
     }
 
