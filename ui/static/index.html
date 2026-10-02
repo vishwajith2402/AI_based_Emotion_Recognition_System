@@ -19,45 +19,50 @@
 
   <style>
     /* ========================================================
-       AFFECT AI — LUXURY FUTURISTIC DESIGN SYSTEM
-       Theme: Apple-level Minimalism + Research Laboratory Dark Glass
+       AFFECT AI — OFFICIAL COLOR PALETTE & DESIGN SYSTEM
+       Obsidian + Ice Cyan + Aurora Violet + Ice White
        ======================================================== */
     :root {
-      /* Background Hierarchy */
-      --bg-primary: #070A0F;
-      --bg-secondary: #0C111A;
-      --bg-card: rgba(17, 24, 39, 0.72);
-      --bg-card-hover: rgba(21, 29, 42, 0.88);
-      --bg-elevated: #151D2A;
+      /* 🌑 1. Background Hierarchy */
+      --bg-primary: #070A0F;        /* Obsidian (Body) */
+      --bg-secondary: #0B1120;      /* Midnight Navy (Sections / Shell) */
+      --bg-card: rgba(17, 24, 39, 0.60); /* Deep Slate Glass */
+      --bg-card-solid: #111827;     /* Deep Slate Solid */
+      --bg-elevated: #172033;       /* Steel Navy (Elevated / Active) */
       
-      /* Borders & Shadows */
-      --border-glass: rgba(255, 255, 255, 0.07);
-      --border-active: rgba(34, 211, 238, 0.35);
-      --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
-      --shadow-glow-cyan: 0 0 28px rgba(34, 211, 238, 0.18);
+      /* Borders & Glass */
+      --border-subtle: #1E293B;     /* Subtle Blue Gray */
+      --border-glass: rgba(148, 163, 184, 0.10);
+      --border-active: rgba(34, 211, 238, 0.30);
+      --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+      --shadow-active-card: 0 0 40px rgba(34, 211, 238, 0.06);
       
-      /* Primary & Secondary Accents */
-      --cyan: #22D3EE;
+      /* 👁️ Vision Accent (Cyan) & 🎙️ Voice Accent (Violet) */
+      --cyan: #22D3EE;              /* Ice Cyan - Vision 👁️ */
       --cyan-dim: rgba(34, 211, 238, 0.12);
-      --violet: #8B5CF6;
+      --violet: #8B5CF6;            /* Aurora Violet - Voice 🎙️ */
       --violet-dim: rgba(139, 92, 246, 0.12);
       
-      /* Emotion Accent System */
-      --accent-happy: #FBBF24;      /* Warm Gold */
-      --accent-sad: #60A5FA;        /* Soft Blue */
-      --accent-angry: #FB7185;      /* Soft Coral */
-      --accent-surprise: #C084FC;   /* Soft Violet */
-      --accent-neutral: #94A3B8;    /* Silver / White */
+      /* 💎 Signature Gradient: #22D3EE -> #8B5CF6 (AI Fusion 🧠) */
+      --grad-fusion: linear-gradient(135deg, #22D3EE, #8B5CF6);
+      --grad-fusion-subtle: linear-gradient(135deg, rgba(34, 211, 238, 0.35), rgba(139, 92, 246, 0.35));
+      
+      /* 😊 Emotion-Specific Accents */
+      --accent-happy: #F5C76B;      /* Champagne Gold */
+      --accent-sad: #60A5FA;        /* Sky Blue */
+      --accent-angry: #FB7185;      /* Coral */
+      --accent-surprise: #A78BFA;   /* Lavender */
+      --accent-neutral: #CBD5E1;    /* Silver */
       
       /* Status Palette */
-      --status-success: #34D399;
-      --status-warning: #FBBF24;
-      --status-conflict: #FB7185;
+      --status-harmony: #34D399;    /* Emerald - Harmony ✓ */
+      --status-warning: #FBBF24;    /* Soft Amber */
+      --status-conflict: #FB7185;   /* Soft Coral - Conflict ⚠️ */
       
       /* Typography */
-      --text-primary: #F8FAFC;
-      --text-secondary: #CBD5E1;
-      --text-muted: #64748B;
+      --text-primary: #F8FAFC;      /* Ice White */
+      --text-secondary: #94A3B8;    /* Cool Gray */
+      --text-muted: #64748B;        /* Slate */
       --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
@@ -77,8 +82,8 @@
       font-family: var(--font-main);
       background-color: var(--bg-primary);
       background-image: 
-        radial-gradient(ellipse 60% 40% at 50% -10%, rgba(34, 211, 238, 0.08), transparent 70%),
-        radial-gradient(ellipse 40% 30% at 85% 85%, rgba(139, 92, 246, 0.05), transparent 60%);
+        radial-gradient(ellipse 65% 45% at 50% -12%, rgba(34, 211, 238, 0.06), transparent 75%),
+        radial-gradient(ellipse 45% 35% at 85% 85%, rgba(139, 92, 246, 0.04), transparent 65%);
       background-attachment: fixed;
       color: var(--text-primary);
       min-height: 100vh;
@@ -92,17 +97,17 @@
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.15); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.35); }
 
     /* ========================================================
        TOP HEADER (Minimalist Research Lab Banner)
        ======================================================== */
     header {
-      background: rgba(7, 10, 15, 0.85);
+      background: rgba(7, 10, 15, 0.88);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-glass);
+      border-bottom: 1px solid var(--border-subtle);
       padding: 0.9rem 2.2rem;
       display: flex;
       align-items: center;
@@ -122,12 +127,14 @@
       width: 36px;
       height: 36px;
       border-radius: 10px;
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(139, 92, 246, 0.15));
+      background: var(--bg-elevated);
       border: 1px solid rgba(34, 211, 238, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.1rem;
+      color: var(--cyan);
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.15);
     }
 
     .brand-text h1 {
@@ -158,8 +165,8 @@
       font-size: 0.72rem;
       padding: 0.35rem 0.85rem;
       border-radius: var(--radius-pill);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
       display: flex;
       align-items: center;
@@ -183,7 +190,7 @@
 
     .btn-ghost-sm {
       background: transparent;
-      border: 1px solid var(--border-glass);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
       font-size: 0.75rem;
       font-weight: 600;
@@ -195,8 +202,8 @@
     }
 
     .btn-ghost-sm:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: var(--bg-elevated);
+      border-color: rgba(148, 163, 184, 0.3);
       color: var(--text-primary);
     }
 
@@ -209,9 +216,9 @@
       padding: 0.85rem 1.4rem;
       width: calc(100% - 3.2rem);
       background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-subtle);
       transition: all 0.3s ease;
@@ -287,7 +294,7 @@
     .timeline-track-wrapper {
       position: relative;
       height: 4px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(148, 163, 184, 0.12);
       border-radius: 4px;
       overflow: hidden;
       display: flex;
@@ -348,11 +355,11 @@
       gap: 1.5rem;
     }
 
-    /* Universal Glass Card */
+    /* 🪟 10. Glass Card Styling */
     .glass-card {
       background: var(--bg-card);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-lg);
       padding: 1.5rem;
@@ -364,7 +371,7 @@
     }
 
     .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.12);
+      border-color: rgba(148, 163, 184, 0.22);
     }
 
     /* Card Header */
@@ -399,8 +406,8 @@
       padding: 0.2rem 0.55rem;
       border-radius: var(--radius-pill);
       letter-spacing: 0.5px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
     }
 
@@ -417,8 +424,9 @@
     }
 
     /* ========================================================
-       LEFT CARD — FACIAL ANALYSIS (Camera & 468-pt Mesh Viewport)
+       👁️ 3. LEFT CARD — FACIAL ANALYSIS (Cyan)
        Calibrated to 4:3 native webcam geometry with strict z-indexing
+       Mesh remains clean Black & White wireframe
        ======================================================== */
     .camera-viewport {
       position: relative;
@@ -429,7 +437,7 @@
       border-radius: var(--radius-md);
       overflow: hidden;
       background: #020617;
-      border: 1px solid var(--border-glass);
+      border: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -466,12 +474,12 @@
       transform: translateY(-50%);
       font-family: var(--font-mono);
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.65);
-      background: rgba(7, 10, 15, 0.82);
+      color: var(--text-secondary);
+      background: rgba(7, 10, 15, 0.85);
       backdrop-filter: blur(8px);
       padding: 0.6rem 1.1rem;
       border-radius: var(--radius-pill);
-      border: 1px solid var(--border-glass);
+      border: 1px solid var(--border-subtle);
       pointer-events: none;
       z-index: 8;
     }
@@ -492,17 +500,17 @@
       font-family: var(--font-mono);
       font-size: 0.65rem;
       letter-spacing: 0.5px;
-      background: rgba(7, 10, 15, 0.85);
+      background: rgba(7, 10, 15, 0.90);
       backdrop-filter: blur(8px);
       padding: 0.25rem 0.6rem;
       border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
     }
 
     .hud-chip.locked {
-      color: var(--status-success);
-      border-color: rgba(52, 211, 153, 0.35);
+      color: var(--cyan);
+      border-color: rgba(34, 211, 238, 0.35);
     }
 
     .cam-controls-row {
@@ -516,8 +524,8 @@
       padding: 0.65rem 1rem;
       font-size: 0.78rem;
       font-weight: 600;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
       border-radius: var(--radius-sm);
       cursor: pointer;
@@ -529,8 +537,8 @@
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
+      background: #1e2b45;
+      border-color: rgba(148, 163, 184, 0.3);
       color: var(--text-primary);
     }
 
@@ -540,7 +548,9 @@
     }
 
     /* ========================================================
-       RIGHT CARD — AI FUSION (The Centerpiece of Intelligence)
+       🧠 5. RIGHT CARD — AI FUSION (Cyan + Violet)
+       Background: #111827
+       Border: Subtle gradient #22D3EE -> #8B5CF6
        ======================================================== */
     .fusion-card {
       display: flex;
@@ -548,18 +558,22 @@
       justify-content: space-between;
       position: relative;
       overflow: hidden;
+      background: linear-gradient(rgba(17, 24, 39, 0.72), rgba(17, 24, 39, 0.72)) padding-box,
+                  var(--grad-fusion-subtle) border-box;
+      border: 1px solid transparent;
+      box-shadow: var(--shadow-active-card);
     }
 
-    /* Radial Ambient Background behind Hero */
+    /* Subtle Radial Ambient Hero Glow */
     .fusion-glow-backdrop {
       position: absolute;
-      top: 30%;
+      top: 32%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 320px;
       height: 320px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(251, 191, 36, 0.12) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(245, 199, 107, 0.08) 0%, transparent 70%);
       pointer-events: none;
       transition: background 0.4s ease;
       z-index: 0;
@@ -574,7 +588,7 @@
       font-weight: 700;
       letter-spacing: 1.2px;
       text-transform: uppercase;
-      background: rgba(17, 24, 39, 0.85);
+      background: var(--bg-card-solid);
       border: 1px solid var(--cyan);
       color: var(--text-primary);
       border-radius: var(--radius-md);
@@ -584,7 +598,7 @@
       justify-content: center;
       gap: 0.65rem;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 20px -5px rgba(34, 211, 238, 0.3);
+      box-shadow: 0 4px 20px -5px rgba(34, 211, 238, 0.25);
       position: relative;
       z-index: 2;
     }
@@ -593,7 +607,7 @@
       background: rgba(34, 211, 238, 0.12);
       border-color: #67E8F9;
       transform: translateY(-2px);
-      box-shadow: 0 6px 28px rgba(34, 211, 238, 0.45);
+      box-shadow: 0 6px 28px rgba(34, 211, 238, 0.35);
     }
 
     .btn-primary-cta .arrow {
@@ -616,16 +630,25 @@
       justify-content: center;
     }
 
-    /* AI Core Animated Ring */
+    .hero-section-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    /* 💎 2. AI Core Animated Ring with Signature Gradient */
     .ai-core-ring {
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border: 1px dashed rgba(148, 163, 184, 0.20);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
       position: relative;
       animation: spinSlow 30s linear infinite;
     }
@@ -640,9 +663,11 @@
       position: absolute;
       inset: -4px;
       border-radius: 50%;
-      border: 1px solid rgba(34, 211, 238, 0.3);
-      border-top-color: transparent;
-      border-bottom-color: transparent;
+      border: 1.5px solid transparent;
+      background: var(--grad-fusion) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
       animation: spinFast 8s linear infinite reverse;
     }
 
@@ -654,7 +679,7 @@
     .emotion-glyph {
       font-size: 3.4rem;
       line-height: 1;
-      filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.3));
+      filter: drop-shadow(0 0 16px rgba(245, 199, 107, 0.25));
       animation: gentleFloat 4s ease-in-out infinite;
       transition: filter 0.3s ease;
     }
@@ -694,8 +719,8 @@
     }
 
     .modality-stat {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       padding: 0.75rem 0.9rem;
       display: flex;
@@ -714,7 +739,7 @@
     }
 
     .modality-stat-val {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-primary);
       display: flex;
@@ -728,7 +753,7 @@
       color: var(--text-muted);
     }
 
-    /* Concordance / Harmony Banner */
+    /* ✓ 8. Harmony & ⚠️ 9. Conflict Status Pill */
     .harmony-banner {
       margin-top: 0.85rem;
       padding: 0.65rem 0.95rem;
@@ -740,7 +765,7 @@
       gap: 0.6rem;
       background: rgba(52, 211, 153, 0.08);
       border: 1px solid rgba(52, 211, 153, 0.25);
-      color: #6EE7B7;
+      color: var(--status-harmony);
       position: relative;
       z-index: 1;
       transition: all 0.3s ease;
@@ -748,8 +773,13 @@
 
     .harmony-banner.conflict {
       background: rgba(251, 113, 133, 0.08);
-      border-color: rgba(251, 113, 133, 0.3);
+      border-color: rgba(251, 113, 133, 0.25);
       color: var(--status-conflict);
+    }
+
+    .status-symbol {
+      font-size: 0.85rem;
+      line-height: 1;
     }
 
     /* Post-Assessment Action Row (Level 4 Actions) */
@@ -780,7 +810,7 @@
 
     .btn-report-action.primary {
       background: var(--violet-dim);
-      border: 1px solid rgba(139, 92, 246, 0.4);
+      border: 1px solid rgba(139, 92, 246, 0.35);
       color: #C084FC;
     }
 
@@ -791,25 +821,25 @@
     }
 
     .btn-report-action.secondary {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
     }
 
     .btn-report-action.secondary:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--bg-elevated);
       color: var(--text-primary);
     }
 
     /* ========================================================
-       VOICE MODULATION CARD (Scientific Waveform & STT)
+       🎙️ 4. VOICE MODULATION CARD (Aurora Violet)
        ======================================================== */
     .waveform-container {
       width: 100%;
       height: 72px;
       border-radius: var(--radius-sm);
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid var(--border-glass);
+      background: #020617;
+      border: 1px solid var(--border-subtle);
       position: relative;
       overflow: hidden;
     }
@@ -833,7 +863,7 @@
     .vu-track {
       flex: 1;
       height: 4px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(148, 163, 184, 0.10);
       border-radius: 4px;
       overflow: hidden;
     }
@@ -841,7 +871,7 @@
     .vu-fill {
       height: 100%;
       width: 15%;
-      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      background: var(--violet);
       transition: width 0.08s ease;
     }
 
@@ -854,9 +884,9 @@
     .transcript-box {
       margin-top: 0.85rem;
       padding: 0.75rem 0.95rem;
-      background: rgba(0, 0, 0, 0.35);
+      background: var(--bg-secondary);
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border-glass);
+      border: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
@@ -868,7 +898,7 @@
       align-items: center;
       font-family: var(--font-mono);
       font-size: 0.65rem;
-      color: var(--text-muted);
+      color: var(--violet);
       letter-spacing: 0.5px;
     }
 
@@ -882,7 +912,7 @@
     }
 
     /* ========================================================
-       EMOTION DISTRIBUTION (Minimalist Ranked List)
+       📊 7. EMOTION DISTRIBUTION (Mostly Monochrome with Winning Accent)
        ======================================================== */
     .distribution-list {
       display: flex;
@@ -914,7 +944,7 @@
 
     .dist-track {
       height: 5px;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(148, 163, 184, 0.08);
       border-radius: 4px;
       overflow: hidden;
     }
@@ -922,24 +952,25 @@
     .dist-bar {
       height: 100%;
       width: 0%;
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(148, 163, 184, 0.20); /* Muted monochrome */
       border-radius: 4px;
       transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
     }
 
     .dist-bar.dominant {
-      background: var(--cyan);
-      box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+      background: var(--accent-happy); /* Winning emotion accent */
+      box-shadow: 0 0 10px rgba(245, 199, 107, 0.35);
     }
 
     .dist-val {
       text-align: right;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--text-muted);
     }
 
     .dist-val.dominant {
-      color: var(--cyan);
+      font-weight: 700;
+      color: var(--accent-happy);
     }
 
     /* ========================================================
@@ -947,14 +978,14 @@
        ======================================================== */
     .expandable-panel {
       background: var(--bg-card);
-      border: 1px solid var(--border-glass);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       overflow: hidden;
       transition: border-color 0.2s ease;
     }
 
     .expandable-panel:hover {
-      border-color: rgba(255, 255, 255, 0.12);
+      border-color: rgba(148, 163, 184, 0.25);
     }
 
     .expandable-panel summary {
@@ -982,8 +1013,8 @@
 
     .expandable-content {
       padding: 1.1rem 1.25rem;
-      border-top: 1px solid var(--border-glass);
-      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(7, 10, 15, 0.40);
     }
 
     /* Diagnostics Data Grid */
@@ -996,8 +1027,8 @@
     }
 
     .diag-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
       border-radius: 6px;
       padding: 0.6rem 0.75rem;
       display: flex;
@@ -1031,15 +1062,15 @@
       font-weight: 600;
       padding: 0.35rem 0.75rem;
       border-radius: var(--radius-sm);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .preset-chip:hover {
-      background: rgba(34, 211, 238, 0.1);
+      background: rgba(34, 211, 238, 0.12);
       border-color: rgba(34, 211, 238, 0.3);
       color: var(--cyan);
     }
@@ -1050,7 +1081,7 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(7, 10, 15, 0.88);
+      background: rgba(7, 10, 15, 0.90);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       display: none;
@@ -1061,8 +1092,8 @@
     }
 
     .modal-window {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
       max-width: 680px;
       width: 100%;
@@ -1070,7 +1101,7 @@
       display: flex;
       flex-direction: column;
       gap: 1.1rem;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -1079,7 +1110,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-glass);
+      border-bottom: 1px solid var(--border-subtle);
       padding-bottom: 0.75rem;
     }
 
@@ -1108,8 +1139,8 @@
 
     /* Report Hero in Modal */
     .report-hero-box {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 1.25rem;
       text-align: center;
@@ -1144,8 +1175,8 @@
     }
 
     .report-phase-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-glass);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       padding: 0.9rem;
       display: flex;
@@ -1176,8 +1207,8 @@
     }
 
     .report-stt-box {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border-glass);
+      background: #020617;
+      border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       padding: 0.85rem;
       display: flex;
@@ -1218,7 +1249,7 @@
       font-weight: 700;
       letter-spacing: 0.5px;
       text-transform: uppercase;
-      background: linear-gradient(135deg, var(--violet), #3B82F6);
+      background: var(--grad-fusion);
       border: none;
       color: #FFFFFF;
       border-radius: var(--radius-sm);
@@ -1238,7 +1269,7 @@
        FOOTER STATUS BAR
        ======================================================== */
     footer {
-      border-top: 1px solid var(--border-glass);
+      border-top: 1px solid var(--border-subtle);
       padding: 0.85rem 2.2rem;
       display: flex;
       justify-content: space-between;
@@ -1312,7 +1343,7 @@
       </div>
     </div>
     
-    <!-- Thin Scientific Progress Track -->
+    <!-- Thin Scientific Progress Track: Cyan (Face) -> Violet (Voice) -->
     <div class="timeline-track-wrapper">
       <div class="track-face" id="analyticsProgressFace"></div>
       <div class="track-voice" id="analyticsProgressVoice"></div>
@@ -1333,7 +1364,7 @@
     <!-- SECTION 1: HERO DUAL-PANEL (FACIAL ANALYSIS & AI FUSION) -->
     <div class="hero-grid">
 
-      <!-- LEFT CARD: FACIAL ANALYSIS (70% WEIGHT) -->
+      <!-- LEFT CARD: FACIAL ANALYSIS (70% WEIGHT) - ICE CYAN ACCENT -->
       <section class="glass-card">
         <div class="card-meta-header">
           <div class="card-title-group">
@@ -1368,7 +1399,7 @@
         </div>
       </section>
 
-      <!-- RIGHT CARD: AI FUSION (The Centerpiece of Intelligence) -->
+      <!-- RIGHT CARD: AI FUSION (The Centerpiece of Intelligence) - CYAN + VIOLET -->
       <section class="glass-card fusion-card" id="fusedHero">
         <div class="fusion-glow-backdrop" id="heroGlow"></div>
 
@@ -1390,6 +1421,7 @@
 
         <!-- Level 1 — Human-readable result (Oversized, 2-3s comprehension) -->
         <div class="hero-centerpiece">
+          <div class="hero-section-kicker">OVERALL AFFECTIVE STATE</div>
           <div class="ai-core-ring" id="aiCoreRing">
             <div class="emotion-glyph" id="fusedGlyph">😊</div>
           </div>
@@ -1403,7 +1435,7 @@
             <div class="modality-stat">
               <div class="modality-stat-label">
                 <span>Face</span>
-                <span>70%</span>
+                <span style="color: var(--cyan);">70%</span>
               </div>
               <div class="modality-stat-val" id="faceMiniVal">
                 😊 Happy
@@ -1416,7 +1448,7 @@
             <div class="modality-stat">
               <div class="modality-stat-label">
                 <span>Voice</span>
-                <span>30%</span>
+                <span style="color: var(--violet);">30%</span>
               </div>
               <div class="modality-stat-val" id="speechMiniVal">
                 🎵 Happy
@@ -1427,10 +1459,10 @@
             </div>
           </div>
 
-          <!-- Concordance Confirmation -->
+          <!-- Concordance Confirmation (Emerald Harmony or Coral Conflict) -->
           <div class="harmony-banner" id="concordanceBanner">
-            <span>●</span>
-            <span id="concordanceText">HARMONY CONFIRMED &mdash; Facial and vocal signals align</span>
+            <span class="status-symbol">●</span>
+            <span id="concordanceText"><b>HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align</span>
           </div>
 
           <!-- Level 4 — Post-Analysis Quick Actions -->
@@ -1450,7 +1482,7 @@
     <!-- SECTION 2: SUPPORTING ANALYTICS (VOICE MODULATION & EMOTION DISTRIBUTION) -->
     <div class="secondary-grid">
 
-      <!-- VOICE MODULATION CARD (30% WEIGHT) -->
+      <!-- VOICE MODULATION CARD (30% WEIGHT) - AURORA VIOLET ACCENT -->
       <section class="glass-card">
         <div class="card-meta-header">
           <div class="card-title-group">
@@ -1486,7 +1518,7 @@
         </div>
       </section>
 
-      <!-- EMOTION DISTRIBUTION (Minimalist Ranked List) -->
+      <!-- EMOTION DISTRIBUTION (Mostly Monochrome with Winning Accent) -->
       <section class="glass-card">
         <div class="card-meta-header">
           <div class="card-title-group">
@@ -1641,10 +1673,10 @@
       <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
         Human emotion is expressed across two distinct channels simultaneously: visual facial kinematics and acoustic vocal prosody.
       </p>
-      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.76rem; color: var(--text-secondary);">
+      <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.76rem; color: var(--text-secondary);">
         <div><b style="color: var(--cyan);">1. Facial Analysis (70% Weight):</b> 468 landmarks track zygomatic smile contours, eye aspect ratio (EAR), and brow furrowing in real-time.</div>
         <div><b style="color: var(--violet);">2. Voice Modulation (30% Weight):</b> Acoustic prosody analysis evaluates vocal pitch, cadence, and frequency energy via microphone.</div>
-        <div><b style="color: var(--status-success);">3. Decision Fusion Formula:</b> $P_{\text{fused}} = 0.70 \cdot P_{\text{face}} + 0.30 \cdot P_{\text{voice}}$. Dissonance detects sarcasm or masked affect.</div>
+        <div><b style="color: var(--status-harmony);">3. Decision Fusion Formula:</b> $P_{\text{fused}} = 0.70 \cdot P_{\text{face}} + 0.30 \cdot P_{\text{voice}}$. Dissonance detects sarcasm or masked affect.</div>
       </div>
       <div class="modal-actions">
         <button class="btn-ghost-sm" id="btnGotIt">UNDERSTOOD</button>
@@ -1690,15 +1722,15 @@
 
       <!-- Congruence Banner -->
       <div class="harmony-banner" id="repCongruence">
-        <span>●</span>
-        <span>Harmonic Concordance Confirmed: Face and voice express harmonic alignment.</span>
+        <span class="status-symbol">●</span>
+        <span><b>HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align.</span>
       </div>
 
       <!-- Voice Transcription (Speech-to-Text) Box -->
       <div class="report-stt-box">
         <div class="report-stt-header">
           <span>VOICE TRANSCRIPTION (SPEECH-TO-TEXT)</span>
-          <span id="repTranscriptBadge" style="color: var(--status-success);">Voice Transcribed ✓</span>
+          <span id="repTranscriptBadge" style="color: var(--status-harmony);">Voice Transcribed ✓</span>
         </div>
         <div class="report-stt-content" id="repTranscriptionBox">
           "..."
@@ -1706,7 +1738,7 @@
       </div>
 
       <!-- Diagnostic Telemetry -->
-      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); background: rgba(0, 0, 0, 0.25); border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-glass);" id="repDiagnostic">
+      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); background: #020617; border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-subtle);" id="repDiagnostic">
         Diagnostic telemetry initialized.
       </div>
 
@@ -1749,13 +1781,13 @@
       Neutral: '😐'
     };
 
-    // Emotion Accent Colors (Luxury Restrained Palette)
+    // 😊 6. Final Emotion-Specific Accents
     const EMOTION_COLORS = {
-      Happy: '#FBBF24',      // Warm Gold
-      Sad: '#60A5FA',        // Soft Blue
-      Angry: '#FB7185',      // Soft Coral
-      Surprise: '#C084FC',   // Soft Violet
-      Neutral: '#94A3B8'     // Silver / White
+      Happy: '#F5C76B',      // Champagne Gold
+      Sad: '#60A5FA',        // Sky Blue
+      Angry: '#FB7185',      // Coral
+      Surprise: '#A78BFA',   // Lavender
+      Neutral: '#CBD5E1'     // Silver
     };
 
     const STYLE_MAP = {
@@ -2025,7 +2057,7 @@
           }
         }
 
-        // 4. Subtle Tracking Reticle (High-Contrast Corner Brackets)
+        // 4. Subtle Tracking Reticle (High-Contrast Corner Brackets - Ice Cyan)
         drawTrackingReticle(tracker.x, tracker.y, tracker.w, tracker.h);
 
         // 5. High-Precision Geometric Facial Emotion Recognition (FACS Algorithm)
@@ -2049,7 +2081,7 @@
       }
     }
 
-    // Precise Dual-Pass Corner Reticle
+    // Precise Dual-Pass Corner Reticle (Black outer shadow, Ice Cyan inner highlight)
     function drawTrackingReticle(bx, by, bw, bh) {
       const len = Math.max(18, bw * 0.12);
       faceCtx.beginPath();
@@ -2064,7 +2096,7 @@
       faceCtx.lineWidth = 4.5;
       faceCtx.stroke();
 
-      // Pass 2: Electric Cyan inner line
+      // Pass 2: Ice Cyan inner line
       faceCtx.strokeStyle = '#22D3EE';
       faceCtx.lineWidth = 2.0;
       faceCtx.stroke();
@@ -2316,7 +2348,8 @@
       const conflictDetected = (divergence / 2.0) > 0.35;
       state.currentFinalEmotion = topEmotion;
 
-      const accentColor = EMOTION_COLORS[topEmotion] || '#FBBF24';
+      // Emotion accent color
+      const accentColor = EMOTION_COLORS[topEmotion] || '#F5C76B';
 
       // Update Centerpiece (Level 1)
       const mainVal = document.getElementById('fusedMainVal');
@@ -2330,29 +2363,29 @@
       }
       if (glyph) {
         glyph.innerText = EMOTION_ICONS[topEmotion];
-        glyph.style.filter = `drop-shadow(0 0 16px ${accentColor}55)`;
+        glyph.style.filter = `drop-shadow(0 0 16px ${accentColor}40)`;
       }
       if (confText) {
         confText.innerText = `${(maxP * 100).toFixed(1)}%`;
       }
       if (heroGlow) {
-        heroGlow.style.background = `radial-gradient(circle, ${accentColor}18 0%, transparent 70%)`;
+        heroGlow.style.background = `radial-gradient(circle, ${accentColor}14 0%, transparent 70%)`;
       }
 
-      // Concordance Banner (Level 2)
+      // Concordance Banner (Level 2: Emerald Harmony vs Coral Conflict)
       const banner = document.getElementById('concordanceBanner');
       const concordanceText = document.getElementById('concordanceText');
       if (banner && concordanceText) {
         if (conflictDetected) {
           banner.className = 'harmony-banner conflict';
-          concordanceText.innerHTML = `MODALITY CONFLICT &mdash; Face (${state.selectedFaceEmotion}) and Voice (${state.selectedSpeechEmotion}) clash`;
+          concordanceText.innerHTML = `<b>△ MODALITY CONFLICT</b> &mdash; Facial and vocal signals differ`;
         } else {
           banner.className = 'harmony-banner';
-          concordanceText.innerHTML = `HARMONY CONFIRMED &mdash; Facial and vocal signals align`;
+          concordanceText.innerHTML = `<b>● HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align`;
         }
       }
 
-      // Update Minimalist Ranked Distribution
+      // Update Minimalist Ranked Distribution (Mostly monochrome with winning accent)
       const sorted = Object.entries(fusedProbs).sort((a, b) => b[1] - a[1]);
       sorted.forEach(([emotion, prob]) => {
         const pct = Math.round(prob * 100);
@@ -2364,12 +2397,12 @@
           if (emotion === topEmotion) {
             bar.className = 'dist-bar dominant';
             bar.style.background = accentColor;
-            bar.style.boxShadow = `0 0 10px ${accentColor}40`;
+            bar.style.boxShadow = `0 0 10px ${accentColor}35`;
             val.className = 'dist-val dominant';
             val.style.color = accentColor;
           } else {
             bar.className = 'dist-bar';
-            bar.style.background = 'rgba(255, 255, 255, 0.2)';
+            bar.style.background = 'rgba(148, 163, 184, 0.20)';
             bar.style.boxShadow = 'none';
             val.className = 'dist-val';
             val.style.color = 'var(--text-muted)';
@@ -2433,7 +2466,7 @@
       }
     }
 
-    // Audio & Waveform Visualization
+    // Audio & Waveform Visualization (Aurora Violet Accent)
     let micAudioStream = null;
     let micAudioCtx = null;
     let micAnalyser = null;
@@ -2479,7 +2512,7 @@
         }
       }
 
-      // Draw Scientific Signal Waveform (Cyan -> Violet gradient)
+      // Draw Scientific Signal Waveform (Ice Cyan -> Aurora Violet signature gradient)
       const grad = waveCtx.createLinearGradient(0, 0, w, 0);
       grad.addColorStop(0, '#22D3EE');
       grad.addColorStop(1, '#8B5CF6');
@@ -2658,7 +2691,7 @@
       elAnalyticsTimer.innerText = `${remainingTotal.toFixed(1)}s`;
 
       if (elapsed < analyticsSession.phase1Duration) {
-        // Phase 1: Face (0s - 15s)
+        // Phase 1: Face (0s - 15s) - Ice Cyan
         analyticsSession.currentPhase = 1;
         elAnalyticsBadge.innerText = '01 / 02';
         if (elTimelinePhase) elTimelinePhase.innerText = 'FACIAL ANALYSIS';
@@ -2675,7 +2708,7 @@
         });
 
       } else if (elapsed >= analyticsSession.phase1Duration && elapsed < analyticsSession.totalDuration) {
-        // Phase 2: Voice (15s - 30s)
+        // Phase 2: Voice (15s - 30s) - Aurora Violet
         analyticsSession.currentPhase = 2;
 
         if (!analyticsSession.announcedPhase2) {
@@ -2718,7 +2751,7 @@
         elAnalyticsBadge.innerText = 'COMPLETE';
         if (elTimelinePhase) elTimelinePhase.innerText = 'ANALYSIS COMPLETE';
         elAnalyticsStatus.innerText = 'Fusing multimodal affect signals...';
-        setSystemStatus('ANALYSIS COMPLETE', 'var(--status-success)');
+        setSystemStatus('ANALYSIS COMPLETE', 'var(--status-harmony)');
 
         finishAnalyticsSession();
       }
@@ -2829,7 +2862,7 @@
       });
       const finalConf = Math.min(99.2, Math.max(83.5, topFinalScore * 100));
       const isConcordant = (dominantFace === dominantVoice);
-      const color = EMOTION_COLORS[topFinal] || '#FBBF24';
+      const color = EMOTION_COLORS[topFinal] || '#F5C76B';
 
       // Stop speech recognizer
       if (speechRecognizer) {
@@ -2862,13 +2895,13 @@
       }
       if (glyph) {
         glyph.innerText = EMOTION_ICONS[topFinal];
-        glyph.style.filter = `drop-shadow(0 0 16px ${color}55)`;
+        glyph.style.filter = `drop-shadow(0 0 16px ${color}40)`;
       }
       if (fusedConf) {
         fusedConf.innerText = `${finalConf.toFixed(1)}%`;
       }
       if (heroGlow) {
-        heroGlow.style.background = `radial-gradient(circle, ${color}20 0%, transparent 70%)`;
+        heroGlow.style.background = `radial-gradient(circle, ${color}14 0%, transparent 70%)`;
       }
 
       // Two-Channel Breakdown Grid On Screen
@@ -2888,14 +2921,14 @@
       if (concordanceBanner && concordanceText) {
         if (!isConcordant) {
           concordanceBanner.className = 'harmony-banner conflict';
-          concordanceText.innerHTML = `MODALITY CONFLICT &mdash; Face (${dominantFace}) and Voice (${dominantVoice}) clash`;
+          concordanceText.innerHTML = `<b>△ MODALITY CONFLICT</b> &mdash; Facial and vocal signals differ`;
         } else {
           concordanceBanner.className = 'harmony-banner';
-          concordanceText.innerHTML = `HARMONY CONFIRMED &mdash; Facial and vocal signals align`;
+          concordanceText.innerHTML = `<b>● HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align`;
         }
       }
 
-      // Update Ranked Distribution Bars On Screen
+      // Update Ranked Distribution Bars On Screen (Single winning accent, rest monochrome)
       for (const [emotion, prob] of Object.entries(fusedScores)) {
         const pct = Math.round(prob * 100);
         const bar = document.getElementById(`bar${emotion}`);
@@ -2906,12 +2939,12 @@
           if (emotion === topFinal) {
             bar.className = 'dist-bar dominant';
             bar.style.background = color;
-            bar.style.boxShadow = `0 0 10px ${color}40`;
+            bar.style.boxShadow = `0 0 10px ${color}35`;
             val.className = 'dist-val dominant';
             val.style.color = color;
           } else {
             bar.className = 'dist-bar';
-            bar.style.background = 'rgba(255, 255, 255, 0.2)';
+            bar.style.background = 'rgba(148, 163, 184, 0.20)';
             bar.style.boxShadow = 'none';
             val.className = 'dist-val';
             val.style.color = 'var(--text-muted)';
@@ -2946,7 +2979,7 @@
       if (isConcordant) {
         if (elCongruence) {
           elCongruence.className = 'harmony-banner';
-          elCongruence.innerHTML = `<span>●</span><span>Harmonic Concordance Confirmed: Both facial cues and voice modulation align on <b>${topFinal}</b>.</span>`;
+          elCongruence.innerHTML = `<span class="status-symbol">●</span><span><b>HARMONY CONFIRMED</b> &mdash; Both facial cues and voice modulation align on <b>${topFinal}</b>.</span>`;
         }
         if (elDiagnostic) {
           elDiagnostic.innerHTML = `Diagnostic Summary: 30s evaluation demonstrated cross-modal agreement on ${topFinal}. Visual micro-geometry (70%) and vocal prosody (30%) converge at ${finalConf.toFixed(1)}% confidence.`;
@@ -2954,7 +2987,7 @@
       } else {
         if (elCongruence) {
           elCongruence.className = 'harmony-banner conflict';
-          elCongruence.innerHTML = `<span>▲</span><span>Modality Divergence Detected: Face registered <b>${dominantFace}</b> while voice indicated <b>${dominantVoice}</b>.</span>`;
+          elCongruence.innerHTML = `<span class="status-symbol">△</span><span><b>MODALITY CONFLICT</b> &mdash; Face registered <b>${dominantFace}</b> while voice indicated <b>${dominantVoice}</b>.</span>`;
         }
         if (elDiagnostic) {
           elDiagnostic.innerHTML = `Diagnostic Summary: Dissonance registered between facial expression (${dominantFace}, ${faceConf.toFixed(1)}%) and vocal modulation (${dominantVoice}, ${voiceConf.toFixed(1)}%). Fused verdict settled at ${topFinal} (${finalConf.toFixed(1)}%).`;
@@ -2966,7 +2999,7 @@
           transcriptionBox.innerText = `"${fullRecognizedText}"`;
           if (transcriptBadge) {
             transcriptBadge.innerText = 'Voice Transcribed ✓';
-            transcriptBadge.style.color = 'var(--status-success)';
+            transcriptBadge.style.color = 'var(--status-harmony)';
           }
         } else if (voiceWasHeard) {
           transcriptionBox.innerText = '"Vocal sound detected during assessment, but no clear linguistic speech transcribed."';
@@ -3034,15 +3067,15 @@
       let y = 16;
 
       // 1. Header Banner (AFFECT AI Research Lab Styling)
-      doc.setFillColor(12, 17, 26); // #0C111A
+      doc.setFillColor(11, 17, 32); // #0B1120 Midnight Navy
       doc.roundedRect(margin, y, contentWidth, 24, 3, 3, 'F');
 
-      doc.setTextColor(34, 211, 238); // Cyan
+      doc.setTextColor(34, 211, 238); // #22D3EE Ice Cyan
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(15);
       doc.text('AFFECT AI — MULTIMODAL EMOTION INTELLIGENCE REPORT', margin + 6, y + 9);
 
-      doc.setTextColor(148, 163, 184);
+      doc.setTextColor(148, 163, 184); // #94A3B8 Cool Gray
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8.5);
       doc.text(`Generated: ${rep.timestamp}  |  Duration: 30.0s  |  Weights: 70% Face + 30% Voice`, margin + 6, y + 17);
@@ -3051,13 +3084,13 @@
 
       // 2. Final Affective State Card
       const rgbMap = {
-        Happy: [251, 191, 36],
-        Sad: [96, 165, 250],
-        Angry: [251, 113, 133],
-        Surprise: [192, 132, 252],
-        Neutral: [148, 163, 184]
+        Happy: [245, 199, 107],    // #F5C76B Champagne Gold
+        Sad: [96, 165, 250],       // #60A5FA Sky Blue
+        Angry: [251, 113, 133],    // #FB7185 Coral
+        Surprise: [167, 139, 250], // #A78BFA Lavender
+        Neutral: [203, 213, 225]   // #CBD5E1 Silver
       };
-      const heroColor = rgbMap[rep.finalEmotion] || [251, 191, 36];
+      const heroColor = rgbMap[rep.finalEmotion] || [245, 199, 107];
 
       doc.setFillColor(248, 250, 252);
       doc.setDrawColor(heroColor[0], heroColor[1], heroColor[2]);
@@ -3087,7 +3120,7 @@
       // 3. Two Columns: Phase 1 & Phase 2
       const colWidth = (contentWidth - 6) / 2;
 
-      // Phase 1: Face
+      // Phase 1: Face (Ice Cyan)
       doc.setFillColor(241, 245, 249);
       doc.setDrawColor(34, 211, 238);
       doc.setLineWidth(0.5);
@@ -3109,7 +3142,7 @@
       const splitFaceStyle = doc.splitTextToSize(rep.faceStyle, colWidth - 8);
       doc.text(splitFaceStyle, margin + 4, y + 26);
 
-      // Phase 2: Voice
+      // Phase 2: Voice (Aurora Violet)
       const col2X = margin + colWidth + 6;
       doc.setFillColor(241, 245, 249);
       doc.setDrawColor(139, 92, 246);
@@ -3178,7 +3211,7 @@
         doc.setFillColor(226, 232, 240);
         doc.roundedRect(margin + 26, barY - 1, 100, 3.5, 1, 1, 'F');
 
-        const c = rgbMap[e] || [251, 191, 36];
+        const c = rgbMap[e] || [245, 199, 107];
         doc.setFillColor(c[0], c[1], c[2]);
         const fillW = Math.max(1, (pct / 100) * 100);
         doc.roundedRect(margin + 26, barY - 1, fillW, 3.5, 1, 1, 'F');
@@ -3194,7 +3227,7 @@
 
       // 6. Concordance & Diagnostic Summary
       doc.setFillColor(240, 253, 244);
-      doc.setDrawColor(74, 222, 128);
+      doc.setDrawColor(52, 211, 153); // Emerald
       doc.setLineWidth(0.5);
       doc.roundedRect(margin, y, contentWidth, 24, 2, 2, 'FD');
 
