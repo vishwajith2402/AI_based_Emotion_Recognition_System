@@ -11,6 +11,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+  <!-- jsPDF Library for Client-Side PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
   <style>
     :root {
       --bg-dark: #090D16;
@@ -917,7 +919,10 @@
         <b>Diagnostic Summary:</b> Over the 30-second assessment, visual micro-expressions and acoustic intonation demonstrated high affect consistency.
       </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+      <div style="display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;">
+        <button class="btn" id="btnDownloadPdf" style="font-size: 0.78rem; background: linear-gradient(135deg, #8B5CF6, #3B82F6); color: white; border: none; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);">
+          📄 Download PDF Report
+        </button>
         <button class="btn" id="btnSpeakReport" style="font-size: 0.78rem;">🔊 Announce Verdict</button>
         <button class="btn btn-primary" id="btnCloseReportBtn" style="font-size: 0.78rem;">Done</button>
       </div>
@@ -2193,6 +2198,26 @@
         }
       }
 
+      // Save latest report data for PDF export
+      state.lastReportData = {
+        timestamp: new Date().toLocaleString(),
+        finalEmotion: topFinal,
+        finalConf: finalConf.toFixed(1),
+        faceEmotion: dominantFace,
+        faceConf: faceConf.toFixed(1),
+        faceStyle: `Mouth: ${faceStyle.mouth} | Eyes: ${faceStyle.eyes} | Brow: ${faceStyle.brow}`,
+        voiceEmotion: dominantVoice,
+        voiceConf: voiceConf.toFixed(1),
+        voiceCadence: voiceCadences[dominantVoice] || voiceCadences.Neutral,
+        fusedScores: { ...fusedScores },
+        concordance: isConcordant ? 'Harmonic Concordance Confirmed (Face and Voice agree)' : 'Modality Divergence Detected (Affective mismatch)',
+        transcription: fullRecognizedText.length > 0 ? `"${fullRecognizedText}"` : (voiceWasHeard ? "Vocal sound detected during assessment, but no clear linguistic speech transcribed." : "no voice is recorded"),
+        transcriptionStatus: fullRecognizedText.length > 0 ? "Voice Transcribed" : (voiceWasHeard ? "Audio Signal Heard" : "No Voice Detected"),
+        diagnostic: isConcordant 
+          ? `Over the 30-second assessment, Phase 1 (0s-15s visual facial geometry, 70% weight) and Phase 2 (15s-30s vocal acoustic prosody, 30% weight) demonstrated strong mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`
+          : `The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%, 70% weight), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%, 30% weight). Multimodal decision fusion weighted to ${topFinal} at ${finalConf.toFixed(1)}%.`
+      };
+
       // Open Modal
       if (elReportModal) elReportModal.style.display = 'flex';
 
@@ -2201,12 +2226,244 @@
       speakPhrase(speechMsg);
     }
 
+    // Professional PDF Report Generator using jsPDF
+    function downloadPdfReport() {
+      const rep = state.lastReportData;
+      if (!rep) {
+        alert('Please complete the 30-second analytics session first to generate a report!');
+        return;
+      }
+
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('PDF library is loading. Please try again in a few moments.');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 16;
+      const contentWidth = pageWidth - (margin * 2);
+      let y = 16;
+
+      // 1. Header Banner
+      doc.setFillColor(15, 23, 42); // Deep navy #0F172A
+      doc.roundedRect(margin, y, contentWidth, 24, 3, 3, 'F');
+      
+      doc.setTextColor(6, 182, 212); // Cyan
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('AI MULTIMODAL EMOTION RECOGNITION REPORT', margin + 6, y + 9);
+
+      doc.setTextColor(148, 163, 184); // Slate text
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(`Generated: ${rep.timestamp}  |  Assessment Duration: 30.0s  |  Weights: 70% Face + 30% Voice`, margin + 6, y + 17);
+
+      y += 30;
+
+      // 2. Final Affective State Card (Hero)
+      const emotionColorsRGB = {
+        Happy: [16, 185, 129],
+        Sad: [59, 130, 246],
+        Angry: [239, 68, 68],
+        Surprise: [245, 158, 11],
+        Neutral: [16, 185, 129]
+      };
+      const heroColor = emotionColorsRGB[rep.finalEmotion] || [16, 185, 129];
+
+      doc.setFillColor(248, 250, 252); // Soft light background
+      doc.setDrawColor(heroColor[0], heroColor[1], heroColor[2]);
+      doc.setLineWidth(0.8);
+      doc.roundedRect(margin, y, contentWidth, 32, 3, 3, 'FD');
+
+      doc.setTextColor(100, 116, 139);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.text('OVERALL HUMAN AFFECTIVE STATE (MULTIMODAL DECISION FUSION)', margin + 6, y + 7);
+
+      doc.setTextColor(heroColor[0], heroColor[1], heroColor[2]);
+      doc.setFontSize(22);
+      doc.text(`${rep.finalEmotion.toUpperCase()}`, margin + 6, y + 18);
+
+      doc.setTextColor(30, 41, 59);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.text(`Overall Confidence: ${rep.finalConf}%`, margin + 65, y + 15);
+
+      doc.setFontSize(8.5);
+      doc.setTextColor(71, 85, 105);
+      doc.text('Calibration Matrix: 70% Visual Facial Geometry + 30% Vocal Acoustic Modulation', margin + 65, y + 21);
+
+      // Status pill on hero
+      doc.setFillColor(heroColor[0], heroColor[1], heroColor[2]);
+      doc.roundedRect(margin + contentWidth - 36, y + 5, 30, 7, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.text('VERIFIED', margin + contentWidth - 27, y + 9.5);
+
+      y += 38;
+
+      // 3. Unimodal Breakdown (Two Columns: Phase 1 & Phase 2)
+      const colWidth = (contentWidth - 6) / 2;
+
+      // Column A: Phase 1 (Face)
+      doc.setFillColor(241, 245, 249);
+      doc.setDrawColor(6, 182, 212);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, y, colWidth, 38, 2, 2, 'FD');
+
+      doc.setTextColor(8, 145, 178); // Cyan dark
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text('PHASE 1: FACIAL EXPRESSIONS (70% WEIGHT)', margin + 4, y + 6);
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(13);
+      doc.text(`${rep.faceEmotion} (${rep.faceConf}%)`, margin + 4, y + 15);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(71, 85, 105);
+      doc.text('468-Point Mesh Geometry Analysis:', margin + 4, y + 22);
+      const splitFaceStyle = doc.splitTextToSize(rep.faceStyle, colWidth - 8);
+      doc.text(splitFaceStyle, margin + 4, y + 27);
+
+      // Column B: Phase 2 (Voice)
+      const col2X = margin + colWidth + 6;
+      doc.setFillColor(241, 245, 249);
+      doc.setDrawColor(139, 92, 246);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(col2X, y, colWidth, 38, 2, 2, 'FD');
+
+      doc.setTextColor(124, 58, 237); // Purple dark
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text('PHASE 2: VOICE MODULATION (30% WEIGHT)', col2X + 4, y + 6);
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(13);
+      doc.text(`${rep.voiceEmotion} (${rep.voiceConf}%)`, col2X + 4, y + 15);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(71, 85, 105);
+      doc.text('Acoustic Prosody & Pitch Intonation:', col2X + 4, y + 22);
+      const splitVoiceCadence = doc.splitTextToSize(rep.voiceCadence, colWidth - 8);
+      doc.text(splitVoiceCadence, col2X + 4, y + 27);
+
+      y += 44;
+
+      // 4. Voice Transcription (Speech-to-Text) Section
+      doc.setFillColor(245, 243, 255); // Soft violet
+      doc.setDrawColor(167, 139, 250);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, y, contentWidth, 28, 2, 2, 'FD');
+
+      doc.setTextColor(109, 40, 217);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text('VOICE TRANSCRIPTION (SPEECH-TO-TEXT)', margin + 4, y + 6);
+
+      doc.setFontSize(7.5);
+      doc.setTextColor(124, 58, 237);
+      doc.text(`Status: [ ${rep.transcriptionStatus} ]`, margin + contentWidth - 45, y + 6);
+
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(30, 41, 59);
+      const splitTranscript = doc.splitTextToSize(rep.transcription, contentWidth - 10);
+      doc.text(splitTranscript, margin + 5, y + 14);
+
+      y += 33;
+
+      // 5. Multimodal Probability Distribution Table / Bars
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(margin, y, contentWidth, 34, 2, 2, 'FD');
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.text('MULTIMODAL DECISION PROBABILITIES (70% FACE + 30% VOICE FUSED)', margin + 4, y + 6);
+
+      const emList = ['Happy', 'Sad', 'Angry', 'Surprise', 'Neutral'];
+      let barY = y + 12;
+      emList.forEach(e => {
+        const val = rep.fusedScores[e] || 0;
+        const pct = Math.round(val * 100);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(51, 65, 85);
+        doc.text(`${e}:`, margin + 6, barY + 2);
+
+        // Bar background
+        doc.setFillColor(226, 232, 240);
+        doc.roundedRect(margin + 26, barY - 1, 100, 3.5, 1, 1, 'F');
+
+        // Bar fill
+        const c = emotionColorsRGB[e] || [16, 185, 129];
+        doc.setFillColor(c[0], c[1], c[2]);
+        const fillW = Math.max(1, (pct / 100) * 100);
+        doc.roundedRect(margin + 26, barY - 1, fillW, 3.5, 1, 1, 'F');
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(71, 85, 105);
+        doc.text(`${pct}%`, margin + 130, barY + 2);
+
+        barY += 4.5;
+      });
+
+      y += 39;
+
+      // 6. Cross-Modality Concordance & Diagnostic Summary
+      doc.setFillColor(240, 253, 244);
+      doc.setDrawColor(74, 222, 128);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, y, contentWidth, 24, 2, 2, 'FD');
+
+      doc.setTextColor(21, 128, 61);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.text(`CONCORDANCE EVALUATION: ${rep.concordance}`, margin + 4, y + 6);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(51, 65, 85);
+      const splitDiag = doc.splitTextToSize(rep.diagnostic, contentWidth - 8);
+      doc.text(splitDiag, margin + 4, y + 12);
+
+      y += 28;
+
+      // 7. Footer
+      doc.setDrawColor(203, 213, 225);
+      doc.setLineWidth(0.3);
+      doc.line(margin, y, margin + contentWidth, y);
+
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7.5);
+      doc.setTextColor(148, 163, 184);
+      doc.text('AIPS AI Emotion Recognition System | Powered by 468-pt Google MediaPipe Face Mesh & Acoustic BiLSTM Fusion', margin, y + 5);
+      doc.text('Page 1 of 1', margin + contentWidth - 16, y + 5);
+
+      // Save PDF to browser
+      const cleanFileName = `Emotion_Report_${rep.finalEmotion}_${Date.now().toString().slice(-6)}.pdf`;
+      doc.save(cleanFileName);
+    }
+
     // Wire up Analytics UI buttons
     document.getElementById('btnStartAnalytics').addEventListener('click', startAnalyticsSession);
     document.getElementById('btnStartAnalyticsHeader').addEventListener('click', startAnalyticsSession);
     document.getElementById('btnCancelAnalytics').addEventListener('click', stopAnalyticsSession);
     document.getElementById('btnCloseReport').addEventListener('click', () => elReportModal.style.display = 'none');
     document.getElementById('btnCloseReportBtn').addEventListener('click', () => elReportModal.style.display = 'none');
+    document.getElementById('btnDownloadPdf').addEventListener('click', downloadPdfReport);
     document.getElementById('btnSpeakReport').addEventListener('click', () => {
       const top = state.currentFinalEmotion;
       speakPhrase(`Multimodal Emotion Report. The final recognized state is ${top}. Face and voice assessment completed across 30 seconds.`);
