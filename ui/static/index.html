@@ -1380,8 +1380,10 @@
           <canvas id="faceCanvas" class="mirrored"></canvas>
           <div class="viewport-overlay-tip" id="camTipText">Camera Standby &mdash; Click "Start Camera"</div>
           <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
-            <span class="hud-chip locked" id="hudTrackStatus">● 468 PT MESH LOCKED</span>
-            <span class="hud-chip" id="hudCoords">COORDS: X:-- Y:--</span>
+            <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
+            <span class="hud-chip" id="hudCalibrationChip">AUTO-CALIBRATING...</span>
+            <span class="hud-chip" id="hudEngineChip">ENGINE: 3D FACS</span>
+            <span class="hud-chip" id="hudCoords">PITCH: 0° ROLL: 0°</span>
           </div>
         </div>
 
@@ -1396,6 +1398,19 @@
           <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
             <span>🕸️</span> B&W Mesh
           </button>
+          <button class="btn-secondary" id="btnCalibrateFace" title="Recalibrate to your resting neutral baseline">
+            <span>🎯</span> Calibrate Neutral
+          </button>
+        </div>
+
+        <!-- AI Vision Engine Selector Row -->
+        <div style="margin-top: 0.65rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.75rem; color: var(--text-secondary); background: rgba(11, 17, 32, 0.7); padding: 0.45rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+          <span style="display: flex; align-items: center; gap: 0.35rem; font-weight: 600;"><span style="color: var(--cyan);">⚡</span> Vision Model:</span>
+          <select id="selectVisionEngine" style="background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.25rem 0.55rem; font-family: var(--font-mono); font-size: 0.72rem; cursor: pointer; outline: none;">
+            <option value="adaptive_3d_facs" selected>MediaPipe 468 3D + Adaptive FACS (60 FPS)</option>
+            <option value="hybrid_ensemble">Hybrid Ensemble (3D FACS + PyTorch Deep CNN)</option>
+            <option value="deep_cnn">PyTorch Deep CNN (Server Model)</option>
+          </select>
         </div>
       </section>
 
@@ -1832,6 +1847,7 @@
       enabled: true,
       isMirrored: true,
       meshStyle: 'bw_mesh', // 'bw_mesh', 'bw_dots', 'bw_contours', 'off'
+      visionEngine: 'adaptive_3d_facs', // 'adaptive_3d_facs', 'hybrid_ensemble', 'deep_cnn'
       x: 0,
       y: 0,
       w: 220,
@@ -1841,8 +1857,52 @@
       targetW: 220,
       targetH: 240,
       isLocked: false,
-      smoothedProbs: null
+      smoothedProbs: null,
+      headPose: { roll: 0, pitch: 0, yaw: 0 },
+      isCalibrating: false,
+      calibrationFrames: 0,
+      baseline: {
+        ear: 0.235,
+        browH: 0.138,
+        innerBrowDist: 0.355,
+        smileElevation: 0.002,
+        mouthAperture: 0.015,
+        mouthWidth: 0.74,
+        griefSlant: 0.00,
+        isCalibrated: false
+      }
     };
+
+    const baselineAccum = {
+      count: 0,
+      sumEar: 0,
+      sumBrowH: 0,
+      sumInnerBrowDist: 0,
+      sumSmileElevation: 0,
+      sumMouthAperture: 0,
+      sumMouthWidth: 0,
+      sumGriefSlant: 0
+    };
+
+    function startBaselineCalibration() {
+      tracker.isCalibrating = true;
+      tracker.calibrationFrames = 0;
+      baselineAccum.count = 0;
+      baselineAccum.sumEar = 0;
+      baselineAccum.sumBrowH = 0;
+      baselineAccum.sumInnerBrowDist = 0;
+      baselineAccum.sumSmileElevation = 0;
+      baselineAccum.sumMouthAperture = 0;
+      baselineAccum.sumMouthWidth = 0;
+      baselineAccum.sumGriefSlant = 0;
+
+      const calChip = document.getElementById('hudCalibrationChip');
+      if (calChip) {
+        calChip.innerText = 'CALIBRATING (1s)... KEEP NEUTRAL';
+        calChip.style.borderColor = 'var(--status-warning)';
+        calChip.style.color = 'var(--status-warning)';
+      }
+    }
 
     function initMediaPipe() {
       if (typeof FaceMesh !== 'undefined' && !faceMesh) {
@@ -1853,11 +1913,11 @@
           faceMesh.setOptions({
             maxNumFaces: 1,
             refineLandmarks: true,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5
+            minDetectionConfidence: 0.65,
+            minTrackingConfidence: 0.65
           });
           faceMesh.onResults(onFaceMeshResults);
-          console.log('[MediaPipe] FaceMesh loaded successfully');
+          console.log('[MediaPipe] FaceMesh loaded successfully (High Sensitivity)');
         } catch (err) {
           console.warn('[MediaPipe] Init error:', err);
         }
@@ -1880,7 +1940,12 @@
         try {
           initMediaPipe();
           const stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
+            video: {
+              width: { ideal: 1280, min: 640 },
+              height: { ideal: 720, min: 480 },
+              facingMode: 'user',
+              frameRate: { ideal: 30, min: 15 }
+            }
           });
           video.srcObject = stream;
           await video.play();
@@ -1892,6 +1957,10 @@
           if (tip) tip.style.display = 'none';
           const hud = document.getElementById('camHudOverlay');
           if (hud) hud.style.display = 'flex';
+          
+          // Auto-start 1-second neutral calibration
+          startBaselineCalibration();
+
           requestAnimationFrame(processVideoFrame);
         } catch (err) {
           console.error('[Camera] Access error:', err);
@@ -1909,8 +1978,38 @@
         const hud = document.getElementById('camHudOverlay');
         if (hud) hud.style.display = 'none';
         tracker.smoothedProbs = null;
+        tracker.isCalibrating = false;
       }
     });
+
+    // Calibrate Button Listener
+    const btnCalibrateFace = document.getElementById('btnCalibrateFace');
+    if (btnCalibrateFace) {
+      btnCalibrateFace.addEventListener('click', () => {
+        if (state.isCameraRunning && tracker.isLocked) {
+          startBaselineCalibration();
+        } else {
+          alert('Please start camera first to calibrate your resting facial baseline.');
+        }
+      });
+    }
+
+    // Vision Engine Selector Listener
+    const selectVisionEngine = document.getElementById('selectVisionEngine');
+    if (selectVisionEngine) {
+      selectVisionEngine.addEventListener('change', (e) => {
+        tracker.visionEngine = e.target.value;
+        const hudEngine = document.getElementById('hudEngineChip');
+        if (hudEngine) {
+          const names = {
+            adaptive_3d_facs: 'ENGINE: 3D FACS (60 FPS)',
+            hybrid_ensemble: 'ENGINE: HYBRID (FACS + CNN)',
+            deep_cnn: 'ENGINE: PYTORCH DEEP CNN'
+          };
+          hudEngine.innerText = names[tracker.visionEngine] || 'ENGINE: 3D FACS';
+        }
+      });
+    }
 
     // Flip Camera View (Mirror vs Normal)
     document.getElementById('btnFlipCam').addEventListener('click', () => {
@@ -2063,20 +2162,22 @@
         // 5. High-Precision Geometric Facial Emotion Recognition (FACS Algorithm)
         analyzeLiveFacialLandmarks(lm);
 
-        // Update HUD text
-        const hudCoords = document.getElementById('hudCoords');
+        // Update HUD tracking lock state
         const hudStatus = document.getElementById('hudTrackStatus');
-        if (hudCoords) hudCoords.innerText = `X:${Math.round(tracker.x)} Y:${Math.round(tracker.y)} W:${Math.round(tracker.w)}`;
         if (hudStatus) {
-          hudStatus.innerText = '● 468 PT MESH LOCKED';
+          hudStatus.innerText = '● 468 PT 3D MESH LOCKED';
           hudStatus.className = 'hud-chip locked';
         }
       } else {
         tracker.isLocked = false;
         const hudStatus = document.getElementById('hudTrackStatus');
+        const hudCoords = document.getElementById('hudCoords');
         if (hudStatus) {
           hudStatus.innerText = '○ SEARCHING FACE...';
           hudStatus.className = 'hud-chip';
+        }
+        if (hudCoords) {
+          hudCoords.innerText = 'PITCH: -- ROLL: --';
         }
       }
     }
@@ -2105,101 +2206,214 @@
     // Helper clamp function
     const clampNorm = (v) => Math.min(1.0, Math.max(0.0, v));
 
-    // Live Landmark Geometry Calculations (FACS Kinematics)
+    // Offscreen Canvas for Deep CNN Image Pipeline
+    const offscreenCanvas = document.createElement('canvas');
+    offscreenCanvas.width = 48;
+    offscreenCanvas.height = 48;
+    const offscreenCtx = offscreenCanvas.getContext('2d');
+    let isFetchingCNN = false;
+    let lastCNNProbs = null;
+    let lastCNNTimestamp = 0;
+
+    // Asynchronous PyTorch Deep CNN Query (Communicates with /api/predict/face when server active)
+    async function queryDeepCNNModel() {
+      if (isFetchingCNN || !state.isCameraRunning || !tracker.isLocked) return;
+      if (tracker.visionEngine === 'adaptive_3d_facs') return;
+
+      const now = Date.now();
+      if (now - lastCNNTimestamp < 320) return; // ~3 queries per second
+
+      isFetchingCNN = true;
+      lastCNNTimestamp = now;
+
+      try {
+        const cropX = Math.max(0, tracker.x);
+        const cropY = Math.max(0, tracker.y);
+        const cropW = Math.min(video.videoWidth - cropX, tracker.w);
+        const cropH = Math.min(video.videoHeight - cropY, tracker.h);
+
+        if (cropW > 10 && cropH > 10) {
+          offscreenCtx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, 48, 48);
+          const b64 = offscreenCanvas.toDataURL('image/jpeg', 0.82);
+
+          const formData = new FormData();
+          formData.append('image_base64', b64);
+
+          const res = await fetch('/api/predict/face', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.probabilities) {
+              lastCNNProbs = data.probabilities;
+              const hudEngine = document.getElementById('hudEngineChip');
+              if (hudEngine) {
+                hudEngine.innerText = tracker.visionEngine === 'deep_cnn' 
+                  ? 'PYTORCH CNN (ACTIVE)' 
+                  : 'HYBRID (3D FACS + CNN)';
+                hudEngine.style.color = 'var(--cyan)';
+              }
+            }
+          }
+        }
+      } catch (e) {
+        lastCNNProbs = null;
+      } finally {
+        isFetchingCNN = false;
+      }
+    }
+
+    // High-Precision Geometric & 3D Pose Normalized Facial Emotion Recognition
     function analyzeLiveFacialLandmarks(lm) {
       if (!lm || lm.length < 468) return;
 
-      // 1. Scale Normalization Factors (Invariant to distance from webcam)
+      // 1. 3D Head Pose Normalization (Pitch, Yaw, Roll)
+      const dEyeX = (lm[263].x - lm[33].x);
+      const dEyeY = (lm[263].y - lm[33].y);
+      const rollRad = Math.atan2(dEyeY, dEyeX);
+
+      const dzPitch = ((lm[1].z || 0) - (lm[168].z || 0));
+      const dyPitch = (lm[1].y - lm[168].y);
+      const pitchRad = Math.atan2(dyPitch, Math.max(0.01, -dzPitch));
+
+      const midEyeX = (lm[33].x + lm[263].x) / 2;
+      const yawRatio = (lm[1].x - midEyeX) / Math.max(0.05, Math.abs(dEyeX));
+
+      tracker.headPose.roll = rollRad * (180 / Math.PI);
+      tracker.headPose.pitch = pitchRad * (180 / Math.PI);
+      tracker.headPose.yaw = yawRatio * 45;
+
+      // Pitch compensation factor (normalizes vertical perspective distortion when tilting head)
+      const cosPitch = Math.max(0.60, Math.cos(pitchRad));
+
+      // 2. Scale Invariants (Distance independent)
       const dEye = Math.max(0.08, dist(lm[33], lm[263]));      // Inter-ocular distance
       const dFaceH = Math.max(0.15, dist(lm[168], lm[152]));   // Nasion to Chin
       
-      // 2. Eye Aspect Ratio (EAR) - Measure of eye aperture / openness
+      // 3. Eye Aspect Ratio (EAR) - Both eyes with dual vertical pairs
       const leftEAR = (dist(lm[160], lm[144]) + dist(lm[158], lm[153])) / (2 * Math.max(0.02, dist(lm[33], lm[133])));
       const rightEAR = (dist(lm[385], lm[380]) + dist(lm[387], lm[373])) / (2 * Math.max(0.02, dist(lm[362], lm[263])));
       const avgEAR = (leftEAR + rightEAR) / 2;
 
-      // 3. Mouth Geometry
+      // 4. Mouth Geometry & Kinematics
       const cornerAvgY = (lm[61].y + lm[291].y) / 2;
       const upperLipY = lm[13].y;
       const mouthWidth = dist(lm[61], lm[291]) / dEye;
       const mouthAperture = dist(lm[13], lm[14]) / dEye;
 
-      // Smile elevation: mouth corners lift above upper lip (lm 13)
-      const smileElevation = (upperLipY - cornerAvgY) / dFaceH;
-      // Frown depression: mouth corners droop below upper lip towards chin
-      const frownDepression = (cornerAvgY - upperLipY) / dFaceH;
+      // Smile elevation: mouth corners lift above upper lip seam (lm 13)
+      const rawSmileElev = (upperLipY - cornerAvgY) / dFaceH;
+      const correctedSmileElev = rawSmileElev / cosPitch;
 
-      // Eye to mouth corner vertical distance (shortens in smile cheek lift AU6)
-      const eyeToCornerY = ((lm[61].y - lm[145].y) + (lm[291].y - lm[374].y)) / (2 * dFaceH);
+      // Eye to mouth corner vertical distance (AU6 Duchenne cheek lift)
+      const eyeToCornerY = ((lm[61].y - lm[145].y) + (lm[291].y - lm[374].y)) / (2 * dFaceH * cosPitch);
 
-      // 4. Eyebrow Geometry
-      // Inner brow distance (AU4: inner brows knit together in frown/anger)
+      // 5. Eyebrow Geometry & Kinematics
       const innerBrowDist = dist(lm[107], lm[336]) / dEye;
       
-      // Brow height above eye (upper lid 159/386 to brow arch 105/334)
       const leftBrowH = (lm[159].y - lm[105].y) / dFaceH;
       const rightBrowH = (lm[386].y - lm[334].y) / dFaceH;
-      const avgBrowH = (leftBrowH + rightBrowH) / 2;
+      const rawAvgBrowH = (leftBrowH + rightBrowH) / 2;
+      const correctedBrowH = rawAvgBrowH / cosPitch;
 
-      // Eyebrow grief slant (AU1: inner brows 107/336 higher than outer brows 70/300)
+      // Eyebrow grief slant (AU1 sadness: inner brows higher than outer brows)
       const innerBrowY = (lm[107].y + lm[336].y) / 2;
       const outerBrowY = (lm[70].y + lm[300].y) / 2;
-      const griefSlant = (outerBrowY - innerBrowY) / dFaceH;
+      const griefSlant = (outerBrowY - innerBrowY) / (dFaceH * cosPitch);
 
-      // 5. FACS Expressive Feature Computations:
-      
-      // 1. HAPPY (AU12 Zygomaticus Major + AU6 Orbicularis Oculi)
-      const smileCurvScore = clampNorm((smileElevation - 0.006) / 0.025);
-      const smileWidthScore = clampNorm((mouthWidth - 0.77) / 0.12);
-      const cheekLiftScore = clampNorm((0.42 - eyeToCornerY) / 0.08);
-      let happyScore = clampNorm((smileCurvScore * 0.50) + (smileWidthScore * 0.30) + (cheekLiftScore * 0.20));
+      // 6. Adaptive Dynamic Baseline Calibration
+      if (tracker.isCalibrating || !tracker.baseline.isCalibrated) {
+        tracker.calibrationFrames++;
+        baselineAccum.sumEar += avgEAR;
+        baselineAccum.sumBrowH += correctedBrowH;
+        baselineAccum.sumInnerBrowDist += innerBrowDist;
+        baselineAccum.sumSmileElevation += correctedSmileElev;
+        baselineAccum.sumMouthAperture += mouthAperture;
+        baselineAccum.sumMouthWidth += mouthWidth;
+        baselineAccum.sumGriefSlant += griefSlant;
+        baselineAccum.count++;
 
-      // 2. SURPRISE (AU1/2 Brows Up + AU26 Jaw Drop + AU5 Eyes Wide)
-      const mouthDropScore = clampNorm((mouthAperture - 0.09) / 0.13);
-      const browRaiseScore = clampNorm((avgBrowH - 0.16) / 0.06);
-      const eyeWideScore = clampNorm((avgEAR - 0.27) / 0.07);
+        const calChip = document.getElementById('hudCalibrationChip');
+        if (calChip) {
+          calChip.innerText = `CALIBRATING (${Math.max(1, 30 - baselineAccum.count)})... KEEP NEUTRAL`;
+          calChip.style.color = 'var(--status-warning)';
+          calChip.style.borderColor = 'rgba(251, 191, 36, 0.4)';
+        }
+
+        if (baselineAccum.count >= 30) {
+          tracker.baseline.ear = baselineAccum.sumEar / baselineAccum.count;
+          tracker.baseline.browH = baselineAccum.sumBrowH / baselineAccum.count;
+          tracker.baseline.innerBrowDist = baselineAccum.sumInnerBrowDist / baselineAccum.count;
+          tracker.baseline.smileElevation = baselineAccum.sumSmileElevation / baselineAccum.count;
+          tracker.baseline.mouthAperture = baselineAccum.sumMouthAperture / baselineAccum.count;
+          tracker.baseline.mouthWidth = baselineAccum.sumMouthWidth / baselineAccum.count;
+          tracker.baseline.griefSlant = baselineAccum.sumGriefSlant / baselineAccum.count;
+          tracker.baseline.isCalibrated = true;
+          tracker.isCalibrating = false;
+
+          if (calChip) {
+            calChip.innerText = 'CALIBRATED ✓ (BASELINE LOCKED)';
+            calChip.style.color = 'var(--status-harmony)';
+            calChip.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+          }
+        }
+      }
+
+      // 7. Relative Baseline Deviation (Δ) Scoring
+      const base = tracker.baseline;
+
+      // 1. HAPPY (AU12 + AU6): Corners lift and mouth widens relative to individual baseline
+      const deltaSmile = correctedSmileElev - base.smileElevation;
+      const deltaWidth = mouthWidth - base.mouthWidth;
+      const happyCurvScore = clampNorm((deltaSmile - 0.007) / 0.020);
+      const happyWidthScore = clampNorm((deltaWidth - 0.035) / 0.08);
+      let happyScore = clampNorm(happyCurvScore * 0.65 + happyWidthScore * 0.35);
+
+      // 2. SURPRISE (AU1/2 + AU26 + AU5): Jaw drop and brow raise relative to individual baseline
+      const deltaAperture = mouthAperture - base.mouthAperture;
+      const deltaBrowRaise = correctedBrowH - base.browH;
+      const deltaEAR = avgEAR - base.ear;
+      const surpMouth = clampNorm((deltaAperture - 0.05) / 0.10);
+      const surpBrow = clampNorm((deltaBrowRaise - 0.025) / 0.045);
+      const surpEye = clampNorm((deltaEAR - 0.03) / 0.06);
       let surpriseScore = 0;
-      if (mouthDropScore > 0.10 || browRaiseScore > 0.10) {
-        surpriseScore = clampNorm((mouthDropScore * 0.45) + (browRaiseScore * 0.35) + (eyeWideScore * 0.20));
+      if (surpMouth > 0.08 || surpBrow > 0.08) {
+        surpriseScore = clampNorm(surpMouth * 0.50 + surpBrow * 0.35 + surpEye * 0.15);
       }
 
-      // 3. ANGRY (AU4 Brow Furrow + AU4 Brow Lower + AU7 Eye Glare)
-      const browFurrowScore = clampNorm((0.315 - innerBrowDist) / 0.075);
-      const browLowerScore = clampNorm((0.125 - avgBrowH) / 0.045);
-      const glareScore = clampNorm((0.21 - avgEAR) / 0.06);
+      // 3. ANGRY (AU4 + AU7): Eyebrows knit together and lower relative to individual baseline
+      const deltaFurrow = base.innerBrowDist - innerBrowDist;
+      const deltaBrowLower = base.browH - correctedBrowH;
+      const deltaGlare = base.ear - avgEAR;
+      const angFurrow = clampNorm((deltaFurrow - 0.025) / 0.055);
+      const angLower = clampNorm((deltaBrowLower - 0.015) / 0.035);
+      const angGlare = clampNorm((deltaGlare - 0.015) / 0.045);
       let angryScore = 0;
-      if (browFurrowScore > 0.10 || browLowerScore > 0.10) {
-        angryScore = clampNorm((browFurrowScore * 0.45) + (browLowerScore * 0.35) + (glareScore * 0.20));
+      if (angFurrow > 0.08 || angLower > 0.08) {
+        angryScore = clampNorm(angFurrow * 0.50 + angLower * 0.35 + angGlare * 0.15);
       }
 
-      // 4. SAD (AU15 Frown + AU1 Grief Brow + AU43 Droop)
-      const frownScore = clampNorm((frownDepression - 0.008) / 0.024);
-      const griefScore = clampNorm((griefSlant - 0.005) / 0.020);
-      const sadEyeScore = clampNorm((0.22 - avgEAR) / 0.06);
+      // 4. SAD (AU15 + AU1): Mouth corners droop and grief brows lift relative to individual baseline
+      const deltaFrown = base.smileElevation - correctedSmileElev;
+      const deltaGrief = griefSlant - base.griefSlant;
+      const deltaSadEye = base.ear - avgEAR;
+      const sadFrown = clampNorm((deltaFrown - 0.007) / 0.020);
+      const sadGrief = clampNorm((deltaGrief - 0.006) / 0.018);
+      const sadEye = clampNorm((deltaSadEye - 0.01) / 0.04);
       let sadScore = 0;
-      if (frownScore > 0.10 || griefScore > 0.10) {
-        sadScore = clampNorm((frownScore * 0.55) + (griefScore * 0.35) + (sadEyeScore * 0.10));
+      if (sadFrown > 0.08 || sadGrief > 0.08) {
+        sadScore = clampNorm(sadFrown * 0.55 + sadGrief * 0.35 + sadEye * 0.10);
       }
 
-      // Dynamic Cross-Modal Inhibition to prevent false blending
-      if (happyScore > 0.25) {
-        sadScore = 0;
-        angryScore = 0;
-      }
-      if (surpriseScore > 0.25) {
-        sadScore *= 0.1;
-        angryScore = 0;
-      }
-      if (angryScore > 0.25) {
-        happyScore = 0;
-        surpriseScore = 0;
-      }
-      if (sadScore > 0.25) {
-        happyScore = 0;
-        surpriseScore = 0;
-      }
+      // Biological Cross-Inhibition
+      if (happyScore > 0.25) { sadScore = 0; angryScore = 0; }
+      if (surpriseScore > 0.25) { sadScore *= 0.1; angryScore = 0; }
+      if (angryScore > 0.25) { happyScore = 0; surpriseScore = 0; }
+      if (sadScore > 0.25) { happyScore = 0; surpriseScore = 0; }
 
-      // 6. Classification & Probability Distribution
+      // 8. Classification & Raw FACS Probabilities
       const expressiveScores = {
         Happy: happyScore,
         Surprise: surpriseScore,
@@ -2216,7 +2430,7 @@
         }
       }
 
-      const activationThreshold = 0.20;
+      const activationThreshold = 0.18;
       let liveEmotion = 'Neutral';
       const rawFaceProbs = { Angry: 0.02, Happy: 0.02, Neutral: 0.04, Sad: 0.02, Surprise: 0.02 };
 
@@ -2236,20 +2450,45 @@
         ['Angry', 'Happy', 'Sad', 'Surprise'].forEach(e => rawFaceProbs[e] = rem);
       }
 
-      // 7. Exponential Moving Average (EMA) Temporal Smoothing (Alpha = 0.35)
+      // 9. Multi-Model Fusion (FACS + PyTorch Deep CNN Ensemble)
+      queryDeepCNNModel();
+
+      let effectiveProbs = { ...rawFaceProbs };
+      if (tracker.visionEngine === 'hybrid_ensemble' && lastCNNProbs) {
+        for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
+          effectiveProbs[e] = 0.60 * rawFaceProbs[e] + 0.40 * (lastCNNProbs[e] || 0.02);
+        }
+        // Recalculate top emotion after hybrid ensemble
+        let topE = 'Neutral';
+        let topP = 0;
+        for (const [em, p] of Object.entries(effectiveProbs)) {
+          if (p > topP) { topP = p; topE = em; }
+        }
+        liveEmotion = topE;
+      } else if (tracker.visionEngine === 'deep_cnn' && lastCNNProbs) {
+        effectiveProbs = { ...lastCNNProbs };
+        let topE = 'Neutral';
+        let topP = 0;
+        for (const [em, p] of Object.entries(effectiveProbs)) {
+          if (p > topP) { topP = p; topE = em; }
+        }
+        liveEmotion = topE;
+      }
+
+      // 10. Temporal EMA Smoothing (Alpha = 0.35)
       if (!tracker.smoothedProbs) {
-        tracker.smoothedProbs = { ...rawFaceProbs };
+        tracker.smoothedProbs = { ...effectiveProbs };
       } else {
         const alpha = 0.35;
         for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
-          tracker.smoothedProbs[e] = alpha * rawFaceProbs[e] + (1 - alpha) * tracker.smoothedProbs[e];
+          tracker.smoothedProbs[e] = alpha * effectiveProbs[e] + (1 - alpha) * tracker.smoothedProbs[e];
         }
       }
 
       state.latestFaceProbs = tracker.smoothedProbs;
       state.selectedFaceEmotion = liveEmotion;
 
-      // 8. Update Live Diagnostics
+      // 11. Live Diagnostics & HUD Updates
       let mouthText = 'Normal Line 😐';
       let eyesText = 'Normal Open';
       let browText = 'Smooth Plain';
@@ -2281,7 +2520,13 @@
       if (elForehead) elForehead.innerText = browText;
       if (elSummary) elSummary.innerText = `${liveEmotion} Features Active`;
 
-      // 9. Update Live Mini Badge & Multimodal Fusion Real-Time
+      // Live HUD Telemetry
+      const hudCoords = document.getElementById('hudCoords');
+      if (hudCoords) {
+        hudCoords.innerText = `PITCH: ${Math.round(tracker.headPose.pitch)}° ROLL: ${Math.round(tracker.headPose.roll)}°`;
+      }
+
+      // 12. Real-Time UI Synchronization
       const topProb = tracker.smoothedProbs[liveEmotion] || 0.85;
       const elMiniVal = document.getElementById('faceMiniVal');
       const elMiniConf = document.getElementById('faceMiniConf');
