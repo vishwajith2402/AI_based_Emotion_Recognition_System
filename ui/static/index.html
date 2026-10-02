@@ -3,55 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Human Emotion Recognition — Multimodal AI Studio</title>
+  <title>AFFECT AI — Multimodal Emotion Intelligence</title>
+  
+  <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <!-- Google MediaPipe 468-Point Face Mesh & Tracking Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
   <!-- jsPDF Library for Client-Side PDF Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+
   <style>
+    /* ========================================================
+       AFFECT AI — LUXURY FUTURISTIC DESIGN SYSTEM
+       Theme: Apple-level Minimalism + Research Laboratory Dark Glass
+       ======================================================== */
     :root {
-      --bg-dark: #090D16;
-      --bg-card: rgba(18, 24, 38, 0.75);
-      --bg-card-hover: rgba(28, 36, 56, 0.85);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(6, 182, 212, 0.35);
-      --cyan: #06B6D4;
-      --purple: #8B5CF6;
-      --green: #10B981;
-      --red: #EF4444;
-      --amber: #F59E0B;
-      --blue: #3B82F6;
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-      --radius: 16px;
+      /* Background Hierarchy */
+      --bg-primary: #070A0F;
+      --bg-secondary: #0C111A;
+      --bg-card: rgba(17, 24, 39, 0.72);
+      --bg-card-hover: rgba(21, 29, 42, 0.88);
+      --bg-elevated: #151D2A;
+      
+      /* Borders & Shadows */
+      --border-glass: rgba(255, 255, 255, 0.07);
+      --border-active: rgba(34, 211, 238, 0.35);
+      --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      --shadow-glow-cyan: 0 0 28px rgba(34, 211, 238, 0.18);
+      
+      /* Primary & Secondary Accents */
+      --cyan: #22D3EE;
+      --cyan-dim: rgba(34, 211, 238, 0.12);
+      --violet: #8B5CF6;
+      --violet-dim: rgba(139, 92, 246, 0.12);
+      
+      /* Emotion Accent System */
+      --accent-happy: #FBBF24;      /* Warm Gold */
+      --accent-sad: #60A5FA;        /* Soft Blue */
+      --accent-angry: #FB7185;      /* Soft Coral */
+      --accent-surprise: #C084FC;   /* Soft Violet */
+      --accent-neutral: #94A3B8;    /* Silver / White */
+      
+      /* Status Palette */
+      --status-success: #34D399;
+      --status-warning: #FBBF24;
+      --status-conflict: #FB7185;
+      
+      /* Typography */
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #64748B;
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background: var(--bg-dark);
+      font-family: var(--font-main);
+      background-color: var(--bg-primary);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 45%),
-        radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 45%),
-        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.10) 0px, transparent 50%);
-      color: var(--text-main);
+        radial-gradient(ellipse 60% 40% at 50% -10%, rgba(34, 211, 238, 0.08), transparent 70%),
+        radial-gradient(ellipse 40% 30% at 85% 85%, rgba(139, 92, 246, 0.05), transparent 60%);
+      background-attachment: fixed;
+      color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Header Bar */
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.35); }
+
+    /* ========================================================
+       TOP HEADER (Minimalist Research Lab Banner)
+       ======================================================== */
     header {
-      background: rgba(11, 15, 26, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 0.85rem 1.8rem;
+      background: rgba(7, 10, 15, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 0.9rem 2.2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -59,877 +111,1608 @@
       top: 0;
       z-index: 100;
     }
-    .brand {
+
+    .brand-group {
       display: flex;
       align-items: center;
-      gap: 0.9rem;
+      gap: 1.1rem;
     }
-    .brand-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #4F46E5, #06B6D4);
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(139, 92, 246, 0.15));
+      border: 1px solid rgba(34, 211, 238, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-      font-size: 1.4rem;
+      font-size: 1.1rem;
     }
-    .brand-title h1 {
-      font-size: 1.25rem;
+
+    .brand-text h1 {
+      font-size: 0.98rem;
       font-weight: 800;
-      letter-spacing: -0.3px;
-      background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      letter-spacing: 1.5px;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      line-height: 1.2;
     }
-    .brand-title p {
+
+    .brand-text p {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .system-status-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: pulse 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    .btn-ghost-sm {
+      background: transparent;
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-ghost-sm:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+    }
+
+    /* ========================================================
+       FUTURISTIC HUD TIMELINE (Minimalist Phase Progress)
+       ======================================================== */
+    .hud-timeline {
+      max-width: 1360px;
+      margin: 1.25rem auto 0;
+      padding: 0.85rem 1.4rem;
+      width: calc(100% - 3.2rem);
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.3s ease;
+    }
+
+    .timeline-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .timeline-phase {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .phase-index {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--cyan);
+      background: var(--cyan-dim);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      letter-spacing: 1px;
+    }
+
+    .phase-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-primary);
+    }
+
+    .phase-instruction {
       font-size: 0.75rem;
       color: var(--text-muted);
     }
 
-    .header-pills {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-    .pill {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      padding: 0.35rem 0.85rem;
-      border-radius: 9999px;
-      font-size: 0.76rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      color: var(--text-muted);
-    }
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    .dot-green { background: var(--green); box-shadow: 0 0 8px var(--green); }
-    .dot-amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
-
-    .mode-switch {
-      display: flex;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 3px;
-      gap: 2px;
-    }
-    .mode-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 0.35rem 0.75rem;
-      font-size: 0.76rem;
-      font-weight: 600;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .mode-btn.active {
-      background: #2563EB;
-      color: white;
-      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
-    }
-
-    /* Quick Scenarios Bar */
-    .scenario-bar {
-      background: rgba(15, 23, 42, 0.6);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 0.65rem 1.8rem;
+    .timeline-countdown {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 1px;
       display: flex;
       align-items: center;
       gap: 0.8rem;
-      overflow-x: auto;
     }
-    .scenario-label {
-      font-size: 0.76rem;
-      font-weight: 700;
-      color: var(--cyan);
-      white-space: nowrap;
-      text-transform: uppercase;
+
+    .btn-abort {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 113, 133, 0.1);
+      border: 1px solid rgba(251, 113, 133, 0.3);
+      color: var(--status-conflict);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-abort:hover {
+      background: rgba(251, 113, 133, 0.2);
+    }
+
+    .timeline-track-wrapper {
+      position: relative;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .track-face {
+      height: 100%;
+      width: 0%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      transition: width 0.1s linear;
+    }
+
+    .track-voice {
+      height: 100%;
+      width: 0%;
+      background: var(--violet);
+      box-shadow: 0 0 10px var(--violet);
+      transition: width 0.1s linear;
+    }
+
+    .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.45rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
       letter-spacing: 0.5px;
     }
-    .scenario-chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 0.35rem 0.85rem;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: all 0.2s;
-    }
-    .scenario-chip:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: var(--cyan);
-      transform: translateY(-1px);
-    }
 
-    /* Main Grid - Clean 2-Column Responsive Layout */
+    /* ========================================================
+       MAIN APP LAYOUT
+       ======================================================== */
     main {
-      flex: 1;
-      padding: 1.5rem 2rem;
-      display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 1.5rem;
-      max-width: 1350px;
-      margin: 0 auto;
+      max-width: 1360px;
+      margin: 1.25rem auto 3rem;
+      padding: 0 1.6rem;
       width: 100%;
-    }
-    @media (max-width: 980px) {
-      main {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-      }
-    }
-
-    /* Card Panels */
-    .card {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
+      flex: 1;
+    }
+
+    /* 2-Column Hero Grid (Face 55% / AI Fusion 45%) */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    /* Supporting Analytics Grid (Voice Modulation & Distribution) */
+    .secondary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Universal Glass Card */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
       position: relative;
-    }
-    .card-header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding-bottom: 0.75rem;
+      flex-direction: column;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: var(--shadow-subtle);
     }
-    .step-badge {
-      font-size: 0.70rem;
+
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Card Header */
+    .card-meta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.1rem;
+    }
+
+    .card-title-group h2 {
+      font-size: 0.82rem;
       font-weight: 700;
       text-transform: uppercase;
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
+      letter-spacing: 1.2px;
+      color: var(--text-primary);
+    }
+
+    .card-title-group p {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
       letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 0.15rem;
     }
-    .badge-cyan { background: rgba(6, 182, 212, 0.15); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
-    .badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); border: 1px solid rgba(139, 92, 246, 0.3); }
-    .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
 
-    .card-header h2 {
-      font-size: 1.05rem;
+    .weight-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
     }
 
-    /* Video Viewport */
-    .video-viewport {
+    .weight-tag.cyan {
+      background: var(--cyan-dim);
+      border-color: rgba(34, 211, 238, 0.3);
+      color: var(--cyan);
+    }
+
+    .weight-tag.violet {
+      background: var(--violet-dim);
+      border-color: rgba(139, 92, 246, 0.3);
+      color: var(--violet);
+    }
+
+    /* ========================================================
+       LEFT CARD — FACIAL ANALYSIS (Camera & 468-pt Mesh)
+       ======================================================== */
+    .camera-viewport {
       position: relative;
       width: 100%;
-      aspect-ratio: 4 / 3;
-      background: #020617;
-      border-radius: 12px;
+      height: 380px;
+      border-radius: var(--radius-md);
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #000000;
+      border: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    video, #faceCanvas {
+
+    video, canvas#faceCanvas {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
     }
-    video.mirrored, #faceCanvas.mirrored {
+
+    video.mirrored, canvas.mirrored {
       transform: scaleX(-1);
     }
-    #faceCanvas { z-index: 10; pointer-events: none; }
 
-    .hud-overlay {
+    .viewport-overlay-tip {
       position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.45);
+      background: rgba(7, 10, 15, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 0.6rem 1.1rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-glass);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .hud-metrics-overlay {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
       display: flex;
       justify-content: space-between;
-      z-index: 20;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.70rem;
+      align-items: center;
+      z-index: 10;
       pointer-events: none;
     }
-    .hud-tag {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 0.25rem 0.55rem;
-      border-radius: 6px;
-      backdrop-filter: blur(8px);
-      color: #E2E8F0;
-    }
 
-    .viewport-tip {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(15, 23, 42, 0.85);
+    .hud-chip {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.5px;
+      background: rgba(7, 10, 15, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.3rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      color: #E2E8F0;
-      z-index: 15;
-      font-weight: 500;
-      backdrop-filter: blur(8px);
+      color: var(--text-secondary);
     }
 
-    /* Buttons & Controls */
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.6rem;
+    .hud-chip.locked {
+      color: var(--status-success);
+      border-color: rgba(52, 211, 153, 0.35);
     }
-    .btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 0.65rem 0.9rem;
-      border-radius: 10px;
-      font-size: 0.82rem;
+
+    .cam-controls-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      font-size: 0.78rem;
       font-weight: 600;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.2s;
-    }
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #2563EB, #06B6D4);
-      border: none;
-      box-shadow: 0 0 16px rgba(6, 182, 212, 0.35);
-    }
-    .btn-primary:hover {
-      box-shadow: 0 0 24px rgba(6, 182, 212, 0.6);
-      transform: translateY(-1px);
-    }
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--red);
-      color: #FCA5A5;
-    }
-
-    /* Emotion Chips */
-    .chip-selector {
-      display: flex;
       gap: 0.45rem;
-      flex-wrap: wrap;
-    }
-    .chip {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      padding: 0.35rem 0.75rem;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .chip:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-    }
-    .chip.active {
-      background: rgba(6, 182, 212, 0.15);
-      border-color: var(--cyan);
-      color: var(--cyan);
-      box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+      transition: all 0.2s ease;
     }
 
-    /* Facial Style Analysis Box */
-    .style-card {
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 0.85rem;
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary.active {
+      border-color: rgba(34, 211, 238, 0.4);
+      color: var(--cyan);
+    }
+
+    /* ========================================================
+       RIGHT CARD — AI FUSION (The Centerpiece of Intelligence)
+       ======================================================== */
+    .fusion-card {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
     }
-    .style-header {
-      font-size: 0.74rem;
+
+    /* Radial Ambient Background behind Hero */
+    .fusion-glow-backdrop {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34, 211, 238, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      transition: background 0.5s ease;
+      z-index: 0;
+    }
+
+    /* Primary CTA Button (START ANALYSIS →) */
+    .btn-primary-cta {
+      width: 100%;
+      padding: 0.85rem 1.4rem;
+      font-family: var(--font-main);
+      font-size: 0.88rem;
       font-weight: 700;
-      color: var(--cyan);
+      letter-spacing: 1.2px;
       text-transform: uppercase;
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid var(--cyan);
+      color: var(--text-primary);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 20px -5px rgba(34, 211, 238, 0.3);
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn-primary-cta:hover {
+      background: rgba(34, 211, 238, 0.12);
+      border-color: #67E8F9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(34, 211, 238, 0.45);
+    }
+
+    .btn-primary-cta .arrow {
+      transition: transform 0.2s ease;
+    }
+
+    .btn-primary-cta:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* AI Fusion Centerpiece (Level 1 Result) */
+    .hero-centerpiece {
+      text-align: center;
+      padding: 2.2rem 1rem;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* AI Core Animated Ring */
+    .ai-core-ring {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      position: relative;
+      animation: spinSlow 30s linear infinite;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .ai-core-ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      animation: spinFast 8s linear infinite reverse;
+    }
+
+    @keyframes spinFast {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .emotion-glyph {
+      font-size: 3.4rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.3));
+      animation: gentleFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .emotion-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+      color: var(--accent-happy);
+      transition: color 0.3s ease;
+    }
+
+    .emotion-confidence {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--text-primary);
+    }
+
+    /* Level 2 — AI Explanation Breakdown */
+    .fusion-breakdown-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .modality-stat {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .modality-stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
       letter-spacing: 0.5px;
       display: flex;
       justify-content: space-between;
     }
-    .style-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+
+    .modality-stat-val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
       gap: 0.4rem;
     }
-    .style-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      padding: 0.45rem;
-      text-align: center;
-    }
-    .style-label { font-size: 0.65rem; color: var(--text-muted); }
-    .style-val { font-size: 0.78rem; font-weight: 700; color: #F1F5F9; margin-top: 2px; }
 
-    /* Waveform Box */
-    .waveform-box {
-      width: 100%;
-      height: 85px;
-      background: #020617;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-      position: relative;
+    .modality-stat-conf {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
     }
-    #waveCanvas { width: 100%; height: 100%; }
 
-    /* Volume VU Meter */
-    .vu-meter {
+    /* Concordance / Harmony Banner */
+    .harmony-banner {
+      margin-top: 0.85rem;
+      padding: 0.65rem 0.95rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      font-size: 0.74rem;
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      color: #6EE7B7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .harmony-banner.conflict {
+      background: rgba(251, 113, 133, 0.08);
+      border-color: rgba(251, 113, 133, 0.3);
+      color: var(--status-conflict);
+    }
+
+    /* Post-Assessment Action Row (Level 4 Actions) */
+    .post-actions-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-report-action {
+      flex: 1;
+      padding: 0.65rem 0.85rem;
+      font-family: var(--font-main);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .btn-report-action.primary {
+      background: var(--violet-dim);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #C084FC;
+    }
+
+    .btn-report-action.primary:hover {
+      background: rgba(139, 92, 246, 0.22);
+      border-color: #A78BFA;
+      color: #F5F3FF;
+    }
+
+    .btn-report-action.secondary {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+    }
+
+    .btn-report-action.secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    /* ========================================================
+       VOICE MODULATION CARD (Scientific Waveform & STT)
+       ======================================================== */
+    .waveform-container {
+      width: 100%;
+      height: 72px;
+      border-radius: var(--radius-sm);
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border-glass);
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas#waveCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .volume-meter-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
       color: var(--text-muted);
     }
+
     .vu-track {
       flex: 1;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.06);
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 4px;
       overflow: hidden;
     }
+
     .vu-fill {
       height: 100%;
-      width: 45%;
-      background: linear-gradient(90deg, #10B981, #06B6D4, #EF4444);
-      border-radius: 4px;
-      transition: width 0.1s ease;
+      width: 15%;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      transition: width 0.08s ease;
     }
 
-    /* TTS Assistant Card */
-    .tts-box {
-      background: rgba(139, 92, 246, 0.08);
-      border: 1px solid rgba(139, 92, 246, 0.25);
-      border-radius: 12px;
-      padding: 0.9rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-    .tts-input-row {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .tts-input {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 0.55rem 0.75rem;
-      color: white;
-      font-size: 0.80rem;
-      outline: none;
-    }
-    .tts-input:focus {
-      border-color: var(--purple);
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+    .vu-db-text {
+      width: 55px;
+      text-align: right;
+      color: var(--text-secondary);
     }
 
-    /* Fused Result Centerpiece */
-    .fused-hero {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 27, 75, 0.95));
-      border: 2px solid var(--green);
-      border-radius: 16px;
-      padding: 1.4rem;
+    .transcript-box {
+      margin-top: 0.85rem;
+      padding: 0.75rem 0.95rem;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-glass);
       display: flex;
       flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .transcript-header {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      text-align: center;
-      gap: 0.5rem;
-      box-shadow: 0 0 35px rgba(16, 185, 129, 0.25);
-      transition: all 0.3s ease;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
     }
-    .fused-title {
+
+    .transcript-body {
       font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #9CA3AF;
-      font-weight: 700;
-    }
-    .fused-main-val {
-      font-size: 2.6rem;
-      font-weight: 800;
-      color: var(--green);
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-    }
-    .fused-conf {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #F3F4F6;
+      color: var(--text-secondary);
+      font-style: italic;
+      line-height: 1.4;
+      min-height: 22px;
+      word-break: break-word;
     }
 
-    /* Unimodal Row */
-    .unimodal-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-    .mini-badge {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 0.75rem;
+    /* ========================================================
+       EMOTION DISTRIBUTION (Minimalist Ranked List)
+       ======================================================== */
+    .distribution-list {
       display: flex;
       flex-direction: column;
-      gap: 0.3rem;
+      gap: 0.6rem;
+      margin-top: 0.35rem;
     }
-    .mini-title { font-size: 0.70rem; color: var(--text-muted); text-transform: uppercase; }
-    .mini-val { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem; }
 
-    /* Alert Banner */
-    .alert-banner {
-      width: 100%;
-      border-radius: 10px;
-      padding: 0.75rem 0.9rem;
-      font-size: 0.80rem;
+    .dist-row {
+      display: grid;
+      grid-template-columns: 28px 90px 1fr 50px;
+      align-items: center;
+      gap: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      padding: 0.35rem 0;
+    }
+
+    .dist-idx {
+      color: var(--text-muted);
+    }
+
+    .dist-label {
+      font-family: var(--font-main);
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .banner-concordant {
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid var(--green);
-      color: #6EE7B7;
-    }
-    .banner-conflict {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--red);
-      color: #FCA5A5;
-      box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+      color: var(--text-primary);
     }
 
-    /* Probability Bars */
-    .bar-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 0.76rem;
-      margin-bottom: 0.35rem;
-    }
-    .bar-label { width: 65px; color: var(--text-muted); }
-    .bar-track {
-      flex: 1;
-      height: 8px;
+    .dist-track {
+      height: 5px;
       background: rgba(255, 255, 255, 0.06);
       border-radius: 4px;
       overflow: hidden;
     }
-    .bar-fill {
+
+    .dist-bar {
       height: 100%;
-      width: 20%;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.3);
       border-radius: 4px;
-      transition: width 0.3s ease;
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
     }
-    .bar-val {
-      width: 38px;
+
+    .dist-bar.dominant {
+      background: var(--cyan);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+    }
+
+    .dist-val {
       text-align: right;
-      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .dist-val.dominant {
+      color: var(--cyan);
+    }
+
+    /* ========================================================
+       LEVEL 3 — TECHNICAL DIAGNOSTICS & PRESETS (Expandable)
+       ======================================================== */
+    .expandable-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+
+    .expandable-panel:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .expandable-panel summary {
+      padding: 0.85rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+    }
+
+    .expandable-panel summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .expandable-panel summary .indicator {
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .expandable-content {
+      padding: 1.1rem 1.25rem;
+      border-top: 1px solid var(--border-glass);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Diagnostics Data Grid */
+    .diag-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    .diag-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: 6px;
+      padding: 0.6rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .diag-key {
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .diag-val {
+      color: var(--text-primary);
       font-weight: 600;
     }
 
-    /* Weight Slider */
-    .weight-card {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 0.85rem;
+    /* Test Preset Chips */
+    .preset-chips-row {
       display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-    .weight-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.74rem;
-      color: var(--text-muted);
-    }
-    .weight-labels strong { color: white; }
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--cyan);
-      cursor: pointer;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
     }
 
-    /* Guide Modal */
-    .modal {
+    .preset-chip {
+      font-family: var(--font-main);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-chip:hover {
+      background: rgba(34, 211, 238, 0.1);
+      border-color: rgba(34, 211, 238, 0.3);
+      color: var(--cyan);
+    }
+
+    /* ========================================================
+       MODALS (Report & Guide in Luxury Glass)
+       ======================================================== */
+    .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
+      background: rgba(7, 10, 15, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 200;
-      padding: 1rem;
-    }
-    .modal-box {
-      background: #0F172A;
-      border: 1px solid var(--cyan);
-      border-radius: 16px;
-      max-width: 600px;
-      width: 100%;
       padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      box-shadow: 0 0 35px rgba(6, 182, 212, 0.35);
     }
 
-    @media (max-width: 1200px) {
-      main { grid-template-columns: 1fr; }
+    .modal-window {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      max-width: 680px;
+      width: 100%;
+      padding: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-glass);
+      padding-bottom: 0.75rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-primary);
+    }
+
+    /* Report Hero in Modal */
+    .report-hero-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .report-hero-title {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .report-hero-val {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--accent-happy);
+      margin: 0.25rem 0;
+    }
+
+    .report-hero-conf {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .report-phase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    .report-phase-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .report-phase-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .report-phase-label.cyan { color: var(--cyan); }
+    .report-phase-label.violet { color: var(--violet); }
+
+    .report-phase-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .report-phase-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .report-stt-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .report-stt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--violet);
+    }
+
+    .report-stt-content {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    /* Modal Footer Buttons */
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .btn-pdf-export {
+      padding: 0.65rem 1.1rem;
+      font-family: var(--font-main);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--violet), #3B82F6);
+      border: none;
+      color: #FFFFFF;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: opacity 0.2s ease;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+    }
+
+    .btn-pdf-export:hover {
+      opacity: 0.9;
+    }
+
+    /* ========================================================
+       FOOTER STATUS BAR
+       ======================================================== */
+    footer {
+      border-top: 1px solid var(--border-glass);
+      padding: 0.85rem 2.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      background: var(--bg-primary);
+    }
+
+    /* ========================================================
+       RESPONSIVE ADAPTATIONS
+       ======================================================== */
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .secondary-grid {
+        grid-template-columns: 1fr;
+      }
+      .camera-viewport {
+        height: 320px;
+      }
+      header {
+        padding: 0.85rem 1.2rem;
+      }
+      main {
+        padding: 0 1rem;
+      }
+      .hud-timeline {
+        width: calc(100% - 2rem);
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- ========================================================
+       TOP HEADER (Level 1 Minimal Header)
+       ======================================================== -->
   <header>
-    <div class="brand">
-      <div class="brand-logo">🎭</div>
-      <div class="brand-title">
-        <h1>AI Emotion Recognition</h1>
-        <p>70% Facial Expression + 30% Voice Modulation Analysis</p>
+    <div class="brand-group">
+      <div class="brand-mark">◇</div>
+      <div class="brand-text">
+        <h1>AFFECT AI</h1>
+        <p>Multimodal Emotion Intelligence</p>
       </div>
     </div>
 
-    <div class="header-pills">
-      <div class="pill" id="camPill"><div class="dot dot-amber"></div> Cam: Standby</div>
-      <button class="btn btn-primary" id="btnStartAnalyticsHeader" style="padding: 0.4rem 0.95rem; font-size: 0.8rem; background: linear-gradient(135deg, #10B981, #06B6D4); font-weight: 700; border: none; border-radius: 8px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); cursor: pointer;">⏱️ Start Analytics (30s)</button>
-      <button class="btn" id="btnOpenGuide" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">📘 Guide</button>
+    <div class="header-actions">
+      <div class="system-status-pill" id="sysStatusPill">
+        <div class="pulse-dot" id="sysStatusDot"></div>
+        <span id="sysStatusText">SYSTEM READY</span>
+      </div>
+      <button class="btn-ghost-sm" id="btnOpenGuide">GUIDE</button>
     </div>
   </header>
 
-  <!-- 30-Second Multimodal Analytics HUD Banner -->
-  <div id="analyticsBanner" style="display: none; background: rgba(15, 23, 42, 0.95); border: 2px solid var(--cyan); border-radius: 14px; margin: 1rem auto 0; max-width: 1350px; width: calc(100% - 4rem); padding: 1rem 1.4rem; box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
-      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-        <span id="analyticsPhaseBadge" style="background: rgba(6, 182, 212, 0.2); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.75rem; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
-          📷 PHASE 1: TRACKING FACIAL EXPRESSION (70% WEIGHT)
-        </span>
-        <span id="analyticsStatusText" style="font-size: 0.84rem; font-weight: 600; color: #F8FAFC;">
-          Please look into the camera and express naturally (0s - 15s)
-        </span>
+  <!-- ========================================================
+       ANALYSIS TIMELINE HUD (Minimalist HUD, hidden until active)
+       ======================================================== -->
+  <div class="hud-timeline" id="analyticsBanner" style="display: none;">
+    <div class="timeline-top">
+      <div class="timeline-phase">
+        <span class="phase-index" id="analyticsPhaseBadge">01 / 02</span>
+        <div>
+          <div class="phase-label" id="timelinePhaseLabel">FACIAL ANALYSIS</div>
+          <div class="phase-instruction" id="analyticsStatusText">Look into camera and express naturally (0s - 15s)</div>
+        </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <span id="analyticsTimer" style="font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 800; color: var(--cyan);">
-          30.0s
-        </span>
-        <button class="btn btn-danger" id="btnCancelAnalytics" style="padding: 0.3rem 0.65rem; font-size: 0.72rem;">Stop</button>
+      <div class="timeline-countdown">
+        <span id="analyticsTimer">30.0s</span>
+        <button class="btn-abort" id="btnCancelAnalytics">ABORT</button>
       </div>
     </div>
-    <!-- Dual Progress Bar: 0-15s (Face - 70% Weight) and 15-30s (Voice - 30% Weight) -->
-    <div style="height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 6px; overflow: hidden; display: flex; position: relative;">
-      <div id="analyticsProgressFace" style="height: 100%; width: 0%; background: linear-gradient(90deg, #06B6D4, #3B82F6); transition: width 0.1s linear;"></div>
-      <div id="analyticsProgressVoice" style="height: 100%; width: 0%; background: linear-gradient(90deg, #8B5CF6, #EC4899); transition: width 0.1s linear;"></div>
-      <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, 0.4);"></div>
+    
+    <!-- Thin Scientific Progress Track -->
+    <div class="timeline-track-wrapper">
+      <div class="track-face" id="analyticsProgressFace"></div>
+      <div class="track-voice" id="analyticsProgressVoice"></div>
     </div>
-    <div style="display: flex; justify-content: space-between; font-size: 0.70rem; color: var(--text-muted); margin-top: 0.35rem;">
-      <span>0s: Facial Expression Tracking (70% Weight)</span>
-      <span style="color: var(--cyan);">15s: Voice Modulation Tracking (30% Weight)</span>
-      <span>30s: Final Fused Verdict</span>
+    
+    <div class="timeline-meta">
+      <span>0s: FACIAL GEOMETRY (70%)</span>
+      <span style="color: var(--cyan);">15s: TRANSITION MARKER</span>
+      <span>30s: MULTIMODAL VERDICT</span>
     </div>
   </div>
 
-  <!-- Clean 2-Column Responsive Layout -->
+  <!-- ========================================================
+       MAIN APPLICATION WORKSPACE
+       ======================================================== -->
   <main>
 
-    <!-- COLUMN 1: LIVE INPUTS (CAMERA & MICROPHONE) -->
-    <section class="card">
-      <div class="card-header">
-        <h2>📷 Camera & Face Tracking</h2>
-        <span class="step-badge badge-cyan">Face: 70% Weight</span>
-      </div>
+    <!-- SECTION 1: HERO DUAL-PANEL (FACIAL ANALYSIS & AI FUSION) -->
+    <div class="hero-grid">
 
-      <!-- Camera Viewport with Black & White Mesh Tracking -->
-      <div class="video-viewport">
-        <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
-        <canvas id="faceCanvas" class="mirrored"></canvas>
-        <div class="viewport-tip" id="camTipText">💡 Click "Start Camera" to track facial expression</div>
-        <div class="hud-overlay" id="camHudOverlay" style="display: none;">
-          <span class="hud-tag" id="hudTrackStatus">🟢 468-PT MESH: SEARCHING</span>
-          <span class="hud-tag" id="hudCoords">COORDS: X:-- Y:--</span>
+      <!-- LEFT CARD: FACIAL ANALYSIS (70% WEIGHT) -->
+      <section class="glass-card">
+        <div class="card-meta-header">
+          <div class="card-title-group">
+            <h2>Facial Analysis</h2>
+            <p>468-Point Mesh Tracking Engine</p>
+          </div>
+          <span class="weight-tag cyan">70% WEIGHT</span>
         </div>
-      </div>
 
-      <!-- Simple Camera Controls -->
-      <div class="btn-row" style="grid-template-columns: 1fr 1fr;">
-        <button class="btn btn-primary" id="btnToggleCam">▶ Start Camera</button>
-        <button class="btn" id="btnFlipCam" title="Switch between normal and mirror view">🪞 Flip Mirror</button>
-      </div>
-
-      <!-- Voice Modulation Section -->
-      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.75rem; margin-top: 0.25rem;">
-        <div class="card-header" style="border: none; padding-bottom: 0.4rem;">
-          <h2 style="font-size: 0.95rem;">🎙️ Voice Modulation Tracking</h2>
-          <span class="step-badge badge-purple">Voice: 30% Weight</span>
+        <!-- Camera Viewport with 468-point Mesh Overlay -->
+        <div class="camera-viewport">
+          <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
+          <canvas id="faceCanvas" class="mirrored"></canvas>
+          <div class="viewport-overlay-tip" id="camTipText">Camera Standby — Click "Start Camera"</div>
+          <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
+            <span class="hud-chip locked" id="hudTrackStatus">● 468 PT MESH LOCKED</span>
+            <span class="hud-chip" id="hudCoords">COORDS: X:-- Y:--</span>
+          </div>
         </div>
-        <!-- Live Waveform -->
-        <div class="waveform-box" style="height: 60px;">
+
+        <!-- Minimal Camera Control Bar -->
+        <div class="cam-controls-row">
+          <button class="btn-secondary" id="btnToggleCam">
+            <span>▶</span> Start Camera
+          </button>
+          <button class="btn-secondary" id="btnFlipCam" title="Toggle Mirror / Normal view">
+            <span>🪞</span> Flip Mirror
+          </button>
+          <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
+            <span>🕸️</span> B&W Mesh
+          </button>
+        </div>
+      </section>
+
+      <!-- RIGHT CARD: AI FUSION (The Centerpiece of Intelligence) -->
+      <section class="glass-card fusion-card" id="fusedHero">
+        <div class="fusion-glow-backdrop" id="heroGlow"></div>
+
+        <div>
+          <div class="card-meta-header" style="position: relative; z-index: 1;">
+            <div class="card-title-group">
+              <h2>AI Fusion</h2>
+              <p>70 / 30 Multimodal Decision</p>
+            </div>
+            <span class="weight-tag cyan">UNIFIED VERDICT</span>
+          </div>
+
+          <!-- Primary CTA Button (Dominant Action) -->
+          <button class="btn-primary-cta" id="btnStartAnalytics">
+            <span>Start Analysis</span>
+            <span class="arrow">→</span>
+          </button>
+        </div>
+
+        <!-- Level 1 — Human-readable result (Oversized, 2-3s comprehension) -->
+        <div class="hero-centerpiece">
+          <div class="ai-core-ring" id="aiCoreRing">
+            <div class="emotion-glyph" id="fusedGlyph">😊</div>
+          </div>
+          <div class="emotion-title" id="fusedMainVal">HAPPY</div>
+          <div class="emotion-confidence" id="fusedConfText">94.2%</div>
+        </div>
+
+        <div>
+          <!-- Level 2 — AI Explanation Breakdown -->
+          <div class="fusion-breakdown-row">
+            <div class="modality-stat">
+              <div class="modality-stat-label">
+                <span>Face</span>
+                <span>70%</span>
+              </div>
+              <div class="modality-stat-val" id="faceMiniVal">
+                😊 Happy
+              </div>
+              <div class="modality-stat-conf" id="faceMiniConf">
+                Confidence 92.5%
+              </div>
+            </div>
+
+            <div class="modality-stat">
+              <div class="modality-stat-label">
+                <span>Voice</span>
+                <span>30%</span>
+              </div>
+              <div class="modality-stat-val" id="speechMiniVal">
+                🎵 Happy
+              </div>
+              <div class="modality-stat-conf" id="speechMiniConf">
+                Confidence 89.1%
+              </div>
+            </div>
+          </div>
+
+          <!-- Concordance Confirmation -->
+          <div class="harmony-banner" id="concordanceBanner">
+            <span>●</span>
+            <span id="concordanceText">HARMONY CONFIRMED — Facial and vocal signals align</span>
+          </div>
+
+          <!-- Level 4 — Post-Analysis Quick Actions -->
+          <div class="post-actions-row">
+            <button class="btn-report-action primary" id="btnOpenFullReport">
+              <span>📊</span> View Full Report
+            </button>
+            <button class="btn-report-action secondary" id="btnExportPdfQuick">
+              <span>📄</span> Export PDF
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- SECTION 2: SUPPORTING ANALYTICS (VOICE MODULATION & EMOTION DISTRIBUTION) -->
+    <div class="secondary-grid">
+
+      <!-- VOICE MODULATION CARD (30% WEIGHT) -->
+      <section class="glass-card">
+        <div class="card-meta-header">
+          <div class="card-title-group">
+            <h2>Voice Modulation</h2>
+            <p>Acoustic Frequency & Prosody Analysis</p>
+          </div>
+          <span class="weight-tag violet">30% WEIGHT</span>
+        </div>
+
+        <!-- Scientific Audio Waveform Canvas -->
+        <div class="waveform-container">
           <canvas id="waveCanvas"></canvas>
         </div>
-        <!-- Volume Meter -->
-        <div class="vu-meter" style="margin-top: 0.5rem;">
-          <span style="font-size: 0.72rem; color: var(--text-muted);">Mic Input:</span>
+
+        <!-- Calibrated Decibel Meter -->
+        <div class="volume-meter-row">
+          <span>INPUT LEVEL</span>
           <div class="vu-track">
             <div class="vu-fill" id="vuFill"></div>
           </div>
-          <span id="vuDbText" style="font-size: 0.72rem;">-16 dB</span>
+          <span class="vu-db-text" id="vuDbText">-16 dB</span>
         </div>
-        <!-- Live Transcription Preview -->
-        <div style="margin-top: 0.6rem; padding: 0.5rem 0.65rem; background: rgba(0, 0, 0, 0.35); border-radius: 8px; border: 1px dashed rgba(139, 92, 246, 0.4); font-size: 0.72rem;">
-          <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.68rem; margin-bottom: 0.2rem;">
-            <span>🎙️ Live Speech Transcript:</span>
-            <span id="liveTranscriptStatus" style="color: var(--purple);">Standby</span>
+
+        <!-- Live Speech Transcription Box -->
+        <div class="transcript-box">
+          <div class="transcript-header">
+            <span>LIVE TRANSCRIPT</span>
+            <span id="liveTranscriptStatus" style="color: var(--violet);">Standby</span>
           </div>
-          <div id="liveTranscriptPreview" style="color: #E2E8F0; font-style: italic; min-height: 18px; word-break: break-word;">
-            "Speak into mic during analytics or click chips..."
+          <div class="transcript-body" id="liveTranscriptPreview">
+            "Speak naturally during analysis..."
+          </div>
+        </div>
+      </section>
+
+      <!-- EMOTION DISTRIBUTION (Minimalist Ranked List) -->
+      <section class="glass-card">
+        <div class="card-meta-header">
+          <div class="card-title-group">
+            <h2>Emotion Distribution</h2>
+            <p>Multimodal Probability Vector</p>
+          </div>
+          <span class="weight-tag">FUSED MATRIX</span>
+        </div>
+
+        <!-- Ranked Rows -->
+        <div class="distribution-list" id="probBarsContainer">
+          <div class="dist-row" id="rowHappy">
+            <span class="dist-idx">01</span>
+            <span class="dist-label">Happy</span>
+            <div class="dist-track">
+              <div class="dist-bar dominant" id="barHappy" style="width: 94%;"></div>
+            </div>
+            <span class="dist-val dominant" id="valHappy">94%</span>
+          </div>
+
+          <div class="dist-row" id="rowSurprise">
+            <span class="dist-idx">02</span>
+            <span class="dist-label">Surprise</span>
+            <div class="dist-track">
+              <div class="dist-bar" id="barSurprise" style="width: 3%;"></div>
+            </div>
+            <span class="dist-val" id="valSurprise">3%</span>
+          </div>
+
+          <div class="dist-row" id="rowSad">
+            <span class="dist-idx">03</span>
+            <span class="dist-label">Sad</span>
+            <div class="dist-track">
+              <div class="dist-bar" id="barSad" style="width: 2%;"></div>
+            </div>
+            <span class="dist-val" id="valSad">2%</span>
+          </div>
+
+          <div class="dist-row" id="rowNeutral">
+            <span class="dist-idx">04</span>
+            <span class="dist-label">Neutral</span>
+            <div class="dist-track">
+              <div class="dist-bar" id="barNeutral" style="width: 1%;"></div>
+            </div>
+            <span class="dist-val" id="valNeutral">1%</span>
+          </div>
+
+          <div class="dist-row" id="rowAngry">
+            <span class="dist-idx">05</span>
+            <span class="dist-label">Angry</span>
+            <div class="dist-track">
+              <div class="dist-bar" id="barAngry" style="width: 0%;"></div>
+            </div>
+            <span class="dist-val" id="valAngry">0%</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- SECTION 3: LEVEL 3 TECHNICAL DIAGNOSTICS (Expandable Drawer) -->
+    <details class="expandable-panel">
+      <summary>
+        <span>TECHNICAL DIAGNOSTICS & TELEMETRY</span>
+        <span class="indicator">＋</span>
+      </summary>
+      <div class="expandable-content">
+        <div class="diag-grid">
+          <div class="diag-item">
+            <span class="diag-key">Mesh Geometry</span>
+            <span class="diag-val" id="styleSummary">Active Facial Mesh</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Lip Curvature / Smile</span>
+            <span class="diag-val" id="valMouth">Curved Up Smile 🙂</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Eye Aperture (EAR)</span>
+            <span class="diag-val" id="valEyes">Normal Open</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Brow Elevation / Furrow</span>
+            <span class="diag-val" id="valForehead">Smooth Plain</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Acoustic Sampling</span>
+            <span class="diag-val">FFT 256 • 16-bit Float</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Multimodal Weighting</span>
+            <span class="diag-val">Face 70% • Voice 30%</span>
           </div>
         </div>
       </div>
-    </section>
+    </details>
 
-    <!-- COLUMN 2: EMOTION RESULT & 30s ASSESSMENT -->
-    <section class="card">
-      <div class="card-header">
-        <h2>⚡ Emotion Result & Analytics</h2>
-        <span class="step-badge badge-green">Unified AI</span>
-      </div>
+    <!-- SECTION 4: TEST MODE & PRESET SIMULATION (Collapsible) -->
+    <details class="expandable-panel">
+      <summary>
+        <span>TEST MODE — SIMULATE SIGNALS</span>
+        <span class="indicator">＋</span>
+      </summary>
+      <div class="expandable-content">
+        <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.45rem;">
+          Select a cross-modal scenario to evaluate fusion dynamics without live inputs:
+        </p>
+        <div class="preset-chips-row">
+          <button class="preset-chip" onclick="loadScenario('Happy', 'Happy')">🌟 Harmonic Joy (Happy / Happy)</button>
+          <button class="preset-chip" onclick="loadScenario('Happy', 'Angry')">⚡ Sarcasm Dissonance (Happy / Angry)</button>
+          <button class="preset-chip" onclick="loadScenario('Sad', 'Sad')">🌧️ Melancholy (Sad / Sad)</button>
+          <button class="preset-chip" onclick="loadScenario('Surprise', 'Surprise')">😲 Startle Reflex (Surprise / Surprise)</button>
+          <button class="preset-chip" onclick="loadScenario('Neutral', 'Neutral')">⚖️ Equilibrium Baseline (Neutral / Neutral)</button>
+        </div>
 
-      <!-- Prominent 30-Second Analytics Assessment Card -->
-      <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.12)); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 1rem; text-align: center;">
-        <button class="btn btn-primary" id="btnStartAnalytics" style="width: 100%; padding: 0.85rem 1rem; font-size: 1.05rem; font-weight: 800; background: linear-gradient(135deg, #10B981, #06B6D4); border: none; border-radius: 10px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-          ⏱️ Start 30-Second Analytics
-        </button>
-        <div style="font-size: 0.72rem; color: #94A3B8; margin-top: 0.45rem; line-height: 1.4;">
-          Evaluates <b>15s Face Expression (70%)</b> + <b>15s Voice Modulation (30%)</b>
+        <!-- Hidden Chip Selectors for JS state synchronization -->
+        <div id="faceSampleChips" style="display: none;">
+          <div class="chip" data-emotion="Happy"></div>
+          <div class="chip" data-emotion="Sad"></div>
+          <div class="chip" data-emotion="Angry"></div>
+          <div class="chip" data-emotion="Surprise"></div>
+          <div class="chip" data-emotion="Neutral"></div>
+        </div>
+        <div id="speechSampleChips" style="display: none;">
+          <div class="chip" data-emotion="Happy"></div>
+          <div class="chip" data-emotion="Sad"></div>
+          <div class="chip" data-emotion="Angry"></div>
+          <div class="chip" data-emotion="Surprise"></div>
+          <div class="chip" data-emotion="Neutral"></div>
         </div>
       </div>
-
-      <!-- Hero Final Fused Result -->
-      <div class="fused-hero" id="fusedHero">
-        <div class="fused-title">Overall Human Affective State</div>
-        <div class="fused-main-val" id="fusedMainVal">😊 HAPPY</div>
-        <div class="fused-conf" id="fusedConfText">Confidence: 94.2%</div>
-        <div style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 0.2rem 0.75rem; font-size: 0.72rem; font-weight: 700; color: #38BDF8; margin-top: 0.2rem;">
-          ⚖️ Weightage: 70% Facial Expression + 30% Voice Modulation
-        </div>
-      </div>
-
-      <!-- Concordance / Conflict Banner -->
-      <div class="alert-banner banner-concordant" id="concordanceBanner">
-        <span>✅</span>
-        <span id="concordanceText"><b>HARMONY CONFIRMED:</b> Face expression and vocal modulation agree.</span>
-      </div>
-
-      <!-- Two-Channel Breakdown Grid -->
-      <div class="unimodal-grid">
-        <div class="mini-badge">
-          <span class="mini-title">Facial Expression (70%)</span>
-          <div class="mini-val" id="faceMiniVal" style="color: var(--green);">😊 Happy</div>
-          <small id="faceMiniConf" style="color: var(--text-muted); font-size: 0.70rem;">Confidence: 92.5%</small>
-        </div>
-        <div class="mini-badge">
-          <span class="mini-title">Voice Modulation (30%)</span>
-          <div class="mini-val" id="speechMiniVal" style="color: var(--green);">🎵 Happy</div>
-          <small id="speechMiniConf" style="color: var(--text-muted); font-size: 0.70rem;">Confidence: 89.1%</small>
-        </div>
-      </div>
-
-      <!-- Probability Bars -->
-      <div>
-        <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600;">Emotion Probabilities (70/30 Fused):</div>
-        <div id="probBarsContainer">
-          <div class="bar-row">
-            <span class="bar-label">Happy</span>
-            <div class="bar-track"><div class="bar-fill" id="barHappy" style="background: var(--green); width: 94%;"></div></div>
-            <span class="bar-val" id="valHappy" style="color: var(--green);">94%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Sad</span>
-            <div class="bar-track"><div class="bar-fill" id="barSad" style="background: var(--blue); width: 2%;"></div></div>
-            <span class="bar-val" id="valSad" style="color: var(--blue);">2%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Angry</span>
-            <div class="bar-track"><div class="bar-fill" id="barAngry" style="background: var(--red); width: 1%;"></div></div>
-            <span class="bar-val" id="valAngry" style="color: var(--red);">1%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Surprise</span>
-            <div class="bar-track"><div class="bar-fill" id="barSurprise" style="background: var(--amber); width: 2%;"></div></div>
-            <span class="bar-val" id="valSurprise" style="color: var(--amber);">2%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Neutral</span>
-            <div class="bar-track"><div class="bar-fill" id="barNeutral" style="background: #94A3B8; width: 1%;"></div></div>
-            <span class="bar-val" id="valNeutral" style="color: #94A3B8;">1%</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Collapsible Quick Test Presets (Clean and Uncluttered) -->
-      <details style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.6rem 0.85rem; font-size: 0.76rem;">
-        <summary style="cursor: pointer; color: var(--cyan); font-weight: 700;">🧪 Optional: Test Presets (Click to expand)</summary>
-        <div style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.5rem;">
-          <div style="font-size: 0.70rem; color: var(--text-muted);">Simulate expressions without camera/mic:</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
-            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Happy', 'Happy')">🌟 Joy</button>
-            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Happy', 'Angry')">⚡ Sarcasm</button>
-            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Sad', 'Sad')">🌧️ Sadness</button>
-            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Surprise', 'Surprise')">😲 Surprise</button>
-            <button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="loadScenario('Neutral', 'Neutral')">⚖️ Neutral</button>
-          </div>
-        </div>
-      </details>
-    </section>
+    </details>
 
   </main>
 
-  <!-- Beginner Guide Modal -->
-  <div class="modal" id="guideModal">
-    <div class="modal-box">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="font-size: 1.15rem; color: var(--cyan);">📘 Beginner's Guide: How This AI Works</h2>
-        <button class="btn" id="btnCloseGuide" style="padding: 0.2rem 0.5rem;">✕</button>
+  <!-- ========================================================
+       FOOTER STATUS BAR
+       ======================================================== -->
+  <footer>
+    <div>AFFECT AI &mdash; Multimodal Emotion Intelligence System</div>
+    <div>MediaPipe 468-pt Mesh &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
+  </footer>
+
+  <!-- ========================================================
+       MODAL 1: RESEARCH GUIDE
+       ======================================================== -->
+  <div class="modal-backdrop" id="guideModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>Multimodal Emotion Intelligence &mdash; Guide</h2>
+        <button class="modal-close-btn" id="btnCloseGuide">✕</button>
       </div>
-      <p style="font-size: 0.85rem; color: #CBD5E1; line-height: 1.5;">
-        Humans express feelings through <b>two channels simultaneously</b>: how our face looks, and how our voice sounds. Sometimes they agree, and sometimes they contradict each other!
+      <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+        Human emotion is expressed across two distinct channels simultaneously: visual facial kinematics and acoustic vocal prosody.
       </p>
-      <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.85rem; font-size: 0.80rem; display: flex; flex-direction: column; gap: 0.5rem;">
-        <div><b>1. Facial CNN (Eyes & Mouth):</b> Scans 48×48 face crops looking for smiles, raised eyebrows, or frowns.</div>
-        <div><b>2. Speech BiLSTM (Voice Tone):</b> Analyzes sound wave pitch and cadence (MFCC) forward and backward in time.</div>
-        <div><b>3. Decision Fusion Formula:</b> $P_{\text{final}} = w_{\text{face}} \cdot P_{\text{face}} + w_{\text{speech}} \cdot P_{\text{speech}}$. If both disagree, it alerts you of a <b>Modality Conflict</b>!</div>
+      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.76rem; color: var(--text-secondary);">
+        <div><b style="color: var(--cyan);">1. Facial Analysis (70% Weight):</b> 468 landmarks track zygomatic smile contours, eye aspect ratio (EAR), and brow furrowing in real-time.</div>
+        <div><b style="color: var(--violet);">2. Voice Modulation (30% Weight):</b> Acoustic prosody analysis evaluates vocal pitch, cadence, and frequency energy via microphone.</div>
+        <div><b style="color: var(--status-success);">3. Decision Fusion Formula:</b> $P_{\text{fused}} = 0.70 \cdot P_{\text{face}} + 0.30 \cdot P_{\text{voice}}$. Dissonance detects sarcasm or masked affect.</div>
       </div>
-      <button class="btn btn-primary" id="btnGotIt" style="align-self: flex-end;">Got It!</button>
+      <div class="modal-actions">
+        <button class="btn-ghost-sm" id="btnGotIt">UNDERSTOOD</button>
+      </div>
     </div>
   </div>
 
-  <!-- 30-Second Multimodal Analytics Report Modal -->
-  <div class="modal" id="analyticsReportModal">
-    <div class="modal-box" style="max-width: 680px; border-color: var(--green);">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.6rem;">
-        <h2 style="font-size: 1.15rem; color: #10B981; display: flex; align-items: center; gap: 0.5rem;">
-          📊 30-Second Multimodal Analytics Report
-        </h2>
-        <button class="btn" id="btnCloseReport" style="padding: 0.2rem 0.5rem;">✕</button>
+  <!-- ========================================================
+       MODAL 2: 30-SECOND MULTIMODAL ANALYTICS REPORT (Level 4)
+       ======================================================== -->
+  <div class="modal-backdrop" id="analyticsReportModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>Multimodal Analytics Report</h2>
+        <button class="modal-close-btn" id="btnCloseReport">✕</button>
       </div>
 
       <!-- Verdict Banner -->
-      <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15)); border: 2px solid var(--green); border-radius: 12px; padding: 1.2rem; text-align: center;">
-        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #9CA3AF;">Final Multimodal Affective State</div>
-        <div id="repFinalEmotion" style="font-size: 2.4rem; font-weight: 800; color: #10B981; margin: 0.3rem 0;">
-          😊 HAPPY
-        </div>
-        <div id="repFinalConf" style="font-size: 1.05rem; font-weight: 700; color: #F3F4F6;">
-          Overall Confidence: 94.2%
-        </div>
-        <div style="display: inline-block; background: rgba(6, 182, 212, 0.15); border: 1px solid var(--cyan); border-radius: 20px; padding: 0.2rem 0.75rem; font-size: 0.72rem; font-weight: 700; color: var(--cyan); margin-top: 0.4rem;">
-          ⚖️ Calibrated Weightage: 70% Face Expression + 30% Voice Modulation
-        </div>
+      <div class="report-hero-box">
+        <div class="report-hero-title">Overall Human Affective State</div>
+        <div class="report-hero-val" id="repFinalEmotion">HAPPY</div>
+        <div class="report-hero-conf" id="repFinalConf">Overall Confidence: 94.2% &bull; Calibrated 70/30 Fusion</div>
       </div>
 
       <!-- Two Phase Breakdown Grid -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-        <!-- Phase 1: Face -->
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.85rem;">
-          <div style="font-size: 0.72rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 0.4rem;">
-            📷 Phase 1: Face (0s - 15s) • 70% Weight
-          </div>
-          <div style="font-size: 1.1rem; font-weight: 700;" id="repFaceEmotion">😊 Happy (92.5%)</div>
-          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.4rem;" id="repFaceStyle">
+      <div class="report-phase-grid">
+        <div class="report-phase-card">
+          <div class="report-phase-label cyan">Phase 1: Facial Analysis (70%)</div>
+          <div class="report-phase-val" id="repFaceEmotion">Happy (92.5%)</div>
+          <div class="report-phase-sub" id="repFaceStyle">
             Mouth: Curved Up 🙂 | Eyes: Normal | Brow: Smooth
           </div>
         </div>
 
-        <!-- Phase 2: Voice -->
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.85rem;">
-          <div style="font-size: 0.72rem; font-weight: 700; color: var(--purple); text-transform: uppercase; margin-bottom: 0.4rem;">
-            🎙️ Phase 2: Voice (15s - 30s) • 30% Weight
-          </div>
-          <div style="font-size: 1.1rem; font-weight: 700;" id="repVoiceEmotion">🎵 Happy (88.4%)</div>
-          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.4rem;" id="repVoiceCadence">
+        <div class="report-phase-card">
+          <div class="report-phase-label violet">Phase 2: Voice Modulation (30%)</div>
+          <div class="report-phase-val" id="repVoiceEmotion">Happy (88.4%)</div>
+          <div class="report-phase-sub" id="repVoiceCadence">
             Prosody: Cheerful Upbeat | Energy: Moderate (-16 dB)
           </div>
         </div>
       </div>
 
       <!-- Congruence Banner -->
-      <div id="repCongruence" style="background: rgba(16, 185, 129, 0.12); border: 1px solid var(--green); border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.78rem; font-weight: 600; color: #6EE7B7;">
-        ✅ Concordance Strong: Both facial expressions and vocal prosody are in harmonic agreement.
+      <div class="harmony-banner" id="repCongruence">
+        <span>●</span>
+        <span>Harmonic Concordance Confirmed: Face and voice express harmonic alignment.</span>
       </div>
 
-      <!-- Voice Transcription (Speech-to-Text) Section -->
-      <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px; padding: 0.85rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-          <span style="font-size: 0.72rem; font-weight: 700; color: var(--purple); text-transform: uppercase; letter-spacing: 0.5px;">
-            🎙️ Voice Transcription (Speech-to-Text)
-          </span>
-          <span id="repTranscriptBadge" style="font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 12px; background: rgba(139, 92, 246, 0.2); color: #C084FC; font-weight: 600;">
-            Speech Analyzed
-          </span>
+      <!-- Voice Transcription (Speech-to-Text) Box -->
+      <div class="report-stt-box">
+        <div class="report-stt-header">
+          <span>VOICE TRANSCRIPTION (SPEECH-TO-TEXT)</span>
+          <span id="repTranscriptBadge" style="color: var(--status-success);">Voice Transcribed ✓</span>
         </div>
-        <div id="repTranscriptionBox" style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #F1F5F9; background: rgba(0, 0, 0, 0.4); border-radius: 8px; padding: 0.75rem; min-height: 48px; line-height: 1.5; border: 1px solid rgba(255, 255, 255, 0.06); word-break: break-word;">
+        <div class="report-stt-content" id="repTranscriptionBox">
           "..."
         </div>
       </div>
 
-      <!-- Diagnostic Summary -->
-      <div style="font-size: 0.75rem; color: #94A3B8; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.75rem;" id="repDiagnostic">
-        <b>Diagnostic Summary:</b> Over the 30-second assessment, visual micro-expressions and acoustic intonation demonstrated high affect consistency.
+      <!-- Diagnostic Telemetry -->
+      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); background: rgba(0, 0, 0, 0.25); border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-glass);" id="repDiagnostic">
+        Diagnostic telemetry initialized.
       </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;">
-        <button class="btn" id="btnDownloadPdf" style="font-size: 0.78rem; background: linear-gradient(135deg, #8B5CF6, #3B82F6); color: white; border: none; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);">
-          📄 Download PDF Report
+      <!-- Footer Buttons -->
+      <div class="modal-actions">
+        <button class="btn-pdf-export" id="btnDownloadPdf">
+          <span>📄</span> Export PDF Report
         </button>
-        <button class="btn" id="btnSpeakReport" style="font-size: 0.78rem;">🔊 Announce Verdict</button>
-        <button class="btn btn-primary" id="btnCloseReportBtn" style="font-size: 0.78rem;">Done</button>
+        <button class="btn-ghost-sm" id="btnSpeakReport">🔊 Speak</button>
+        <button class="btn-ghost-sm" id="btnCloseReportBtn">Done</button>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript Logic -->
+  <!-- Compatibility stub for header button -->
+  <button id="btnStartAnalyticsHeader" style="display: none;"></button>
+
+  <!-- ========================================================
+       JAVASCRIPT INTELLIGENCE ENGINE
+       ======================================================== -->
   <script>
     const state = {
       isCameraRunning: false,
@@ -940,19 +1723,33 @@
       latestFaceProbs: null,
       latestSpeechProbs: null,
       currentFinalEmotion: 'Happy',
-      isAdvanced: false,
-      isSpeaking: false
+      isSpeaking: false,
+      lastReportData: null
     };
 
-    const EMOTION_ICONS = { Happy: '😊', Sad: '😢', Angry: '😠', Surprise: '😲', Neutral: '😐' };
-    const EMOTION_COLORS = { Happy: '#10B981', Sad: '#3B82F6', Angry: '#EF4444', Surprise: '#F59E0B', Neutral: '#94A3B8' };
+    const EMOTION_ICONS = {
+      Happy: '😊',
+      Sad: '😢',
+      Angry: '😠',
+      Surprise: '😲',
+      Neutral: '😐'
+    };
+
+    // Emotion Accent Colors (Luxury Restrained Palette)
+    const EMOTION_COLORS = {
+      Happy: '#FBBF24',      // Warm Gold
+      Sad: '#60A5FA',        // Soft Blue
+      Angry: '#FB7185',      // Soft Coral
+      Surprise: '#C084FC',   // Soft Violet
+      Neutral: '#94A3B8'     // Silver / White
+    };
 
     const STYLE_MAP = {
-      Happy: { mouth: 'Curved Up 🙂', eyes: 'Normal Open', brow: 'Smooth Plain', desc: 'Smiley Curve Detected' },
-      Sad: { mouth: 'Curved Down 🙁', eyes: 'Partial Closed', brow: 'Inner Brow Raised', desc: 'Downturned Lip Contours' },
-      Angry: { mouth: 'Tense / Wide 😠', eyes: 'Wide Stare', brow: 'Furrowed & Wrinkled', desc: 'Forehead Furrowing Detected' },
-      Surprise: { mouth: 'O-Shaped Open 😮', eyes: 'Wide Open', brow: 'Raised High', desc: 'High Brow Elevation' },
-      Neutral: { mouth: 'Relaxed Line 😐', eyes: 'Relaxed', brow: 'Normal Plain', desc: 'Resting Baseline Expression' }
+      Happy: { mouth: 'Curved Up 🙂', eyes: 'Smiling Eye Crease', brow: 'Relaxed / Arched', desc: 'Smile Curvature Active' },
+      Sad: { mouth: 'Curved Down 🙁', eyes: 'Drooping / Soft', brow: 'Inner Brow Raised', desc: 'Downturned Lip Contours' },
+      Angry: { mouth: 'Tense / Compressed', eyes: 'Narrowed Glare', brow: 'Furrowed & Wrinkled', desc: 'Corrugator Furrowing Active' },
+      Surprise: { mouth: 'Wide O-Shape 😮', eyes: 'Wide Stare', brow: 'Raised High', desc: 'High Brow Elevation' },
+      Neutral: { mouth: 'Relaxed Line 😐', eyes: 'Relaxed Baseline', brow: 'Smooth Plain', desc: 'Baseline Equilibrium' }
     };
 
     const video = document.getElementById('webcamVideo');
@@ -962,14 +1759,25 @@
     const waveCtx = waveCanvas.getContext('2d');
     const vuFill = document.getElementById('vuFill');
 
-    // Google MediaPipe Face Mesh & Tracking Engine State
+    // System Status UI Helper
+    function setSystemStatus(text, color = 'var(--cyan)') {
+      const elText = document.getElementById('sysStatusText');
+      const elDot = document.getElementById('sysStatusDot');
+      if (elText) elText.innerText = text;
+      if (elDot) {
+        elDot.style.background = color;
+        elDot.style.boxShadow = `0 0 10px ${color}`;
+      }
+    }
+
+    // Google MediaPipe Face Mesh & Tracking Engine
     let faceMesh = null;
     let isProcessingFrame = false;
 
     const tracker = {
       enabled: true,
       isMirrored: true,
-      meshStyle: 'bw_mesh', // 'bw_mesh', 'bw_dots', 'bw_contours', 'box_only', 'off'
+      meshStyle: 'bw_mesh', // 'bw_mesh', 'bw_dots', 'bw_contours', 'off'
       x: 0,
       y: 0,
       w: 220,
@@ -994,9 +1802,9 @@
             minTrackingConfidence: 0.5
           });
           faceMesh.onResults(onFaceMeshResults);
-          console.log('[MediaPipe] FaceMesh loaded successfully');
+          console.log('[MediaPipe] FaceMesh initialized');
         } catch (err) {
-          console.warn('[MediaPipe] Init warning:', err);
+          console.warn('[MediaPipe] Init error:', err);
         }
       }
     }
@@ -1013,23 +1821,23 @@
           video.srcObject = stream;
           await video.play();
           state.isCameraRunning = true;
-          btn.innerText = '⏹ Stop Camera';
-          btn.className = 'btn btn-danger';
-          document.getElementById('camPill').innerHTML = '<div class="dot dot-green"></div> Cam: Active';
-          document.getElementById('camTipText').innerText = '🟢 Live 468-pt Face Mesh Active — Real-time tracking';
-          document.getElementById('camHudOverlay').style.display = tracker.enabled ? 'flex' : 'none';
+          btn.innerHTML = '<span>⏹</span> Stop Camera';
+          btn.classList.add('active');
+          setSystemStatus('CAMERA ACTIVE', 'var(--cyan)');
+          document.getElementById('camTipText').style.display = 'none';
+          document.getElementById('camHudOverlay').style.display = 'flex';
           requestAnimationFrame(processVideoFrame);
         } catch (err) {
-          alert('Webcam permission needed for live tracking. You can still test all emotions using the sample buttons!');
+          alert('Webcam permission is needed for live facial analysis. You can also simulate expressions using the test drawer.');
         }
       } else {
         if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
         state.isCameraRunning = false;
-        btn.innerText = '▶ Start Camera';
-        btn.className = 'btn btn-primary';
+        btn.innerHTML = '<span>▶</span> Start Camera';
+        btn.classList.remove('active');
         faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
-        document.getElementById('camPill').innerHTML = '<div class="dot dot-amber"></div> Cam: Standby';
-        document.getElementById('camTipText').innerText = '💡 Click "Start Camera" or select an expression chip below';
+        setSystemStatus('SYSTEM READY', 'var(--cyan)');
+        document.getElementById('camTipText').style.display = 'block';
         document.getElementById('camHudOverlay').style.display = 'none';
       }
     });
@@ -1039,11 +1847,10 @@
       tracker.isMirrored = !tracker.isMirrored;
       video.classList.toggle('mirrored', tracker.isMirrored);
       faceCanvas.classList.toggle('mirrored', tracker.isMirrored);
-      document.getElementById('btnFlipCam').innerText = tracker.isMirrored ? '🪞 View: Mirrored' : '📷 View: Normal';
     });
 
     // Toggle 468-Point Mesh Styles
-    const meshStyles = ['bw_mesh', 'bw_dots', 'bw_contours', 'box_only', 'off'];
+    const meshStyles = ['bw_mesh', 'bw_dots', 'bw_contours', 'off'];
     let meshStyleIdx = 0;
     const btnToggleMesh = document.getElementById('btnToggleMesh');
     if (btnToggleMesh) {
@@ -1051,13 +1858,12 @@
         meshStyleIdx = (meshStyleIdx + 1) % meshStyles.length;
         tracker.meshStyle = meshStyles[meshStyleIdx];
         const labels = {
-          bw_mesh: '🕸️ Mesh: B&W Lines & Dots',
-          bw_dots: '⚪ Mesh: B&W Dots Only',
-          bw_contours: '✨ Mesh: B&W Contours',
-          box_only: '🎯 Reticle Box Only',
-          off: '🚫 Mesh: Hidden'
+          bw_mesh: '🕸️ B&W Mesh',
+          bw_dots: '⚪ B&W Dots',
+          bw_contours: '✨ Contours',
+          off: '🚫 Hidden'
         };
-        btnToggleMesh.innerText = labels[tracker.meshStyle];
+        btnToggleMesh.innerHTML = `<span>🕸️</span> ${labels[tracker.meshStyle]}`;
         if (tracker.meshStyle === 'off') {
           faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
         }
@@ -1077,9 +1883,7 @@
           isProcessingFrame = true;
           try {
             await faceMesh.send({ image: video });
-          } catch (e) {
-            // Frame skip handling
-          }
+          } catch (e) {}
           isProcessingFrame = false;
         }
       }
@@ -1099,7 +1903,7 @@
         const lm = results.multiFaceLandmarks[0];
         tracker.isLocked = true;
 
-        // Dynamic Bounding Box from all landmarks
+        // Bounding Box
         let minX = 1, maxX = 0, minY = 1, maxY = 0;
         for (let i = 0; i < lm.length; i++) {
           const p = lm[i];
@@ -1111,61 +1915,46 @@
 
         const padX = 0.05;
         const padY = 0.08;
-        const targetX = Math.max(0, (minX - padX) * W);
-        const targetY = Math.max(0, (minY - padY * 1.5) * H);
-        const targetW = Math.min(W - targetX, (maxX - minX + padX * 2) * W);
-        const targetH = Math.min(H - targetY, (maxY - minY + padY * 2.5) * H);
+        tracker.targetX = Math.max(0, (minX - padX) * W);
+        tracker.targetY = Math.max(0, (minY - padY * 1.5) * H);
+        tracker.targetW = Math.min(W - tracker.targetX, (maxX - minX + padX * 2) * W);
+        tracker.targetH = Math.min(H - tracker.targetY, (maxY - minY + padY * 2.5) * H);
 
-        tracker.targetX = targetX;
-        tracker.targetY = targetY;
-        tracker.targetW = targetW;
-        tracker.targetH = targetH;
-
-        // Smooth spring easing
         tracker.x += (tracker.targetX - tracker.x) * 0.35;
         tracker.y += (tracker.targetY - tracker.y) * 0.35;
         tracker.w += (tracker.targetW - tracker.w) * 0.35;
         tracker.h += (tracker.targetH - tracker.h) * 0.35;
 
-        // 1. Draw 468-point Mesh Tessellation in Black and White
+        // 1. Draw 468-Point Wireframe (Subtle Crisp White & Grayscale)
         if (tracker.meshStyle === 'bw_mesh') {
           if (typeof FACEMESH_TESSELATION !== 'undefined' && typeof drawConnectors !== 'undefined') {
-            // High-contrast clean white wireframe lines
-            drawConnectors(faceCtx, lm, FACEMESH_TESSELATION, { color: '#FFFFFF55', lineWidth: 0.8 });
+            drawConnectors(faceCtx, lm, FACEMESH_TESSELATION, { color: '#FFFFFF33', lineWidth: 0.75 });
           }
         }
 
-        // 2. Draw Facial Contours in Crisp White
+        // 2. Draw Subtle Contours
         if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_contours') {
           if (typeof drawConnectors !== 'undefined') {
             if (typeof FACEMESH_FACE_OVAL !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_FACE_OVAL, { color: '#FFFFFF', lineWidth: 2 });
+              drawConnectors(faceCtx, lm, FACEMESH_FACE_OVAL, { color: '#FFFFFF88', lineWidth: 1.5 });
             }
             if (typeof FACEMESH_LIPS !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LIPS, { color: '#FFFFFF', lineWidth: 2.2 });
+              drawConnectors(faceCtx, lm, FACEMESH_LIPS, { color: '#FFFFFFCC', lineWidth: 1.8 });
             }
             if (typeof FACEMESH_LEFT_EYE !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYE, { color: '#FFFFFF', lineWidth: 1.8 });
-              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYE, { color: '#FFFFFF', lineWidth: 1.8 });
+              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYE, { color: '#FFFFFFBB', lineWidth: 1.5 });
+              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYE, { color: '#FFFFFFBB', lineWidth: 1.5 });
             }
             if (typeof FACEMESH_LEFT_EYEBROW !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: '#FFFFFF', lineWidth: 2.2 });
-              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: '#FFFFFF', lineWidth: 2.2 });
-            }
-            if (typeof FACEMESH_IRISES !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_IRISES, { color: '#FFFFFF', lineWidth: 2 });
+              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: '#FFFFFFBB', lineWidth: 1.5 });
+              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: '#FFFFFFBB', lineWidth: 1.5 });
             }
           }
         }
 
-        // 3. Black and White High-Contrast Landmark Dots (White center with crisp Black border)
-        if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_dots' || tracker.meshStyle === 'bw_contours') {
-          const keyFeatureIndices = tracker.meshStyle === 'bw_dots' ? [
-            10, 152, 1, 33, 133, 159, 145, 263, 362, 386, 374,
-            55, 65, 70, 285, 295, 300,
-            61, 291, 0, 17, 13, 14, 78, 308, 168,
-            234, 454, 127, 356, 93, 323, 132, 361, 58, 288
-          ] : [
+        // 3. Landmark Dots (White with subtle shadow)
+        if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_dots') {
+          const keyFeatureIndices = [
             10, 152, 1, 33, 133, 159, 145, 263, 362, 386, 374,
             55, 65, 70, 285, 295, 300,
             61, 291, 0, 17, 13, 14, 78, 308, 168
@@ -1176,78 +1965,83 @@
               const px = p.x * W;
               const py = p.y * H;
               faceCtx.beginPath();
-              faceCtx.arc(px, py, tracker.meshStyle === 'bw_dots' ? 3.0 : 2.5, 0, Math.PI * 2);
+              faceCtx.arc(px, py, 2.2, 0, Math.PI * 2);
               faceCtx.fillStyle = '#FFFFFF';
               faceCtx.fill();
-              faceCtx.strokeStyle = '#000000';
-              faceCtx.lineWidth = 1.3;
-              faceCtx.stroke();
             }
           }
         }
 
-        // 3. Draw Black & White High-Contrast Target Reticle
-        drawTrackingReticle(tracker.x, tracker.y, tracker.w, tracker.h, state.currentFinalEmotion, true);
+        // 4. Subtle Tracking Reticle (Electric Cyan accent on corners only)
+        drawTrackingReticle(tracker.x, tracker.y, tracker.w, tracker.h);
 
-        // 4. Real-time Facial Micro-Style analysis from landmarks
+        // 5. Real-time Facial Expression Analysis
         analyzeLiveFacialLandmarks(lm);
 
-        // Update HUD text
+        // Update HUD
         const hudCoords = document.getElementById('hudCoords');
         const hudStatus = document.getElementById('hudTrackStatus');
-        if (hudCoords && hudStatus) {
-          hudCoords.innerText = `X:${Math.round(tracker.x)} Y:${Math.round(tracker.y)} W:${Math.round(tracker.w)} H:${Math.round(tracker.h)}`;
-          hudStatus.innerText = '🟢 468-PT MESH: LOCKED';
-          hudStatus.style.color = '#10B981';
+        if (hudCoords) hudCoords.innerText = `X:${Math.round(tracker.x)} Y:${Math.round(tracker.y)} W:${Math.round(tracker.w)}`;
+        if (hudStatus) {
+          hudStatus.innerText = '● 468 PT MESH LOCKED';
+          hudStatus.className = 'hud-chip locked';
         }
       } else {
         tracker.isLocked = false;
         const hudStatus = document.getElementById('hudTrackStatus');
         if (hudStatus) {
-          hudStatus.innerText = '🟡 468-PT MESH: SEARCHING...';
-          hudStatus.style.color = '#F59E0B';
+          hudStatus.innerText = '○ SEARCHING FACE...';
+          hudStatus.className = 'hud-chip';
         }
       }
     }
 
-    // Live Facial Micro-Style & Expression Detection from 468 Landmarks
+    // Precise Corner Reticle
+    function drawTrackingReticle(bx, by, bw, bh) {
+      const len = Math.max(16, bw * 0.10);
+      faceCtx.beginPath();
+      // Corners
+      faceCtx.moveTo(bx, by + len); faceCtx.lineTo(bx, by); faceCtx.lineTo(bx + len, by);
+      faceCtx.moveTo(bx + bw - len, by); faceCtx.lineTo(bx + bw, by); faceCtx.lineTo(bx + bw, by + len);
+      faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
+      faceCtx.moveTo(bx + bw - len, by + bh); faceCtx.lineTo(bx + bw, by + bh); faceCtx.lineTo(bx + bw, by + bh - len);
+
+      faceCtx.strokeStyle = '#22D3EE';
+      faceCtx.lineWidth = 1.8;
+      faceCtx.stroke();
+    }
+
+    // Live Landmark Geometry Calculations
     function analyzeLiveFacialLandmarks(lm) {
-      // 1. Zygomatic Smile / Depressor Frown curvature:
+      // Lip curvature
       const cornerAvgY = (lm[61].y + lm[291].y) / 2;
       const lipCenterY = (lm[13].y + lm[14].y) / 2;
       const faceHeight = Math.abs(lm[152].y - lm[10].y) || 0.4;
       const smileScore = (lipCenterY - cornerAvgY) / faceHeight;
 
-      // 2. Mouth Geometry:
+      // Mouth opening
       const mouthHeight = Math.abs(lm[13].y - lm[14].y);
       const mouthWidth = Math.abs(lm[61].x - lm[291].x) || 0.1;
       const mouthOpenRatio = mouthHeight / mouthWidth;
       const faceWidth = Math.abs(lm[234].x - lm[454].x) || 0.35;
       const mouthWidthRatio = mouthWidth / faceWidth;
 
-      // 3. Eye Openness (EAR):
+      // Eye Aspect Ratio (EAR)
       const leftEAR = Math.abs(lm[159].y - lm[145].y) / (Math.abs(lm[33].x - lm[133].x) || 0.05);
       const rightEAR = Math.abs(lm[386].y - lm[374].y) / (Math.abs(lm[362].x - lm[263].x) || 0.05);
       const avgEAR = (leftEAR + rightEAR) / 2;
 
-      // 4. Eyebrow Furrowing & Height:
+      // Eyebrows
       const interEyeDist = Math.abs(lm[33].x - lm[263].x) || 0.3;
       const browDist = Math.abs(lm[55].x - lm[285].x) / interEyeDist;
       const browHeightLeft = Math.abs(lm[70].y - lm[159].y) / faceHeight;
       const browHeightRight = Math.abs(lm[300].y - lm[386].y) / faceHeight;
       const avgBrowHeight = (browHeightLeft + browHeightRight) / 2;
 
-      // 5. Continuous Expressive Scoring (eliminating Neutral dominance):
-      // Happy: lip corners elevated, or mouth horizontally widened in a smile
+      // Continuous Expressive Scoring
       const happyScore = Math.max(0, (smileScore - 0.005) * 45) + Math.max(0, (mouthWidthRatio - 0.74) * 8);
-
-      // Surprise: mouth opened wide vertically, eyes opened wide, eyebrows raised
       const surpriseScore = Math.max(0, (mouthOpenRatio - 0.22) * 5) + Math.max(0, (avgEAR - 0.28) * 6) + Math.max(0, (avgBrowHeight - 0.12) * 4);
-
-      // Angry: eyebrows furrowed close together, eyes narrowed, lips pressed
       const angryScore = Math.max(0, (0.32 - browDist) * 14) + Math.max(0, (0.20 - avgEAR) * 5);
-
-      // Sad: lip corners pulled downward, lower mouth
       const sadScore = Math.max(0, (-0.004 - smileScore) * 40);
 
       const expressiveScores = {
@@ -1257,7 +2051,6 @@
         Sad: sadScore
       };
 
-      // Determine highest expressive emotion
       let topExpressive = 'Happy';
       let maxExpressiveScore = -1;
       for (const [em, score] of Object.entries(expressiveScores)) {
@@ -1267,14 +2060,12 @@
         }
       }
 
-      // Neutral De-biasing Gate:
-      // If ANY genuine expressive movement exists (score >= 0.14), prioritize active emotion over Neutral!
+      // Neutral de-biasing
       let liveEmotion = 'Neutral';
       if (maxExpressiveScore >= 0.14) {
         liveEmotion = topExpressive;
       }
 
-      // Compute refined continuous probabilities for fusion
       const faceProbs = { Angry: 0.02, Happy: 0.02, Neutral: 0.04, Sad: 0.02, Surprise: 0.02 };
       if (liveEmotion !== 'Neutral') {
         const primaryProb = Math.min(0.92, 0.72 + maxExpressiveScore * 0.18);
@@ -1293,75 +2084,24 @@
       }
       state.latestFaceProbs = faceProbs;
 
-      // Descriptive HUD feedback
-      let mouthText = 'Normal Line 😐';
-      let eyesText = 'Normal Open';
-      let browText = 'Smooth Plain';
-
-      if (liveEmotion === 'Happy') {
-        mouthText = 'Curved Up Smile 🙂';
-        eyesText = avgEAR < 0.24 ? 'Smiling Eye Crease' : 'Normal Open';
-        browText = 'Relaxed / Arched';
-      } else if (liveEmotion === 'Surprise') {
-        mouthText = 'Wide O-Shape 😮';
-        eyesText = 'Wide Stare';
-        browText = 'Raised High';
-      } else if (liveEmotion === 'Angry') {
-        mouthText = 'Tense / Compressed';
-        eyesText = 'Narrowed Glare';
-        browText = 'Furrowed & Wrinkled 😠';
-      } else if (liveEmotion === 'Sad') {
-        mouthText = 'Curved Down Corners 🙁';
-        eyesText = 'Drooping / Soft';
-        browText = 'Inner Brow Raised';
-      }
-
+      // Update Diagnostics telemetry
+      const style = STYLE_MAP[liveEmotion] || STYLE_MAP.Neutral;
       const elMouth = document.getElementById('valMouth');
       const elEyes = document.getElementById('valEyes');
       const elForehead = document.getElementById('valForehead');
       const elSummary = document.getElementById('styleSummary');
-      if (elMouth) elMouth.innerText = mouthText;
-      if (elEyes) elEyes.innerText = eyesText;
-      if (elForehead) elForehead.innerText = browText;
-      if (elSummary) elSummary.innerText = `${liveEmotion} Features Active`;
+      if (elMouth) elMouth.innerText = style.mouth;
+      if (elEyes) elEyes.innerText = style.eyes;
+      if (elForehead) elForehead.innerText = style.brow;
+      if (elSummary) elSummary.innerText = style.desc;
 
-      // Update Visual Prediction if emotion changed
       if (state.selectedFaceEmotion !== liveEmotion) {
         state.selectedFaceEmotion = liveEmotion;
-        document.querySelectorAll('#faceSampleChips .chip').forEach(c => {
-          c.classList.toggle('active', c.dataset.emotion === liveEmotion);
-        });
         updateFacePrediction();
       }
     }
 
-    // Draw Modern Adaptive Reticle with Dual-Pass Black and White Corner Brackets
-    function drawTrackingReticle(bx, by, bw, bh, emotion, isLocked) {
-      const len = Math.max(18, bw * 0.12);
-
-      // Target Corner Brackets Path
-      faceCtx.beginPath();
-      // Top-Left
-      faceCtx.moveTo(bx, by + len); faceCtx.lineTo(bx, by); faceCtx.lineTo(bx + len, by);
-      // Top-Right
-      faceCtx.moveTo(bx + bw - len, by); faceCtx.lineTo(bx + bw, by); faceCtx.lineTo(bx + bw, by + len);
-      // Bottom-Left
-      faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
-      // Bottom-Right
-      faceCtx.moveTo(bx + bw - len, by + bh); faceCtx.lineTo(bx + bw, by + bh); faceCtx.lineTo(bx + bw, by + bh - len);
-
-      // Pass 1: Crisp Outer Black Stroke (Drop Shadow Contrast)
-      faceCtx.strokeStyle = '#000000';
-      faceCtx.lineWidth = 4.5;
-      faceCtx.stroke();
-
-      // Pass 2: High-Contrast Pure White Inner Stroke
-      faceCtx.strokeStyle = '#FFFFFF';
-      faceCtx.lineWidth = 2.2;
-      faceCtx.stroke();
-    }
-
-    // Simulation / Offline Math Provider
+    // Simulation Math Provider
     function getSimulationProbs(primaryEmotion, isAcoustic = false) {
       const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
       const probs = {};
@@ -1371,7 +2111,6 @@
         if (e === primaryEmotion) {
           p = isAcoustic ? 0.84 + Math.random() * 0.10 : 0.88 + Math.random() * 0.08;
         } else if (e === 'Neutral') {
-          // De-bias neutral background when an active emotion is selected
           p = (primaryEmotion === 'Neutral') ? 0.75 : 0.02 + Math.random() * 0.02;
         } else {
           p = 0.02 + Math.random() * 0.03;
@@ -1383,77 +2122,37 @@
       return probs;
     }
 
-    // Facial Chip Selection
-    document.querySelectorAll('#faceSampleChips .chip').forEach(chip => {
-      chip.addEventListener('click', async () => {
-        document.querySelectorAll('#faceSampleChips .chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        state.selectedFaceEmotion = chip.dataset.emotion;
-        state.latestFaceProbs = getSimulationProbs(state.selectedFaceEmotion, false);
-        updateFacePrediction(false);
-      });
-    });
-
     function updateFacePrediction(recomputeProbs = false) {
       if (recomputeProbs || !state.latestFaceProbs) {
         state.latestFaceProbs = getSimulationProbs(state.selectedFaceEmotion, false);
       }
       const probs = state.latestFaceProbs;
-
       const top = state.selectedFaceEmotion;
       const conf = probs[top] || 0.85;
-      const col = EMOTION_COLORS[top];
 
       const elMiniVal = document.getElementById('faceMiniVal');
       const elMiniConf = document.getElementById('faceMiniConf');
-      if (elMiniVal) {
-        elMiniVal.innerHTML = `${EMOTION_ICONS[top]} ${top}`;
-        elMiniVal.style.color = col;
-      }
-      if (elMiniConf) {
-        elMiniConf.innerText = `Confidence: ${(conf * 100).toFixed(1)}%`;
-      }
-
-      // Update Facial Micro-Style if elements present
-      const style = STYLE_MAP[top] || STYLE_MAP.Neutral;
-      const elMouth = document.getElementById('valMouth');
-      const elEyes = document.getElementById('valEyes');
-      const elForehead = document.getElementById('valForehead');
-      const elSummary = document.getElementById('styleSummary');
-      if (elMouth) elMouth.innerText = style.mouth;
-      if (elEyes) elEyes.innerText = style.eyes;
-      if (elForehead) elForehead.innerText = style.brow;
-      if (elSummary) elSummary.innerText = style.desc;
+      if (elMiniVal) elMiniVal.innerHTML = `${EMOTION_ICONS[top]} ${top}`;
+      if (elMiniConf) elMiniConf.innerText = `Confidence ${(conf * 100).toFixed(1)}%`;
 
       updateMultimodalFusion();
     }
-
-    // Speech Chip Selection
-    document.querySelectorAll('#speechSampleChips .chip').forEach(chip => {
-      chip.addEventListener('click', async () => {
-        document.querySelectorAll('#speechSampleChips .chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        state.selectedSpeechEmotion = chip.dataset.emotion;
-        updateSpeechPrediction();
-      });
-    });
 
     function updateSpeechPrediction() {
       const probs = getSimulationProbs(state.selectedSpeechEmotion, true);
       state.latestSpeechProbs = probs;
-
       const top = state.selectedSpeechEmotion;
       const conf = probs[top];
-      const col = EMOTION_COLORS[top];
 
-      document.getElementById('speechMiniVal').innerHTML = `${EMOTION_ICONS[top]} ${top}`;
-      document.getElementById('speechMiniVal').style.color = col;
-      document.getElementById('speechMiniConf').innerText = `Confidence: ${(conf * 100).toFixed(1)}%`;
+      const elSpeechVal = document.getElementById('speechMiniVal');
+      const elSpeechConf = document.getElementById('speechMiniConf');
+      if (elSpeechVal) elSpeechVal.innerHTML = `🎵 ${top}`;
+      if (elSpeechConf) elSpeechConf.innerText = `Confidence ${(conf * 100).toFixed(1)}%`;
 
       updateMultimodalFusion();
     }
 
-    // Multimodal Fusion Calculation
+    // Multimodal 70/30 Decision Fusion
     function updateMultimodalFusion() {
       if (!state.latestFaceProbs || !state.latestSpeechProbs) return;
 
@@ -1463,7 +2162,6 @@
       let topEmotion = 'Neutral';
       let divergence = 0;
 
-      // Determine whether an active expressive state is present in face or speech
       const hasActiveFace = state.selectedFaceEmotion && state.selectedFaceEmotion !== 'Neutral';
       const hasActiveSpeech = state.selectedSpeechEmotion && state.selectedSpeechEmotion !== 'Neutral';
 
@@ -1472,7 +2170,6 @@
         const sp = state.latestSpeechProbs[e] || 0;
         let p = state.wFace * fp + state.wSpeech * sp;
 
-        // If either modality exhibits active emotion, de-bias neutral baseline
         if ((hasActiveFace || hasActiveSpeech) && e === 'Neutral') {
           p *= 0.40;
         }
@@ -1485,45 +2182,72 @@
         }
       });
 
-      const conflictScore = divergence / 2.0;
-      const conflictDetected = conflictScore > 0.35;
+      const conflictDetected = (divergence / 2.0) > 0.35;
       state.currentFinalEmotion = topEmotion;
 
-      const color = EMOTION_COLORS[topEmotion] || '#10B981';
+      const accentColor = EMOTION_COLORS[topEmotion] || '#FBBF24';
 
-      // Update Centerpiece
+      // Update Centerpiece (Level 1)
       const mainVal = document.getElementById('fusedMainVal');
-      mainVal.innerHTML = `${EMOTION_ICONS[topEmotion]} ${topEmotion.toUpperCase()}`;
-      mainVal.style.color = color;
-      mainVal.style.textShadow = `0 0 25px ${color}80`;
+      const glyph = document.getElementById('fusedGlyph');
+      const confText = document.getElementById('fusedConfText');
+      const heroGlow = document.getElementById('heroGlow');
 
-      document.getElementById('fusedConfText').innerText = `Confidence: ${(maxP * 100).toFixed(1)}%`;
-      document.getElementById('fusedHero').style.borderColor = color;
-      document.getElementById('fusedHero').style.boxShadow = `0 0 35px ${color}40`;
-
-      // Update Harmony / Conflict Banner
-      const banner = document.getElementById('concordanceBanner');
-      if (conflictDetected) {
-        banner.className = 'alert-banner banner-conflict';
-        banner.innerHTML = `<span>⚠️</span><span><b>MODALITY CONFLICT DETECTED:</b> Facial expression (${state.selectedFaceEmotion}) and vocal tone (${state.selectedSpeechEmotion}) clash. Possible sarcasm or masked feeling!</span>`;
-      } else {
-        banner.className = 'alert-banner banner-concordant';
-        banner.innerHTML = `<span>✅</span><span><b>HARMONY CONFIRMED:</b> Both facial cues and voice tone tell the same story (${topEmotion}).</span>`;
+      if (mainVal) {
+        mainVal.innerText = topEmotion.toUpperCase();
+        mainVal.style.color = accentColor;
+      }
+      if (glyph) {
+        glyph.innerText = EMOTION_ICONS[topEmotion];
+        glyph.style.filter = `drop-shadow(0 0 16px ${accentColor}55)`;
+      }
+      if (confText) {
+        confText.innerText = `${(maxP * 100).toFixed(1)}%`;
+      }
+      if (heroGlow) {
+        heroGlow.style.background = `radial-gradient(circle, ${accentColor}18 0%, transparent 70%)`;
       }
 
-      // Update Prob Bars
-      for (const [emotion, prob] of Object.entries(fusedProbs)) {
+      // Concordance Banner (Level 2)
+      const banner = document.getElementById('concordanceBanner');
+      const concordanceText = document.getElementById('concordanceText');
+      if (banner && concordanceText) {
+        if (conflictDetected) {
+          banner.className = 'harmony-banner conflict';
+          concordanceText.innerHTML = `MODALITY CONFLICT &mdash; Face (${state.selectedFaceEmotion}) and Voice (${state.selectedSpeechEmotion}) clash`;
+        } else {
+          banner.className = 'harmony-banner';
+          concordanceText.innerHTML = `HARMONY CONFIRMED &mdash; Facial and vocal signals align`;
+        }
+      }
+
+      // Update Minimalist Ranked Distribution
+      const sorted = Object.entries(fusedProbs).sort((a, b) => b[1] - a[1]);
+      sorted.forEach(([emotion, prob], idx) => {
         const pct = Math.round(prob * 100);
         const bar = document.getElementById(`bar${emotion}`);
         const val = document.getElementById(`val${emotion}`);
         if (bar && val) {
           bar.style.width = `${pct}%`;
           val.innerText = `${pct}%`;
+          if (emotion === topEmotion) {
+            bar.className = 'dist-bar dominant';
+            bar.style.background = accentColor;
+            bar.style.boxShadow = `0 0 10px ${accentColor}40`;
+            val.className = 'dist-val dominant';
+            val.style.color = accentColor;
+          } else {
+            bar.className = 'dist-bar';
+            bar.style.background = 'rgba(255, 255, 255, 0.2)';
+            bar.style.boxShadow = 'none';
+            val.className = 'dist-val';
+            val.style.color = 'var(--text-muted)';
+          }
         }
-      }
+      });
     }
 
-    // Sample utterances for emotional scenarios
+    // Preset Scenario Loader
     const SCENARIO_UTTERANCES = {
       Happy: "I am feeling truly wonderful and full of joy today!",
       Angry: "I cannot believe this happened again, this is so frustrating!",
@@ -1532,32 +2256,16 @@
       Neutral: "The system is operating under baseline normal conditions."
     };
 
-    // Quick Scenario Loader
     window.loadScenario = function(faceEmotion, speechEmotion) {
-      // Set Face Chip
-      document.querySelectorAll('#faceSampleChips .chip').forEach(c => {
-        c.classList.toggle('active', c.dataset.emotion === faceEmotion);
-      });
       state.selectedFaceEmotion = faceEmotion;
-
-      // Set Speech Chip
-      document.querySelectorAll('#speechSampleChips .chip').forEach(c => {
-        c.classList.toggle('active', c.dataset.emotion === speechEmotion);
-      });
       state.selectedSpeechEmotion = speechEmotion;
 
-      // Update live speech preview
       const previewText = SCENARIO_UTTERANCES[speechEmotion] || "Simulated voice sample loaded.";
       const elLivePrev = document.getElementById('liveTranscriptPreview');
       const elLiveStat = document.getElementById('liveTranscriptStatus');
-      if (elLivePrev) {
-        elLivePrev.innerText = `"${previewText}"`;
-        elLivePrev.style.color = '#A7F3D0';
-      }
-      if (elLiveStat) {
-        elLiveStat.innerText = 'Preset Sample';
-        elLiveStat.style.color = '#C084FC';
-      }
+      if (elLivePrev) elLivePrev.innerText = `"${previewText}"`;
+      if (elLiveStat) elLiveStat.innerText = 'Preset Loaded';
+
       if (analyticsSession && !analyticsSession.active) {
         analyticsSession.hasAudioHeard = true;
         analyticsSession.latestTranscript = previewText;
@@ -1567,186 +2275,39 @@
       updateSpeechPrediction();
     };
 
-    // Weight Slider Listener (if present)
-    const elSlider = document.getElementById('fusionSlider');
-    if (elSlider) {
-      elSlider.addEventListener('input', (e) => {
-        const val = parseInt(e.target.value);
-        state.wFace = val / 100.0;
-        state.wSpeech = 1.0 - state.wFace;
-        const wFaceLabel = document.getElementById('wFaceLabel');
-        const wSpeechLabel = document.getElementById('wSpeechLabel');
-        if (wFaceLabel) wFaceLabel.innerText = `${val}%`;
-        if (wSpeechLabel) wSpeechLabel.innerText = `${100 - val}%`;
-        updateMultimodalFusion();
-      });
-    }
-
-    // TTS Voice Virtualizer (if present)
-    const elBtnSpeakText = document.getElementById('btnSpeakText');
-    if (elBtnSpeakText) {
-      elBtnSpeakText.addEventListener('click', () => {
-        const textInput = document.getElementById('ttsTextInput');
-        if (textInput) speakPhrase(textInput.value);
-      });
-    }
-
-    const elBtnSpeakPred = document.getElementById('btnSpeakPrediction');
-    if (elBtnSpeakPred) {
-      elBtnSpeakPred.addEventListener('click', () => {
-        const text = `The multimodal AI recognizes human emotion as ${state.currentFinalEmotion}.`;
-        speakPhrase(text);
-      });
-    }
-
+    // Speech Synthesis
     function speakPhrase(text, onComplete = null) {
-      const status = document.getElementById('ttsStatus');
-      if (status) status.innerText = 'Speaking...';
       state.isSpeaking = true;
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Stop any pending speech
+        window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.rate = 1.0;
         utter.onend = () => {
-          if (status) status.innerText = 'Ready';
           setTimeout(() => {
             state.isSpeaking = false;
             if (onComplete) onComplete();
-          }, 300); // 300ms acoustic grace period to prevent echo capture
+          }, 250);
         };
         utter.onerror = () => {
           state.isSpeaking = false;
-          if (status) status.innerText = 'Ready';
           if (onComplete) onComplete();
         };
         window.speechSynthesis.speak(utter);
       } else {
         setTimeout(() => {
           state.isSpeaking = false;
-          if (status) status.innerText = 'Ready';
           if (onComplete) onComplete();
-        }, 1200);
+        }, 1000);
       }
     }
 
-    // Waveform Animation Loop with Real Mic Integration
-    function animateWaveform() {
-      waveCanvas.width = waveCanvas.clientWidth;
-      waveCanvas.height = waveCanvas.clientHeight;
-      waveCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
-
-      const h = waveCanvas.height;
-      const w = waveCanvas.width;
-      let vuPct = 15;
-      let isLiveAudio = false;
-
-      // Check if real microphone audio is active
-      if (micAnalyser && micDataArray) {
-        micAnalyser.getByteFrequencyData(micDataArray);
-        let sum = 0;
-        for (let i = 0; i < micDataArray.length; i++) {
-          sum += micDataArray[i];
-        }
-        const avg = sum / micDataArray.length;
-        if (avg > 4) { // Sound threshold
-          isLiveAudio = true;
-          vuPct = Math.min(100, Math.max(8, avg * 2.2));
-          if (analyticsSession && analyticsSession.active) {
-            analyticsSession.hasAudioHeard = true;
-          }
-        }
-      }
-
-      if (isLiveAudio && micAnalyser) {
-        // Render real audio frequency waveform
-        waveCtx.strokeStyle = '#A855F7';
-        waveCtx.lineWidth = 2.5;
-        waveCtx.beginPath();
-        const sliceWidth = w * 1.0 / micDataArray.length;
-        let x = 0;
-        for (let i = 0; i < micDataArray.length; i++) {
-          const v = micDataArray[i] / 128.0;
-          const y = (v * h) / 2;
-          if (i === 0) waveCtx.moveTo(x, y);
-          else waveCtx.lineTo(x, y);
-          x += sliceWidth;
-        }
-        waveCtx.lineTo(w, h / 2);
-        waveCtx.stroke();
-      } else {
-        // Gentle ambient waveform
-        waveCtx.strokeStyle = '#06B6D4';
-        waveCtx.lineWidth = 1.8;
-        waveCtx.beginPath();
-        const time = Date.now() * 0.003;
-        for (let x = 0; x < w; x++) {
-          const y = h/2 + Math.sin(x * 0.04 + time) * 6 * Math.cos(time * 0.4);
-          if (x === 0) waveCtx.moveTo(x, y);
-          else waveCtx.lineTo(x, y);
-        }
-        waveCtx.stroke();
-        vuPct = 12 + Math.sin(Date.now() * 0.002) * 5;
-      }
-
-      // Update VU meter
-      vuFill.style.width = `${Math.min(100, Math.max(0, vuPct))}%`;
-      const vuText = document.getElementById('vuDbText');
-      if (vuText) vuText.innerText = `${Math.round(-40 + vuPct * 0.32)} dB`;
-
-      requestAnimationFrame(animateWaveform);
-    }
-    requestAnimationFrame(animateWaveform);
-
-    // Guide Modal
-    const btnOpenGuide = document.getElementById('btnOpenGuide');
-    if (btnOpenGuide) {
-      btnOpenGuide.addEventListener('click', () => {
-        document.getElementById('guideModal').style.display = 'flex';
-      });
-    }
-    const btnCloseGuide = document.getElementById('btnCloseGuide');
-    if (btnCloseGuide) {
-      btnCloseGuide.addEventListener('click', () => {
-        document.getElementById('guideModal').style.display = 'none';
-      });
-    }
-    const btnGotIt = document.getElementById('btnGotIt');
-    if (btnGotIt) {
-      btnGotIt.addEventListener('click', () => {
-        document.getElementById('guideModal').style.display = 'none';
-      });
-    }
-
-    // Mode Switcher (if present)
-    const btnSimple = document.getElementById('btnModeSimple');
-    const btnAdvanced = document.getElementById('btnModeAdvanced');
-    if (btnSimple) {
-      btnSimple.addEventListener('click', () => {
-        btnSimple.classList.add('active');
-        if (btnAdvanced) btnAdvanced.classList.remove('active');
-        state.isAdvanced = false;
-      });
-    }
-    if (btnAdvanced) {
-      btnAdvanced.addEventListener('click', () => {
-        btnAdvanced.classList.add('active');
-        if (btnSimple) btnSimple.classList.remove('active');
-        state.isAdvanced = true;
-      });
-    }
-
-    // ==========================================
-    // SPEECH RECOGNITION (SPEECH-TO-TEXT ENGINE)
-    // ==========================================
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-    let speechRecognizer = null;
+    // Audio & Waveform Visualization
     let micAudioStream = null;
     let micAudioCtx = null;
     let micAnalyser = null;
     let micSource = null;
     let micDataArray = null;
 
-    // Helper to start hardware microphone audio analysis
     async function initMicAudio() {
       if (micAudioStream) return;
       try {
@@ -1757,36 +2318,93 @@
         micSource = micAudioCtx.createMediaStreamSource(micAudioStream);
         micSource.connect(micAnalyser);
         micDataArray = new Uint8Array(micAnalyser.frequencyBinCount);
-        console.log('[Audio] Hardware mic connected for live prosody analysis');
       } catch (err) {
-        console.warn('[Audio] Hardware mic capture unavailable or denied:', err);
+        console.warn('[Audio] Hardware mic capture denied or unavailable');
       }
     }
 
-    // Helper to initialize Speech Recognition with High Accuracy & Echo Suppression
-    function initSpeechRecognition() {
-      if (!SpeechRecognition) {
-        console.warn('[SpeechRec] Web Speech API not supported on this browser');
-        return null;
+    function animateWaveform() {
+      waveCanvas.width = waveCanvas.clientWidth;
+      waveCanvas.height = waveCanvas.clientHeight;
+      waveCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+
+      const h = waveCanvas.height;
+      const w = waveCanvas.width;
+      let vuPct = 15;
+      let isLiveAudio = false;
+
+      if (micAnalyser && micDataArray) {
+        micAnalyser.getByteFrequencyData(micDataArray);
+        let sum = 0;
+        for (let i = 0; i < micDataArray.length; i++) sum += micDataArray[i];
+        const avg = sum / micDataArray.length;
+        if (avg > 4) {
+          isLiveAudio = true;
+          vuPct = Math.min(100, Math.max(8, avg * 2.2));
+          if (analyticsSession && analyticsSession.active) {
+            analyticsSession.hasAudioHeard = true;
+          }
+        }
       }
+
+      // Draw Scientific Signal Waveform (Cyan -> Violet gradient)
+      const grad = waveCtx.createLinearGradient(0, 0, w, 0);
+      grad.addColorStop(0, '#22D3EE');
+      grad.addColorStop(1, '#8B5CF6');
+
+      waveCtx.strokeStyle = grad;
+      waveCtx.lineWidth = 1.8;
+      waveCtx.beginPath();
+
+      if (isLiveAudio && micAnalyser) {
+        const sliceWidth = w * 1.0 / micDataArray.length;
+        let x = 0;
+        for (let i = 0; i < micDataArray.length; i++) {
+          const v = micDataArray[i] / 128.0;
+          const y = (v * h) / 2;
+          if (i === 0) waveCtx.moveTo(x, y);
+          else waveCtx.lineTo(x, y);
+          x += sliceWidth;
+        }
+        waveCtx.lineTo(w, h / 2);
+      } else {
+        const time = Date.now() * 0.0025;
+        for (let x = 0; x < w; x++) {
+          const y = h/2 + Math.sin(x * 0.04 + time) * 5 * Math.cos(time * 0.4);
+          if (x === 0) waveCtx.moveTo(x, y);
+          else waveCtx.lineTo(x, y);
+        }
+        vuPct = 12 + Math.sin(Date.now() * 0.002) * 4;
+      }
+      waveCtx.stroke();
+
+      vuFill.style.width = `${Math.min(100, Math.max(0, vuPct))}%`;
+      const vuText = document.getElementById('vuDbText');
+      if (vuText) vuText.innerText = `${Math.round(-40 + vuPct * 0.32)} dB`;
+
+      requestAnimationFrame(animateWaveform);
+    }
+    requestAnimationFrame(animateWaveform);
+
+    // Web Speech API Transcription
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+    let speechRecognizer = null;
+
+    function initSpeechRecognition() {
+      if (!SpeechRecognition) return null;
       try {
         const sr = new SpeechRecognition();
         sr.continuous = true;
         sr.interimResults = true;
         sr.maxAlternatives = 3;
-        // Prioritize user's system locale or default to en-US
         sr.lang = navigator.language || 'en-US';
 
         sr.onstart = () => {
           const elLiveStat = document.getElementById('liveTranscriptStatus');
-          if (elLiveStat) {
-            elLiveStat.innerText = 'Listening 🎙️';
-            elLiveStat.style.color = '#38BDF8';
-          }
+          if (elLiveStat) elLiveStat.innerText = 'Listening 🎙️';
         };
 
         sr.onresult = (event) => {
-          // If the AI assistant itself is speaking, discard incoming audio to prevent self-transcription loop
           if (state.isSpeaking) return;
 
           let finalChunk = '';
@@ -1796,11 +2414,8 @@
             const res = event.results[i];
             if (res && res[0]) {
               const text = res[0].transcript;
-              if (res.isFinal) {
-                finalChunk += text + ' ';
-              } else {
-                interimChunk += text;
-              }
+              if (res.isFinal) finalChunk += text + ' ';
+              else interimChunk += text;
             }
           }
 
@@ -1813,54 +2428,27 @@
             analyticsSession.latestTranscript = combined;
             analyticsSession.hasAudioHeard = true;
 
-            // Live UI Preview
             const elLivePrev = document.getElementById('liveTranscriptPreview');
             const elLiveStat = document.getElementById('liveTranscriptStatus');
-            if (elLivePrev) {
-              elLivePrev.innerText = `"${combined}"`;
-              elLivePrev.style.color = '#A7F3D0';
-            }
-            if (elLiveStat) {
-              elLiveStat.innerText = 'Transcribing ✓';
-              elLiveStat.style.color = '#10B981';
-            }
+            if (elLivePrev) elLivePrev.innerText = `"${combined}"`;
+            if (elLiveStat) elLiveStat.innerText = 'Transcribing ✓';
           }
         };
 
-        sr.onerror = (event) => {
-          // Handle common non-fatal errors
-          if (event.error === 'no-speech') {
-            // normal when user pauses
-            return;
-          }
-          if (event.error === 'audio-capture') {
-            console.warn('[SpeechRec] No microphone was detected or mic is muted.');
-          } else {
-            console.warn('[SpeechRec] Recognition status/notice:', event.error);
-          }
-        };
-
+        sr.onerror = () => {};
         sr.onend = () => {
-          // Keep recognition alive only if the 30-second analytics session is running
           if (analyticsSession.active && speechRecognizer) {
-            try { 
-              speechRecognizer.start(); 
-            } catch (e) {
-              // Ignore already-started exceptions
-            }
+            try { speechRecognizer.start(); } catch (e) {}
           }
         };
 
         return sr;
       } catch (err) {
-        console.warn('[SpeechRec] Init error:', err);
         return null;
       }
     }
 
-    // ==========================================
-    // 30-SECOND MULTIMODAL ANALYTICS CONTROLLER
-    // ==========================================
+    // 30-Second Multimodal Analytics Controller
     const analyticsSession = {
       active: false,
       startTime: 0,
@@ -1880,21 +2468,18 @@
     const elAnalyticsTimer = document.getElementById('analyticsTimer');
     const elAnalyticsBadge = document.getElementById('analyticsPhaseBadge');
     const elAnalyticsStatus = document.getElementById('analyticsStatusText');
+    const elTimelinePhase = document.getElementById('timelinePhaseLabel');
     const elProgressFace = document.getElementById('analyticsProgressFace');
     const elProgressVoice = document.getElementById('analyticsProgressVoice');
     const elReportModal = document.getElementById('analyticsReportModal');
 
     async function startAnalyticsSession() {
-      // 1. If camera not yet started, launch camera automatically
       if (!state.isCameraRunning) {
-        const btnToggleCam = document.getElementById('btnToggleCam');
-        btnToggleCam.click();
+        document.getElementById('btnToggleCam').click();
       }
 
-      // 2. Request mic audio & launch speech recognition
       await initMicAudio();
 
-      // 3. Reset session state
       analyticsSession.active = true;
       analyticsSession.startTime = Date.now();
       analyticsSession.currentPhase = 1;
@@ -1905,44 +2490,31 @@
       analyticsSession.latestTranscript = '';
       analyticsSession.hasAudioHeard = false;
 
-      // Reset Live Transcript UI
       const elLivePrev = document.getElementById('liveTranscriptPreview');
       const elLiveStat = document.getElementById('liveTranscriptStatus');
-      if (elLivePrev) {
-        elLivePrev.innerText = '"Listening for voice during session..."';
-        elLivePrev.style.color = '#E2E8F0';
-      }
-      if (elLiveStat) {
-        elLiveStat.innerText = 'Listening 🎙️';
-        elLiveStat.style.color = 'var(--purple)';
-      }
+      if (elLivePrev) elLivePrev.innerText = '"Listening for speech during session..."';
+      if (elLiveStat) elLiveStat.innerText = 'Standby';
 
-      // Launch speech recognition engine
-      if (!speechRecognizer) {
-        speechRecognizer = initSpeechRecognition();
-      }
+      if (!speechRecognizer) speechRecognizer = initSpeechRecognition();
       if (speechRecognizer) {
         try { speechRecognizer.start(); } catch (e) {}
       }
 
       if (analyticsSession.timerId) clearInterval(analyticsSession.timerId);
 
-      // 4. Reveal HUD Banner & update UI
       elAnalyticsBanner.style.display = 'block';
       elAnalyticsBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      setSystemStatus('ANALYSIS RUNNING', 'var(--cyan)');
 
       elAnalyticsTimer.innerText = '30.0s';
-      elAnalyticsBadge.innerHTML = '📷 PHASE 1: TRACKING FACIAL EXPRESSION';
-      elAnalyticsBadge.style.color = 'var(--cyan)';
-      elAnalyticsBadge.style.borderColor = 'var(--cyan)';
-      elAnalyticsBadge.style.background = 'rgba(6, 182, 212, 0.2)';
-      elAnalyticsStatus.innerText = 'Please look into the camera and express naturally (0s - 15s)';
+      elAnalyticsBadge.innerText = '01 / 02';
+      if (elTimelinePhase) elTimelinePhase.innerText = 'FACIAL ANALYSIS';
+      elAnalyticsStatus.innerText = 'Look into camera and express naturally (0s - 15s)';
       elProgressFace.style.width = '0%';
       elProgressVoice.style.width = '0%';
 
-      speakPhrase('Analytics started. Phase 1: Face tracking.');
+      speakPhrase('Analysis initialized. Phase 1: Facial tracking.');
 
-      // 5. Start 100ms assessment tick
       analyticsSession.timerId = setInterval(onAnalyticsTick, 100);
     }
 
@@ -1954,17 +2526,16 @@
       elAnalyticsTimer.innerText = `${remainingTotal.toFixed(1)}s`;
 
       if (elapsed < analyticsSession.phase1Duration) {
-        // --- PHASE 1: FACIAL EXPRESSION TRACKING (0s - 15s) • 70% WEIGHT ---
+        // Phase 1: Face (0s - 15s)
         analyticsSession.currentPhase = 1;
-        const faceRemaining = Math.max(0, analyticsSession.phase1Duration - elapsed);
-        elAnalyticsBadge.innerHTML = `📷 PHASE 1: TRACKING FACIAL EXPRESSION (70% WEIGHT • ${faceRemaining.toFixed(1)}s left)`;
-        elAnalyticsStatus.innerText = `Tracking 468 facial mesh landmarks & micro-expressions (70% weight)... (${state.selectedFaceEmotion})`;
+        elAnalyticsBadge.innerText = '01 / 02';
+        if (elTimelinePhase) elTimelinePhase.innerText = 'FACIAL ANALYSIS';
+        elAnalyticsStatus.innerText = `Tracking 468 mesh landmarks (70% weight)... (${state.selectedFaceEmotion})`;
 
         const facePct = (elapsed / analyticsSession.phase1Duration) * 50;
         elProgressFace.style.width = `${facePct}%`;
         elProgressVoice.style.width = '0%';
 
-        // Sample current face emotion & probabilities
         analyticsSession.faceSamples.push({
           emotion: state.selectedFaceEmotion,
           probs: { ...state.latestFaceProbs },
@@ -1972,42 +2543,33 @@
         });
 
       } else if (elapsed >= analyticsSession.phase1Duration && elapsed < analyticsSession.totalDuration) {
-        // --- PHASE 2: VOICE MODULATION TRACKING (15s - 30s) • 30% WEIGHT ---
+        // Phase 2: Voice (15s - 30s)
         analyticsSession.currentPhase = 2;
-        const voiceRemaining = Math.max(0, analyticsSession.totalDuration - elapsed);
 
         if (!analyticsSession.announcedPhase2) {
           analyticsSession.announcedPhase2 = true;
-          // Cleanly clear any residual audio before user begins speaking
           analyticsSession.transcripts = [];
           analyticsSession.latestTranscript = '';
           const elLivePrev = document.getElementById('liveTranscriptPreview');
-          if (elLivePrev) {
-            elLivePrev.innerText = '"Listening... Please speak your sentence now!"';
-            elLivePrev.style.color = '#38BDF8';
-          }
+          if (elLivePrev) elLivePrev.innerText = '"Speak now... listening to speech"';
           speakPhrase('Phase 2. Please speak now.', () => {
-            // Restart recognizer right after prompt finishes to capture user speech cleanly
             if (speechRecognizer) {
               try { speechRecognizer.stop(); } catch (e) {}
               setTimeout(() => {
                 try { speechRecognizer.start(); } catch (e) {}
-              }, 150);
+              }, 120);
             }
           });
         }
 
-        elAnalyticsBadge.innerHTML = `🎙️ PHASE 2: TRACKING VOICE MODULATION (30% WEIGHT • ${voiceRemaining.toFixed(1)}s left)`;
-        elAnalyticsBadge.style.color = '#C084FC';
-        elAnalyticsBadge.style.borderColor = '#8B5CF6';
-        elAnalyticsBadge.style.background = 'rgba(139, 92, 246, 0.25)';
-        elAnalyticsStatus.innerText = `Tracking vocal pitch, frequency modulation & prosody (30% weight)... (${state.selectedSpeechEmotion})`;
+        elAnalyticsBadge.innerText = '02 / 02';
+        if (elTimelinePhase) elTimelinePhase.innerText = 'VOICE ANALYSIS';
+        elAnalyticsStatus.innerText = `Analyzing vocal prosody and speech-to-text (30% weight)... (${state.selectedSpeechEmotion})`;
 
         elProgressFace.style.width = '50%';
         const voicePct = ((elapsed - analyticsSession.phase1Duration) / (analyticsSession.totalDuration - analyticsSession.phase1Duration)) * 50;
         elProgressVoice.style.width = `${voicePct}%`;
 
-        // Sample current voice modulation & probabilities
         analyticsSession.voiceSamples.push({
           emotion: state.selectedSpeechEmotion,
           probs: { ...state.latestSpeechProbs },
@@ -2015,17 +2577,16 @@
         });
 
       } else {
-        // --- 30s COMPLETED: PRESENT FINAL RESULT ---
+        // 30s Finished
         clearInterval(analyticsSession.timerId);
         analyticsSession.active = false;
         elProgressFace.style.width = '50%';
         elProgressVoice.style.width = '50%';
         elAnalyticsTimer.innerText = '0.0s';
-        elAnalyticsBadge.innerHTML = '🎉 30s MULTIMODAL ASSESSMENT COMPLETE';
-        elAnalyticsBadge.style.color = '#10B981';
-        elAnalyticsBadge.style.borderColor = '#10B981';
-        elAnalyticsBadge.style.background = 'rgba(16, 185, 129, 0.2)';
-        elAnalyticsStatus.innerText = 'Computing 70% Face + 30% Voice multimodal fusion...';
+        elAnalyticsBadge.innerText = 'COMPLETE';
+        if (elTimelinePhase) elTimelinePhase.innerText = 'ANALYSIS COMPLETE';
+        elAnalyticsStatus.innerText = 'Fusing multimodal affect signals...';
+        setSystemStatus('ANALYSIS COMPLETE', 'var(--status-success)');
 
         finishAnalyticsSession();
       }
@@ -2038,11 +2599,10 @@
         try { speechRecognizer.stop(); } catch (e) {}
       }
       elAnalyticsBanner.style.display = 'none';
-      elAnalyticsTimer.innerText = '30.0s';
+      setSystemStatus('SYSTEM READY', 'var(--cyan)');
     }
 
     function finishAnalyticsSession() {
-      // 1. Tally Facial Expression Distribution from Phase 1
       const faceCounts = {};
       const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
       emotions.forEach(e => faceCounts[e] = 0);
@@ -2051,7 +2611,6 @@
         if (faceCounts[s.emotion] !== undefined) faceCounts[s.emotion]++;
       });
 
-      // Active Expressive vs Neutral Tally for Face
       let topExpressiveFace = 'Happy';
       let maxExpressiveFaceCount = 0;
       let totalExpressiveFaceCount = 0;
@@ -2068,8 +2627,6 @@
       let maxFaceCount = -1;
       const totalFaceSamples = analyticsSession.faceSamples.length || 1;
 
-      // If at least 15% of recorded facial frames captured genuine active expression,
-      // the person is intentionally expressing that emotion (e.g. smiling or surprised) rather than purely Neutral
       if (totalExpressiveFaceCount / totalFaceSamples >= 0.15) {
         dominantFace = topExpressiveFace;
         maxFaceCount = maxExpressiveFaceCount;
@@ -2083,10 +2640,9 @@
       }
       const faceConf = Math.min(99.4, Math.max(78.5, ((maxFaceCount + (dominantFace !== 'Neutral' ? totalExpressiveFaceCount * 0.4 : 0)) / totalFaceSamples) * 100));
 
-      // 2. Tally Voice Modulation Distribution from Phase 2
+      // Voice counts
       const voiceCounts = {};
       emotions.forEach(e => voiceCounts[e] = 0);
-
       analyticsSession.voiceSamples.forEach(s => {
         if (voiceCounts[s.emotion] !== undefined) voiceCounts[s.emotion]++;
       });
@@ -2120,7 +2676,7 @@
       }
       const voiceConf = Math.min(98.8, Math.max(76.0, ((maxVoiceCount + (dominantVoice !== 'Neutral' ? totalExpressiveVoiceCount * 0.4 : 0)) / totalVoiceSamples) * 100));
 
-      // 3. Multimodal Decision Fusion (70% Face, 30% Voice) with Neutral de-biasing
+      // 70/30 Fusion
       const fusedScores = {};
       let topFinal = 'Neutral';
       let topFinalScore = -1;
@@ -2129,13 +2685,9 @@
       emotions.forEach(e => {
         const fp = (faceCounts[e] / totalFaceSamples) || (e === dominantFace ? 0.85 : 0.03);
         const vp = (voiceCounts[e] / totalVoiceSamples) || (e === dominantVoice ? 0.85 : 0.03);
-        // Calibrated exactly to 70% facial expression and 30% voice modulation
         let score = 0.70 * fp + 0.30 * vp;
 
-        // Expressive Salience: De-bias Neutral baseline when active expressions occurred
-        if (hasActiveModalities && e === 'Neutral') {
-          score *= 0.42;
-        }
+        if (hasActiveModalities && e === 'Neutral') score *= 0.42;
 
         fusedScores[e] = score;
         if (score > topFinalScore) {
@@ -2144,57 +2696,18 @@
         }
       });
       const finalConf = Math.min(99.2, Math.max(83.5, topFinalScore * 100));
-
-      // Concordance Check
       const isConcordant = (dominantFace === dominantVoice);
-      const color = EMOTION_COLORS[topFinal] || '#10B981';
 
-      // 4. Update Main Centerpiece Display
-      state.currentFinalEmotion = topFinal;
-      const mainVal = document.getElementById('fusedMainVal');
-      if (mainVal) {
-        mainVal.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()}`;
-        mainVal.style.color = color;
-        mainVal.style.textShadow = `0 0 25px ${color}80`;
-      }
-      const fusedConf = document.getElementById('fusedConfText');
-      if (fusedConf) fusedConf.innerText = `Confidence: ${finalConf.toFixed(1)}% (70% Face + 30% Voice)`;
-      const fusedHero = document.getElementById('fusedHero');
-      if (fusedHero) {
-        fusedHero.style.borderColor = color;
-        fusedHero.style.boxShadow = `0 0 35px ${color}40`;
+      // Stop speech recognizer
+      if (speechRecognizer) {
+        try { speechRecognizer.stop(); } catch (e) {}
       }
 
-      // Update Probability Bars
-      for (const [emotion, prob] of Object.entries(fusedScores)) {
-        const pct = Math.round(prob * 100);
-        const bar = document.getElementById(`bar${emotion}`);
-        const val = document.getElementById(`val${emotion}`);
-        if (bar && val) {
-          bar.style.width = `${pct}%`;
-          val.innerText = `${pct}%`;
-        }
-      }
+      // Voice Transcription
+      const fullRecognizedText = (analyticsSession.latestTranscript || analyticsSession.transcripts.join(' ')).trim();
+      const voiceWasHeard = analyticsSession.hasAudioHeard || fullRecognizedText.length > 0;
 
-      // 5. Populate and Display the 30-Second Multimodal Analytics Report Modal
-      const repFinal = document.getElementById('repFinalEmotion');
-      if (repFinal) {
-        repFinal.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()}`;
-        repFinal.style.color = color;
-      }
-      const repConf = document.getElementById('repFinalConf');
-      if (repConf) {
-        repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted: 70% Face + 30% Voice`;
-      }
-
-      const repFace = document.getElementById('repFaceEmotion');
-      if (repFace) repFace.innerHTML = `${EMOTION_ICONS[dominantFace]} ${dominantFace} (${faceConf.toFixed(1)}%)`;
       const faceStyle = STYLE_MAP[dominantFace] || STYLE_MAP.Neutral;
-      const repFStyle = document.getElementById('repFaceStyle');
-      if (repFStyle) repFStyle.innerText = `Mouth: ${faceStyle.mouth} | Eyes: ${faceStyle.eyes} | Brow: ${faceStyle.brow}`;
-
-      const repVoice = document.getElementById('repVoiceEmotion');
-      if (repVoice) repVoice.innerHTML = `🎵 ${dominantVoice} (${voiceConf.toFixed(1)}%)`;
       const voiceCadences = {
         Happy: 'Prosody: Cheerful Upbeat | Dynamic Pitch: High Harmonic | Energy: -15 dB',
         Sad: 'Prosody: Subdued Melancholy | Pitch: Low Monotone | Energy: -28 dB',
@@ -2202,76 +2715,71 @@
         Surprise: 'Prosody: Sharp Rising Spike | Dynamic Range: Extreme | Energy: -12 dB',
         Neutral: 'Prosody: Stable Cadence | Inflection: Balanced | Energy: -18 dB'
       };
-      const repCadence = document.getElementById('repVoiceCadence');
-      if (repCadence) repCadence.innerText = voiceCadences[dominantVoice] || voiceCadences.Neutral;
 
+      // Populate Report Modal Data
+      const repFinal = document.getElementById('repFinalEmotion');
+      const repConf = document.getElementById('repFinalConf');
+      const repFace = document.getElementById('repFaceEmotion');
+      const repFStyle = document.getElementById('repFaceStyle');
+      const repVoice = document.getElementById('repVoiceEmotion');
+      const repCadence = document.getElementById('repVoiceCadence');
       const elCongruence = document.getElementById('repCongruence');
       const elDiagnostic = document.getElementById('repDiagnostic');
-
-      if (isConcordant) {
-        if (elCongruence) {
-          elCongruence.className = 'alert-banner banner-concordant';
-          elCongruence.innerHTML = `✅ <b>Harmonic Concordance Confirmed:</b> Both facial expression and vocal prosody are aligned on <b>${topFinal}</b>. High cognitive-emotional coherence.`;
-        }
-        if (elDiagnostic) {
-          elDiagnostic.innerHTML = `<b>Diagnostic Summary:</b> Over the 30-second assessment, Phase 1 (0s–15s visual facial geometry, 70% weight) and Phase 2 (15s–30s vocal acoustic prosody, 30% weight) demonstrated strong mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`;
-        }
-      } else {
-        if (elCongruence) {
-          elCongruence.className = 'alert-banner banner-conflict';
-          elCongruence.innerHTML = `⚠️ <b>Modality Divergence Detected:</b> Face expresses <b>${dominantFace}</b> (70% weight) while vocal tone indicates <b>${dominantVoice}</b> (30% weight). Possible masked or sarcastic affect!`;
-        }
-        if (elDiagnostic) {
-          elDiagnostic.innerHTML = `<b>Diagnostic Summary:</b> The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%, 70% weight), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%, 30% weight). Multimodal decision fusion weighted to ${topFinal} at ${finalConf.toFixed(1)}%.`;
-        }
-      }
-
-      // Stop live speech recognizer
-      if (speechRecognizer) {
-        try { speechRecognizer.stop(); } catch (e) {}
-      }
-
-      // Voice Transcription Check & Population
       const transcriptionBox = document.getElementById('repTranscriptionBox');
       const transcriptBadge = document.getElementById('repTranscriptBadge');
 
-      const fullRecognizedText = (analyticsSession.latestTranscript || analyticsSession.transcripts.join(' ')).trim();
-      const voiceWasHeard = analyticsSession.hasAudioHeard || fullRecognizedText.length > 0;
+      if (repFinal) {
+        repFinal.innerText = topFinal.toUpperCase();
+        repFinal.style.color = EMOTION_COLORS[topFinal] || '#FBBF24';
+      }
+      if (repConf) {
+        repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted 70% Face + 30% Voice`;
+      }
+      if (repFace) repFace.innerText = `${EMOTION_ICONS[dominantFace]} ${dominantFace} (${faceConf.toFixed(1)}%)`;
+      if (repFStyle) repFStyle.innerText = `Mouth: ${faceStyle.mouth} | Eyes: ${faceStyle.eyes} | Brow: ${faceStyle.brow}`;
+      if (repVoice) repVoice.innerText = `🎵 ${dominantVoice} (${voiceConf.toFixed(1)}%)`;
+      if (repCadence) repCadence.innerText = voiceCadences[dominantVoice] || voiceCadences.Neutral;
+
+      if (isConcordant) {
+        if (elCongruence) {
+          elCongruence.className = 'harmony-banner';
+          elCongruence.innerHTML = `<span>●</span><span>Harmonic Concordance Confirmed: Both facial cues and voice modulation align on <b>${topFinal}</b>.</span>`;
+        }
+        if (elDiagnostic) {
+          elDiagnostic.innerHTML = `Diagnostic Summary: 30s evaluation demonstrated cross-modal agreement on ${topFinal}. Visual micro-geometry (70%) and vocal prosody (30%) converge at ${finalConf.toFixed(1)}% confidence.`;
+        }
+      } else {
+        if (elCongruence) {
+          elCongruence.className = 'harmony-banner conflict';
+          elCongruence.innerHTML = `<span>▲</span><span>Modality Divergence Detected: Face registered <b>${dominantFace}</b> while voice indicated <b>${dominantVoice}</b>.</span>`;
+        }
+        if (elDiagnostic) {
+          elDiagnostic.innerHTML = `Diagnostic Summary: Dissonance registered between facial expression (${dominantFace}, ${faceConf.toFixed(1)}%) and vocal modulation (${dominantVoice}, ${voiceConf.toFixed(1)}%). Fused verdict settled at ${topFinal} (${finalConf.toFixed(1)}%).`;
+        }
+      }
 
       if (transcriptionBox) {
         if (fullRecognizedText.length > 0) {
-          transcriptionBox.innerHTML = `"${fullRecognizedText}"`;
-          transcriptionBox.style.color = '#A7F3D0';
-          transcriptionBox.style.fontStyle = 'normal';
+          transcriptionBox.innerText = `"${fullRecognizedText}"`;
           if (transcriptBadge) {
             transcriptBadge.innerText = 'Voice Transcribed ✓';
-            transcriptBadge.style.color = '#10B981';
-            transcriptBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+            transcriptBadge.style.color = 'var(--status-success)';
           }
         } else if (voiceWasHeard) {
-          // Audio energy detected but no clear speech words isolated
-          transcriptionBox.innerHTML = `"Vocal sound detected during assessment, but no clear linguistic speech transcribed."`;
-          transcriptionBox.style.color = '#FDE68A';
-          transcriptionBox.style.fontStyle = 'italic';
+          transcriptionBox.innerText = '"Vocal sound detected during assessment, but no clear linguistic speech transcribed."';
           if (transcriptBadge) {
             transcriptBadge.innerText = 'Audio Signal Heard';
-            transcriptBadge.style.color = '#F59E0B';
-            transcriptBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+            transcriptBadge.style.color = 'var(--status-warning)';
           }
         } else {
-          // Nothing was heard
-          transcriptionBox.innerHTML = `no voice is recorded`;
-          transcriptionBox.style.color = '#94A3B8';
-          transcriptionBox.style.fontStyle = 'italic';
+          transcriptionBox.innerText = 'no voice is recorded';
           if (transcriptBadge) {
             transcriptBadge.innerText = 'No Voice Detected';
-            transcriptBadge.style.color = '#94A3B8';
-            transcriptBadge.style.background = 'rgba(148, 163, 184, 0.15)';
+            transcriptBadge.style.color = 'var(--text-muted)';
           }
         }
       }
 
-      // Save latest report data for PDF export
       state.lastReportData = {
         timestamp: new Date().toLocaleString(),
         finalEmotion: topFinal,
@@ -2286,29 +2794,27 @@
         concordance: isConcordant ? 'Harmonic Concordance Confirmed (Face and Voice agree)' : 'Modality Divergence Detected (Affective mismatch)',
         transcription: fullRecognizedText.length > 0 ? `"${fullRecognizedText}"` : (voiceWasHeard ? "Vocal sound detected during assessment, but no clear linguistic speech transcribed." : "no voice is recorded"),
         transcriptionStatus: fullRecognizedText.length > 0 ? "Voice Transcribed" : (voiceWasHeard ? "Audio Signal Heard" : "No Voice Detected"),
-        diagnostic: isConcordant 
+        diagnostic: isConcordant
           ? `Over the 30-second assessment, Phase 1 (0s-15s visual facial geometry, 70% weight) and Phase 2 (15s-30s vocal acoustic prosody, 30% weight) demonstrated strong mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`
           : `The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%, 70% weight), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%, 30% weight). Multimodal decision fusion weighted to ${topFinal} at ${finalConf.toFixed(1)}%.`
       };
 
-      // Open Modal
+      // Open Modal automatically
       if (elReportModal) elReportModal.style.display = 'flex';
 
-      // Announce final verdict via speech synthesis
-      const speechMsg = `30-second multimodal analytics complete. The final recognized emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence, weighted 70 percent on facial expression and 30 percent on vocal modulation. ${isConcordant ? 'Facial expressions and vocal tone are in harmonic agreement.' : 'Cross-modality divergence was detected between face and voice.'}`;
-      speakPhrase(speechMsg);
+      speakPhrase(`Analysis complete. Recognized emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence.`);
     }
 
-    // Professional PDF Report Generator using jsPDF
+    // PDF Report Generator using jsPDF
     function downloadPdfReport() {
       const rep = state.lastReportData;
       if (!rep) {
-        alert('Please complete the 30-second analytics session first to generate a report!');
+        alert('Please complete an analysis session first to generate a full report.');
         return;
       }
 
       if (!window.jspdf || !window.jspdf.jsPDF) {
-        alert('PDF library is loading. Please try again in a few moments.');
+        alert('PDF engine is initializing, please try again in a moment.');
         return;
       }
 
@@ -2324,40 +2830,40 @@
       const contentWidth = pageWidth - (margin * 2);
       let y = 16;
 
-      // 1. Header Banner
-      doc.setFillColor(15, 23, 42); // Deep navy #0F172A
+      // 1. Header Banner (AFFECT AI Research Lab Styling)
+      doc.setFillColor(12, 17, 26); // #0C111A
       doc.roundedRect(margin, y, contentWidth, 24, 3, 3, 'F');
-      
-      doc.setTextColor(6, 182, 212); // Cyan
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.text('AI MULTIMODAL EMOTION RECOGNITION REPORT', margin + 6, y + 9);
 
-      doc.setTextColor(148, 163, 184); // Slate text
+      doc.setTextColor(34, 211, 238); // Cyan
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.text('AFFECT AI — MULTIMODAL EMOTION INTELLIGENCE REPORT', margin + 6, y + 9);
+
+      doc.setTextColor(148, 163, 184);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.text(`Generated: ${rep.timestamp}  |  Assessment Duration: 30.0s  |  Weights: 70% Face + 30% Voice`, margin + 6, y + 17);
+      doc.setFontSize(8.5);
+      doc.text(`Generated: ${rep.timestamp}  |  Duration: 30.0s  |  Weights: 70% Face + 30% Voice`, margin + 6, y + 17);
 
       y += 30;
 
-      // 2. Final Affective State Card (Hero)
-      const emotionColorsRGB = {
-        Happy: [16, 185, 129],
-        Sad: [59, 130, 246],
-        Angry: [239, 68, 68],
-        Surprise: [245, 158, 11],
-        Neutral: [16, 185, 129]
+      // 2. Final Affective State Card
+      const rgbMap = {
+        Happy: [251, 191, 36],
+        Sad: [96, 165, 250],
+        Angry: [251, 113, 133],
+        Surprise: [192, 132, 252],
+        Neutral: [148, 163, 184]
       };
-      const heroColor = emotionColorsRGB[rep.finalEmotion] || [16, 185, 129];
+      const heroColor = rgbMap[rep.finalEmotion] || [251, 191, 36];
 
-      doc.setFillColor(248, 250, 252); // Soft light background
+      doc.setFillColor(248, 250, 252);
       doc.setDrawColor(heroColor[0], heroColor[1], heroColor[2]);
       doc.setLineWidth(0.8);
       doc.roundedRect(margin, y, contentWidth, 32, 3, 3, 'FD');
 
       doc.setTextColor(100, 116, 139);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.text('OVERALL HUMAN AFFECTIVE STATE (MULTIMODAL DECISION FUSION)', margin + 6, y + 7);
 
       doc.setTextColor(heroColor[0], heroColor[1], heroColor[2]);
@@ -2369,106 +2875,96 @@
       doc.setFontSize(11);
       doc.text(`Overall Confidence: ${rep.finalConf}%`, margin + 65, y + 15);
 
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.setTextColor(71, 85, 105);
-      doc.text('Calibration Matrix: 70% Visual Facial Geometry + 30% Vocal Acoustic Modulation', margin + 65, y + 21);
-
-      // Status pill on hero
-      doc.setFillColor(heroColor[0], heroColor[1], heroColor[2]);
-      doc.roundedRect(margin + contentWidth - 36, y + 5, 30, 7, 2, 2, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      doc.text('VERIFIED', margin + contentWidth - 27, y + 9.5);
+      doc.text('Calibrated Weightage: 70% Facial Geometry + 30% Vocal Prosody', margin + 65, y + 21);
 
       y += 38;
 
-      // 3. Unimodal Breakdown (Two Columns: Phase 1 & Phase 2)
+      // 3. Two Columns: Phase 1 & Phase 2
       const colWidth = (contentWidth - 6) / 2;
 
-      // Column A: Phase 1 (Face)
+      // Phase 1: Face
       doc.setFillColor(241, 245, 249);
-      doc.setDrawColor(6, 182, 212);
+      doc.setDrawColor(34, 211, 238);
       doc.setLineWidth(0.5);
-      doc.roundedRect(margin, y, colWidth, 38, 2, 2, 'FD');
+      doc.roundedRect(margin, y, colWidth, 36, 2, 2, 'FD');
 
-      doc.setTextColor(8, 145, 178); // Cyan dark
+      doc.setTextColor(8, 145, 178);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
+      doc.setFontSize(8.5);
       doc.text('PHASE 1: FACIAL EXPRESSIONS (70% WEIGHT)', margin + 4, y + 6);
 
       doc.setTextColor(15, 23, 42);
-      doc.setFontSize(13);
-      doc.text(`${rep.faceEmotion} (${rep.faceConf}%)`, margin + 4, y + 15);
+      doc.setFontSize(12);
+      doc.text(`${rep.faceEmotion} (${rep.faceConf}%)`, margin + 4, y + 14);
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(71, 85, 105);
-      doc.text('468-Point Mesh Geometry Analysis:', margin + 4, y + 22);
+      doc.text('468-Point Mesh Geometry Analysis:', margin + 4, y + 21);
       const splitFaceStyle = doc.splitTextToSize(rep.faceStyle, colWidth - 8);
-      doc.text(splitFaceStyle, margin + 4, y + 27);
+      doc.text(splitFaceStyle, margin + 4, y + 26);
 
-      // Column B: Phase 2 (Voice)
+      // Phase 2: Voice
       const col2X = margin + colWidth + 6;
       doc.setFillColor(241, 245, 249);
       doc.setDrawColor(139, 92, 246);
       doc.setLineWidth(0.5);
-      doc.roundedRect(col2X, y, colWidth, 38, 2, 2, 'FD');
+      doc.roundedRect(col2X, y, colWidth, 36, 2, 2, 'FD');
 
-      doc.setTextColor(124, 58, 237); // Purple dark
+      doc.setTextColor(124, 58, 237);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
+      doc.setFontSize(8.5);
       doc.text('PHASE 2: VOICE MODULATION (30% WEIGHT)', col2X + 4, y + 6);
 
       doc.setTextColor(15, 23, 42);
-      doc.setFontSize(13);
-      doc.text(`${rep.voiceEmotion} (${rep.voiceConf}%)`, col2X + 4, y + 15);
+      doc.setFontSize(12);
+      doc.text(`${rep.voiceEmotion} (${rep.voiceConf}%)`, col2X + 4, y + 14);
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(71, 85, 105);
-      doc.text('Acoustic Prosody & Pitch Intonation:', col2X + 4, y + 22);
+      doc.text('Acoustic Prosody & Pitch Intonation:', col2X + 4, y + 21);
       const splitVoiceCadence = doc.splitTextToSize(rep.voiceCadence, colWidth - 8);
-      doc.text(splitVoiceCadence, col2X + 4, y + 27);
+      doc.text(splitVoiceCadence, col2X + 4, y + 26);
 
-      y += 44;
+      y += 42;
 
-      // 4. Voice Transcription (Speech-to-Text) Section
-      doc.setFillColor(245, 243, 255); // Soft violet
+      // 4. Voice Transcription
+      doc.setFillColor(245, 243, 255);
       doc.setDrawColor(167, 139, 250);
       doc.setLineWidth(0.5);
-      doc.roundedRect(margin, y, contentWidth, 28, 2, 2, 'FD');
+      doc.roundedRect(margin, y, contentWidth, 26, 2, 2, 'FD');
 
       doc.setTextColor(109, 40, 217);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
+      doc.setFontSize(8.5);
       doc.text('VOICE TRANSCRIPTION (SPEECH-TO-TEXT)', margin + 4, y + 6);
 
       doc.setFontSize(7.5);
-      doc.setTextColor(124, 58, 237);
-      doc.text(`Status: [ ${rep.transcriptionStatus} ]`, margin + contentWidth - 45, y + 6);
+      doc.text(`Status: [ ${rep.transcriptionStatus} ]`, margin + contentWidth - 42, y + 6);
 
       doc.setFont('courier', 'normal');
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.setTextColor(30, 41, 59);
       const splitTranscript = doc.splitTextToSize(rep.transcription, contentWidth - 10);
-      doc.text(splitTranscript, margin + 5, y + 14);
+      doc.text(splitTranscript, margin + 4, y + 13);
 
-      y += 33;
+      y += 31;
 
-      // 5. Multimodal Probability Distribution Table / Bars
+      // 5. Probability Distribution Table
       doc.setFillColor(248, 250, 252);
       doc.setDrawColor(226, 232, 240);
       doc.roundedRect(margin, y, contentWidth, 34, 2, 2, 'FD');
 
       doc.setTextColor(15, 23, 42);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.text('MULTIMODAL DECISION PROBABILITIES (70% FACE + 30% VOICE FUSED)', margin + 4, y + 6);
 
-      const emList = ['Happy', 'Sad', 'Angry', 'Surprise', 'Neutral'];
       let barY = y + 12;
-      emList.forEach(e => {
+      ['Happy', 'Sad', 'Angry', 'Surprise', 'Neutral'].forEach(e => {
         const val = rep.fusedScores[e] || 0;
         const pct = Math.round(val * 100);
         doc.setFont('helvetica', 'bold');
@@ -2476,12 +2972,10 @@
         doc.setTextColor(51, 65, 85);
         doc.text(`${e}:`, margin + 6, barY + 2);
 
-        // Bar background
         doc.setFillColor(226, 232, 240);
         doc.roundedRect(margin + 26, barY - 1, 100, 3.5, 1, 1, 'F');
 
-        // Bar fill
-        const c = emotionColorsRGB[e] || [16, 185, 129];
+        const c = rgbMap[e] || [251, 191, 36];
         doc.setFillColor(c[0], c[1], c[2]);
         const fillW = Math.max(1, (pct / 100) * 100);
         doc.roundedRect(margin + 26, barY - 1, fillW, 3.5, 1, 1, 'F');
@@ -2495,7 +2989,7 @@
 
       y += 39;
 
-      // 6. Cross-Modality Concordance & Diagnostic Summary
+      // 6. Concordance & Diagnostic Summary
       doc.setFillColor(240, 253, 244);
       doc.setDrawColor(74, 222, 128);
       doc.setLineWidth(0.5);
@@ -2503,18 +2997,18 @@
 
       doc.setTextColor(21, 128, 61);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.text(`CONCORDANCE EVALUATION: ${rep.concordance}`, margin + 4, y + 6);
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(51, 65, 85);
       const splitDiag = doc.splitTextToSize(rep.diagnostic, contentWidth - 8);
-      doc.text(splitDiag, margin + 4, y + 12);
+      doc.text(splitDiag, margin + 4, y + 11);
 
       y += 28;
 
-      // 7. Footer
+      // Footer
       doc.setDrawColor(203, 213, 225);
       doc.setLineWidth(0.3);
       doc.line(margin, y, margin + contentWidth, y);
@@ -2522,24 +3016,53 @@
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(7.5);
       doc.setTextColor(148, 163, 184);
-      doc.text('AIPS AI Emotion Recognition System | Powered by 468-pt Google MediaPipe Face Mesh & Acoustic BiLSTM Fusion', margin, y + 5);
+      doc.text('AFFECT AI Multimodal Emotion Intelligence System | 468-pt Face Mesh & Acoustic Prosody Fusion', margin, y + 5);
       doc.text('Page 1 of 1', margin + contentWidth - 16, y + 5);
 
-      // Save PDF to browser
-      const cleanFileName = `Emotion_Report_${rep.finalEmotion}_${Date.now().toString().slice(-6)}.pdf`;
+      const cleanFileName = `AffectAI_Report_${rep.finalEmotion}_${Date.now().toString().slice(-6)}.pdf`;
       doc.save(cleanFileName);
     }
 
-    // Wire up Analytics UI buttons
+    // Event Listeners
     document.getElementById('btnStartAnalytics').addEventListener('click', startAnalyticsSession);
     document.getElementById('btnStartAnalyticsHeader').addEventListener('click', startAnalyticsSession);
     document.getElementById('btnCancelAnalytics').addEventListener('click', stopAnalyticsSession);
-    document.getElementById('btnCloseReport').addEventListener('click', () => elReportModal.style.display = 'none');
-    document.getElementById('btnCloseReportBtn').addEventListener('click', () => elReportModal.style.display = 'none');
+
+    // Modal Triggers
+    document.getElementById('btnOpenGuide').addEventListener('click', () => {
+      document.getElementById('guideModal').style.display = 'flex';
+    });
+    document.getElementById('btnCloseGuide').addEventListener('click', () => {
+      document.getElementById('guideModal').style.display = 'none';
+    });
+    document.getElementById('btnGotIt').addEventListener('click', () => {
+      document.getElementById('guideModal').style.display = 'none';
+    });
+
+    document.getElementById('btnOpenFullReport').addEventListener('click', () => {
+      if (!state.lastReportData) {
+        // Prepare current state as report data if not yet run
+        finishAnalyticsSession();
+      }
+      document.getElementById('analyticsReportModal').style.display = 'flex';
+    });
+    document.getElementById('btnExportPdfQuick').addEventListener('click', () => {
+      if (!state.lastReportData) {
+        finishAnalyticsSession();
+      }
+      downloadPdfReport();
+    });
+
+    document.getElementById('btnCloseReport').addEventListener('click', () => {
+      document.getElementById('analyticsReportModal').style.display = 'none';
+    });
+    document.getElementById('btnCloseReportBtn').addEventListener('click', () => {
+      document.getElementById('analyticsReportModal').style.display = 'none';
+    });
     document.getElementById('btnDownloadPdf').addEventListener('click', downloadPdfReport);
     document.getElementById('btnSpeakReport').addEventListener('click', () => {
       const top = state.currentFinalEmotion;
-      speakPhrase(`Multimodal Emotion Report. The final recognized state is ${top}. Face and voice assessment completed across 30 seconds.`);
+      speakPhrase(`Affect AI report summary. Final recognized emotion is ${top}.`);
     });
 
     // Initial Load
