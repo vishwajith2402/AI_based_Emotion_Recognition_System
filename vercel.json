@@ -1,5 +1,16 @@
 {
   "version": 2,
-  "buildCommand": "echo 'Deploying static dashboard'",
-  "outputDirectory": "ui/static"
+  "framework": null,
+  "builds": [
+    {
+      "src": "ui/static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/ui/static/$1"
+    }
+  ]
 }
