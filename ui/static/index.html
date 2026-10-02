@@ -417,28 +417,43 @@
     }
 
     /* ========================================================
-       LEFT CARD — FACIAL ANALYSIS (Camera & 468-pt Mesh)
+       LEFT CARD — FACIAL ANALYSIS (Camera & 468-pt Mesh Viewport)
+       Calibrated to 4:3 native webcam geometry with strict z-indexing
        ======================================================== */
     .camera-viewport {
       position: relative;
       width: 100%;
-      height: 380px;
+      aspect-ratio: 4 / 3;
+      min-height: 280px;
+      max-height: 480px;
       border-radius: var(--radius-md);
       overflow: hidden;
-      background: #000000;
+      background: #020617;
       border: 1px solid var(--border-glass);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    video, canvas#faceCanvas {
+    video#webcamVideo {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      z-index: 1;
+    }
+
+    canvas#faceCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 5;
+      pointer-events: none;
     }
 
     video.mirrored, canvas.mirrored {
@@ -451,14 +466,14 @@
       transform: translateY(-50%);
       font-family: var(--font-mono);
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.45);
-      background: rgba(7, 10, 15, 0.75);
+      color: rgba(255, 255, 255, 0.65);
+      background: rgba(7, 10, 15, 0.82);
       backdrop-filter: blur(8px);
       padding: 0.6rem 1.1rem;
       border-radius: var(--radius-pill);
       border: 1px solid var(--border-glass);
       pointer-events: none;
-      z-index: 5;
+      z-index: 8;
     }
 
     .hud-metrics-overlay {
@@ -544,9 +559,9 @@
       width: 320px;
       height: 320px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(34, 211, 238, 0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.12) 0%, transparent 70%);
       pointer-events: none;
-      transition: background 0.5s ease;
+      transition: background 0.4s ease;
       z-index: 0;
     }
 
@@ -641,6 +656,7 @@
       line-height: 1;
       filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.3));
       animation: gentleFloat 4s ease-in-out infinite;
+      transition: filter 0.3s ease;
     }
 
     @keyframes gentleFloat {
@@ -727,6 +743,7 @@
       color: #6EE7B7;
       position: relative;
       z-index: 1;
+      transition: all 0.3s ease;
     }
 
     .harmony-banner.conflict {
@@ -907,7 +924,7 @@
       width: 0%;
       background: rgba(255, 255, 255, 0.3);
       border-radius: 4px;
-      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
     }
 
     .dist-bar.dominant {
@@ -1242,9 +1259,6 @@
       .secondary-grid {
         grid-template-columns: 1fr;
       }
-      .camera-viewport {
-        height: 320px;
-      }
       header {
         padding: 0.85rem 1.2rem;
       }
@@ -1333,7 +1347,7 @@
         <div class="camera-viewport">
           <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
           <canvas id="faceCanvas" class="mirrored"></canvas>
-          <div class="viewport-overlay-tip" id="camTipText">Camera Standby — Click "Start Camera"</div>
+          <div class="viewport-overlay-tip" id="camTipText">Camera Standby &mdash; Click "Start Camera"</div>
           <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
             <span class="hud-chip locked" id="hudTrackStatus">● 468 PT MESH LOCKED</span>
             <span class="hud-chip" id="hudCoords">COORDS: X:-- Y:--</span>
@@ -1346,7 +1360,7 @@
             <span>▶</span> Start Camera
           </button>
           <button class="btn-secondary" id="btnFlipCam" title="Toggle Mirror / Normal view">
-            <span>🪞</span> Flip Mirror
+            <span>🪞</span> Mirrored
           </button>
           <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
             <span>🕸️</span> B&W Mesh
@@ -1416,7 +1430,7 @@
           <!-- Concordance Confirmation -->
           <div class="harmony-banner" id="concordanceBanner">
             <span>●</span>
-            <span id="concordanceText">HARMONY CONFIRMED — Facial and vocal signals align</span>
+            <span id="concordanceText">HARMONY CONFIRMED &mdash; Facial and vocal signals align</span>
           </div>
 
           <!-- Level 4 — Post-Analysis Quick Actions -->
@@ -1770,6 +1784,14 @@
       }
     }
 
+    // Euclidean distance helper
+    function dist(p1, p2) {
+      if (!p1 || !p2) return 0.001;
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      return Math.hypot(dx, dy);
+    }
+
     // Google MediaPipe Face Mesh & Tracking Engine
     let faceMesh = null;
     let isProcessingFrame = false;
@@ -1786,7 +1808,8 @@
       targetY: 0,
       targetW: 220,
       targetH: 240,
-      isLocked: false
+      isLocked: false,
+      smoothedProbs: null
     };
 
     function initMediaPipe() {
@@ -1802,10 +1825,19 @@
             minTrackingConfidence: 0.5
           });
           faceMesh.onResults(onFaceMeshResults);
-          console.log('[MediaPipe] FaceMesh initialized');
+          console.log('[MediaPipe] FaceMesh loaded successfully');
         } catch (err) {
           console.warn('[MediaPipe] Init error:', err);
         }
+      }
+      return !!faceMesh;
+    }
+
+    // Pre-warm MediaPipe wasm assets in background
+    function warmUpMediaPipe(retries = 10) {
+      if (initMediaPipe()) return;
+      if (retries > 0) {
+        setTimeout(() => warmUpMediaPipe(retries - 1), 600);
       }
     }
 
@@ -1824,10 +1856,13 @@
           btn.innerHTML = '<span>⏹</span> Stop Camera';
           btn.classList.add('active');
           setSystemStatus('CAMERA ACTIVE', 'var(--cyan)');
-          document.getElementById('camTipText').style.display = 'none';
-          document.getElementById('camHudOverlay').style.display = 'flex';
+          const tip = document.getElementById('camTipText');
+          if (tip) tip.style.display = 'none';
+          const hud = document.getElementById('camHudOverlay');
+          if (hud) hud.style.display = 'flex';
           requestAnimationFrame(processVideoFrame);
         } catch (err) {
+          console.error('[Camera] Access error:', err);
           alert('Webcam permission is needed for live facial analysis. You can also simulate expressions using the test drawer.');
         }
       } else {
@@ -1837,8 +1872,11 @@
         btn.classList.remove('active');
         faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
         setSystemStatus('SYSTEM READY', 'var(--cyan)');
-        document.getElementById('camTipText').style.display = 'block';
-        document.getElementById('camHudOverlay').style.display = 'none';
+        const tip = document.getElementById('camTipText');
+        if (tip) tip.style.display = 'block';
+        const hud = document.getElementById('camHudOverlay');
+        if (hud) hud.style.display = 'none';
+        tracker.smoothedProbs = null;
       }
     });
 
@@ -1847,6 +1885,7 @@
       tracker.isMirrored = !tracker.isMirrored;
       video.classList.toggle('mirrored', tracker.isMirrored);
       faceCanvas.classList.toggle('mirrored', tracker.isMirrored);
+      document.getElementById('btnFlipCam').innerHTML = tracker.isMirrored ? '<span>🪞</span> Mirrored' : '<span>📷</span> Normal';
     });
 
     // Toggle 468-Point Mesh Styles
@@ -1858,10 +1897,10 @@
         meshStyleIdx = (meshStyleIdx + 1) % meshStyles.length;
         tracker.meshStyle = meshStyles[meshStyleIdx];
         const labels = {
-          bw_mesh: '🕸️ B&W Mesh',
-          bw_dots: '⚪ B&W Dots',
-          bw_contours: '✨ Contours',
-          off: '🚫 Hidden'
+          bw_mesh: 'B&W Mesh',
+          bw_dots: 'B&W Dots',
+          bw_contours: 'Contours',
+          off: 'Hidden'
         };
         btnToggleMesh.innerHTML = `<span>🕸️</span> ${labels[tracker.meshStyle]}`;
         if (tracker.meshStyle === 'off') {
@@ -1873,18 +1912,25 @@
     // Real-Time Frame Loop
     async function processVideoFrame() {
       if (!state.isCameraRunning) return;
-      if (video.videoWidth > 0) {
+      if (video.readyState >= 2 && video.videoWidth > 0) {
         if (faceCanvas.width !== video.videoWidth || faceCanvas.height !== video.videoHeight) {
           faceCanvas.width = video.videoWidth;
           faceCanvas.height = video.videoHeight;
+        }
+
+        if (!faceMesh) {
+          initMediaPipe();
         }
 
         if (faceMesh && !isProcessingFrame) {
           isProcessingFrame = true;
           try {
             await faceMesh.send({ image: video });
-          } catch (e) {}
-          isProcessingFrame = false;
+          } catch (e) {
+            // Frame skip handling
+          } finally {
+            isProcessingFrame = false;
+          }
         }
       }
       requestAnimationFrame(processVideoFrame);
@@ -1903,7 +1949,7 @@
         const lm = results.multiFaceLandmarks[0];
         tracker.isLocked = true;
 
-        // Bounding Box
+        // Dynamic Bounding Box from all landmarks
         let minX = 1, maxX = 0, minY = 1, maxY = 0;
         for (let i = 0; i < lm.length; i++) {
           const p = lm[i];
@@ -1920,39 +1966,43 @@
         tracker.targetW = Math.min(W - tracker.targetX, (maxX - minX + padX * 2) * W);
         tracker.targetH = Math.min(H - tracker.targetY, (maxY - minY + padY * 2.5) * H);
 
+        // Smooth spring damping
         tracker.x += (tracker.targetX - tracker.x) * 0.35;
         tracker.y += (tracker.targetY - tracker.y) * 0.35;
         tracker.w += (tracker.targetW - tracker.w) * 0.35;
         tracker.h += (tracker.targetH - tracker.h) * 0.35;
 
-        // 1. Draw 468-Point Wireframe (Subtle Crisp White & Grayscale)
+        // 1. Draw 468-Point Wireframe Tessellation (High-contrast subtle white)
         if (tracker.meshStyle === 'bw_mesh') {
           if (typeof FACEMESH_TESSELATION !== 'undefined' && typeof drawConnectors !== 'undefined') {
-            drawConnectors(faceCtx, lm, FACEMESH_TESSELATION, { color: '#FFFFFF33', lineWidth: 0.75 });
+            drawConnectors(faceCtx, lm, FACEMESH_TESSELATION, { color: '#FFFFFF35', lineWidth: 0.8 });
           }
         }
 
-        // 2. Draw Subtle Contours
+        // 2. Draw Facial Contours in Crisp White
         if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_contours') {
           if (typeof drawConnectors !== 'undefined') {
             if (typeof FACEMESH_FACE_OVAL !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_FACE_OVAL, { color: '#FFFFFF88', lineWidth: 1.5 });
+              drawConnectors(faceCtx, lm, FACEMESH_FACE_OVAL, { color: '#FFFFFFCC', lineWidth: 1.8 });
             }
             if (typeof FACEMESH_LIPS !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LIPS, { color: '#FFFFFFCC', lineWidth: 1.8 });
+              drawConnectors(faceCtx, lm, FACEMESH_LIPS, { color: '#FFFFFF', lineWidth: 2.2 });
             }
             if (typeof FACEMESH_LEFT_EYE !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYE, { color: '#FFFFFFBB', lineWidth: 1.5 });
-              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYE, { color: '#FFFFFFBB', lineWidth: 1.5 });
+              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYE, { color: '#FFFFFFEE', lineWidth: 1.8 });
+              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYE, { color: '#FFFFFFEE', lineWidth: 1.8 });
             }
             if (typeof FACEMESH_LEFT_EYEBROW !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: '#FFFFFFBB', lineWidth: 1.5 });
-              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: '#FFFFFFBB', lineWidth: 1.5 });
+              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: '#FFFFFFEE', lineWidth: 2.0 });
+              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: '#FFFFFFEE', lineWidth: 2.0 });
+            }
+            if (typeof FACEMESH_IRISES !== 'undefined') {
+              drawConnectors(faceCtx, lm, FACEMESH_IRISES, { color: '#22D3EE', lineWidth: 1.8 });
             }
           }
         }
 
-        // 3. Landmark Dots (White with subtle shadow)
+        // 3. High-Contrast Landmark Dots (White center with crisp Black border)
         if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_dots') {
           const keyFeatureIndices = [
             10, 152, 1, 33, 133, 159, 145, 263, 362, 386, 374,
@@ -1965,20 +2015,23 @@
               const px = p.x * W;
               const py = p.y * H;
               faceCtx.beginPath();
-              faceCtx.arc(px, py, 2.2, 0, Math.PI * 2);
+              faceCtx.arc(px, py, 2.5, 0, Math.PI * 2);
               faceCtx.fillStyle = '#FFFFFF';
               faceCtx.fill();
+              faceCtx.strokeStyle = '#000000';
+              faceCtx.lineWidth = 1.2;
+              faceCtx.stroke();
             }
           }
         }
 
-        // 4. Subtle Tracking Reticle (Electric Cyan accent on corners only)
+        // 4. Subtle Tracking Reticle (High-Contrast Corner Brackets)
         drawTrackingReticle(tracker.x, tracker.y, tracker.w, tracker.h);
 
-        // 5. Real-time Facial Expression Analysis
+        // 5. High-Precision Geometric Facial Emotion Recognition (FACS Algorithm)
         analyzeLiveFacialLandmarks(lm);
 
-        // Update HUD
+        // Update HUD text
         const hudCoords = document.getElementById('hudCoords');
         const hudStatus = document.getElementById('hudTrackStatus');
         if (hudCoords) hudCoords.innerText = `X:${Math.round(tracker.x)} Y:${Math.round(tracker.y)} W:${Math.round(tracker.w)}`;
@@ -1996,9 +2049,9 @@
       }
     }
 
-    // Precise Corner Reticle
+    // Precise Dual-Pass Corner Reticle
     function drawTrackingReticle(bx, by, bw, bh) {
-      const len = Math.max(16, bw * 0.10);
+      const len = Math.max(18, bw * 0.12);
       faceCtx.beginPath();
       // Corners
       faceCtx.moveTo(bx, by + len); faceCtx.lineTo(bx, by); faceCtx.lineTo(bx + len, by);
@@ -2006,44 +2059,88 @@
       faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
       faceCtx.moveTo(bx + bw - len, by + bh); faceCtx.lineTo(bx + bw, by + bh); faceCtx.lineTo(bx + bw, by + bh - len);
 
+      // Pass 1: Crisp outer shadow line
+      faceCtx.strokeStyle = '#000000';
+      faceCtx.lineWidth = 4.5;
+      faceCtx.stroke();
+
+      // Pass 2: Electric Cyan inner line
       faceCtx.strokeStyle = '#22D3EE';
-      faceCtx.lineWidth = 1.8;
+      faceCtx.lineWidth = 2.0;
       faceCtx.stroke();
     }
 
-    // Live Landmark Geometry Calculations
+    // Live Landmark Geometry Calculations (FACS Kinematics)
     function analyzeLiveFacialLandmarks(lm) {
-      // Lip curvature
-      const cornerAvgY = (lm[61].y + lm[291].y) / 2;
-      const lipCenterY = (lm[13].y + lm[14].y) / 2;
-      const faceHeight = Math.abs(lm[152].y - lm[10].y) || 0.4;
-      const smileScore = (lipCenterY - cornerAvgY) / faceHeight;
+      if (!lm || lm.length < 468) return;
 
-      // Mouth opening
-      const mouthHeight = Math.abs(lm[13].y - lm[14].y);
-      const mouthWidth = Math.abs(lm[61].x - lm[291].x) || 0.1;
-      const mouthOpenRatio = mouthHeight / mouthWidth;
-      const faceWidth = Math.abs(lm[234].x - lm[454].x) || 0.35;
-      const mouthWidthRatio = mouthWidth / faceWidth;
-
-      // Eye Aspect Ratio (EAR)
-      const leftEAR = Math.abs(lm[159].y - lm[145].y) / (Math.abs(lm[33].x - lm[133].x) || 0.05);
-      const rightEAR = Math.abs(lm[386].y - lm[374].y) / (Math.abs(lm[362].x - lm[263].x) || 0.05);
+      // 1. Scale Normalization Factors (Invariant to distance from webcam)
+      const dEye = Math.max(0.08, dist(lm[33], lm[263]));      // Inter-ocular distance
+      const dFaceH = Math.max(0.15, dist(lm[168], lm[152]));   // Nasion to Chin
+      
+      // 2. Eye Aspect Ratio (EAR) - Measure of eye aperture / openness
+      const leftEAR = (dist(lm[160], lm[144]) + dist(lm[158], lm[153])) / (2 * Math.max(0.02, dist(lm[33], lm[133])));
+      const rightEAR = (dist(lm[385], lm[380]) + dist(lm[387], lm[373])) / (2 * Math.max(0.02, dist(lm[362], lm[263])));
       const avgEAR = (leftEAR + rightEAR) / 2;
 
-      // Eyebrows
-      const interEyeDist = Math.abs(lm[33].x - lm[263].x) || 0.3;
-      const browDist = Math.abs(lm[55].x - lm[285].x) / interEyeDist;
-      const browHeightLeft = Math.abs(lm[70].y - lm[159].y) / faceHeight;
-      const browHeightRight = Math.abs(lm[300].y - lm[386].y) / faceHeight;
+      // 3. Mouth Geometry
+      const cornerAvgY = (lm[61].y + lm[291].y) / 2;
+      const lipCenterY = (lm[13].y + lm[14].y) / 2;
+      const mouthWidth = dist(lm[61], lm[291]) / dEye;
+      const mouthAperture = dist(lm[13], lm[14]) / dEye;
+      const smileCurvature = (lipCenterY - cornerAvgY) / dFaceH;
+
+      // Zygomatic Cheek Distance (Shortens when smiling as mouth corners pull toward outer eyes)
+      const leftCheekDist = dist(lm[61], lm[33]) / dEye;
+      const rightCheekDist = dist(lm[291], lm[263]) / dEye;
+      const avgCheekDist = (leftCheekDist + rightCheekDist) / 2;
+
+      // 4. Eyebrow Geometry
+      const browDist = dist(lm[55], lm[285]) / dEye; // Distance between inner eyebrows
+      const browHeightLeft = dist(lm[70], lm[159]) / dFaceH;
+      const browHeightRight = dist(lm[300], lm[386]) / dFaceH;
       const avgBrowHeight = (browHeightLeft + browHeightRight) / 2;
+      const innerBrowY = (lm[107].y + lm[336].y) / 2;
+      const outerBrowY = (lm[70].y + lm[300].y) / 2;
 
-      // Continuous Expressive Scoring
-      const happyScore = Math.max(0, (smileScore - 0.005) * 45) + Math.max(0, (mouthWidthRatio - 0.74) * 8);
-      const surpriseScore = Math.max(0, (mouthOpenRatio - 0.22) * 5) + Math.max(0, (avgEAR - 0.28) * 6) + Math.max(0, (avgBrowHeight - 0.12) * 4);
-      const angryScore = Math.max(0, (0.32 - browDist) * 14) + Math.max(0, (0.20 - avgEAR) * 5);
-      const sadScore = Math.max(0, (-0.004 - smileScore) * 40);
+      // 5. FACS Expressive Feature Computations:
+      
+      // HAPPY (AU12 Zygomaticus + AU6 Orbicularis):
+      // - Lip corners elevated above mouth center
+      // - Mouth widened
+      // - Cheek-to-eye distance shortened
+      const cheekLift = Math.max(0, (0.95 - avgCheekDist) * 5.0);
+      const widthExpansion = Math.max(0, (mouthWidth - 0.73) * 4.0);
+      const curveLift = Math.max(0, (smileCurvature - 0.003) * 45.0);
+      const happyScore = (cheekLift * 0.40) + (widthExpansion * 0.35) + (curveLift * 0.25);
 
+      // SURPRISE (AU1/2 Brows Up + AU5 Eyes Wide + AU26 Mouth Drop):
+      // - Vertical mouth open
+      // - Eyes wide open (EAR > 0.28)
+      // - Brows raised high
+      const mouthDrop = Math.max(0, (mouthAperture - 0.09) * 4.5);
+      const eyeWide = Math.max(0, (avgEAR - 0.27) * 7.5);
+      const browElevation = Math.max(0, (avgBrowHeight - 0.092) * 14.0);
+      const surpriseScore = (mouthDrop * 0.45) + (eyeWide * 0.30) + (browElevation * 0.25);
+
+      // ANGRY (AU4 Corrugator Brow Furrow + AU7 Eye Squint + Tense Mouth):
+      // - Inner brows pulled together (browDist < 0.31)
+      // - Brows pulled down towards nose root
+      // - Eyes narrowed in a glare
+      const browFurrow = Math.max(0, (0.31 - browDist) * 14.0);
+      const browDown = Math.max(0, (innerBrowY - lm[168].y) / dFaceH * 15.0);
+      const eyeGlare = Math.max(0, (0.21 - avgEAR) * 6.5);
+      const angryScore = (browFurrow * 0.50) + (browDown * 0.25) + (eyeGlare * 0.25);
+
+      // SAD (AU1 Inner Brow Raise + AU15 Corner Depressor):
+      // - Mouth corners droop below lower lip (lm 17)
+      // - Inner brows raised higher than outer brows
+      // - Gentle eye droop
+      const mouthDroop = Math.max(0, (cornerAvgY - lm[17].y + 0.004) / dFaceH * 40.0);
+      const griefBrow = Math.max(0, (outerBrowY - innerBrowY - 0.004) * 22.0);
+      const sadScore = (mouthDroop * 0.65) + (griefBrow * 0.35);
+
+      // 6. Classification & Confidence Calculation
       const expressiveScores = {
         Happy: happyScore,
         Surprise: surpriseScore,
@@ -2060,48 +2157,82 @@
         }
       }
 
-      // Neutral de-biasing
+      // Neutral De-Biasing: Any genuine expressive movement >= 0.15 activates the emotion!
       let liveEmotion = 'Neutral';
-      if (maxExpressiveScore >= 0.14) {
-        liveEmotion = topExpressive;
-      }
+      const rawFaceProbs = { Angry: 0.02, Happy: 0.02, Neutral: 0.04, Sad: 0.02, Surprise: 0.02 };
 
-      const faceProbs = { Angry: 0.02, Happy: 0.02, Neutral: 0.04, Sad: 0.02, Surprise: 0.02 };
-      if (liveEmotion !== 'Neutral') {
-        const primaryProb = Math.min(0.92, 0.72 + maxExpressiveScore * 0.18);
-        faceProbs[liveEmotion] = primaryProb;
-        faceProbs.Neutral = Math.max(0.02, (1.0 - primaryProb) * 0.25);
-        const rem = (1.0 - primaryProb - faceProbs.Neutral) / 3.0;
+      if (maxExpressiveScore >= 0.15) {
+        liveEmotion = topExpressive;
+        const primaryProb = Math.min(0.96, 0.74 + maxExpressiveScore * 0.20);
+        rawFaceProbs[liveEmotion] = primaryProb;
+        rawFaceProbs.Neutral = Math.max(0.02, (1.0 - primaryProb) * 0.25);
+        const rem = (1.0 - primaryProb - rawFaceProbs.Neutral) / 3.0;
         ['Angry', 'Happy', 'Sad', 'Surprise'].forEach(e => {
-          if (e !== liveEmotion) faceProbs[e] = Math.max(0.01, rem);
+          if (e !== liveEmotion) rawFaceProbs[e] = Math.max(0.01, rem);
         });
       } else {
-        faceProbs.Neutral = 0.65;
-        faceProbs.Happy = 0.10;
-        faceProbs.Surprise = 0.08;
-        faceProbs.Angry = 0.09;
-        faceProbs.Sad = 0.08;
+        const neutralP = Math.max(0.60, 0.88 - maxExpressiveScore * 1.5);
+        rawFaceProbs.Neutral = neutralP;
+        const rem = (1.0 - neutralP) / 4.0;
+        ['Angry', 'Happy', 'Sad', 'Surprise'].forEach(e => rawFaceProbs[e] = rem);
       }
-      state.latestFaceProbs = faceProbs;
 
-      // Update Diagnostics telemetry
-      const style = STYLE_MAP[liveEmotion] || STYLE_MAP.Neutral;
+      // 7. Exponential Moving Average (EMA) Temporal Smoothing (Alpha = 0.35)
+      if (!tracker.smoothedProbs) {
+        tracker.smoothedProbs = { ...rawFaceProbs };
+      } else {
+        const alpha = 0.35;
+        for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
+          tracker.smoothedProbs[e] = alpha * rawFaceProbs[e] + (1 - alpha) * tracker.smoothedProbs[e];
+        }
+      }
+
+      state.latestFaceProbs = tracker.smoothedProbs;
+      state.selectedFaceEmotion = liveEmotion;
+
+      // 8. Update Live Diagnostics
+      let mouthText = 'Normal Line 😐';
+      let eyesText = 'Normal Open';
+      let browText = 'Smooth Plain';
+
+      if (liveEmotion === 'Happy') {
+        mouthText = 'Curved Up Smile 🙂';
+        eyesText = avgEAR < 0.23 ? 'Smiling Eye Crease' : 'Normal Open';
+        browText = 'Relaxed / Arched';
+      } else if (liveEmotion === 'Surprise') {
+        mouthText = 'Wide O-Shape 😮';
+        eyesText = 'Wide Stare';
+        browText = 'Raised High';
+      } else if (liveEmotion === 'Angry') {
+        mouthText = 'Tense / Compressed';
+        eyesText = 'Narrowed Glare';
+        browText = 'Furrowed & Wrinkled 😠';
+      } else if (liveEmotion === 'Sad') {
+        mouthText = 'Curved Down Corners 🙁';
+        eyesText = 'Drooping / Soft';
+        browText = 'Inner Brow Raised';
+      }
+
       const elMouth = document.getElementById('valMouth');
       const elEyes = document.getElementById('valEyes');
       const elForehead = document.getElementById('valForehead');
       const elSummary = document.getElementById('styleSummary');
-      if (elMouth) elMouth.innerText = style.mouth;
-      if (elEyes) elEyes.innerText = style.eyes;
-      if (elForehead) elForehead.innerText = style.brow;
-      if (elSummary) elSummary.innerText = style.desc;
+      if (elMouth) elMouth.innerText = mouthText;
+      if (elEyes) elEyes.innerText = eyesText;
+      if (elForehead) elForehead.innerText = browText;
+      if (elSummary) elSummary.innerText = `${liveEmotion} Features Active`;
 
-      if (state.selectedFaceEmotion !== liveEmotion) {
-        state.selectedFaceEmotion = liveEmotion;
-        updateFacePrediction();
-      }
+      // 9. Update Live Mini Badge & Multimodal Fusion Real-Time
+      const topProb = tracker.smoothedProbs[liveEmotion] || 0.85;
+      const elMiniVal = document.getElementById('faceMiniVal');
+      const elMiniConf = document.getElementById('faceMiniConf');
+      if (elMiniVal) elMiniVal.innerHTML = `${EMOTION_ICONS[liveEmotion]} ${liveEmotion}`;
+      if (elMiniConf) elMiniConf.innerText = `Confidence ${(topProb * 100).toFixed(1)}%`;
+
+      updateMultimodalFusion();
     }
 
-    // Simulation Math Provider
+    // Simulation Math Provider (Used for test presets & voice simulation)
     function getSimulationProbs(primaryEmotion, isAcoustic = false) {
       const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
       const probs = {};
@@ -2223,7 +2354,7 @@
 
       // Update Minimalist Ranked Distribution
       const sorted = Object.entries(fusedProbs).sort((a, b) => b[1] - a[1]);
-      sorted.forEach(([emotion, prob], idx) => {
+      sorted.forEach(([emotion, prob]) => {
         const pct = Math.round(prob * 100);
         const bar = document.getElementById(`bar${emotion}`);
         const val = document.getElementById(`val${emotion}`);
@@ -2259,6 +2390,7 @@
     window.loadScenario = function(faceEmotion, speechEmotion) {
       state.selectedFaceEmotion = faceEmotion;
       state.selectedSpeechEmotion = speechEmotion;
+      tracker.smoothedProbs = null;
 
       const previewText = SCENARIO_UTTERANCES[speechEmotion] || "Simulated voice sample loaded.";
       const elLivePrev = document.getElementById('liveTranscriptPreview');
@@ -2271,7 +2403,7 @@
         analyticsSession.latestTranscript = previewText;
       }
 
-      updateFacePrediction();
+      updateFacePrediction(true);
       updateSpeechPrediction();
     };
 
@@ -2697,6 +2829,7 @@
       });
       const finalConf = Math.min(99.2, Math.max(83.5, topFinalScore * 100));
       const isConcordant = (dominantFace === dominantVoice);
+      const color = EMOTION_COLORS[topFinal] || '#FBBF24';
 
       // Stop speech recognizer
       if (speechRecognizer) {
@@ -2716,7 +2849,77 @@
         Neutral: 'Prosody: Stable Cadence | Inflection: Balanced | Energy: -18 dB'
       };
 
-      // Populate Report Modal Data
+      // 1. Update Main Centerpiece Display On Screen
+      state.currentFinalEmotion = topFinal;
+      const mainVal = document.getElementById('fusedMainVal');
+      const glyph = document.getElementById('fusedGlyph');
+      const fusedConf = document.getElementById('fusedConfText');
+      const heroGlow = document.getElementById('heroGlow');
+
+      if (mainVal) {
+        mainVal.innerText = topFinal.toUpperCase();
+        mainVal.style.color = color;
+      }
+      if (glyph) {
+        glyph.innerText = EMOTION_ICONS[topFinal];
+        glyph.style.filter = `drop-shadow(0 0 16px ${color}55)`;
+      }
+      if (fusedConf) {
+        fusedConf.innerText = `${finalConf.toFixed(1)}%`;
+      }
+      if (heroGlow) {
+        heroGlow.style.background = `radial-gradient(circle, ${color}20 0%, transparent 70%)`;
+      }
+
+      // Two-Channel Breakdown Grid On Screen
+      const elFaceMiniVal = document.getElementById('faceMiniVal');
+      const elFaceMiniConf = document.getElementById('faceMiniConf');
+      if (elFaceMiniVal) elFaceMiniVal.innerHTML = `${EMOTION_ICONS[dominantFace]} ${dominantFace}`;
+      if (elFaceMiniConf) elFaceMiniConf.innerText = `Confidence ${faceConf.toFixed(1)}%`;
+
+      const elSpeechMiniVal = document.getElementById('speechMiniVal');
+      const elSpeechMiniConf = document.getElementById('speechMiniConf');
+      if (elSpeechMiniVal) elSpeechMiniVal.innerHTML = `🎵 ${dominantVoice}`;
+      if (elSpeechMiniConf) elSpeechMiniConf.innerText = `Confidence ${voiceConf.toFixed(1)}%`;
+
+      // Update Concordance Banner On Screen
+      const concordanceText = document.getElementById('concordanceText');
+      const concordanceBanner = document.getElementById('concordanceBanner');
+      if (concordanceBanner && concordanceText) {
+        if (!isConcordant) {
+          concordanceBanner.className = 'harmony-banner conflict';
+          concordanceText.innerHTML = `MODALITY CONFLICT &mdash; Face (${dominantFace}) and Voice (${dominantVoice}) clash`;
+        } else {
+          concordanceBanner.className = 'harmony-banner';
+          concordanceText.innerHTML = `HARMONY CONFIRMED &mdash; Facial and vocal signals align`;
+        }
+      }
+
+      // Update Ranked Distribution Bars On Screen
+      for (const [emotion, prob] of Object.entries(fusedScores)) {
+        const pct = Math.round(prob * 100);
+        const bar = document.getElementById(`bar${emotion}`);
+        const val = document.getElementById(`val${emotion}`);
+        if (bar && val) {
+          bar.style.width = `${pct}%`;
+          val.innerText = `${pct}%`;
+          if (emotion === topFinal) {
+            bar.className = 'dist-bar dominant';
+            bar.style.background = color;
+            bar.style.boxShadow = `0 0 10px ${color}40`;
+            val.className = 'dist-val dominant';
+            val.style.color = color;
+          } else {
+            bar.className = 'dist-bar';
+            bar.style.background = 'rgba(255, 255, 255, 0.2)';
+            bar.style.boxShadow = 'none';
+            val.className = 'dist-val';
+            val.style.color = 'var(--text-muted)';
+          }
+        }
+      }
+
+      // 2. Populate Report Modal Data
       const repFinal = document.getElementById('repFinalEmotion');
       const repConf = document.getElementById('repFinalConf');
       const repFace = document.getElementById('repFaceEmotion');
@@ -2730,7 +2933,7 @@
 
       if (repFinal) {
         repFinal.innerText = topFinal.toUpperCase();
-        repFinal.style.color = EMOTION_COLORS[topFinal] || '#FBBF24';
+        repFinal.style.color = color;
       }
       if (repConf) {
         repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted 70% Face + 30% Voice`;
@@ -3041,7 +3244,6 @@
 
     document.getElementById('btnOpenFullReport').addEventListener('click', () => {
       if (!state.lastReportData) {
-        // Prepare current state as report data if not yet run
         finishAnalyticsSession();
       }
       document.getElementById('analyticsReportModal').style.display = 'flex';
@@ -3065,8 +3267,9 @@
       speakPhrase(`Affect AI report summary. Final recognized emotion is ${top}.`);
     });
 
-    // Initial Load
+    // Initial Load & Warmup
     window.addEventListener('DOMContentLoaded', () => {
+      warmUpMediaPipe();
       updateFacePrediction();
       updateSpeechPrediction();
     });
