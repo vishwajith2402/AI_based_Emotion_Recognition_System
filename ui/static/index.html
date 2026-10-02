@@ -940,7 +940,8 @@
       latestFaceProbs: null,
       latestSpeechProbs: null,
       currentFinalEmotion: 'Happy',
-      isAdvanced: false
+      isAdvanced: false,
+      isSpeaking: false
     };
 
     const EMOTION_ICONS = { Happy: '😊', Sad: '😢', Angry: '😠', Surprise: '😲', Neutral: '😐' };
@@ -1557,7 +1558,7 @@
         elLiveStat.innerText = 'Preset Sample';
         elLiveStat.style.color = '#C084FC';
       }
-      if (analyticsSession) {
+      if (analyticsSession && !analyticsSession.active) {
         analyticsSession.hasAudioHeard = true;
         analyticsSession.latestTranscript = previewText;
       }
@@ -1598,16 +1599,33 @@
       });
     }
 
-    function speakPhrase(text) {
+    function speakPhrase(text, onComplete = null) {
       const status = document.getElementById('ttsStatus');
       if (status) status.innerText = 'Speaking...';
+      state.isSpeaking = true;
       if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop any pending speech
         const utter = new SpeechSynthesisUtterance(text);
         utter.rate = 1.0;
-        utter.onend = () => { if (status) status.innerText = 'Ready'; };
+        utter.onend = () => {
+          if (status) status.innerText = 'Ready';
+          setTimeout(() => {
+            state.isSpeaking = false;
+            if (onComplete) onComplete();
+          }, 300); // 300ms acoustic grace period to prevent echo capture
+        };
+        utter.onerror = () => {
+          state.isSpeaking = false;
+          if (status) status.innerText = 'Ready';
+          if (onComplete) onComplete();
+        };
         window.speechSynthesis.speak(utter);
       } else {
-        setTimeout(() => { if (status) status.innerText = 'Ready'; }, 1200);
+        setTimeout(() => {
+          state.isSpeaking = false;
+          if (status) status.innerText = 'Ready';
+          if (onComplete) onComplete();
+        }, 1200);
       }
     }
 
@@ -1745,7 +1763,7 @@
       }
     }
 
-    // Helper to initialize Speech Recognition
+    // Helper to initialize Speech Recognition with High Accuracy & Echo Suppression
     function initSpeechRecognition() {
       if (!SpeechRecognition) {
         console.warn('[SpeechRec] Web Speech API not supported on this browser');
@@ -1755,42 +1773,81 @@
         const sr = new SpeechRecognition();
         sr.continuous = true;
         sr.interimResults = true;
-        sr.lang = 'en-US';
+        sr.maxAlternatives = 3;
+        // Prioritize user's system locale or default to en-US
+        sr.lang = navigator.language || 'en-US';
+
+        sr.onstart = () => {
+          const elLiveStat = document.getElementById('liveTranscriptStatus');
+          if (elLiveStat) {
+            elLiveStat.innerText = 'Listening 🎙️';
+            elLiveStat.style.color = '#38BDF8';
+          }
+        };
 
         sr.onresult = (event) => {
-          let interimTranscript = '';
+          // If the AI assistant itself is speaking, discard incoming audio to prevent self-transcription loop
+          if (state.isSpeaking) return;
+
+          let finalChunk = '';
+          let interimChunk = '';
+
           for (let i = event.resultIndex; i < event.results.length; ++i) {
-            const transcript = event.results[i][0].transcript;
-            if (event.results[i].isFinal) {
-              analyticsSession.transcripts.push(transcript.trim());
-            } else {
-              interimTranscript += transcript;
+            const res = event.results[i];
+            if (res && res[0]) {
+              const text = res[0].transcript;
+              if (res.isFinal) {
+                finalChunk += text + ' ';
+              } else {
+                interimChunk += text;
+              }
             }
           }
-          const fullText = (analyticsSession.transcripts.join(' ') + ' ' + interimTranscript).trim();
-          analyticsSession.latestTranscript = fullText;
 
-          // Update live preview in UI
-          const elLivePrev = document.getElementById('liveTranscriptPreview');
-          const elLiveStat = document.getElementById('liveTranscriptStatus');
-          if (elLivePrev && fullText) {
-            elLivePrev.innerText = `"${fullText}"`;
-            elLivePrev.style.color = '#A7F3D0';
+          if (finalChunk.trim()) {
+            analyticsSession.transcripts.push(finalChunk.trim());
           }
-          if (elLiveStat && fullText) {
-            elLiveStat.innerText = 'Transcribing...';
-            elLiveStat.style.color = '#10B981';
+
+          const combined = (analyticsSession.transcripts.join(' ') + ' ' + interimChunk).trim();
+          if (combined.length > 0) {
+            analyticsSession.latestTranscript = combined;
+            analyticsSession.hasAudioHeard = true;
+
+            // Live UI Preview
+            const elLivePrev = document.getElementById('liveTranscriptPreview');
+            const elLiveStat = document.getElementById('liveTranscriptStatus');
+            if (elLivePrev) {
+              elLivePrev.innerText = `"${combined}"`;
+              elLivePrev.style.color = '#A7F3D0';
+            }
+            if (elLiveStat) {
+              elLiveStat.innerText = 'Transcribing ✓';
+              elLiveStat.style.color = '#10B981';
+            }
           }
         };
 
         sr.onerror = (event) => {
-          console.warn('[SpeechRec] Recognition notice/error:', event.error);
+          // Handle common non-fatal errors
+          if (event.error === 'no-speech') {
+            // normal when user pauses
+            return;
+          }
+          if (event.error === 'audio-capture') {
+            console.warn('[SpeechRec] No microphone was detected or mic is muted.');
+          } else {
+            console.warn('[SpeechRec] Recognition status/notice:', event.error);
+          }
         };
 
         sr.onend = () => {
-          // Auto-restart if analytics session is still active
+          // Keep recognition alive only if the 30-second analytics session is running
           if (analyticsSession.active && speechRecognizer) {
-            try { speechRecognizer.start(); } catch (e) {}
+            try { 
+              speechRecognizer.start(); 
+            } catch (e) {
+              // Ignore already-started exceptions
+            }
           }
         };
 
@@ -1883,7 +1940,7 @@
       elProgressFace.style.width = '0%';
       elProgressVoice.style.width = '0%';
 
-      speakPhrase('Starting 30-second multimodal analytics. Phase 1: Tracking facial expressions with 70 percent weightage. Please look into the camera.');
+      speakPhrase('Analytics started. Phase 1: Face tracking.');
 
       // 5. Start 100ms assessment tick
       analyticsSession.timerId = setInterval(onAnalyticsTick, 100);
@@ -1921,7 +1978,23 @@
 
         if (!analyticsSession.announcedPhase2) {
           analyticsSession.announcedPhase2 = true;
-          speakPhrase('Phase 1 complete. Phase 2: Tracking voice modulation with 30 percent weightage. Please speak or vocalize now.');
+          // Cleanly clear any residual audio before user begins speaking
+          analyticsSession.transcripts = [];
+          analyticsSession.latestTranscript = '';
+          const elLivePrev = document.getElementById('liveTranscriptPreview');
+          if (elLivePrev) {
+            elLivePrev.innerText = '"Listening... Please speak your sentence now!"';
+            elLivePrev.style.color = '#38BDF8';
+          }
+          speakPhrase('Phase 2. Please speak now.', () => {
+            // Restart recognizer right after prompt finishes to capture user speech cleanly
+            if (speechRecognizer) {
+              try { speechRecognizer.stop(); } catch (e) {}
+              setTimeout(() => {
+                try { speechRecognizer.start(); } catch (e) {}
+              }, 150);
+            }
+          });
         }
 
         elAnalyticsBadge.innerHTML = `🎙️ PHASE 2: TRACKING VOICE MODULATION (30% WEIGHT • ${voiceRemaining.toFixed(1)}s left)`;
