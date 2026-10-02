@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/ui/static/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/ui/static/$1"
+    }
+  ]
+}
