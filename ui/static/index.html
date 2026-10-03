@@ -1373,6 +1373,224 @@
     }
 
     /* ========================================================
+       ABOUT SECTION & TEAM SHOWCASE (Obsidian Luxury Glass)
+       ======================================================== */
+    .about-card {
+      margin-top: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border-glass);
+      background: linear-gradient(rgba(17, 24, 39, 0.75), rgba(11, 17, 32, 0.85));
+    }
+
+    .about-lead-text {
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+    }
+
+    .about-lead-text strong {
+      color: var(--text-primary);
+    }
+
+    .about-lead-text em {
+      color: var(--cyan);
+      font-style: normal;
+    }
+
+    .about-highlights-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .about-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.25s ease;
+    }
+
+    .about-pill:hover {
+      border-color: rgba(34, 211, 238, 0.45);
+      background: rgba(34, 211, 238, 0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(34, 211, 238, 0.15);
+    }
+
+    .team-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 1.3rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .team-section-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .team-member-card {
+      background: rgba(11, 17, 32, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: var(--radius-md);
+      padding: 1.3rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .team-member-card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.5), rgba(139, 92, 246, 0.5));
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      z-index: 0;
+    }
+
+    .team-member-card::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: calc(var(--radius-md) - 1px);
+      background: rgba(11, 17, 32, 0.92);
+      z-index: 0;
+    }
+
+    .team-member-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 35px -5px rgba(34, 211, 238, 0.2), 0 0 25px rgba(139, 92, 246, 0.18);
+    }
+
+    .team-member-card:hover::before {
+      opacity: 1;
+    }
+
+    .team-card-inner {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .team-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1.5px solid rgba(34, 211, 238, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 0.85rem;
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .team-member-card:hover .team-avatar {
+      transform: scale(1.1);
+      border-color: #A78BFA;
+      box-shadow: 0 0 22px rgba(139, 92, 246, 0.4);
+      color: #F8FAFC;
+    }
+
+    /* ✨ Luminous Signature Effect on Team Names */
+    .team-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      line-height: 1.25;
+      margin-bottom: 0.4rem;
+      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 35%, #C084FC 70%, #22D3EE 100%);
+      background-size: 250% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: teamGlowShine 4s linear infinite;
+      transition: filter 0.3s ease;
+    }
+
+    @keyframes teamGlowShine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .team-member-card:hover .team-name {
+      filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.65));
+    }
+
+    .team-role {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      line-height: 1.35;
+    }
+
+    .team-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--radius-pill);
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      color: var(--cyan);
+    }
+
+    .team-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    /* ========================================================
        FOOTER STATUS BAR
        ======================================================== */
     footer {
@@ -1500,6 +1718,10 @@
       .modal-window {
         padding: 1.25rem !important;
         max-height: 92vh !important;
+      }
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.85rem !important;
       }
       footer {
         flex-direction: column !important;
@@ -1643,6 +1865,29 @@
       .diag-val {
         font-size: 0.68rem !important;
       }
+      .team-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.55rem !important;
+      }
+      .team-member-card {
+        padding: 1rem 0.65rem !important;
+      }
+      .team-avatar {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 0.78rem !important;
+        margin-bottom: 0.6rem !important;
+      }
+      .team-name {
+        font-size: 0.95rem !important;
+      }
+      .team-role {
+        font-size: 0.58rem !important;
+      }
+      .team-badge {
+        font-size: 0.55rem !important;
+        padding: 0.15rem 0.45rem !important;
+      }
       .modal-window {
         padding: 1rem !important;
       }
@@ -1691,6 +1936,7 @@
         <span id="sysStatusText">SYSTEM READY</span>
       </div>
       <button class="btn-ghost-sm" id="btnOpenGuide">GUIDE</button>
+      <a href="#aboutSection" class="btn-ghost-sm" style="text-decoration: none; display: inline-flex; align-items: center;">ABOUT</a>
     </div>
   </header>
 
@@ -2043,6 +2289,79 @@
         </div>
       </div>
     </details>
+
+    <!-- ========================================================
+         SECTION 5: ABOUT THE PROJECT & RESEARCH TEAM
+         ======================================================== -->
+    <section class="glass-card about-card" id="aboutSection">
+      <div class="card-meta-header">
+        <div class="card-title-group">
+          <h2>About Affect AI</h2>
+          <p>System Overview &amp; Multimodal Architecture</p>
+        </div>
+        <span class="weight-tag cyan">RESEARCH &amp; INNOVATION</span>
+      </div>
+
+      <div class="about-lead-text">
+        <strong>Affect AI</strong> is an advanced, high-precision <em>Multimodal Human Emotion Recognition System</em> engineered to capture, analyze, and fuse human affective signals in real time. By uniting high-fidelity <strong>468-point 3D facial landmark geometry (70% decision weight)</strong> with <strong>acoustic prosody and vocal frequency modulation (30% decision weight)</strong>, the platform delivers instantaneous, scientifically grounded classification across five core emotional states: <em>Happy, Sad, Angry, Surprise, and Neutral</em>. The architecture features automated resting baseline calibration, cross-modal concordance/conflict detection, and client-side forensic diagnostic reporting.
+      </div>
+
+      <div class="about-highlights-row">
+        <div class="about-pill"><span>👁️</span> 468-Point 3D FACS Mesh</div>
+        <div class="about-pill"><span>🎙️</span> Real-time Acoustic Waveform &amp; Prosody</div>
+        <div class="about-pill"><span>🧠</span> Calibrated 70/30 Multimodal Decision Fusion</div>
+        <div class="about-pill"><span>✓</span> Cross-Modal Harmony &amp; Conflict Verification</div>
+        <div class="about-pill"><span>📄</span> Forensic PDF Diagnostic Export</div>
+      </div>
+
+      <!-- Engineering & Research Team Showcase -->
+      <div class="team-section-header">
+        <span class="team-section-title"><span>👥</span> Project Research &amp; Development Team</span>
+        <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.5px;">4 RESEARCHERS</span>
+      </div>
+
+      <div class="team-grid">
+        <!-- Team Member 1: Vishwajith -->
+        <div class="team-member-card">
+          <div class="team-card-inner">
+            <div class="team-avatar">VJ</div>
+            <div class="team-name">Vishwajith</div>
+            <div class="team-role">Lead AI &amp; Multimodal Architecture</div>
+            <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+          </div>
+        </div>
+
+        <!-- Team Member 2: Wilson -->
+        <div class="team-member-card">
+          <div class="team-card-inner">
+            <div class="team-avatar">WL</div>
+            <div class="team-name">Wilson</div>
+            <div class="team-role">Computer Vision &amp; 3D Face Geometry</div>
+            <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+          </div>
+        </div>
+
+        <!-- Team Member 3: Vadivazhagi -->
+        <div class="team-member-card">
+          <div class="team-card-inner">
+            <div class="team-avatar">VD</div>
+            <div class="team-name">Vadivazhagi</div>
+            <div class="team-role">Acoustic Signal &amp; Prosody Analysis</div>
+            <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+          </div>
+        </div>
+
+        <!-- Team Member 4: Viseka -->
+        <div class="team-member-card">
+          <div class="team-card-inner">
+            <div class="team-avatar">VS</div>
+            <div class="team-name">Viseka</div>
+            <div class="team-role">Decision Fusion &amp; Interface Experience</div>
+            <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
   </main>
 
