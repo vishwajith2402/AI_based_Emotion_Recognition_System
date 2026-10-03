@@ -533,6 +533,46 @@
       border-color: rgba(34, 211, 238, 0.35);
     }
 
+    /* Floating Quick Flip Camera Button (Front / Back) */
+    .cam-flip-floating-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 15;
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(34, 211, 238, 0.45);
+      color: var(--cyan);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    .cam-flip-floating-btn:hover {
+      background: rgba(34, 211, 238, 0.2);
+      border-color: var(--cyan);
+      transform: scale(1.04);
+    }
+
+    .cam-flip-floating-btn:active {
+      transform: scale(0.96);
+    }
+
+    .flip-cam-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.5px;
+      color: var(--text-primary);
+    }
+
     .cam-controls-row {
       display: flex;
       gap: 0.75rem;
@@ -1708,6 +1748,13 @@
           <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
           <canvas id="faceCanvas" class="mirrored"></canvas>
           <div class="viewport-overlay-tip" id="camTipText">Camera Standby &mdash; Click "Start Camera"</div>
+          
+          <!-- Floating Quick Flip Camera Button (Front / Back) -->
+          <button class="cam-flip-floating-btn" id="btnFloatingFlipCam" title="Flip to Front / Back Camera" style="display: none;">
+            <span class="flip-icon">🔄</span>
+            <span class="flip-cam-badge" id="floatingFlipBadge">FRONT CAM</span>
+          </button>
+
           <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
             <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
             <span class="hud-chip" id="hudCalibrationChip">AUTO-CALIBRATING...</span>
@@ -1721,8 +1768,8 @@
           <button class="btn-secondary" id="btnToggleCam">
             <span>▶</span> Start Camera
           </button>
-          <button class="btn-secondary" id="btnFlipCam" title="Toggle Mirror / Normal view">
-            <span>🪞</span> Mirrored
+          <button class="btn-secondary" id="btnFlipCam" title="Switch Front / Back Camera or Toggle Mirror">
+            <span id="btnFlipCamIcon">🔄</span> <span id="btnFlipCamText">Front Cam</span>
           </button>
           <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
             <span>🕸️</span> B&W Mesh
@@ -2108,6 +2155,9 @@
   <script>
     const state = {
       isCameraRunning: false,
+      facingMode: 'user', // 'user' (front camera) or 'environment' (back camera)
+      availableCameras: [],
+      hasMultipleCameras: false,
       selectedFaceEmotion: 'Neutral',
       selectedSpeechEmotion: 'Neutral',
       wFace: 0.70,
@@ -2267,6 +2317,104 @@
       }
     }
 
+    // Camera Device Detection (Front vs Back)
+    async function detectAvailableCameras() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = devices.filter(d => d.kind === 'videoinput');
+        state.availableCameras = videoInputs;
+        
+        // Multi-camera: 2+ video inputs, OR any mobile device
+        const isMobile = isMobileDevice || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        state.hasMultipleCameras = videoInputs.length > 1 || isMobile;
+
+        updateFlipCamControlsUI();
+      } catch (err) {
+        console.warn('[Camera] Enumeration warning:', err);
+      }
+    }
+
+    function updateFlipCamControlsUI() {
+      const floatBtn = document.getElementById('btnFloatingFlipCam');
+      const floatBadge = document.getElementById('floatingFlipBadge');
+      const flipBtnText = document.getElementById('btnFlipCamText');
+      const flipBtnIcon = document.getElementById('btnFlipCamIcon');
+      const flipBtn = document.getElementById('btnFlipCam');
+
+      if (state.hasMultipleCameras) {
+        if (floatBtn) floatBtn.style.display = 'flex';
+        const isFront = state.facingMode === 'user';
+        if (floatBadge) floatBadge.innerText = isFront ? 'FRONT CAM' : 'BACK CAM';
+        if (flipBtnText) flipBtnText.innerText = isFront ? 'Front Cam' : 'Back Cam';
+        if (flipBtnIcon) flipBtnIcon.innerText = isFront ? '🤳' : '📷';
+        if (flipBtn) flipBtn.title = 'Switch to ' + (isFront ? 'Back Camera' : 'Front Camera');
+      } else {
+        if (floatBtn) floatBtn.style.display = 'none';
+        if (flipBtnText) flipBtnText.innerText = tracker.isMirrored ? 'Mirrored' : 'Normal';
+        if (flipBtnIcon) flipBtnIcon.innerText = tracker.isMirrored ? '🪞' : '📷';
+        if (flipBtn) flipBtn.title = 'Toggle Mirror / Normal view';
+      }
+    }
+
+    async function toggleCameraFlip() {
+      if (state.hasMultipleCameras) {
+        // Toggle front vs back camera
+        state.facingMode = (state.facingMode === 'user') ? 'environment' : 'user';
+        
+        // Front camera: mirrored for natural selfie. Back camera: normal (not mirrored)
+        tracker.isMirrored = (state.facingMode === 'user');
+        video.classList.toggle('mirrored', tracker.isMirrored);
+        faceCanvas.classList.toggle('mirrored', tracker.isMirrored);
+        
+        updateFlipCamControlsUI();
+
+        // If camera is currently active, seamlessly switch video stream
+        if (state.isCameraRunning) {
+          try {
+            if (video.srcObject) {
+              video.srcObject.getTracks().forEach(t => t.stop());
+            }
+
+            const videoConstraints = isMobileDevice ? {
+              facingMode: { ideal: state.facingMode },
+              width: { ideal: 640, max: 800 },
+              height: { ideal: 480, max: 800 }
+            } : {
+              facingMode: { ideal: state.facingMode },
+              width: { ideal: 1280, min: 640 },
+              height: { ideal: 720, min: 480 },
+              frameRate: { ideal: 30, min: 15 }
+            };
+
+            let stream;
+            try {
+              stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+            } catch (fallbackErr) {
+              stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode } });
+            }
+
+            video.srcObject = stream;
+            await video.play();
+
+            // Auto-recalibrate neutral baseline for new camera sensor & angle
+            startBaselineCalibration();
+
+            setSystemStatus(`CAMERA: ${state.facingMode === 'user' ? 'FRONT' : 'BACK'} ACTIVE`, 'var(--cyan)');
+          } catch (err) {
+            console.error('[Camera] Error switching to ' + state.facingMode + ' camera:', err);
+            alert(`Unable to switch to ${state.facingMode === 'user' ? 'front' : 'back'} camera. ${err.message || ''}`);
+          }
+        }
+      } else {
+        // Single camera: toggle mirror mode
+        tracker.isMirrored = !tracker.isMirrored;
+        video.classList.toggle('mirrored', tracker.isMirrored);
+        faceCanvas.classList.toggle('mirrored', tracker.isMirrored);
+        updateFlipCamControlsUI();
+      }
+    }
+
     // Camera Management
     document.getElementById('btnToggleCam').addEventListener('click', async () => {
       const btn = document.getElementById('btnToggleCam');
@@ -2276,31 +2424,34 @@
           let stream;
           try {
             const videoConstraints = isMobileDevice ? {
-              facingMode: 'user',
+              facingMode: { ideal: state.facingMode },
               width: { ideal: 640, max: 800 },
               height: { ideal: 480, max: 800 }
             } : {
               width: { ideal: 1280, min: 640 },
               height: { ideal: 720, min: 480 },
-              facingMode: 'user',
+              facingMode: { ideal: state.facingMode },
               frameRate: { ideal: 30, min: 15 }
             };
             stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
           } catch (constraintErr) {
             console.warn('[Camera] Fallback to simple user facingMode constraints:', constraintErr);
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode } });
           }
           video.srcObject = stream;
           await video.play();
           state.isCameraRunning = true;
           btn.innerHTML = '<span>⏹</span> Stop Camera';
           btn.classList.add('active');
-          setSystemStatus('CAMERA ACTIVE', 'var(--cyan)');
+          setSystemStatus(`CAMERA ACTIVE (${state.facingMode === 'user' ? 'FRONT' : 'BACK'})`, 'var(--cyan)');
           const tip = document.getElementById('camTipText');
           if (tip) tip.style.display = 'none';
           const hud = document.getElementById('camHudOverlay');
           if (hud) hud.style.display = 'flex';
           
+          // Detect available cameras now that permission is granted
+          detectAvailableCameras();
+
           // Auto-start 1-second neutral calibration
           startBaselineCalibration();
 
@@ -2324,6 +2475,11 @@
         tracker.isCalibrating = false;
       }
     });
+
+    // Flip Camera Listeners (Both control row and floating button)
+    document.getElementById('btnFlipCam').addEventListener('click', toggleCameraFlip);
+    const floatFlip = document.getElementById('btnFloatingFlipCam');
+    if (floatFlip) floatFlip.addEventListener('click', toggleCameraFlip);
 
     // Calibrate Button Listener
     const btnCalibrateFace = document.getElementById('btnCalibrateFace');
@@ -2353,14 +2509,6 @@
         }
       });
     }
-
-    // Flip Camera View (Mirror vs Normal)
-    document.getElementById('btnFlipCam').addEventListener('click', () => {
-      tracker.isMirrored = !tracker.isMirrored;
-      video.classList.toggle('mirrored', tracker.isMirrored);
-      faceCanvas.classList.toggle('mirrored', tracker.isMirrored);
-      document.getElementById('btnFlipCam').innerHTML = tracker.isMirrored ? '<span>🪞</span> Mirrored' : '<span>📷</span> Normal';
-    });
 
     // Toggle 468-Point Mesh Styles
     const meshStyles = ['bw_mesh', 'bw_dots', 'bw_contours', 'off'];
@@ -3978,6 +4126,7 @@
     // Initial Load & Warmup
     window.addEventListener('DOMContentLoaded', () => {
       warmUpMediaPipe();
+      detectAvailableCameras();
       updateFacePrediction();
       updateSpeechPrediction();
     });
