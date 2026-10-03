@@ -654,6 +654,55 @@
       white-space: nowrap;
     }
 
+    /* Multi-Language STT Selector Bar */
+    .voice-lang-bar {
+      margin-top: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background: rgba(11, 17, 32, 0.7);
+      padding: 0.45rem 0.8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-glass);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .voice-lang-label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .voice-lang-select {
+      flex: 1;
+      min-width: 0;
+      max-width: 100%;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.3rem 0.55rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      cursor: pointer;
+      outline: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .voice-lang-select:focus {
+      border-color: var(--violet);
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.25);
+    }
+
     /* ========================================================
        🧠 5. RIGHT CARD — AI FUSION (Cyan + Violet)
        Background: #111827
@@ -1797,6 +1846,17 @@
         font-size: 0.68rem !important;
         padding: 0.3rem 0.45rem !important;
       }
+      .voice-lang-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.35rem !important;
+        padding: 0.45rem 0.65rem !important;
+      }
+      .voice-lang-select {
+        width: 100% !important;
+        font-size: 0.68rem !important;
+        padding: 0.3rem 0.45rem !important;
+      }
       .hero-centerpiece {
         padding: 1.1rem 0 !important;
       }
@@ -2155,6 +2215,32 @@
             "Speak naturally during analysis..."
           </div>
         </div>
+
+        <!-- Multi-Language STT Selector Bar -->
+        <div class="voice-lang-bar">
+          <span class="voice-lang-label">
+            <span style="color: var(--violet);">🌐</span> Speech Language:
+          </span>
+          <select id="selectSttLang" class="voice-lang-select" aria-label="Speech Recognition Language">
+            <option value="en-US" selected>English (US) &mdash; en-US</option>
+            <option value="en-IN">English (India) &mdash; en-IN</option>
+            <option value="en-GB">English (UK) &mdash; en-GB</option>
+            <option value="hi-IN">Hindi (हिंदी) &mdash; hi-IN</option>
+            <option value="ta-IN">Tamil (தமிழ்) &mdash; ta-IN</option>
+            <option value="te-IN">Telugu (తెలుగు) &mdash; te-IN</option>
+            <option value="kn-IN">Kannada (ಕನ್ನಡ) &mdash; kn-IN</option>
+            <option value="ml-IN">Malayalam (മലയാളം) &mdash; ml-IN</option>
+            <option value="mr-IN">Marathi (मराठी) &mdash; mr-IN</option>
+            <option value="bn-IN">Bengali (বাংলা) &mdash; bn-IN</option>
+            <option value="es-ES">Spanish (Español) &mdash; es-ES</option>
+            <option value="fr-FR">French (Français) &mdash; fr-FR</option>
+            <option value="de-DE">German (Deutsch) &mdash; de-DE</option>
+            <option value="ja-JP">Japanese (日本語) &mdash; ja-JP</option>
+            <option value="zh-CN">Chinese (中文 - 普通话) &mdash; zh-CN</option>
+            <option value="ar-SA">Arabic (العربية) &mdash; ar-SA</option>
+            <option value="ru-RU">Russian (Русский) &mdash; ru-RU</option>
+          </select>
+        </div>
       </section>
 
       <!-- EMOTION DISTRIBUTION (Mostly Monochrome with Winning Accent) -->
@@ -2477,6 +2563,7 @@
       facingMode: 'user', // 'user' (front camera) or 'environment' (back camera)
       availableCameras: [],
       hasMultipleCameras: false,
+      sttLanguage: 'en-US',
       selectedFaceEmotion: 'Neutral',
       selectedSpeechEmotion: 'Neutral',
       wFace: 0.70,
@@ -3658,15 +3745,86 @@
     }
     requestAnimationFrame(animateWaveform);
 
-    // Speech sentiment / emotional intent classifier for live voice transcript
+    // Speech sentiment / emotional intent classifier for live voice transcript (Multilingual: English, Hindi, Tamil, Telugu, Spanish, French, German, Japanese, Chinese)
     function classifySpeechTranscript(text) {
       if (!text || typeof text !== 'string') return null;
       const lower = text.toLowerCase();
       
-      const angryWords = ['angry', 'mad', 'furious', 'hate', 'rage', 'shut up', 'terrible', 'annoying', 'irritated', 'stop it', 'worst', 'stupid', 'horrible', 'hell', 'bad'];
-      const sadWords = ['sad', 'unhappy', 'crying', 'depressed', 'sorrow', 'grief', 'lonely', 'miserable', 'heartbroken', 'pain', 'gloomy', 'tears', 'upset', 'hurt'];
-      const happyWords = ['happy', 'glad', 'joy', 'smile', 'great', 'awesome', 'wonderful', 'excellent', 'love', 'fantastic', 'amazing', 'good', 'pleased', 'cheerful'];
-      const surpriseWords = ['wow', 'omg', 'surprise', 'surprised', 'unbelievable', 'astonished', 'shocked', 'whoa', 'really', 'no way', 'unexpected'];
+      const angryWords = [
+        // English
+        'angry', 'mad', 'furious', 'hate', 'rage', 'shut up', 'terrible', 'annoying', 'irritated', 'stop it', 'worst', 'stupid', 'horrible', 'hell', 'bad', 'disgust', 'irritating',
+        // Hindi / Hinglish
+        'gussa', 'krodh', 'naraz', 'bakwas', 'bura', 'nafrat', 'pagal', 'chup', 'galat', 'dimag kharab', 'गुस्सा', 'क्रोध', 'नफ़रत', 'बकवास', 'नाराज़', 'पागल',
+        // Tamil / Tanglish
+        'kovam', 'krovam', 'erichal', 'thappu', 'muttal', 'moodu', 'veri', 'verupu', 'kadupu', 'கோபம்', 'வெறுப்பு', 'எரிச்சல்', 'முட்டாள்',
+        // Telugu
+        'kopam', 'chiraku', 'chetta', 'durmargam', 'కోపం', 'చిరాకు',
+        // Spanish
+        'enojado', 'furioso', 'odio', 'rabia', 'molesto', 'cállate', 'callate', 'terrible', 'estúpido', 'malo',
+        // French
+        'fâché', 'fache', 'colère', 'colere', 'énerve', 'déteste', 'tais-toi', 'horrible', 'mauvais', 'furieux',
+        // German
+        'wütend', 'zornig', 'hass', 'böse', 'boese', 'schrecklich', 'ärgerlich', 'nervig',
+        // Japanese / Chinese
+        '怒', 'いかり', 'ムカつく', '生气', '愤怒', '讨厌'
+      ];
+      
+      const sadWords = [
+        // English
+        'sad', 'unhappy', 'crying', 'depressed', 'sorrow', 'grief', 'lonely', 'miserable', 'heartbroken', 'pain', 'gloomy', 'tears', 'upset', 'hurt', 'crying', 'suffering',
+        // Hindi / Hinglish
+        'udaas', 'udas', 'dukhi', 'rona', 'dard', 'dukh', 'akele', 'takleef', 'ro raha', 'bebas', 'उदास', 'दुखी', 'रोना', 'दर्द', 'दुःख', 'तकलीफ',
+        // Tamil / Tanglish
+        'kavalai', 'varutham', 'azhukai', 'thunbam', 'vedhanai', 'kavala', 'soham', 'azhugai', 'vali', 'கவலை', 'வருத்தம்', 'அழுகை', 'துன்பம்', 'வலி',
+        // Telugu
+        'badha', 'edupu', 'dukham', 'baadha', 'బాధ', 'ఏడుపు', 'దుఃఖం',
+        // Spanish
+        'triste', 'tristeza', 'llorando', 'deprimido', 'dolor', 'solo', 'pena', 'desgarrador',
+        // French
+        'triste', 'tristesse', 'pleure', 'déprimé', 'deprime', 'douleur', 'chagrin', 'seul', 'peine',
+        // German
+        'traurig', 'weinen', 'deprimiert', 'schmerz', 'einsam', 'kummer', 'unglücklich',
+        // Japanese / Chinese
+        '悲しい', 'かなしい', '泣', '难过', '伤心', '痛苦', '哭'
+      ];
+      
+      const happyWords = [
+        // English
+        'happy', 'glad', 'joy', 'smile', 'great', 'awesome', 'wonderful', 'excellent', 'love', 'fantastic', 'amazing', 'good', 'pleased', 'cheerful', 'excited', 'yay', 'best', 'bliss', 'delight', 'super',
+        // Hindi / Hinglish
+        'khush', 'prasann', 'anand', 'badhiya', 'shandar', 'mast', 'pyaar', 'khushi', 'achha', 'accha', 'shukriya', 'मस्त', 'बढ़िया', 'खुश', 'प्रसन्न', 'आनंद', 'शानदार', 'प्यार', 'खुशी', 'अच्छा',
+        // Tamil / Tanglish
+        'santhosham', 'magizhchi', 'sirippu', 'nandri', 'super', 'arumai', 'azhagu', 'anbu', 'semma', 'makilchi', 'சந்தோஷம்', 'மகிழ்ச்சி', 'சிரிப்பு', 'அருமை', 'நன்று', 'அழகு',
+        // Telugu
+        'santhosham', 'aanandam', 'baagundi', 'manchidi', 'dhanyavadalu', 'సంతోషం', 'ఆనందం', 'బాగుంది',
+        // Spanish
+        'feliz', 'alegría', 'alegria', 'contento', 'genial', 'maravilloso', 'excelente', 'amor', 'fantastico', 'bueno', 'sonreír', 'sonreir',
+        // French
+        'heureux', 'content', 'joie', 'super', 'génial', 'genial', 'merveilleux', 'amour', 'fantastique', 'sourire', 'magnifique',
+        // German
+        'glücklich', 'gluecklich', 'freude', 'toll', 'wunderbar', 'super', 'liebe', 'fantastisch', 'gut', 'lächeln',
+        // Japanese / Chinese
+        'うれしい', '楽しい', '幸せ', '笑顔', '开心', '快乐', '高兴', '喜欢', '太棒了'
+      ];
+      
+      const surpriseWords = [
+        // English
+        'wow', 'omg', 'surprise', 'surprised', 'unbelievable', 'astonished', 'shocked', 'whoa', 'really', 'no way', 'unexpected', 'incredible', 'what', 'gosh',
+        // Hindi / Hinglish
+        'arey', 'waah', 'hairan', 'chamatkar', 'aashcharya', 'kya baat', 'sach me', 'arre', 'वाह', 'हैरान', 'आश्चर्य', 'सच में', 'अरे',
+        // Tamil / Tanglish
+        'aacharyam', 'adede', 'viyappu', 'nijamava', 'enna', 'appadiya', 'aachariyam', 'ஆச்சரியம்', 'அடடே', 'வியப்பு', 'உண்மையா', 'அப்படியா',
+        // Telugu
+        'aascharyam', 'nijama', 'entha', 'adbhutam', 'ఆశ్చర్యం', 'నిజమా',
+        // Spanish
+        'guau', 'sorpresa', 'increíble', 'increible', 'asombroso', 'en serio', 'no puede ser', 'caramba',
+        // French
+        'ouah', 'surprise', 'incroyable', 'étonné', 'etonne', 'choqué', 'choque', 'vraiment', 'pas possible',
+        // German
+        'wow', 'überraschung', 'ueberraschung', 'unglaublich', 'erstaunt', 'geschockt', 'wirklich',
+        // Japanese / Chinese
+        'びっくり', 'すごい', '驚き', '吃惊', '震惊', '不可思议', '真的吗'
+      ];
 
       let angryHits = 0, sadHits = 0, happyHits = 0, surpriseHits = 0;
       angryWords.forEach(w => { if (lower.includes(w)) angryHits += 2; });
@@ -3697,11 +3855,11 @@
         sr.continuous = true;
         sr.interimResults = true;
         sr.maxAlternatives = 3;
-        sr.lang = navigator.language || 'en-US';
+        sr.lang = state.sttLanguage || navigator.language || 'en-US';
 
         sr.onstart = () => {
           const elLiveStat = document.getElementById('liveTranscriptStatus');
-          if (elLiveStat) elLiveStat.innerText = 'Listening 🎙️';
+          if (elLiveStat) elLiveStat.innerText = `Listening (${state.sttLanguage || 'en-US'}) 🎙️`;
         };
 
         sr.onresult = (event) => {
@@ -3755,6 +3913,36 @@
       }
     }
 
+    // Dynamic STT Language Switcher Handler
+    const selectSttLang = document.getElementById('selectSttLang');
+    if (selectSttLang) {
+      selectSttLang.addEventListener('change', (e) => {
+        state.sttLanguage = e.target.value;
+        const langName = e.target.options[e.target.selectedIndex].text;
+        console.log(`[STT] Speech language set to: ${state.sttLanguage} (${langName})`);
+        setSystemStatus(`STT: ${state.sttLanguage} ACTIVE`, 'var(--violet)');
+
+        const elLiveStat = document.getElementById('liveTranscriptStatus');
+        if (elLiveStat && analyticsSession.active) {
+          elLiveStat.innerText = `Listening (${state.sttLanguage}) 🎙️`;
+        }
+
+        // Dynamically update active SpeechRecognizer instance
+        if (speechRecognizer) {
+          try {
+            speechRecognizer.lang = state.sttLanguage;
+          } catch (err) {
+            console.warn('[STT] Could not set lang directly:', err);
+          }
+          if (analyticsSession.active) {
+            try {
+              speechRecognizer.abort(); // Triggers onend which restarts with new lang
+            } catch (e) {}
+          }
+        }
+      });
+    }
+
     // 30-Second Multimodal Analytics Controller
     const analyticsSession = {
       active: false,
@@ -3804,6 +3992,7 @@
 
       if (!speechRecognizer) speechRecognizer = initSpeechRecognition();
       if (speechRecognizer) {
+        speechRecognizer.lang = state.sttLanguage || 'en-US';
         try { speechRecognizer.start(); } catch (e) {}
       }
 
@@ -4140,7 +4329,7 @@
         if (fullRecognizedText.length > 0) {
           transcriptionBox.innerText = `"${fullRecognizedText}"`;
           if (transcriptBadge) {
-            transcriptBadge.innerText = 'Voice Transcribed ✓';
+            transcriptBadge.innerText = `Voice Transcribed (${state.sttLanguage || 'en-US'}) ✓`;
             transcriptBadge.style.color = 'var(--status-harmony)';
           }
         } else if (voiceWasHeard) {
@@ -4171,7 +4360,7 @@
         fusedScores: { ...fusedScores },
         concordance: isConcordant ? 'Harmonic Concordance Confirmed (Face and Voice agree)' : 'Modality Divergence Detected (Affective mismatch)',
         transcription: fullRecognizedText.length > 0 ? `"${fullRecognizedText}"` : (voiceWasHeard ? "Vocal sound detected during assessment, but no clear linguistic speech transcribed." : "no voice is recorded"),
-        transcriptionStatus: fullRecognizedText.length > 0 ? "Voice Transcribed" : (voiceWasHeard ? "Audio Signal Heard" : "No Voice Detected"),
+        transcriptionStatus: fullRecognizedText.length > 0 ? `Voice Transcribed (${state.sttLanguage || 'en-US'})` : (voiceWasHeard ? "Audio Signal Heard" : "No Voice Detected"),
         diagnostic: isConcordant
           ? `Over the 30-second assessment, Phase 1 (0s-15s visual facial geometry, 70% weight) and Phase 2 (15s-30s vocal acoustic prosody, 30% weight) demonstrated strong mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`
           : `The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%, 70% weight), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%, 30% weight). Multimodal decision fusion weighted to ${topFinal} at ${finalConf.toFixed(1)}%.`
