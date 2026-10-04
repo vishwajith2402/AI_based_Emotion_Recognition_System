@@ -1704,19 +1704,71 @@
       color: #F8FAFC;
     }
 
-    /* ✨ Luminous Signature Effect on Team Names */
+    /* ✨ Luminous Signature Effect on Team Names with Sparkling Stars */
     .team-name {
       font-size: 1.1rem;
       font-weight: 800;
       letter-spacing: 0.8px;
       line-height: 1.25;
       margin-bottom: 0.4rem;
-      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 35%, #C084FC 70%, #22D3EE 100%);
+      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 25%, #F0ABFC 50%, #C084FC 75%, #22D3EE 100%);
       background-size: 250% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: teamGlowShine 4s linear infinite;
-      transition: filter 0.3s ease;
+      animation: teamGlowShine 3.5s linear infinite;
+      filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.75)) drop-shadow(0 0 16px rgba(192, 132, 252, 0.55));
+      transition: all 0.3s ease;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Sparkling Twinkle Star on Team Member Name */
+    .team-name::after {
+      content: '✦';
+      font-size: 0.72em;
+      margin-left: 0.35rem;
+      display: inline-block;
+      vertical-align: middle;
+      animation: teamSparkleSpin 2.4s ease-in-out infinite;
+      filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 16px currentColor);
+    }
+
+    /* Asynchronous Twinkle Delays & Custom Hues per Member */
+    .team-grid > :nth-child(1) .team-name::after,
+    .intro-team-grid > :nth-child(1) .team-name::after {
+      color: #22D3EE;
+      animation-delay: 0s;
+    }
+
+    .team-grid > :nth-child(2) .team-name::after,
+    .intro-team-grid > :nth-child(2) .team-name::after {
+      color: #C084FC;
+      animation-delay: 0.6s;
+    }
+
+    .team-grid > :nth-child(3) .team-name::after,
+    .intro-team-grid > :nth-child(3) .team-name::after {
+      color: #38BDF8;
+      animation-delay: 1.2s;
+    }
+
+    .team-grid > :nth-child(4) .team-name::after,
+    .intro-team-grid > :nth-child(4) .team-name::after {
+      color: #F472B6;
+      animation-delay: 1.8s;
+    }
+
+    @keyframes teamSparkleSpin {
+      0%, 100% {
+        transform: scale(0.65) rotate(0deg);
+        opacity: 0.4;
+      }
+      50% {
+        transform: scale(1.35) rotate(90deg);
+        opacity: 1;
+      }
     }
 
     @keyframes teamGlowShine {
@@ -1726,7 +1778,8 @@
     }
 
     .team-member-card:hover .team-name {
-      filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.65));
+      filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.95)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.85)) drop-shadow(0 0 40px rgba(34, 211, 238, 0.6));
+      transform: scale(1.03);
     }
 
     .team-role {
@@ -2906,17 +2959,85 @@
       margin-bottom: 0.5rem;
     }
 
+    /* ✨ Sparkling Luminous Aura on Main Title */
     .intro-title {
       font-size: clamp(2.6rem, 6.5vw, 4.8rem);
       font-weight: 900;
       letter-spacing: 2.5px;
-      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 38%, #C084FC 75%, #22D3EE 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: teamGlowShine 5s linear infinite;
       line-height: 1.1;
       margin: 0;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.75)) drop-shadow(0 0 35px rgba(192, 132, 252, 0.55));
+      animation: titleAuraPulse 3.5s ease-in-out infinite alternate;
+    }
+
+    .title-shimmer-text {
+      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 28%, #F3E8FF 50%, #C084FC 75%, #22D3EE 100%);
+      background-size: 250% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titleSparkleSweep 4s linear infinite;
+    }
+
+    .sparkle-star {
+      font-size: 0.44em;
+      display: inline-block;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .star-1 {
+      color: #67E8F9;
+      animation: sparkleFloatTwinkle 2.4s ease-in-out infinite;
+      filter: drop-shadow(0 0 8px #22D3EE) drop-shadow(0 0 16px #22D3EE);
+    }
+    .star-2 {
+      color: #F472B6;
+      animation: sparkleFloatTwinkle 2.8s ease-in-out infinite 0.7s;
+      filter: drop-shadow(0 0 8px #F472B6) drop-shadow(0 0 16px #E879F9);
+    }
+    .star-3 {
+      color: #C084FC;
+      animation: sparkleFloatTwinkle 2.6s ease-in-out infinite 1.3s;
+      filter: drop-shadow(0 0 8px #C084FC) drop-shadow(0 0 16px #A855F7);
+    }
+    .star-4 {
+      color: #38BDF8;
+      animation: sparkleFloatTwinkle 2.2s ease-in-out infinite 1.9s;
+      filter: drop-shadow(0 0 8px #38BDF8) drop-shadow(0 0 16px #0284C7);
+    }
+
+    @keyframes titleAuraPulse {
+      0% {
+        filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.5)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.35));
+      }
+      50% {
+        filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.95)) drop-shadow(0 0 55px rgba(192, 132, 252, 0.8)) drop-shadow(0 0 85px rgba(34, 211, 238, 0.45));
+      }
+      100% {
+        filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.5)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.35));
+      }
+    }
+
+    @keyframes titleSparkleSweep {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes sparkleFloatTwinkle {
+      0%, 100% {
+        transform: scale(0.65) rotate(0deg) translateY(0);
+        opacity: 0.35;
+      }
+      50% {
+        transform: scale(1.35) rotate(180deg) translateY(-3px);
+        opacity: 1;
+      }
     }
 
     .intro-tagline {
@@ -3656,7 +3777,13 @@
           </div>
         </div>
 
-        <h1 class="intro-title">AFFECT AI</h1>
+        <h1 class="intro-title">
+          <span class="sparkle-star star-1">✦</span>
+          <span class="sparkle-star star-2">✨</span>
+          <span class="title-shimmer-text">AFFECT AI</span>
+          <span class="sparkle-star star-3">✦</span>
+          <span class="sparkle-star star-4">✨</span>
+        </h1>
         <p class="intro-tagline">Multimodal Human Emotion Recognition System</p>
         <p class="intro-subtagline">
           Real-time fusion of 468-point 3D facial landmark geometry (70% decision weight) and acoustic vocal prosodic modulation (30% decision weight) for robust affective classification.
