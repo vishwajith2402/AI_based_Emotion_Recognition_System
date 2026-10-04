@@ -387,45 +387,49 @@
     /* Master Multimodal Grid (Matches Wireframe Architecture: Cam View Left vs Stacked Right) */
     .app-workspace-layout {
       display: grid;
-      grid-template-columns: 1.18fr 0.82fr;
-      gap: 1.5rem;
-      align-items: stretch;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.25rem;
+      align-items: start;
       width: 100%;
     }
 
-    /* Left Column: Cam view (Full Height Card) */
+    /* Left Column: Cam view (Compact & Contained, Window Friendly) */
     .cam-view-col {
       display: flex;
       flex-direction: column;
-      height: 100%;
+      position: sticky;
+      top: 1rem;
     }
 
     .cam-view-col .glass-card {
-      height: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 0.85rem;
+      padding: 1.25rem 1.4rem;
     }
 
     .cam-view-col .camera-viewport {
-      flex: 1;
       width: 100%;
-      min-height: 440px;
-      max-height: none;
+      aspect-ratio: 4 / 3;
+      max-height: min(380px, calc(100vh - 280px));
+      min-height: 240px;
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
     }
 
     /* Right Column: Stacked Voice Virtualizer + Emotion Cards */
     .stacked-right-col {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
-      height: 100%;
+      gap: 1.25rem;
     }
 
     .stacked-right-col .glass-card {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 0.85rem;
+      padding: 1.25rem 1.4rem;
     }
 
     /* Fallback wrapper resets */
@@ -510,8 +514,8 @@
       position: relative;
       width: 100%;
       aspect-ratio: 4 / 3;
-      min-height: 280px;
-      max-height: 480px;
+      min-height: 240px;
+      max-height: 380px;
       border-radius: var(--radius-md);
       overflow: hidden;
       background: #020617;
@@ -835,7 +839,7 @@
     /* AI Fusion Centerpiece (Level 1 Result) */
     .hero-centerpiece {
       text-align: center;
-      padding: 1.25rem 0.75rem;
+      padding: 0.85rem 0.5rem;
       position: relative;
       z-index: 1;
       display: flex;
@@ -846,23 +850,23 @@
 
     .hero-section-kicker {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       letter-spacing: 1.4px;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 0.55rem;
+      margin-bottom: 0.45rem;
     }
 
     /* 💎 2. AI Core Animated Ring with Signature Gradient */
     .ai-core-ring {
-      width: 96px;
-      height: 96px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       border: 1px dashed rgba(148, 163, 184, 0.20);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
       position: relative;
       animation: spinSlow 30s linear infinite;
     }
@@ -891,7 +895,7 @@
     }
 
     .emotion-glyph {
-      font-size: 3.4rem;
+      font-size: 2.6rem;
       line-height: 1;
       filter: drop-shadow(0 0 16px rgba(245, 199, 107, 0.25));
       animation: gentleFloat 4s ease-in-out infinite;
@@ -1050,7 +1054,7 @@
        ======================================================== */
     .waveform-container {
       width: 100%;
-      height: 185px;
+      height: 135px;
       border-radius: var(--radius-sm);
       background: #080c16;
       border: 1px solid var(--border-subtle);
@@ -1068,9 +1072,9 @@
     /* Floating HUD Badge Pills inside Visualizer (Matches Screenshot Spec) */
     .hud-overlay-badges {
       position: absolute;
-      bottom: 10px;
-      left: 12px;
-      right: 12px;
+      bottom: 8px;
+      left: 10px;
+      right: 10px;
       display: flex;
       justify-content: space-between;
       pointer-events: none;
@@ -1081,8 +1085,8 @@
       background: rgba(11, 17, 32, 0.88);
       border: 1px solid rgba(148, 163, 184, 0.18);
       border-radius: 6px;
-      padding: 0.35rem 0.65rem;
-      min-width: 80px;
+      padding: 0.25rem 0.55rem;
+      min-width: 75px;
       text-align: center;
       backdrop-filter: blur(8px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -1091,18 +1095,18 @@
     .hud-pill-lbl {
       display: block;
       font-family: var(--font-mono);
-      font-size: 0.58rem;
+      font-size: 0.55rem;
       font-weight: 600;
       color: var(--text-muted);
       letter-spacing: 0.5px;
       text-transform: uppercase;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
 
     .hud-pill-val {
       display: block;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 700;
       color: #a78bfa;
       letter-spacing: 0.3px;
@@ -1113,8 +1117,8 @@
     }
 
     .transcript-box {
-      margin-top: 0.85rem;
-      padding: 0.85rem 1rem;
+      margin-top: 0.65rem;
+      padding: 0.65rem 0.85rem;
       background: var(--bg-secondary);
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-subtle);
@@ -1779,9 +1783,12 @@
         grid-template-columns: 1fr;
         gap: 1.25rem;
       }
+      .cam-view-col {
+        position: static;
+      }
       .cam-view-col .camera-viewport {
-        min-height: 300px;
-        max-height: 400px;
+        min-height: 240px;
+        max-height: 340px;
       }
       .hero-grid, .secondary-grid {
         display: contents;
@@ -1844,9 +1851,10 @@
         padding: 1.25rem 1rem !important;
         border-radius: var(--radius-md) !important;
       }
+      .cam-view-col .camera-viewport,
       .camera-viewport {
-        max-height: 340px !important;
-        min-height: 220px !important;
+        max-height: 300px !important;
+        min-height: 200px !important;
       }
       .cam-controls-row {
         display: grid !important;
@@ -1944,9 +1952,10 @@
         padding: 1rem 0.85rem !important;
         border-radius: 14px !important;
       }
+      .cam-view-col .camera-viewport,
       .camera-viewport {
-        max-height: 280px !important;
-        min-height: 190px !important;
+        max-height: 260px !important;
+        min-height: 180px !important;
       }
       .cam-controls-row {
         grid-template-columns: 1fr 1fr !important;
