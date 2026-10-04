@@ -2916,6 +2916,56 @@
     }
 
     /* ---------------- VIEW 1: INTRO LANDING HERO ---------------- */
+    #viewIntro {
+      position: relative;
+      overflow: hidden;
+      background: #020617;
+    }
+
+    .intro-bg-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.88;
+    }
+
+    .intro-cursor-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 650px;
+      height: 650px;
+      margin-top: -325px;
+      margin-left: -325px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle, rgba(34, 211, 238, 0.18) 0%, rgba(192, 132, 252, 0.08) 42%, transparent 70%);
+      filter: blur(28px);
+      transition: opacity 0.4s ease;
+      will-change: transform;
+      opacity: 0;
+    }
+
+    .intro-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(circle 380px at var(--mouse-x, 50%) var(--mouse-y, 45%), black 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(circle 380px at var(--mouse-x, 50%) var(--mouse-y, 45%), black 0%, transparent 100%);
+      opacity: 0.75;
+      transition: opacity 0.3s ease;
+    }
+
     .intro-hero-wrapper {
       min-height: 100vh;
       display: flex;
@@ -2925,7 +2975,8 @@
       padding: 3rem 1.5rem 2.5rem;
       box-sizing: border-box;
       position: relative;
-      background: radial-gradient(circle at 50% 32%, rgba(34, 211, 238, 0.12) 0%, rgba(139, 92, 246, 0.08) 45%, transparent 75%);
+      z-index: 1;
+      background: radial-gradient(circle at 50% 32%, rgba(34, 211, 238, 0.08) 0%, rgba(139, 92, 246, 0.05) 45%, transparent 75%);
     }
 
     .intro-top-badge {
@@ -3762,6 +3813,11 @@
        Title, Tagline, "Let's Start" CTA, and Team Members at Bottom
        ======================================================== -->
   <section class="app-view active" id="viewIntro">
+    <!-- Interactive Background Canvas & Cursor Tracking Halo (Intro Page Only) -->
+    <canvas id="introInteractiveCanvas" class="intro-bg-canvas"></canvas>
+    <div class="intro-cursor-glow" id="introCursorGlow"></div>
+    <div class="intro-grid-overlay" id="introGridOverlay"></div>
+
     <div class="intro-hero-wrapper">
       
       <!-- Top Cyber Pill -->
@@ -7994,6 +8050,11 @@
           initMediaPipe();
         }
       }
+
+      // Resume interactive background canvas if returning to Intro
+      if (viewId === 'viewIntro' && typeof window.startIntroBackground === 'function') {
+        window.startIntroBackground();
+      }
     }
 
     // View Navigation Button Listeners
@@ -8103,8 +8164,237 @@
       initViewRouting();
     });
 
+    // ========================================================
+    // 🌌 INTRO LANDING PAGE: CURSOR-REACTIVE PARTICLE NETWORK
+    // ========================================================
+    function initIntroBackground() {
+      const canvas = document.getElementById('introInteractiveCanvas');
+      const cursorGlow = document.getElementById('introCursorGlow');
+      const introSection = document.getElementById('viewIntro');
+      if (!canvas || !introSection) return;
+
+      const ctx = canvas.getContext('2d');
+      let animId = null;
+      let width = 0;
+      let height = 0;
+
+      // Cursor tracking with smooth lerp
+      const mouse = {
+        x: -1000,
+        y: -1000,
+        targetX: -1000,
+        targetY: -1000,
+        isActive: false,
+        radius: 175
+      };
+
+      // Click ripples
+      const ripples = [];
+
+      function resize() {
+        if (!introSection) return;
+        const rect = introSection.getBoundingClientRect();
+        width = canvas.width = rect.width || window.innerWidth;
+        height = canvas.height = rect.height || window.innerHeight;
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+
+      // Particles setup
+      const isMobile = window.innerWidth <= 768;
+      const PARTICLE_COUNT = isMobile ? 36 : 72;
+      const particles = [];
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * (width || window.innerWidth),
+          y: Math.random() * (height || window.innerHeight),
+          vx: (Math.random() - 0.5) * 0.7,
+          vy: (Math.random() - 0.5) * 0.7,
+          size: Math.random() * 2 + 1,
+          color: Math.random() > 0.45 ? '#22D3EE' : '#C084FC',
+          baseAlpha: Math.random() * 0.45 + 0.25,
+          pulseSpeed: Math.random() * 0.03 + 0.015,
+          pulseVal: Math.random() * Math.PI * 2
+        });
+      }
+
+      // Mouse & touch events bounded strictly to intro section
+      introSection.addEventListener('mousemove', (e) => {
+        const rect = introSection.getBoundingClientRect();
+        mouse.targetX = e.clientX - rect.left;
+        mouse.targetY = e.clientY - rect.top;
+        mouse.isActive = true;
+
+        if (cursorGlow) {
+          cursorGlow.style.opacity = '1';
+        }
+        introSection.style.setProperty('--mouse-x', `${mouse.targetX}px`);
+        introSection.style.setProperty('--mouse-y', `${mouse.targetY}px`);
+      });
+
+      introSection.addEventListener('mouseleave', () => {
+        mouse.isActive = false;
+        if (cursorGlow) cursorGlow.style.opacity = '0';
+      });
+
+      introSection.addEventListener('click', (e) => {
+        const rect = introSection.getBoundingClientRect();
+        ripples.push({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+          r: 5,
+          maxR: isMobile ? 120 : 200,
+          alpha: 0.8
+        });
+      });
+
+      introSection.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches[0]) {
+          const rect = introSection.getBoundingClientRect();
+          mouse.targetX = e.touches[0].clientX - rect.left;
+          mouse.targetY = e.touches[0].clientY - rect.top;
+          mouse.isActive = true;
+          if (cursorGlow) cursorGlow.style.opacity = '0.9';
+          introSection.style.setProperty('--mouse-x', `${mouse.targetX}px`);
+          introSection.style.setProperty('--mouse-y', `${mouse.targetY}px`);
+        }
+      }, { passive: true });
+
+      introSection.addEventListener('touchend', () => {
+        mouse.isActive = false;
+        if (cursorGlow) cursorGlow.style.opacity = '0';
+      });
+
+      // Ambient idle drift when mouse hasn't moved
+      let idleTime = 0;
+      let isRunning = false;
+
+      function render() {
+        if (!introSection.classList.contains('active')) {
+          isRunning = false;
+          return;
+        }
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Lerp cursor position
+        if (mouse.isActive) {
+          mouse.x += (mouse.targetX - mouse.x) * 0.14;
+          mouse.y += (mouse.targetY - mouse.y) * 0.14;
+        } else {
+          // Gentle ambient Lissajous attractor
+          idleTime += 0.015;
+          mouse.x = width * 0.5 + Math.sin(idleTime * 0.7) * (width * 0.25);
+          mouse.y = height * 0.4 + Math.cos(idleTime * 0.9) * (height * 0.2);
+        }
+
+        if (cursorGlow && mouse.isActive) {
+          cursorGlow.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`;
+        }
+
+        // Render ripples
+        for (let i = ripples.length - 1; i >= 0; i--) {
+          const rp = ripples[i];
+          rp.r += 4.5;
+          rp.alpha *= 0.95;
+          ctx.beginPath();
+          ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(34, 211, 238, ${rp.alpha * 0.6})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          if (rp.alpha < 0.02 || rp.r > rp.maxR) {
+            ripples.splice(i, 1);
+          }
+        }
+
+        // Draw connecting filaments between particles
+        const maxDist = isMobile ? 85 : 125;
+        for (let i = 0; i < particles.length; i++) {
+          const p1 = particles[i];
+
+          // Particle movement
+          p1.x += p1.vx;
+          p1.y += p1.vy;
+
+          if (p1.x < 0) p1.x = width;
+          else if (p1.x > width) p1.x = 0;
+          if (p1.y < 0) p1.y = height;
+          else if (p1.y > height) p1.y = 0;
+
+          // Mouse proximity interaction (elastic deflection / attraction)
+          const dxM = mouse.x - p1.x;
+          const dyM = mouse.y - p1.y;
+          const distM = Math.hypot(dxM, dyM);
+
+          if (distM < mouse.radius && mouse.isActive) {
+            const force = (1 - distM / mouse.radius) * 0.04;
+            p1.x -= dxM * force;
+            p1.y -= dyM * force;
+
+            // Connecting laser beam to cursor
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            const beamAlpha = (1 - distM / mouse.radius) * 0.45;
+            ctx.strokeStyle = p1.color === '#22D3EE' 
+              ? `rgba(34, 211, 238, ${beamAlpha})` 
+              : `rgba(192, 132, 252, ${beamAlpha})`;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+          }
+
+          // Particle-to-particle mesh lines
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < maxDist) {
+              const alpha = (1 - dist / maxDist) * 0.22;
+              ctx.beginPath();
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(34, 211, 238, ${alpha})`;
+              ctx.lineWidth = 0.75;
+              ctx.stroke();
+            }
+          }
+
+          // Render particle node
+          p1.pulseVal += p1.pulseSpeed;
+          const currentAlpha = p1.baseAlpha + Math.sin(p1.pulseVal) * 0.15;
+          ctx.beginPath();
+          ctx.arc(p1.x, p1.y, p1.size, 0, Math.PI * 2);
+          ctx.fillStyle = p1.color === '#22D3EE'
+            ? `rgba(34, 211, 238, ${Math.max(0.1, currentAlpha)})`
+            : `rgba(192, 132, 252, ${Math.max(0.1, currentAlpha)})`;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = p1.color;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        animId = requestAnimationFrame(render);
+      }
+
+      window.startIntroBackground = function() {
+        if (!isRunning) {
+          isRunning = true;
+          resize();
+          animId = requestAnimationFrame(render);
+        }
+      };
+
+      window.startIntroBackground();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       initViewRouting();
+      initIntroBackground();
       warmUpMediaPipe();
       detectAvailableCameras();
       updateFacePrediction();
