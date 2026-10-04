@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acoustic & Voice Visualizer Module | Affect AI</title>
+  <style>
+    :root {
+      --bg-dark: #080c16;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --border-card: rgba(148, 163, 184, 0.14);
+      --cyan: #00f2fe;
+      --violet: #8b5cf6;
+      --indigo: #6366f1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-mono: "SF Mono", "Fira Code", "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #040711;
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .module-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-card);
+      padding-bottom: 0.75rem;
+    }
+
+    .module-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .module-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(0, 242, 254, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      font-weight: 600;
+    }
+
+    /* Dual-Layer Visualizer Card */
+    .visualizer-wrapper {
+      position: relative;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      height: 240px;
+    }
+
+    #visualizerCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Floating HUD Badge Overlay */
+    .hud-overlay {
+      position: absolute;
+      bottom: 14px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .hud-pill {
+      background: rgba(11, 17, 32, 0.88);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      min-width: 90px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+
+    .hud-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .hud-val {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #a78bfa;
+      letter-spacing: 0.3px;
+    }
+
+    /* Live Speech Transcription & Tone Card */
+    .transcription-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 1.1rem 1.25rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+    }
+
+    .transcription-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .transcription-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .tone-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.85rem;
+      border-radius: 6px;
+      background: rgba(139, 92, 246, 0.16);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      transition: all 0.3s ease;
+    }
+
+    .tone-badge.Happy {
+      background: rgba(245, 199, 107, 0.18);
+      color: #fcd34d;
+      border-color: rgba(245, 199, 107, 0.4);
+    }
+    .tone-badge.Angry {
+      background: rgba(251, 113, 133, 0.18);
+      color: #fda4af;
+      border-color: rgba(251, 113, 133, 0.4);
+    }
+    .tone-badge.Sad {
+      background: rgba(96, 165, 250, 0.18);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+    .tone-badge.Surprise {
+      background: rgba(167, 139, 250, 0.18);
+      color: #c4b5fd;
+      border-color: rgba(167, 139, 250, 0.4);
+    }
+
+    .transcription-body {
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      font-style: italic;
+      min-height: 44px;
+      transition: color 0.2s ease;
+    }
+
+    .transcription-body.active {
+      color: #e2e8f0;
+      font-style: normal;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      color: #cbd5e1;
+      border: 1px solid var(--border-card);
+    }
+    .btn-secondary:hover {
+      background: rgba(51, 65, 85, 0.9);
+      color: #fff;
+    }
+
+    .lang-select {
+      background: rgba(15, 23, 42, 0.85);
+      color: #f1f5f9;
+      border: 1px solid var(--border-card);
+      border-radius: 6px;
+      padding: 0.45rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Prosody Telemetry Meter Grid */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .telem-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+    }
+
+    .telem-title {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .telem-val {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="module-header">
+      <div class="module-title">
+        <span>🎙️</span> Audio & Voice Visualizer Module
+      </div>
+      <span class="module-badge">Web Audio API • FFT 2048</span>
+    </div>
+
+    <!-- Dual-Layer Visualizer Viewport -->
+    <div class="visualizer-wrapper">
+      <canvas id="visualizerCanvas"></canvas>
+      
+      <!-- Real-Time HUD Overlay Badge Pills -->
+      <div class="hud-overlay">
+        <div class="hud-pill">
+          <div class="hud-label">PITCH (F₀)</div>
+          <div class="hud-val" id="hudPitch">0 Hz</div>
+        </div>
+        <div class="hud-pill">
+          <div class="hud-label">LOUDNESS</div>
+          <div class="hud-val" id="hudLoudness">-59 dB</div>
+        </div>
+        <div class="hud-pill">
+          <div class="hud-label">ENERGY</div>
+          <div class="hud-val" id="hudEnergy">0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Speech Transcription & Tone Card -->
+    <div class="transcription-card">
+      <div class="transcription-header">
+        <span class="transcription-title">LIVE SPEECH TRANSCRIPTION & TONE:</span>
+        <span class="tone-badge" id="toneBadge">Neutral</span>
+      </div>
+      <div class="transcription-body" id="transcriptionText">
+        Speak into microphone to analyze prosodic tone, pitch inflection, and linguistic sentiment...
+      </div>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-primary" id="btnToggleMic">
+          <span>🎤</span> Start Microphone
+        </button>
+        <button class="btn btn-secondary" id="btnSimulate">
+          <span>⚡</span> Simulate Voice
+        </button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 0.72rem; color: var(--text-muted);">Language:</span>
+        <select class="lang-select" id="selectLang">
+          <option value="en-US" selected>English (US)</option>
+          <option value="en-IN">English (India)</option>
+          <option value="hi-IN">Hindi (हिंदी)</option>
+          <option value="ta-IN">Tamil (தமிழ்)</option>
+          <option value="te-IN">Telugu (తెలుగు)</option>
+          <option value="es-ES">Spanish (Español)</option>
+          <option value="fr-FR">French (Français)</option>
+          <option value="de-DE">German (Deutsch)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Real-Time Acoustic & Prosody Telemetry -->
+    <div class="telemetry-grid">
+      <div class="telem-card">
+        <div class="telem-title">Pitch Variance</div>
+        <div class="telem-val" id="telemVariance">0.0 σ</div>
+      </div>
+      <div class="telem-card">
+        <div class="telem-title">Voice Activity</div>
+        <div class="telem-val" id="telemVoiced">Unvoiced</div>
+      </div>
+      <div class="telem-card">
+        <div class="telem-title">Confidence</div>
+        <div class="telem-val" id="telemConfidence">60%</div>
+      </div>
+      <div class="telem-card">
+        <div class="telem-title">Lexical Sentiment</div>
+        <div class="telem-val" id="telemSentiment">Neutral</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Reusable Modular Script -->
+  <script src="voice_analyzer.js"></script>
+
+  <script>
+    const canvas = document.getElementById('visualizerCanvas');
+    const hudPitch = document.getElementById('hudPitch');
+    const hudLoudness = document.getElementById('hudLoudness');
+    const hudEnergy = document.getElementById('hudEnergy');
+    const toneBadge = document.getElementById('toneBadge');
+    const transcriptionText = document.getElementById('transcriptionText');
+    const btnToggleMic = document.getElementById('btnToggleMic');
+    const btnSimulate = document.getElementById('btnSimulate');
+    const selectLang = document.getElementById('selectLang');
+
+    const telemVariance = document.getElementById('telemVariance');
+    const telemVoiced = document.getElementById('telemVoiced');
+    const telemConfidence = document.getElementById('telemConfidence');
+    const telemSentiment = document.getElementById('telemSentiment');
+
+    // Instantiate VoiceAnalyzer class
+    const analyzer = new VoiceAnalyzer({
+      fftSize: 2048,
+      smoothingTimeConstant: 0.8,
+      simulationMode: false,
+      sttLanguage: 'en-US'
+    });
+
+    let isMicRunning = false;
+
+    // Listen for transcription updates
+    analyzer.on('transcript', (data) => {
+      if (data.combined.length > 0) {
+        transcriptionText.innerText = `"${data.combined}"`;
+        transcriptionText.classList.add('active');
+      } else {
+        transcriptionText.innerText = 'Speak into microphone to analyze prosodic tone, pitch inflection, and linguistic sentiment...';
+        transcriptionText.classList.remove('active');
+      }
+      telemSentiment.innerText = data.sentiment;
+    });
+
+    // Primary render & processing loop
+    function renderLoop() {
+      // 1. Process audio features & emotions
+      const metrics = analyzer.update();
+
+      // 2. Draw dual-layer visualizer
+      analyzer.drawVisualizer(canvas);
+
+      // 3. Update HUD pills
+      hudPitch.innerText = `${metrics.pitch} Hz`;
+      hudLoudness.innerText = `${metrics.loudness} dB`;
+      hudEnergy.innerText = metrics.rms.toFixed(2);
+
+      // 4. Update Tone Badge & Telemetry
+      toneBadge.innerText = metrics.emotion;
+      toneBadge.className = `tone-badge ${metrics.emotion}`;
+
+      telemVariance.innerText = `${metrics.pitchVariance.toFixed(1)} σ`;
+      telemVoiced.innerText = metrics.isVoiced ? 'Voiced ●' : 'Unvoiced ○';
+      telemVoiced.style.color = metrics.isVoiced ? '#22d3ee' : '#94a3b8';
+      telemConfidence.innerText = `${metrics.confidence}%`;
+
+      requestAnimationFrame(renderLoop);
+    }
+    requestAnimationFrame(renderLoop);
+
+    // Microphone toggle
+    btnToggleMic.addEventListener('click', async () => {
+      if (!isMicRunning) {
+        const success = await analyzer.start();
+        if (success) {
+          isMicRunning = true;
+          btnToggleMic.innerHTML = '<span>⏹️</span> Stop Microphone';
+          btnToggleMic.classList.remove('btn-primary');
+          btnToggleMic.classList.add('btn-secondary');
+        } else {
+          alert('Could not access microphone. Falling back to simulation mode.');
+        }
+      } else {
+        analyzer.stop();
+        isMicRunning = false;
+        btnToggleMic.innerHTML = '<span>🎤</span> Start Microphone';
+        btnToggleMic.classList.remove('btn-secondary');
+        btnToggleMic.classList.add('btn-primary');
+      }
+    });
+
+    // Simulation toggle
+    btnSimulate.addEventListener('click', () => {
+      if (!analyzer.isRunning) {
+        analyzer.isRunning = true;
+      }
+      analyzer.isSimulating = !analyzer.isSimulating;
+      btnSimulate.style.borderColor = analyzer.isSimulating ? 'var(--cyan)' : 'var(--border-card)';
+      btnSimulate.innerHTML = analyzer.isSimulating ? '<span>⚡</span> Simulating (Active)' : '<span>⚡</span> Simulate Voice';
+    });
+
+    // Language selection
+    selectLang.addEventListener('change', (e) => {
+      analyzer.setLanguage(e.target.value);
+    });
+  </script>
+</body>
+</html>

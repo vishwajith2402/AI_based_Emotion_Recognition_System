@@ -988,16 +988,17 @@
     }
 
     /* ========================================================
-       🎙️ 4. VOICE MODULATION CARD (Aurora Violet)
+       🎙️ 4. VOICE MODULATION CARD (Aurora Violet & Cyan)
        ======================================================== */
     .waveform-container {
       width: 100%;
-      height: 72px;
+      height: 185px;
       border-radius: var(--radius-sm);
-      background: #020617;
+      background: #080c16;
       border: 1px solid var(--border-subtle);
       position: relative;
       overflow: hidden;
+      box-shadow: inset 0 2px 14px rgba(0, 0, 0, 0.7);
     }
 
     canvas#waveCanvas {
@@ -1006,46 +1007,62 @@
       display: block;
     }
 
-    .volume-meter-row {
+    /* Floating HUD Badge Pills inside Visualizer (Matches Screenshot Spec) */
+    .hud-overlay-badges {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      right: 12px;
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 0.85rem;
+      justify-content: space-between;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hud-pill-box {
+      background: rgba(11, 17, 32, 0.88);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 6px;
+      padding: 0.35rem 0.65rem;
+      min-width: 80px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .hud-pill-lbl {
+      display: block;
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.58rem;
+      font-weight: 600;
       color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
     }
 
-    .vu-track {
-      flex: 1;
-      height: 4px;
-      background: rgba(148, 163, 184, 0.10);
-      border-radius: 4px;
-      overflow: hidden;
+    .hud-pill-val {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #a78bfa;
+      letter-spacing: 0.3px;
     }
 
-    .vu-fill {
-      height: 100%;
-      width: 15%;
-      background: var(--violet);
-      transition: width 0.08s ease;
-    }
-
-    .vu-db-text {
-      width: 55px;
-      text-align: right;
-      color: var(--text-secondary);
+    .volume-meter-row {
+      display: none; /* Replaced by HUD Loudness pill */
     }
 
     .transcript-box {
       margin-top: 0.85rem;
-      padding: 0.75rem 0.95rem;
+      padding: 0.85rem 1rem;
       background: var(--bg-secondary);
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.45rem;
     }
 
     .transcript-header {
@@ -1053,18 +1070,60 @@
       justify-content: space-between;
       align-items: center;
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--violet);
-      letter-spacing: 0.5px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .tone-badge-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.7rem;
+      border-radius: 6px;
+      background: rgba(139, 92, 246, 0.16);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      transition: all 0.3s ease;
+      text-transform: capitalize;
+    }
+
+    .tone-badge-pill.Happy {
+      background: rgba(245, 199, 107, 0.18);
+      color: #fcd34d;
+      border-color: rgba(245, 199, 107, 0.4);
+    }
+    .tone-badge-pill.Angry {
+      background: rgba(251, 113, 133, 0.18);
+      color: #fda4af;
+      border-color: rgba(251, 113, 133, 0.4);
+    }
+    .tone-badge-pill.Sad {
+      background: rgba(96, 165, 250, 0.18);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+    .tone-badge-pill.Surprise {
+      background: rgba(167, 139, 250, 0.18);
+      color: #c4b5fd;
+      border-color: rgba(167, 139, 250, 0.4);
     }
 
     .transcript-body {
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       color: var(--text-secondary);
       font-style: italic;
-      line-height: 1.4;
-      min-height: 22px;
+      line-height: 1.45;
+      min-height: 32px;
       word-break: break-word;
+      transition: color 0.2s ease;
+    }
+
+    .transcript-body.active {
+      color: var(--text-primary);
+      font-style: normal;
     }
 
     /* ========================================================
@@ -2191,28 +2250,39 @@
           <span class="weight-tag violet">30% WEIGHT</span>
         </div>
 
-        <!-- Scientific Audio Waveform Canvas -->
+        <!-- High-Performance Dual-Layer Audio & Voice Visualizer -->
         <div class="waveform-container">
           <canvas id="waveCanvas"></canvas>
+          <div class="hud-overlay-badges">
+            <div class="hud-pill-box">
+              <span class="hud-pill-lbl">PITCH (F₀)</span>
+              <span class="hud-pill-val" id="hudPitch">0 Hz</span>
+            </div>
+            <div class="hud-pill-box">
+              <span class="hud-pill-lbl">LOUDNESS</span>
+              <span class="hud-pill-val" id="hudLoudness">-59 dB</span>
+            </div>
+            <div class="hud-pill-box">
+              <span class="hud-pill-lbl">ENERGY</span>
+              <span class="hud-pill-val" id="hudEnergy">0.00</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Calibrated Decibel Meter -->
-        <div class="volume-meter-row">
-          <span>INPUT LEVEL</span>
-          <div class="vu-track">
-            <div class="vu-fill" id="vuFill"></div>
-          </div>
+        <!-- Hidden compatibility hook for legacy meter -->
+        <div class="volume-meter-row" style="display: none;">
+          <div class="vu-track"><div class="vu-fill" id="vuFill"></div></div>
           <span class="vu-db-text" id="vuDbText">-16 dB</span>
         </div>
 
-        <!-- Live Speech Transcription Box -->
+        <!-- Live Speech Transcription & Tone Card (Exact Reference Spec) -->
         <div class="transcript-box">
           <div class="transcript-header">
-            <span>LIVE TRANSCRIPT</span>
-            <span id="liveTranscriptStatus" style="color: var(--violet);">Standby</span>
+            <span>LIVE SPEECH TRANSCRIPTION & TONE:</span>
+            <span class="tone-badge-pill Neutral" id="liveTranscriptStatus">Neutral</span>
           </div>
           <div class="transcript-body" id="liveTranscriptPreview">
-            "Speak naturally during analysis..."
+            Speak into microphone to analyze prosodic tone, pitch inflection, and linguistic sentiment...
           </div>
         </div>
 
@@ -2553,6 +2623,9 @@
 
   <!-- Compatibility stub for header button -->
   <button id="btnStartAnalyticsHeader" style="display: none;"></button>
+
+  <!-- High-Performance Acoustic & Voice Visualizer Module -->
+  <script src="voice_analyzer.js"></script>
 
   <!-- ========================================================
        JAVASCRIPT INTELLIGENCE ENGINE
@@ -3639,33 +3712,29 @@
       }
     }
 
-    // Audio & Waveform Visualization (Aurora Violet Accent)
-    let micAudioStream = null;
-    let micAudioCtx = null;
-    let micAnalyser = null;
-    let micSource = null;
-    let micDataArray = null;
+    // High-Performance Audio & Voice Visualizer Engine
+    const voiceAnalyzer = new VoiceAnalyzer({
+      fftSize: 2048,
+      smoothingTimeConstant: 0.8,
+      minPitch: 65,
+      maxPitch: 550,
+      rmsSilenceThreshold: 0.015,
+      pitchBufferSize: 30,
+      emaAlpha: 0.20,
+      numBars: 64,
+      simulationMode: false,
+      sttLanguage: state.sttLanguage || 'en-US'
+    });
 
     async function initMicAudio() {
-      if (micAudioStream && micAudioCtx) {
-        if (micAudioCtx.state === 'suspended') {
-          try { await micAudioCtx.resume(); } catch (e) {}
-        }
+      if (voiceAnalyzer && voiceAnalyzer.isRunning && !voiceAnalyzer.isSimulating) {
         return;
       }
       try {
-        micAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        micAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (micAudioCtx.state === 'suspended') {
-          try { await micAudioCtx.resume(); } catch (e) {}
-        }
-        micAnalyser = micAudioCtx.createAnalyser();
-        micAnalyser.fftSize = 256;
-        micSource = micAudioCtx.createMediaStreamSource(micAudioStream);
-        micSource.connect(micAnalyser);
-        micDataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+        await voiceAnalyzer.start();
+        console.log('[VoiceAnalyzer] Connected to user microphone');
       } catch (err) {
-        console.warn('[Audio] Hardware mic capture denied or unavailable', err);
+        console.warn('[VoiceAnalyzer] Microphone initialization notice:', err);
       }
     }
 
@@ -3677,73 +3746,67 @@
       if (timestamp - lastWaveTime >= waveInterval) {
         lastWaveTime = timestamp;
 
-        // Only update dimensions on resize to prevent expensive DOM reflows
-        if (waveCanvas.width !== waveCanvas.clientWidth || waveCanvas.height !== waveCanvas.clientHeight) {
-          waveCanvas.width = waveCanvas.clientWidth;
-          waveCanvas.height = waveCanvas.clientHeight;
+        // Auto-run smooth simulation until active microphone input starts
+        if (!voiceAnalyzer.isRunning) {
+          voiceAnalyzer.isRunning = true;
+          voiceAnalyzer.isSimulating = true;
         }
 
-        const h = waveCanvas.height;
-        const w = waveCanvas.width;
-        let vuPct = 15;
-        let isLiveAudio = false;
+        const metrics = voiceAnalyzer.update();
+        voiceAnalyzer.drawVisualizer(waveCanvas);
 
-        if (micAnalyser && micDataArray) {
-          micAnalyser.getByteFrequencyData(micDataArray);
-          let sum = 0;
-          for (let i = 0; i < micDataArray.length; i++) sum += micDataArray[i];
-          const avg = sum / micDataArray.length;
-          if (avg > 4) {
-            isLiveAudio = true;
-            vuPct = Math.min(100, Math.max(8, avg * 2.2));
-            if (analyticsSession && analyticsSession.active) {
-              analyticsSession.hasAudioHeard = true;
-            }
-          }
+        // Update real-time HUD badge pills (Matches Screenshot Spec)
+        const elHudPitch = document.getElementById('hudPitch');
+        const elHudLoudness = document.getElementById('hudLoudness');
+        const elHudEnergy = document.getElementById('hudEnergy');
+
+        if (elHudPitch) elHudPitch.innerText = `${metrics.pitch} Hz`;
+        if (elHudLoudness) elHudLoudness.innerText = `${metrics.loudness} dB`;
+        if (elHudEnergy) elHudEnergy.innerText = metrics.rms.toFixed(2);
+
+        // Update Live Tone Badge
+        const elLiveStat = document.getElementById('liveTranscriptStatus');
+        if (elLiveStat) {
+          elLiveStat.innerText = metrics.emotion;
+          elLiveStat.className = `tone-badge-pill ${metrics.emotion}`;
         }
 
-        waveCtx.clearRect(0, 0, w, h);
-
-        // Draw Scientific Signal Waveform (Ice Cyan -> Aurora Violet signature gradient)
-        const grad = waveCtx.createLinearGradient(0, 0, w, 0);
-        grad.addColorStop(0, '#22D3EE');
-        grad.addColorStop(1, '#8B5CF6');
-
-        waveCtx.strokeStyle = grad;
-        waveCtx.lineWidth = 1.8;
-        waveCtx.beginPath();
-
-        if (isLiveAudio && micAnalyser) {
-          const sliceWidth = w * 1.0 / micDataArray.length;
-          let x = 0;
-          for (let i = 0; i < micDataArray.length; i++) {
-            const v = micDataArray[i] / 128.0;
-            const y = (v * h) / 2;
-            if (i === 0) waveCtx.moveTo(x, y);
-            else waveCtx.lineTo(x, y);
-            x += sliceWidth;
-          }
-          waveCtx.lineTo(w, h / 2);
-        } else {
-          const time = Date.now() * 0.0025;
-          const step = isMobileDevice ? 2 : 1; // 2x faster loop on mobile
-          for (let x = 0; x < w; x += step) {
-            const y = h/2 + Math.sin(x * 0.04 + time) * 5 * Math.cos(time * 0.4);
-            if (x === 0) waveCtx.moveTo(x, y);
-            else waveCtx.lineTo(x, y);
-          }
-          vuPct = 12 + Math.sin(Date.now() * 0.002) * 4;
+        // Voice activity registration during 30s assessment session
+        if (metrics.isVoiced && analyticsSession && analyticsSession.active) {
+          analyticsSession.hasAudioHeard = true;
         }
-        waveCtx.stroke();
 
-        vuFill.style.width = `${Math.min(100, Math.max(0, vuPct))}%`;
-        const vuText = document.getElementById('vuDbText');
-        if (vuText) vuText.innerText = `${Math.round(-40 + vuPct * 0.32)} dB`;
+        // Real-time prosodic vocal emotion classification feeding into 70/30 Multimodal Decision Fusion
+        if (metrics.isVoiced || (analyticsSession && analyticsSession.active)) {
+          if (metrics.emotion && metrics.emotion !== state.selectedSpeechEmotion) {
+            state.selectedSpeechEmotion = metrics.emotion;
+            state.latestSpeechProbs = { ...metrics.probabilities };
+            updateSpeechPrediction();
+          }
+        }
       }
 
       requestAnimationFrame(animateWaveform);
     }
     requestAnimationFrame(animateWaveform);
+
+    // Listen for live speech transcription from VoiceAnalyzer
+    voiceAnalyzer.on('transcript', (data) => {
+      const elLivePrev = document.getElementById('liveTranscriptPreview');
+      if (elLivePrev) {
+        if (data.combined && data.combined.length > 0) {
+          elLivePrev.innerText = `"${data.combined}"`;
+          elLivePrev.classList.add('active');
+          if (analyticsSession && analyticsSession.active) {
+            analyticsSession.hasAudioHeard = true;
+            analyticsSession.latestTranscript = data.combined;
+          }
+        } else {
+          elLivePrev.innerText = 'Speak into microphone to analyze prosodic tone, pitch inflection, and linguistic sentiment...';
+          elLivePrev.classList.remove('active');
+        }
+      }
+    });
 
     // Speech sentiment / emotional intent classifier for live voice transcript (Multilingual: English, Hindi, Tamil, Telugu, Spanish, French, German, Japanese, Chinese)
     function classifySpeechTranscript(text) {
@@ -3927,7 +3990,10 @@
           elLiveStat.innerText = `Listening (${state.sttLanguage}) 🎙️`;
         }
 
-        // Dynamically update active SpeechRecognizer instance
+        // Dynamically update active SpeechRecognizer and VoiceAnalyzer instance
+        if (voiceAnalyzer) {
+          voiceAnalyzer.setLanguage(state.sttLanguage);
+        }
         if (speechRecognizer) {
           try {
             speechRecognizer.lang = state.sttLanguage;
