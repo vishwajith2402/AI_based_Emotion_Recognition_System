@@ -2842,48 +2842,590 @@
         padding: 1.1rem 0.75rem !important;
         font-size: 0.65rem !important;
       }
+    /* ========================================================
+       🌐 MULTI-PAGE / MULTI-VIEW SPA ARCHITECTURE
+       ======================================================== */
+    .app-view {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .app-view.active {
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+    }
+
+    /* ---------------- VIEW 1: INTRO LANDING HERO ---------------- */
+    .intro-hero-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3rem 1.5rem 2.5rem;
+      box-sizing: border-box;
+      position: relative;
+      background: radial-gradient(circle at 50% 32%, rgba(34, 211, 238, 0.12) 0%, rgba(139, 92, 246, 0.08) 45%, transparent 75%);
+    }
+
+    .intro-top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      padding: 0.35rem 0.95rem;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.15);
+    }
+
+    .intro-centerpiece {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.15rem;
+      max-width: 880px;
+      margin: auto 0;
+      padding: 1.5rem 0;
+    }
+
+    .intro-ai-orb {
+      margin-bottom: 0.5rem;
+    }
+
+    .intro-title {
+      font-size: clamp(2.6rem, 6.5vw, 4.8rem);
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 38%, #C084FC 75%, #22D3EE 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: teamGlowShine 5s linear infinite;
+      line-height: 1.1;
+      margin: 0;
+    }
+
+    .intro-tagline {
+      font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+      font-weight: 700;
+      color: #F8FAFC;
+      margin: 0;
+      letter-spacing: 0.6px;
+    }
+
+    .intro-subtagline {
+      font-family: var(--font-main);
+      font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 680px;
+      margin: 0;
+    }
+
+    .btn-lets-start {
+      margin-top: 1.25rem;
+      padding: 1rem 3rem;
+      font-family: var(--font-main);
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.25) 0%, rgba(139, 92, 246, 0.3) 100%);
+      border: 1.5px solid var(--cyan);
+      color: #FFFFFF;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: 0 0 32px rgba(34, 211, 238, 0.35);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-lets-start:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 50px rgba(34, 211, 238, 0.6);
+      border-color: #67E8F9;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.4) 0%, rgba(139, 92, 246, 0.45) 100%);
+    }
+
+    .btn-lets-start .btn-start-arrow {
+      transition: transform 0.25s ease;
+    }
+
+    .btn-lets-start:hover .btn-start-arrow {
+      transform: translateX(5px);
+    }
+
+    .intro-team-footer {
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .intro-team-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .intro-team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .intro-team-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+
+    /* ---------------- VIEW 2: MODE SELECTION HUB ---------------- */
+    .mode-select-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3.5rem 1.5rem;
+      box-sizing: border-box;
+      background: radial-gradient(circle at 50% 35%, rgba(139, 92, 246, 0.12) 0%, rgba(34, 211, 238, 0.08) 50%, transparent 80%);
+    }
+
+    .mode-select-header {
+      text-align: center;
+      margin-bottom: 2.6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .mode-select-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #F8FAFC;
+      margin: 0;
+    }
+
+    .mode-select-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .mode-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+      max-width: 980px;
+      width: 100%;
+    }
+
+    .mode-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 2.2rem 1.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.1rem;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-7px);
+      border-color: var(--cyan);
+      box-shadow: 0 18px 45px rgba(34, 211, 238, 0.25);
+    }
+
+    .mode-card.vocal-hover:hover {
+      border-color: var(--violet);
+      box-shadow: 0 18px 45px rgba(139, 92, 246, 0.25);
+    }
+
+    .mode-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      padding: 0.22rem 0.65rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .mode-card-badge.cyan {
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      color: var(--cyan);
+    }
+
+    .mode-card-badge.violet {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: #C4B5FD;
+    }
+
+    .mode-card-icon {
+      font-size: 3rem;
+      margin: 0.25rem 0;
+      filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+    }
+
+    .mode-card-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .mode-card-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .mode-card-features {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin: 0.5rem 0;
+    }
+
+    .btn-mode-cta {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      font-family: var(--font-main);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      transition: all 0.25s ease;
+      margin-top: auto;
+    }
+
+    .btn-mode-cta.cyan-btn {
+      background: rgba(34, 211, 238, 0.14);
+      border: 1.5px solid var(--cyan);
+      color: #FFFFFF;
+    }
+
+    .btn-mode-cta.cyan-btn:hover {
+      background: rgba(34, 211, 238, 0.28);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+    }
+
+    .btn-mode-cta.violet-btn {
+      background: rgba(139, 92, 246, 0.14);
+      border: 1.5px solid var(--violet);
+      color: #FFFFFF;
+    }
+
+    .btn-mode-cta.violet-btn:hover {
+      background: rgba(139, 92, 246, 0.28);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .mode-return-bar {
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 820px) {
+      .mode-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Top Nav Switch Buttons */
+    .nav-switch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .nav-switch-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      background: rgba(34, 211, 238, 0.1);
+    }
+
+    /* Dedicated Media Upload Studio View */
+    .media-studio-page-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      box-sizing: border-box;
     }
   </style>
 </head>
 <body>
 
   <!-- ========================================================
-       TOP HEADER (Main Header Tab - Wireframe Specification)
+       VIEW 1: INTRO LANDING PAGE
+       Title, Tagline, "Let's Start" CTA, and Team Members at Bottom
        ======================================================== -->
-  <header>
-    <div class="brand-group">
-      <div class="brand-mark">◇</div>
-      <div class="brand-text">
-        <h1>AFFECT AI</h1>
-        <p>Multimodal Emotion Intelligence</p>
-      </div>
-    </div>
-
-    <div class="header-actions">
-      <div class="system-status-pill" id="sysStatusPill">
-        <div class="pulse-dot" id="sysStatusDot"></div>
-        <span id="sysStatusText">SYSTEM READY</span>
+  <section class="app-view active" id="viewIntro">
+    <div class="intro-hero-wrapper">
+      
+      <!-- Top Cyber Pill -->
+      <div class="intro-top-badge">
+        <span class="pulse-dot-cyan"></span> MULTIMODAL AFFECTIVE INTELLIGENCE PLATFORM
       </div>
 
-      <!-- Quick Header Action CTA -->
-      <button class="btn-header-cta" id="btnStartAnalyticsHeader">
-        <span>▶</span> Start Analysis
-      </button>
+      <!-- Centerpiece: Title, Taglines & "Let's Start" CTA -->
+      <div class="intro-centerpiece">
+        <div class="intro-ai-orb">
+          <div class="ai-core-ring" style="width: 104px; height: 104px; margin-bottom: 0;">
+            <div class="emotion-glyph" style="font-size: 3rem;">◇</div>
+          </div>
+        </div>
 
-      <!-- New Features Window: Media & Voice Lab CTA -->
-      <button class="btn-header-cta media-lab-btn" id="btnOpenMediaLab" title="Open Media Lab: Video/Image & Voice Offline Analyzer">
-        <span>✨</span> Media & Voice Lab <span class="media-lab-tag">NEW</span>
-      </button>
+        <h1 class="intro-title">AFFECT AI</h1>
+        <p class="intro-tagline">Multimodal Human Emotion Recognition System</p>
+        <p class="intro-subtagline">
+          Real-time fusion of 468-point 3D facial landmark geometry (70% decision weight) and acoustic vocal prosodic modulation (30% decision weight) for robust affective classification.
+        </p>
 
-      <!-- Quick Flip Camera Button in Header -->
-      <button class="btn-ghost-sm" id="btnHeaderFlipCam" title="Quick Flip Front / Back Camera">
-        <span>🔄</span> Flip Cam
-      </button>
+        <!-- Main "Let's Start" CTA Button -->
+        <button class="btn-lets-start" id="btnHeroLetsStart">
+          <span>🚀</span>
+          <span>LET'S START</span>
+          <span class="btn-start-arrow">&rarr;</span>
+        </button>
+      </div>
 
-      <button class="btn-ghost-sm" id="btnOpenGuide">GUIDE</button>
-      <a href="#aboutSection" class="btn-ghost-sm" style="text-decoration: none; display: inline-flex; align-items: center;">ABOUT</a>
+      <!-- Team Members Section in the Bottom of the Window -->
+      <div class="intro-team-footer">
+        <div class="intro-team-label">
+          <span>👥</span> RESEARCH &amp; DEVELOPMENT ENGINEERING TEAM
+        </div>
+        <div class="team-grid intro-team-grid">
+          <!-- Team Member 1: Vishwajith -->
+          <div class="team-member-card">
+            <div class="team-card-inner">
+              <div class="team-avatar">VJ</div>
+              <div class="team-name">Vishwajith</div>
+              <div class="team-role">Lead AI &amp; Multimodal Architecture</div>
+              <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+            </div>
+          </div>
+
+          <!-- Team Member 2: Wilson -->
+          <div class="team-member-card">
+            <div class="team-card-inner">
+              <div class="team-avatar">WL</div>
+              <div class="team-name">Wilson</div>
+              <div class="team-role">Computer Vision &amp; 3D Face Geometry</div>
+              <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+            </div>
+          </div>
+
+          <!-- Team Member 3: Vadivazhagi -->
+          <div class="team-member-card">
+            <div class="team-card-inner">
+              <div class="team-avatar">VD</div>
+              <div class="team-name">Vadivazhagi</div>
+              <div class="team-role">Acoustic Signal &amp; Prosody Analysis</div>
+              <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+            </div>
+          </div>
+
+          <!-- Team Member 4: Viseka -->
+          <div class="team-member-card">
+            <div class="team-card-inner">
+              <div class="team-avatar">VS</div>
+              <div class="team-name">Viseka</div>
+              <div class="team-role">Decision Fusion &amp; Interface Experience</div>
+              <div class="team-badge"><span class="dot"></span>Core Contributor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </header>
+  </section>
+
+  <!-- ========================================================
+       VIEW 2: MODE SELECTION HUB
+       Option 1: Live Analysis | Option 2: Media Uploads
+       ======================================================== -->
+  <section class="app-view" id="viewModeSelect">
+    <div class="mode-select-wrapper">
+      
+      <!-- Hub Header -->
+      <div class="mode-select-header">
+        <div class="media-lab-badge" style="margin-bottom: 0.65rem;">
+          <span class="pulse-dot-cyan"></span> SELECT SYSTEM WORKSPACE
+        </div>
+        <h2 class="mode-select-title">Choose Analysis Mode</h2>
+        <p class="mode-select-subtitle">Select between real-time interactive stream monitoring or offline multimodal file intelligence.</p>
+      </div>
+
+      <!-- Two Main Mode Cards -->
+      <div class="mode-cards-grid">
+        
+        <!-- Mode Option 1: Live Analysis -->
+        <div class="mode-card visual-mode" id="btnSelectLiveMode">
+          <div class="mode-card-badge cyan">
+            <span>●</span> REAL-TIME HARDWARE SENSORS
+          </div>
+          <div class="mode-card-icon">📷 + 🎙️</div>
+          <h3 class="mode-card-title">Live Analysis</h3>
+          <p class="mode-card-desc">
+            Direct webcam stream with 468-point 3D face mesh tracking, live acoustic frequency waveform visualizer, continuous speech transcription, and automated 30-second analytics evaluation.
+          </p>
+          <div class="mode-card-features">
+            <span>✓ 468-Pt 3D Face FACS Mesh</span>
+            <span>✓ Dual-Layer Voice Waveform</span>
+            <span>✓ 30-Second Forensic Session</span>
+          </div>
+          <button class="btn-mode-cta cyan-btn">
+            <span>Launch Live Analysis</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+        <!-- Mode Option 2: Media Uploads -->
+        <div class="mode-card vocal-mode vocal-hover" id="btnSelectMediaMode">
+          <div class="mode-card-badge violet">
+            <span>📁</span> OFFLINE MULTIMODAL MEDIA
+          </div>
+          <div class="mode-card-icon">🎬 + 🎵</div>
+          <h3 class="mode-card-title">Media Uploads</h3>
+          <p class="mode-card-desc">
+            Upload custom video (.mp4) or photo (.png, .jpg) + voice audio (.wav, .mp3) or record voice, extract Action Units &amp; acoustic prosody, and generate 70/30 cross-modal fusion intelligence.
+          </p>
+          <div class="mode-card-features">
+            <span>✓ Video / Photo Facial Scanner</span>
+            <span>✓ Voice Waveform &amp; Pitch Decoders</span>
+            <span>✓ Full 70/30 Decision Report</span>
+          </div>
+          <button class="btn-mode-cta violet-btn">
+            <span>Open Media Uploads</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Return to Intro Button -->
+      <div class="mode-return-bar">
+        <button class="btn-ghost-sm" id="btnBackToIntro">
+          <span>&larr;</span> Return to Home
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================
+       VIEW 3: LIVE ANALYSIS WORKSPACE
+       Camera view, Voice virtualizer, 30-second analytics session
+       ======================================================== -->
+  <section class="app-view" id="viewLiveApp">
+
+    <!-- TOP HEADER -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-mark">◇</div>
+        <div class="brand-text">
+          <h1>AFFECT AI</h1>
+          <p>Live Multimodal Stream</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Navigation Buttons -->
+        <button class="nav-switch-btn" id="btnNavHomeFromLive" title="Return to Home">
+          <span>🏠</span> Home
+        </button>
+        <button class="nav-switch-btn" id="btnNavModeFromLive" title="Switch Mode">
+          <span>🔀</span> Switch Mode
+        </button>
+        <button class="nav-switch-btn" id="btnNavMediaFromLive" title="Go to Media Uploads Studio">
+          <span>📁</span> Media Uploads
+        </button>
+
+        <div class="system-status-pill" id="sysStatusPill">
+          <div class="pulse-dot" id="sysStatusDot"></div>
+          <span id="sysStatusText">SYSTEM READY</span>
+        </div>
+
+        <!-- Quick Header Action CTA -->
+        <button class="btn-header-cta" id="btnStartAnalyticsHeader">
+          <span>▶</span> Start Analysis
+        </button>
+
+        <!-- Quick Flip Camera Button in Header -->
+        <button class="btn-ghost-sm" id="btnHeaderFlipCam" title="Quick Flip Front / Back Camera">
+          <span>🔄</span> Flip Cam
+        </button>
+
+        <button class="btn-ghost-sm" id="btnOpenGuide">GUIDE</button>
+        <a href="#aboutSection" class="btn-ghost-sm" style="text-decoration: none; display: inline-flex; align-items: center;">ABOUT</a>
+      </div>
+    </header>
 
   <!-- ========================================================
        ANALYSIS TIMELINE HUD (Minimalist HUD, hidden until active)
@@ -3344,6 +3886,7 @@
     <div>AFFECT AI &mdash; Multimodal Emotion Intelligence System</div>
     <div>MediaPipe 468-pt Mesh &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
   </footer>
+  </section> <!-- /viewLiveApp -->
 
   <!-- ========================================================
        MODAL 1: RESEARCH GUIDE
@@ -3434,25 +3977,55 @@
         <button class="btn-ghost-sm" id="btnSpeakReport">🔊 Speak</button>
         <button class="btn-ghost-sm" id="btnCloseReportBtn">Done</button>
       </div>
+    </div>
   </div>
 
   <!-- ========================================================
-       MODAL 3: NEW FEATURES WINDOW — MULTIMODAL MEDIA & VOICE LAB
-       Allows user to input video or image + voice / audio and generate deep analysis
+       VIEW 4: DEDICATED MEDIA UPLOADS & OFFLINE ANALYSIS STUDIO
+       Video / Photo input + Voice audio input + 70/30 Fusion
        ======================================================== -->
-  <div class="modal-backdrop" id="mediaAnalysisModal" style="display: none;">
-    <div class="modal-window media-lab-window">
+  <section class="app-view" id="viewMediaUpload">
+    
+    <!-- TOP HEADER -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-mark">◇</div>
+        <div class="brand-text">
+          <h1>AFFECT AI</h1>
+          <p>Media &amp; Voice Upload Studio</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Navigation Buttons -->
+        <button class="nav-switch-btn" id="btnNavHomeFromMedia" title="Return to Home">
+          <span>🏠</span> Home
+        </button>
+        <button class="nav-switch-btn" id="btnNavModeFromMedia" title="Switch Mode">
+          <span>🔀</span> Switch Mode
+        </button>
+        <button class="nav-switch-btn" id="btnNavLiveFromMedia" title="Go to Live Analysis">
+          <span>🔴</span> Live Analysis
+        </button>
+
+        <div class="system-status-pill">
+          <div class="pulse-dot"></div>
+          <span>OFFLINE LAB READY</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="media-studio-page-container">
       
-      <!-- Window Titlebar -->
-      <div class="modal-header media-lab-header">
+      <!-- Studio Header Card -->
+      <div class="media-lab-header" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 1.5rem; backdrop-filter: blur(20px);">
         <div class="media-lab-title-group">
           <div class="media-lab-badge">
-            <span class="pulse-dot-cyan"></span> NEW FEATURE &bull; OFFLINE MULTIMODAL MEDIA STUDIO
+            <span class="pulse-dot-cyan"></span> OFFLINE MULTIMODAL MEDIA STUDIO
           </div>
-          <h2>Video, Image & Voice Affect Intelligence Lab</h2>
-          <p>Input Custom Video/Image + Voice Audio File or Mic &bull; 468-Point Geometric FACS & Acoustic Prosody &bull; Unified 70/30 Multimodal Decision</p>
+          <h2 style="font-size: 1.45rem;">Video, Image &amp; Voice Affect Intelligence Lab</h2>
+          <p style="font-size: 0.85rem;">Upload custom video or image + voice audio file or record microphone. Extracts 468-point 3D facial Action Units (FACS) and acoustic prosody (pitch/loudness/inflection) to compute a calibrated 70/30 decision fusion report.</p>
         </div>
-        <button class="modal-close-btn" id="btnCloseMediaLab" title="Close Window (Esc)">✕</button>
       </div>
 
       <!-- Quick Preset Scenario Strip -->
@@ -3724,7 +4297,13 @@
       </div>
 
     </div>
-  </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div>AFFECT AI &mdash; Multimodal Media &amp; Voice Studio</div>
+      <div>468-pt Mesh Kinematics &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
+    </footer>
+  </section>
 
 
   <!-- High-Performance Acoustic & Voice Visualizer Module -->
@@ -5872,10 +6451,12 @@
     const elMediaProgressStatus = document.getElementById('mediaLabProgressStatus');
     const elMediaFusionDashboard = document.getElementById('mediaFusionDashboard');
 
-    // Open / Close Modal
+    // Open / Close Media Lab Studio Navigation
     if (elBtnOpenMediaLab) {
       elBtnOpenMediaLab.addEventListener('click', () => {
-        if (elMediaModal) {
+        if (typeof switchView === 'function') {
+          switchView('viewMediaUpload');
+        } else if (elMediaModal) {
           elMediaModal.style.display = 'flex';
           initMediaPipe();
         }
@@ -5884,17 +6465,22 @@
 
     if (elBtnCloseMediaLab) {
       elBtnCloseMediaLab.addEventListener('click', () => {
-        if (elMediaModal) elMediaModal.style.display = 'none';
+        if (typeof switchView === 'function') {
+          switchView('viewModeSelect');
+        } else if (elMediaModal) {
+          elMediaModal.style.display = 'none';
+        }
         if (elLabVideoPreview) elLabVideoPreview.pause();
         if (elLabAudioPlayer) elLabAudioPlayer.pause();
       });
     }
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && elMediaModal && elMediaModal.style.display === 'flex') {
-        elMediaModal.style.display = 'none';
-        if (elLabVideoPreview) elLabVideoPreview.pause();
-        if (elLabAudioPlayer) elLabAudioPlayer.pause();
+      if (e.key === 'Escape') {
+        const mediaView = document.getElementById('viewMediaUpload');
+        if (mediaView && mediaView.classList.contains('active')) {
+          switchView('viewModeSelect');
+        }
       }
     });
 
@@ -6818,7 +7404,165 @@
         speakPhrase(`Media Lab analysis verdict. Overall recognized emotion is ${top} at ${conf} percent confidence. ${conc}.`);
       });
     }
+
+    // ========================================================
+    // 🌐 MULTI-PAGE / MULTI-VIEW SPA NAVIGATION CONTROLLER
+    // ========================================================
+    function switchView(viewId, updateHash = true) {
+      const views = document.querySelectorAll('.app-view');
+      let targetView = document.getElementById(viewId);
+      if (!targetView) {
+        targetView = document.getElementById('viewIntro');
+        viewId = 'viewIntro';
+      }
+
+      views.forEach(v => {
+        v.classList.remove('active');
+      });
+      targetView.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Update URL hash without forcing full page reload
+      if (updateHash) {
+        if (viewId === 'viewLiveApp') history.pushState(null, '', '#live');
+        else if (viewId === 'viewMediaUpload') history.pushState(null, '', '#media');
+        else if (viewId === 'viewModeSelect') history.pushState(null, '', '#select-mode');
+        else history.pushState(null, '', '#');
+      }
+
+      // Camera lifecycle management when switching views
+      if (viewId !== 'viewLiveApp' && state.isCameraRunning) {
+        const camBtn = document.getElementById('btnToggleCam');
+        if (camBtn) {
+          camBtn.click(); // Gracefully releases stream & stops tracks
+        }
+      }
+
+      // Media Lab playback control
+      if (viewId !== 'viewMediaUpload') {
+        if (typeof elLabVideoPreview !== 'undefined' && elLabVideoPreview && !elLabVideoPreview.paused) {
+          elLabVideoPreview.pause();
+        }
+        if (typeof elLabAudioPlayer !== 'undefined' && elLabAudioPlayer && !elLabAudioPlayer.paused) {
+          elLabAudioPlayer.pause();
+        }
+      } else {
+        // Pre-warm MediaPipe FaceMesh for media processing
+        if (typeof initMediaPipe === 'function') {
+          initMediaPipe();
+        }
+      }
+    }
+
+    // View Navigation Button Listeners
+    // 1. Intro View: "Let's Start" CTA
+    const btnHeroLetsStart = document.getElementById('btnHeroLetsStart');
+    if (btnHeroLetsStart) {
+      btnHeroLetsStart.addEventListener('click', () => {
+        switchView('viewModeSelect');
+      });
+    }
+
+    // 2. Mode Select View: Live Analysis & Media Uploads options
+    const btnSelectLiveMode = document.getElementById('btnSelectLiveMode');
+    if (btnSelectLiveMode) {
+      btnSelectLiveMode.addEventListener('click', () => {
+        switchView('viewLiveApp');
+      });
+    }
+
+    const btnSelectMediaMode = document.getElementById('btnSelectMediaMode');
+    if (btnSelectMediaMode) {
+      btnSelectMediaMode.addEventListener('click', () => {
+        switchView('viewMediaUpload');
+      });
+    }
+
+    const btnBackToIntro = document.getElementById('btnBackToIntro');
+    if (btnBackToIntro) {
+      btnBackToIntro.addEventListener('click', () => {
+        switchView('viewIntro');
+      });
+    }
+
+    // 3. Live Analysis Workspace Header Navigation
+    const btnNavHomeFromLive = document.getElementById('btnNavHomeFromLive');
+    if (btnNavHomeFromLive) {
+      btnNavHomeFromLive.addEventListener('click', () => {
+        switchView('viewIntro');
+      });
+    }
+
+    const btnNavModeFromLive = document.getElementById('btnNavModeFromLive');
+    if (btnNavModeFromLive) {
+      btnNavModeFromLive.addEventListener('click', () => {
+        switchView('viewModeSelect');
+      });
+    }
+
+    const btnNavMediaFromLive = document.getElementById('btnNavMediaFromLive');
+    if (btnNavMediaFromLive) {
+      btnNavMediaFromLive.addEventListener('click', () => {
+        switchView('viewMediaUpload');
+      });
+    }
+
+    // 4. Media Upload Studio Header Navigation
+    const btnNavHomeFromMedia = document.getElementById('btnNavHomeFromMedia');
+    if (btnNavHomeFromMedia) {
+      btnNavHomeFromMedia.addEventListener('click', () => {
+        switchView('viewIntro');
+      });
+    }
+
+    const btnNavModeFromMedia = document.getElementById('btnNavModeFromMedia');
+    if (btnNavModeFromMedia) {
+      btnNavModeFromMedia.addEventListener('click', () => {
+        switchView('viewModeSelect');
+      });
+    }
+
+    const btnNavLiveFromMedia = document.getElementById('btnNavLiveFromMedia');
+    if (btnNavLiveFromMedia) {
+      btnNavLiveFromMedia.addEventListener('click', () => {
+        switchView('viewLiveApp');
+      });
+    }
+
+    // Header Brand Mark click in both views returns to Intro Home
+    document.querySelectorAll('.brand-group').forEach(bg => {
+      bg.style.cursor = 'pointer';
+      bg.title = 'Return to Home';
+      bg.addEventListener('click', () => {
+        switchView('viewIntro');
+      });
+    });
+
+    // Deep linking / hash-based routing support
+    function initViewRouting() {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#live' || hash === '#liveapp') {
+        switchView('viewLiveApp', false);
+      } else if (hash === '#media' || hash === '#mediaupload') {
+        switchView('viewMediaUpload', false);
+      } else if (hash === '#select-mode' || hash === '#modes') {
+        switchView('viewModeSelect', false);
+      } else {
+        // Default on opening site: Intro landing page
+        switchView('viewIntro', false);
+      }
+    }
+
+    window.addEventListener('popstate', () => {
+      initViewRouting();
+    });
+
+    window.addEventListener('hashchange', () => {
+      initViewRouting();
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
+      initViewRouting();
       warmUpMediaPipe();
       detectAvailableCameras();
       updateFacePrediction();
