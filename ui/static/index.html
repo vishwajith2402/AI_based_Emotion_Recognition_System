@@ -2842,11 +2842,13 @@
         padding: 1.1rem 0.75rem !important;
         font-size: 0.65rem !important;
       }
+    }
+
     /* ========================================================
        🌐 MULTI-PAGE / MULTI-VIEW SPA ARCHITECTURE
        ======================================================== */
     .app-view {
-      display: none;
+      display: none !important;
       width: 100%;
       min-height: 100vh;
       opacity: 0;
@@ -2855,7 +2857,7 @@
     }
 
     .app-view.active {
-      display: flex;
+      display: flex !important;
       flex-direction: column;
       opacity: 1;
     }
@@ -6420,9 +6422,9 @@
     };
 
     // DOM Elements for Media Lab
-    const elMediaModal = document.getElementById('mediaAnalysisModal');
-    const elBtnOpenMediaLab = document.getElementById('btnOpenMediaLab');
-    const elBtnCloseMediaLab = document.getElementById('btnCloseMediaLab');
+    const elMediaModal = document.getElementById('viewMediaUpload');
+    const elBtnOpenMediaLab = document.getElementById('btnSelectMediaMode');
+    const elBtnCloseMediaLab = document.getElementById('btnNavModeFromMedia');
     const elVisualFileInput = document.getElementById('visualFileInput');
     const elVocalFileInput = document.getElementById('vocalFileInput');
     const elPresetVisualSelect = document.getElementById('presetVisualSelect');
