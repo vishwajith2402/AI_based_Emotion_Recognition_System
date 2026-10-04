@@ -227,6 +227,30 @@
       color: var(--text-primary);
     }
 
+    .btn-header-cta {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.22));
+      border: 1px solid rgba(34, 211, 238, 0.45);
+      color: var(--cyan);
+      font-family: var(--font-main);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.38rem 0.85rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+      letter-spacing: 0.4px;
+    }
+
+    .btn-header-cta:hover {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(139, 92, 246, 0.35));
+      border-color: var(--cyan);
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.3);
+      color: #fff;
+    }
+
     /* ========================================================
        FUTURISTIC HUD TIMELINE (Minimalist Phase Progress)
        ======================================================== */
@@ -360,19 +384,53 @@
       flex: 1;
     }
 
-    /* 2-Column Hero Grid (Face 55% / AI Fusion 45%) */
-    .hero-grid {
+    /* Master Multimodal Grid (Matches Wireframe Architecture: Cam View Left vs Stacked Right) */
+    .app-workspace-layout {
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1.18fr 0.82fr;
       gap: 1.5rem;
       align-items: stretch;
+      width: 100%;
     }
 
-    /* Supporting Analytics Grid (Voice Modulation & Distribution) */
-    .secondary-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    /* Left Column: Cam view (Full Height Card) */
+    .cam-view-col {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .cam-view-col .glass-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cam-view-col .camera-viewport {
+      flex: 1;
+      width: 100%;
+      min-height: 440px;
+      max-height: none;
+    }
+
+    /* Right Column: Stacked Voice Virtualizer + Emotion Cards */
+    .stacked-right-col {
+      display: flex;
+      flex-direction: column;
       gap: 1.5rem;
+      height: 100%;
+    }
+
+    .stacked-right-col .glass-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Fallback wrapper resets */
+    .hero-grid, .secondary-grid {
+      display: contents;
     }
 
     /* 🪟 10. Glass Card Styling */
@@ -777,7 +835,7 @@
     /* AI Fusion Centerpiece (Level 1 Result) */
     .hero-centerpiece {
       text-align: center;
-      padding: 2.2rem 1rem;
+      padding: 1.25rem 0.75rem;
       position: relative;
       z-index: 1;
       display: flex;
@@ -788,23 +846,23 @@
 
     .hero-section-kicker {
       font-family: var(--font-mono);
-      font-size: 0.68rem;
-      letter-spacing: 1.5px;
+      font-size: 0.65rem;
+      letter-spacing: 1.4px;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.55rem;
     }
 
     /* 💎 2. AI Core Animated Ring with Signature Gradient */
     .ai-core-ring {
-      width: 120px;
-      height: 120px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       border: 1px dashed rgba(148, 163, 184, 0.20);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       position: relative;
       animation: spinSlow 30s linear infinite;
     }
@@ -1717,11 +1775,16 @@
        RESPONSIVE ADAPTATIONS
        ======================================================== */
     @media (max-width: 1024px) {
-      .hero-grid {
+      .app-workspace-layout {
         grid-template-columns: 1fr;
+        gap: 1.25rem;
       }
-      .secondary-grid {
-        grid-template-columns: 1fr;
+      .cam-view-col .camera-viewport {
+        min-height: 300px;
+        max-height: 400px;
+      }
+      .hero-grid, .secondary-grid {
+        display: contents;
       }
       header {
         padding: 0.85rem 1.2rem;
@@ -2038,7 +2101,7 @@
 <body>
 
   <!-- ========================================================
-       TOP HEADER (Level 1 Minimal Header)
+       TOP HEADER (Main Header Tab - Wireframe Specification)
        ======================================================== -->
   <header>
     <div class="brand-group">
@@ -2054,6 +2117,17 @@
         <div class="pulse-dot" id="sysStatusDot"></div>
         <span id="sysStatusText">SYSTEM READY</span>
       </div>
+
+      <!-- Quick Header Action CTA -->
+      <button class="btn-header-cta" id="btnStartAnalyticsHeader">
+        <span>▶</span> Start Analysis
+      </button>
+
+      <!-- Quick Flip Camera Button in Header -->
+      <button class="btn-ghost-sm" id="btnHeaderFlipCam" title="Quick Flip Front / Back Camera">
+        <span>🔄</span> Flip Cam
+      </button>
+
       <button class="btn-ghost-sm" id="btnOpenGuide">GUIDE</button>
       <a href="#aboutSection" class="btn-ghost-sm" style="text-decoration: none; display: inline-flex; align-items: center;">ABOUT</a>
     </div>
@@ -2095,283 +2169,273 @@
        ======================================================== -->
   <main>
 
-    <!-- SECTION 1: HERO DUAL-PANEL (FACIAL ANALYSIS & AI FUSION) -->
-    <div class="hero-grid">
+    <!-- MASTER MULTIMODAL WORKSPACE (Wireframe Architecture) -->
+    <div class="app-workspace-layout">
 
-      <!-- LEFT CARD: FACIAL ANALYSIS (70% WEIGHT) - ICE CYAN ACCENT -->
-      <section class="glass-card">
-        <div class="card-meta-header">
-          <div class="card-title-group">
-            <h2>Facial Analysis</h2>
-            <p>468-Point Mesh Tracking Engine</p>
-          </div>
-          <span class="weight-tag cyan">70% WEIGHT</span>
-        </div>
-
-        <!-- Camera Viewport with 468-point Mesh Overlay -->
-        <div class="camera-viewport">
-          <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
-          <canvas id="faceCanvas" class="mirrored"></canvas>
-          <div class="viewport-overlay-tip" id="camTipText">Camera Standby &mdash; Click "Start Camera"</div>
-          
-          <!-- Floating Quick Flip Camera Button (Front / Back) -->
-          <button class="cam-flip-floating-btn" id="btnFloatingFlipCam" title="Flip to Front / Back Camera" style="display: none;">
-            <span class="flip-icon">🔄</span>
-            <span class="flip-cam-badge" id="floatingFlipBadge">FRONT CAM</span>
-          </button>
-
-          <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
-            <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
-            <span class="hud-chip" id="hudCalibrationChip">AUTO-CALIBRATING...</span>
-            <span class="hud-chip" id="hudEngineChip">ENGINE: 3D FACS</span>
-            <span class="hud-chip" id="hudCoords">PITCH: 0° ROLL: 0°</span>
-          </div>
-        </div>
-
-        <!-- Minimal Camera Control Bar -->
-        <div class="cam-controls-row">
-          <button class="btn-secondary" id="btnToggleCam">
-            <span>▶</span> Start Camera
-          </button>
-          <button class="btn-secondary" id="btnFlipCam" title="Switch Front / Back Camera or Toggle Mirror">
-            <span id="btnFlipCamIcon">🔄</span> <span id="btnFlipCamText">Front Cam</span>
-          </button>
-          <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
-            <span>🕸️</span> B&W Mesh
-          </button>
-          <button class="btn-secondary" id="btnCalibrateFace" title="Recalibrate to your resting neutral baseline">
-            <span>🎯</span> Calibrate Neutral
-          </button>
-        </div>
-
-        <!-- AI Vision Engine Selector Row -->
-        <div class="vision-model-bar">
-          <span class="vision-model-label">
-            <span style="color: var(--cyan);">⚡</span> Vision Model:
-          </span>
-          <select id="selectVisionEngine" class="vision-model-select">
-            <option value="adaptive_3d_facs" selected>MediaPipe 468 3D FACS (60 FPS)</option>
-            <option value="hybrid_ensemble">Hybrid Ensemble (FACS + Deep CNN)</option>
-            <option value="deep_cnn">PyTorch Deep CNN (Server Model)</option>
-          </select>
-        </div>
-      </section>
-
-      <!-- RIGHT CARD: AI FUSION (The Centerpiece of Intelligence) - CYAN + VIOLET -->
-      <section class="glass-card fusion-card" id="fusedHero">
-        <div class="fusion-glow-backdrop" id="heroGlow"></div>
-
-        <div>
-          <div class="card-meta-header" style="position: relative; z-index: 1;">
+      <!-- LEFT COLUMN: CAM VIEW (Full-Height Card) -->
+      <div class="cam-view-col">
+        <section class="glass-card">
+          <div class="card-meta-header">
             <div class="card-title-group">
-              <h2>AI Fusion</h2>
-              <p>70 / 30 Multimodal Decision</p>
+              <h2>Facial Analysis</h2>
+              <p>468-Point Mesh Tracking Engine</p>
             </div>
-            <span class="weight-tag cyan">UNIFIED VERDICT</span>
+            <span class="weight-tag cyan">70% WEIGHT</span>
           </div>
 
-          <!-- Primary CTA Button (Dominant Action) -->
-          <button class="btn-primary-cta" id="btnStartAnalytics">
-            <span>Start Analysis</span>
-            <span class="arrow">→</span>
-          </button>
-        </div>
-
-        <!-- Level 1 — Human-readable result (Oversized, 2-3s comprehension) -->
-        <div class="hero-centerpiece">
-          <div class="hero-section-kicker">OVERALL AFFECTIVE STATE</div>
-          <div class="ai-core-ring" id="aiCoreRing">
-            <div class="emotion-glyph" id="fusedGlyph">😊</div>
-          </div>
-          <div class="emotion-title" id="fusedMainVal">HAPPY</div>
-          <div class="emotion-confidence" id="fusedConfText">94.2%</div>
-        </div>
-
-        <div>
-          <!-- Level 2 — AI Explanation Breakdown -->
-          <div class="fusion-breakdown-row">
-            <div class="modality-stat">
-              <div class="modality-stat-label">
-                <span>Face</span>
-                <span style="color: var(--cyan);">70%</span>
-              </div>
-              <div class="modality-stat-val" id="faceMiniVal">
-                😊 Happy
-              </div>
-              <div class="modality-stat-conf" id="faceMiniConf">
-                Confidence 92.5%
-              </div>
-            </div>
-
-            <div class="modality-stat">
-              <div class="modality-stat-label">
-                <span>Voice</span>
-                <span style="color: var(--violet);">30%</span>
-              </div>
-              <div class="modality-stat-val" id="speechMiniVal">
-                🎵 Happy
-              </div>
-              <div class="modality-stat-conf" id="speechMiniConf">
-                Confidence 89.1%
-              </div>
-            </div>
-          </div>
-
-          <!-- Concordance Confirmation (Emerald Harmony or Coral Conflict) -->
-          <div class="harmony-banner" id="concordanceBanner">
-            <span class="status-symbol">●</span>
-            <span id="concordanceText"><b>HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align</span>
-          </div>
-
-          <!-- Level 4 — Post-Analysis Quick Actions -->
-          <div class="post-actions-row">
-            <button class="btn-report-action primary" id="btnOpenFullReport">
-              <span>📊</span> View Full Report
+          <!-- Camera Viewport with 468-point Mesh Overlay -->
+          <div class="camera-viewport">
+            <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
+            <canvas id="faceCanvas" class="mirrored"></canvas>
+            <div class="viewport-overlay-tip" id="camTipText">Camera Standby &mdash; Click "Start Camera"</div>
+            
+            <!-- Floating Quick Flip Camera Button (Front / Back) -->
+            <button class="cam-flip-floating-btn" id="btnFloatingFlipCam" title="Flip to Front / Back Camera" style="display: none;">
+              <span class="flip-icon">🔄</span>
+              <span class="flip-cam-badge" id="floatingFlipBadge">FRONT CAM</span>
             </button>
-            <button class="btn-report-action secondary" id="btnExportPdfQuick">
-              <span>📄</span> Export PDF
+
+            <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
+              <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
+              <span class="hud-chip" id="hudCalibrationChip">AUTO-CALIBRATING...</span>
+              <span class="hud-chip" id="hudEngineChip">ENGINE: 3D FACS</span>
+              <span class="hud-chip" id="hudCoords">PITCH: 0° ROLL: 0°</span>
+            </div>
+          </div>
+
+          <!-- Minimal Camera Control Bar -->
+          <div class="cam-controls-row">
+            <button class="btn-secondary" id="btnToggleCam">
+              <span>▶</span> Start Camera
+            </button>
+            <button class="btn-secondary" id="btnFlipCam" title="Switch Front / Back Camera or Toggle Mirror">
+              <span id="btnFlipCamIcon">🔄</span> <span id="btnFlipCamText">Front Cam</span>
+            </button>
+            <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
+              <span>🕸️</span> B&W Mesh
+            </button>
+            <button class="btn-secondary" id="btnCalibrateFace" title="Recalibrate to your resting neutral baseline">
+              <span>🎯</span> Calibrate Neutral
             </button>
           </div>
-        </div>
-      </section>
 
-    </div>
-
-    <!-- SECTION 2: SUPPORTING ANALYTICS (VOICE MODULATION & EMOTION DISTRIBUTION) -->
-    <div class="secondary-grid">
-
-      <!-- VOICE MODULATION CARD (30% WEIGHT) - AURORA VIOLET ACCENT -->
-      <section class="glass-card">
-        <div class="card-meta-header">
-          <div class="card-title-group">
-            <h2>Voice Modulation</h2>
-            <p>Acoustic Frequency & Prosody Analysis</p>
+          <!-- AI Vision Engine Selector Row -->
+          <div class="vision-model-bar">
+            <span class="vision-model-label">
+              <span style="color: var(--cyan);">⚡</span> Vision Model:
+            </span>
+            <select id="selectVisionEngine" class="vision-model-select">
+              <option value="adaptive_3d_facs" selected>MediaPipe 468 3D FACS (60 FPS)</option>
+              <option value="hybrid_ensemble">Hybrid Ensemble (FACS + Deep CNN)</option>
+              <option value="deep_cnn">PyTorch Deep CNN (Server Model)</option>
+            </select>
           </div>
-          <span class="weight-tag violet">30% WEIGHT</span>
-        </div>
+        </section>
+      </div>
 
-        <!-- High-Performance Dual-Layer Audio & Voice Visualizer -->
-        <div class="waveform-container">
-          <canvas id="waveCanvas"></canvas>
-          <div class="hud-overlay-badges">
-            <div class="hud-pill-box">
-              <span class="hud-pill-lbl">PITCH (F₀)</span>
-              <span class="hud-pill-val" id="hudPitch">0 Hz</span>
+      <!-- RIGHT COLUMN: STACKED (Voice virtualizer + Emotion) -->
+      <div class="stacked-right-col">
+
+        <!-- TOP RIGHT: VOICE VIRTUALIZER (30% WEIGHT) -->
+        <section class="glass-card">
+          <div class="card-meta-header">
+            <div class="card-title-group">
+              <h2>Voice Modulation</h2>
+              <p>Acoustic Frequency & Prosody Analysis</p>
             </div>
-            <div class="hud-pill-box">
-              <span class="hud-pill-lbl">LOUDNESS</span>
-              <span class="hud-pill-val" id="hudLoudness">-59 dB</span>
+            <span class="weight-tag violet">30% WEIGHT</span>
+          </div>
+
+          <!-- High-Performance Dual-Layer Audio & Voice Visualizer -->
+          <div class="waveform-container">
+            <canvas id="waveCanvas"></canvas>
+            <div class="hud-overlay-badges">
+              <div class="hud-pill-box">
+                <span class="hud-pill-lbl">PITCH (F₀)</span>
+                <span class="hud-pill-val" id="hudPitch">0 Hz</span>
+              </div>
+              <div class="hud-pill-box">
+                <span class="hud-pill-lbl">LOUDNESS</span>
+                <span class="hud-pill-val" id="hudLoudness">-59 dB</span>
+              </div>
+              <div class="hud-pill-box">
+                <span class="hud-pill-lbl">ENERGY</span>
+                <span class="hud-pill-val" id="hudEnergy">0.00</span>
+              </div>
             </div>
-            <div class="hud-pill-box">
-              <span class="hud-pill-lbl">ENERGY</span>
-              <span class="hud-pill-val" id="hudEnergy">0.00</span>
+          </div>
+
+          <!-- Hidden compatibility hook for legacy meter -->
+          <div class="volume-meter-row" style="display: none;">
+            <div class="vu-track"><div class="vu-fill" id="vuFill"></div></div>
+            <span class="vu-db-text" id="vuDbText">-16 dB</span>
+          </div>
+
+          <!-- Live Speech Transcription & Tone Card (Exact Reference Spec) -->
+          <div class="transcript-box">
+            <div class="transcript-header">
+              <span>LIVE SPEECH TRANSCRIPTION & TONE:</span>
+              <span class="tone-badge-pill Neutral" id="liveTranscriptStatus">Neutral</span>
+            </div>
+            <div class="transcript-body" id="liveTranscriptPreview">
+              Speak into microphone to analyze prosodic tone, pitch inflection, and linguistic sentiment...
             </div>
           </div>
-        </div>
 
-        <!-- Hidden compatibility hook for legacy meter -->
-        <div class="volume-meter-row" style="display: none;">
-          <div class="vu-track"><div class="vu-fill" id="vuFill"></div></div>
-          <span class="vu-db-text" id="vuDbText">-16 dB</span>
-        </div>
-
-        <!-- Live Speech Transcription & Tone Card (Exact Reference Spec) -->
-        <div class="transcript-box">
-          <div class="transcript-header">
-            <span>LIVE SPEECH TRANSCRIPTION & TONE:</span>
-            <span class="tone-badge-pill Neutral" id="liveTranscriptStatus">Neutral</span>
+          <!-- Multi-Language STT Selector Bar -->
+          <div class="voice-lang-bar">
+            <span class="voice-lang-label">
+              <span style="color: var(--violet);">🌐</span> Speech Language:
+            </span>
+            <select id="selectSttLang" class="voice-lang-select" aria-label="Speech Recognition Language">
+              <option value="en-US" selected>English (US) &mdash; en-US</option>
+              <option value="en-IN">English (India) &mdash; en-IN</option>
+              <option value="en-GB">English (UK) &mdash; en-GB</option>
+              <option value="hi-IN">Hindi (हिंदी) &mdash; hi-IN</option>
+              <option value="ta-IN">Tamil (தமிழ்) &mdash; ta-IN</option>
+              <option value="te-IN">Telugu (తెలుగు) &mdash; te-IN</option>
+              <option value="kn-IN">Kannada (ಕನ್ನಡ) &mdash; kn-IN</option>
+              <option value="ml-IN">Malayalam (മലയാളം) &mdash; ml-IN</option>
+              <option value="mr-IN">Marathi (मराठी) &mdash; mr-IN</option>
+              <option value="bn-IN">Bengali (বাংলা) &mdash; bn-IN</option>
+              <option value="es-ES">Spanish (Español) &mdash; es-ES</option>
+              <option value="fr-FR">French (Français) &mdash; fr-FR</option>
+              <option value="de-DE">German (Deutsch) &mdash; de-DE</option>
+              <option value="ja-JP">Japanese (日本語) &mdash; ja-JP</option>
+              <option value="zh-CN">Chinese (中文 - 普通话) &mdash; zh-CN</option>
+              <option value="ar-SA">Arabic (العربية) &mdash; ar-SA</option>
+              <option value="ru-RU">Russian (Русский) &mdash; ru-RU</option>
+            </select>
           </div>
-          <div class="transcript-body" id="liveTranscriptPreview">
-            Speak into microphone to analyze prosodic tone, pitch inflection, and linguistic sentiment...
-          </div>
-        </div>
+        </section>
 
-        <!-- Multi-Language STT Selector Bar -->
-        <div class="voice-lang-bar">
-          <span class="voice-lang-label">
-            <span style="color: var(--violet);">🌐</span> Speech Language:
-          </span>
-          <select id="selectSttLang" class="voice-lang-select" aria-label="Speech Recognition Language">
-            <option value="en-US" selected>English (US) &mdash; en-US</option>
-            <option value="en-IN">English (India) &mdash; en-IN</option>
-            <option value="en-GB">English (UK) &mdash; en-GB</option>
-            <option value="hi-IN">Hindi (हिंदी) &mdash; hi-IN</option>
-            <option value="ta-IN">Tamil (தமிழ்) &mdash; ta-IN</option>
-            <option value="te-IN">Telugu (తెలుగు) &mdash; te-IN</option>
-            <option value="kn-IN">Kannada (ಕನ್ನಡ) &mdash; kn-IN</option>
-            <option value="ml-IN">Malayalam (മലയാളം) &mdash; ml-IN</option>
-            <option value="mr-IN">Marathi (मराठी) &mdash; mr-IN</option>
-            <option value="bn-IN">Bengali (বাংলা) &mdash; bn-IN</option>
-            <option value="es-ES">Spanish (Español) &mdash; es-ES</option>
-            <option value="fr-FR">French (Français) &mdash; fr-FR</option>
-            <option value="de-DE">German (Deutsch) &mdash; de-DE</option>
-            <option value="ja-JP">Japanese (日本語) &mdash; ja-JP</option>
-            <option value="zh-CN">Chinese (中文 - 普通话) &mdash; zh-CN</option>
-            <option value="ar-SA">Arabic (العربية) &mdash; ar-SA</option>
-            <option value="ru-RU">Russian (Русский) &mdash; ru-RU</option>
-          </select>
-        </div>
-      </section>
+        <!-- BOTTOM RIGHT: EMOTION (AI Fusion & Decision Engine) -->
+        <section class="glass-card fusion-card" id="fusedHero">
+          <div class="fusion-glow-backdrop" id="heroGlow"></div>
 
-      <!-- EMOTION DISTRIBUTION (Mostly Monochrome with Winning Accent) -->
-      <section class="glass-card">
-        <div class="card-meta-header">
-          <div class="card-title-group">
-            <h2>Emotion Distribution</h2>
-            <p>Multimodal Probability Vector</p>
-          </div>
-          <span class="weight-tag">FUSED MATRIX</span>
-        </div>
-
-        <!-- Ranked Rows -->
-        <div class="distribution-list" id="probBarsContainer">
-          <div class="dist-row" id="rowHappy">
-            <span class="dist-idx">01</span>
-            <span class="dist-label">Happy</span>
-            <div class="dist-track">
-              <div class="dist-bar dominant" id="barHappy" style="width: 94%;"></div>
+          <div>
+            <div class="card-meta-header" style="position: relative; z-index: 1;">
+              <div class="card-title-group">
+                <h2>Emotion Intelligence</h2>
+                <p>70 / 30 Multimodal Decision</p>
+              </div>
+              <span class="weight-tag cyan">UNIFIED VERDICT</span>
             </div>
-            <span class="dist-val dominant" id="valHappy">94%</span>
+
+            <!-- Primary CTA Button (Dominant Action) -->
+            <button class="btn-primary-cta" id="btnStartAnalytics">
+              <span>Start Analysis</span>
+              <span class="arrow">→</span>
+            </button>
           </div>
 
-          <div class="dist-row" id="rowSurprise">
-            <span class="dist-idx">02</span>
-            <span class="dist-label">Surprise</span>
-            <div class="dist-track">
-              <div class="dist-bar" id="barSurprise" style="width: 3%;"></div>
+          <!-- Level 1 — Human-readable result (Oversized, 2-3s comprehension) -->
+          <div class="hero-centerpiece">
+            <div class="hero-section-kicker">OVERALL AFFECTIVE STATE</div>
+            <div class="ai-core-ring" id="aiCoreRing">
+              <div class="emotion-glyph" id="fusedGlyph">😊</div>
             </div>
-            <span class="dist-val" id="valSurprise">3%</span>
+            <div class="emotion-title" id="fusedMainVal">HAPPY</div>
+            <div class="emotion-confidence" id="fusedConfText">94.2%</div>
           </div>
 
-          <div class="dist-row" id="rowSad">
-            <span class="dist-idx">03</span>
-            <span class="dist-label">Sad</span>
-            <div class="dist-track">
-              <div class="dist-bar" id="barSad" style="width: 2%;"></div>
+          <div>
+            <!-- Level 2 — AI Explanation Breakdown -->
+            <div class="fusion-breakdown-row">
+              <div class="modality-stat">
+                <div class="modality-stat-label">
+                  <span>Face</span>
+                  <span style="color: var(--cyan);">70%</span>
+                </div>
+                <div class="modality-stat-val" id="faceMiniVal">
+                  😊 Happy
+                </div>
+                <div class="modality-stat-conf" id="faceMiniConf">
+                  Confidence 92.5%
+                </div>
+              </div>
+
+              <div class="modality-stat">
+                <div class="modality-stat-label">
+                  <span>Voice</span>
+                  <span style="color: var(--violet);">30%</span>
+                </div>
+                <div class="modality-stat-val" id="speechMiniVal">
+                  🎵 Happy
+                </div>
+                <div class="modality-stat-conf" id="speechMiniConf">
+                  Confidence 89.1%
+                </div>
+              </div>
             </div>
-            <span class="dist-val" id="valSad">2%</span>
-          </div>
 
-          <div class="dist-row" id="rowNeutral">
-            <span class="dist-idx">04</span>
-            <span class="dist-label">Neutral</span>
-            <div class="dist-track">
-              <div class="dist-bar" id="barNeutral" style="width: 1%;"></div>
+            <!-- Concordance Confirmation (Emerald Harmony or Coral Conflict) -->
+            <div class="harmony-banner" id="concordanceBanner">
+              <span class="status-symbol">●</span>
+              <span id="concordanceText"><b>HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align</span>
             </div>
-            <span class="dist-val" id="valNeutral">1%</span>
-          </div>
 
-          <div class="dist-row" id="rowAngry">
-            <span class="dist-idx">05</span>
-            <span class="dist-label">Angry</span>
-            <div class="dist-track">
-              <div class="dist-bar" id="barAngry" style="width: 0%;"></div>
+            <!-- Emotion Probability Distribution Bars -->
+            <div class="distribution-list" id="probBarsContainer" style="margin-top: 0.85rem;">
+              <div class="dist-row" id="rowHappy">
+                <span class="dist-idx">01</span>
+                <span class="dist-label">Happy</span>
+                <div class="dist-track">
+                  <div class="dist-bar dominant" id="barHappy" style="width: 94%;"></div>
+                </div>
+                <span class="dist-val dominant" id="valHappy">94%</span>
+              </div>
+
+              <div class="dist-row" id="rowSurprise">
+                <span class="dist-idx">02</span>
+                <span class="dist-label">Surprise</span>
+                <div class="dist-track">
+                  <div class="dist-bar" id="barSurprise" style="width: 3%;"></div>
+                </div>
+                <span class="dist-val" id="valSurprise">3%</span>
+              </div>
+
+              <div class="dist-row" id="rowSad">
+                <span class="dist-idx">03</span>
+                <span class="dist-label">Sad</span>
+                <div class="dist-track">
+                  <div class="dist-bar" id="barSad" style="width: 2%;"></div>
+                </div>
+                <span class="dist-val" id="valSad">2%</span>
+              </div>
+
+              <div class="dist-row" id="rowNeutral">
+                <span class="dist-idx">04</span>
+                <span class="dist-label">Neutral</span>
+                <div class="dist-track">
+                  <div class="dist-bar" id="barNeutral" style="width: 1%;"></div>
+                </div>
+                <span class="dist-val" id="valNeutral">1%</span>
+              </div>
+
+              <div class="dist-row" id="rowAngry">
+                <span class="dist-idx">05</span>
+                <span class="dist-label">Angry</span>
+                <div class="dist-track">
+                  <div class="dist-bar" id="barAngry" style="width: 0%;"></div>
+                </div>
+                <span class="dist-val" id="valAngry">0%</span>
+              </div>
             </div>
-            <span class="dist-val" id="valAngry">0%</span>
-          </div>
-        </div>
-      </section>
 
+            <!-- Level 4 — Post-Analysis Quick Actions -->
+            <div class="post-actions-row">
+              <button class="btn-report-action primary" id="btnOpenFullReport">
+                <span>📊</span> View Full Report
+              </button>
+              <button class="btn-report-action secondary" id="btnExportPdfQuick">
+                <span>📄</span> Export PDF
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </div>
 
     <!-- SECTION 3: LEVEL 3 TECHNICAL DIAGNOSTICS (Expandable Drawer) -->
@@ -2621,8 +2685,6 @@
     </div>
   </div>
 
-  <!-- Compatibility stub for header button -->
-  <button id="btnStartAnalyticsHeader" style="display: none;"></button>
 
   <!-- High-Performance Acoustic & Voice Visualizer Module -->
   <script src="voice_analyzer.js"></script>
@@ -2955,10 +3017,12 @@
       }
     });
 
-    // Flip Camera Listeners (Both control row and floating button)
+    // Flip Camera Listeners (Control row, floating button, and header tab)
     document.getElementById('btnFlipCam').addEventListener('click', toggleCameraFlip);
     const floatFlip = document.getElementById('btnFloatingFlipCam');
     if (floatFlip) floatFlip.addEventListener('click', toggleCameraFlip);
+    const headerFlip = document.getElementById('btnHeaderFlipCam');
+    if (headerFlip) headerFlip.addEventListener('click', toggleCameraFlip);
 
     // Calibrate Button Listener
     const btnCalibrateFace = document.getElementById('btnCalibrateFace');
