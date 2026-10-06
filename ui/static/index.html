@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AFFECT AI — Multimodal Emotion Intelligence</title>
-  <link rel="icon" type="image/png" href="./demo_samples/app_icon.png">
+  <title>EmotiX — Emotion Recognition System (Facial | Voice)</title>
+  <link rel="icon" type="image/png" href="./demo_samples/emotix_medallion.png">
+  <link rel="shortcut icon" href="./demo_samples/favicon.ico">
+  <link rel="apple-touch-icon" href="./demo_samples/app_icon.png">
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#0B0F19">
+  <meta name="theme-color" content="#080B10">
   
   <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +24,7 @@
 
   <style>
     /* ========================================================
-       AFFECT AI — OFFICIAL COLOR PALETTE & DESIGN SYSTEM
+       EmotiX — OFFICIAL COLOR PALETTE & DESIGN SYSTEM
        Obsidian + Ice Cyan + Aurora Violet + Ice White
        ======================================================== */
     :root {
@@ -147,17 +149,24 @@
     }
 
     .brand-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: var(--bg-elevated);
-      border: 1px solid rgba(34, 211, 238, 0.3);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #080B10;
+      border: 1.5px solid rgba(0, 242, 254, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      color: var(--cyan);
-      box-shadow: 0 0 15px rgba(34, 211, 238, 0.15);
+      overflow: hidden;
+      box-shadow: 0 0 16px rgba(0, 242, 254, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .brand-text h1 {
@@ -3013,6 +3022,44 @@
       margin-bottom: 0.5rem;
     }
 
+    .emotix-crest-badge {
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.8), rgba(37, 99, 235, 0.4), rgba(0, 242, 254, 0.8));
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.45), 0 0 50px rgba(37, 99, 235, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: crestPulse 4s ease-in-out infinite alternate;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .emotix-crest-badge:hover {
+      transform: scale(1.06);
+    }
+
+    .emotix-crest-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes crestPulse {
+      0% {
+        transform: scale(0.96) translateY(0);
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.35), 0 0 40px rgba(37, 99, 235, 0.2);
+      }
+      100% {
+        transform: scale(1.04) translateY(-3px);
+        box-shadow: 0 0 35px rgba(0, 242, 254, 0.7), 0 0 65px rgba(37, 99, 235, 0.45);
+      }
+    }
+
     /* ⚡ Laser Telemetry Aura on Main Title */
     .intro-title {
       font-size: clamp(2.6rem, 6.5vw, 4.8rem);
@@ -3808,19 +3855,19 @@
       <!-- Centerpiece: Title, Taglines & "Let's Start" CTA -->
       <div class="intro-centerpiece">
         <div class="intro-ai-orb">
-          <div class="ai-core-ring" style="width: 104px; height: 104px; margin-bottom: 0;">
-            <div class="emotion-glyph" style="font-size: 3rem;">◇</div>
+          <div class="emotix-crest-badge" title="EmotiX Biometric AI Emblem">
+            <img src="./demo_samples/emotix_medallion.png" alt="EmotiX Emblem" class="emotix-crest-img">
           </div>
         </div>
 
         <h1 class="intro-title">
           <span class="tech-bracket">[</span>
-          <span class="title-shimmer-text">AFFECT AI</span>
+          <span class="title-shimmer-text">EmotiX</span>
           <span class="tech-bracket">]</span>
         </h1>
-        <p class="intro-tagline">Multimodal Human Emotion Recognition System</p>
+        <p class="intro-tagline">EMOTION RECOGNITION SYSTEM &bull; FACIAL | VOICE</p>
         <p class="intro-subtagline">
-          Real-time fusion of 468-point 3D facial landmark geometry (70% decision weight) and acoustic vocal prosodic modulation (30% decision weight) for robust affective classification.
+          Advanced real-time multimodal fusion of 468-point 3D facial landmark geometry (70% decision weight) and acoustic vocal prosodic modulation (30% decision weight) for robust affective intelligence.
         </p>
 
         <!-- Main "Let's Start" CTA Button -->
@@ -3964,9 +4011,11 @@
     <!-- TOP HEADER -->
     <header>
       <div class="brand-group">
-        <div class="brand-mark">◇</div>
+        <div class="brand-mark">
+          <img src="./demo_samples/emotix_medallion.png" alt="EmotiX" class="brand-logo-img">
+        </div>
         <div class="brand-text">
-          <h1>AFFECT AI</h1>
+          <h1>EmotiX</h1>
           <p>Live Multimodal Stream</p>
         </div>
       </div>
@@ -4386,14 +4435,14 @@
     <section class="glass-card about-card" id="aboutSection">
       <div class="card-meta-header">
         <div class="card-title-group">
-          <h2>About Affect AI</h2>
+          <h2>About EmotiX</h2>
           <p>System Overview &amp; Multimodal Architecture</p>
         </div>
         <span class="weight-tag cyan">RESEARCH &amp; INNOVATION</span>
       </div>
 
       <div class="about-lead-text">
-        <strong>Affect AI</strong> is an advanced, high-precision <em>Multimodal Human Emotion Recognition System</em> engineered to capture, analyze, and fuse human affective signals in real time. By uniting high-fidelity <strong>468-point 3D facial landmark geometry (70% decision weight)</strong> with <strong>acoustic prosody and vocal frequency modulation (30% decision weight)</strong>, the platform delivers instantaneous, scientifically grounded classification across five core emotional states: <em>Happy, Sad, Angry, Surprise, and Neutral</em>. The architecture features automated resting baseline calibration, cross-modal concordance/conflict detection, and client-side forensic diagnostic reporting.
+        <strong>EmotiX</strong> is an advanced, high-precision <em>Multimodal Human Emotion Recognition System</em> engineered to capture, analyze, and fuse human affective signals in real time. By uniting high-fidelity <strong>468-point 3D facial landmark geometry (70% decision weight)</strong> with <strong>acoustic prosody and vocal frequency modulation (30% decision weight)</strong>, the platform delivers instantaneous, scientifically grounded classification across five core emotional states: <em>Happy, Sad, Angry, Surprise, and Neutral</em>. The architecture features automated resting baseline calibration, cross-modal concordance/conflict detection, and client-side forensic diagnostic reporting.
       </div>
 
       <div class="about-highlights-row">
@@ -4459,7 +4508,7 @@
        FOOTER STATUS BAR
        ======================================================== -->
   <footer>
-    <div>AFFECT AI &mdash; Multimodal Emotion Intelligence System</div>
+    <div>EmotiX &mdash; Multimodal Emotion Intelligence System</div>
     <div>MediaPipe 468-pt Mesh &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
   </footer>
   </section> <!-- /viewLiveApp -->
@@ -4565,9 +4614,11 @@
     <!-- TOP HEADER -->
     <header>
       <div class="brand-group">
-        <div class="brand-mark">◇</div>
+        <div class="brand-mark">
+          <img src="./demo_samples/emotix_medallion.png" alt="EmotiX" class="brand-logo-img">
+        </div>
         <div class="brand-text">
-          <h1>AFFECT AI</h1>
+          <h1>EmotiX</h1>
           <p>Media &amp; Voice Upload Studio</p>
         </div>
       </div>
@@ -4876,7 +4927,7 @@
 
     <!-- FOOTER -->
     <footer>
-      <div>AFFECT AI &mdash; Multimodal Media &amp; Voice Studio</div>
+      <div>EmotiX &mdash; Multimodal Media &amp; Voice Studio</div>
       <div>468-pt Mesh Kinematics &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
     </footer>
   </section>
@@ -6872,7 +6923,7 @@
       doc.setTextColor(34, 211, 238); // #22D3EE Ice Cyan
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(15);
-      doc.text('AFFECT AI — MULTIMODAL EMOTION INTELLIGENCE REPORT', margin + 6, y + 9);
+      doc.text('EmotiX — MULTIMODAL EMOTION INTELLIGENCE REPORT', margin + 6, y + 9);
 
       doc.setTextColor(148, 163, 184); // #94A3B8 Cool Gray
       doc.setFont('helvetica', 'normal');
@@ -7096,7 +7147,7 @@
     document.getElementById('btnDownloadPdf').addEventListener('click', downloadPdfReport);
     document.getElementById('btnSpeakReport').addEventListener('click', () => {
       const top = state.currentFinalEmotion;
-      speakPhrase(`Affect AI report summary. Final recognized emotion is ${top}.`);
+      speakPhrase(`EmotiX report summary. Final recognized emotion is ${top}.`);
     });
 
     // ========================================================
@@ -8042,7 +8093,7 @@
         doc.setTextColor(34, 211, 238);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(16);
-        doc.text('AFFECT AI - MULTIMODAL MEDIA LAB INTELLIGENCE REPORT', 14, 20);
+        doc.text('EmotiX - MULTIMODAL MEDIA LAB INTELLIGENCE REPORT', 14, 20);
 
         doc.setFontSize(10);
         doc.setTextColor(148, 163, 184);
@@ -8075,7 +8126,7 @@
     if (btnExportLabJson) {
       btnExportLabJson.addEventListener('click', () => {
         const payload = {
-          system: 'Affect AI Multimodal Media Lab',
+          system: 'EmotiX Multimodal Media Lab',
           timestamp: new Date().toISOString(),
           verdict: {
             fusedEmotion: window.labState.fusedEmotion,

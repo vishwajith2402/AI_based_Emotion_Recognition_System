@@ -1,7 +1,7 @@
 {
-  "name": "Human Emotion Recognition AI",
-  "short_name": "Emotion AI",
-  "description": "Multimodal Emotion Recognition System using Facial Action Units & Acoustic Prosody",
+  "name": "EmotiX - Emotion Recognition System",
+  "short_name": "EmotiX",
+  "description": "EmotiX: Multimodal Emotion Recognition System using Facial Action Units & Acoustic Prosody",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0B0F19",

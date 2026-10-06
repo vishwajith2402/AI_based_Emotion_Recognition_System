@@ -1,8 +1,8 @@
 {
-  "name": "aips-emotion-recognition-software",
-  "productName": "Human Emotion Recognition AI",
+  "name": "emotix-emotion-recognition",
+  "productName": "EmotiX - Emotion Recognition System",
   "version": "1.0.0",
-  "description": "Multimodal AI Emotion Recognition Software (Facial Expressions & Acoustic Prosody)",
+  "description": "EmotiX: Multimodal Emotion Recognition Software (Facial Action Units & Acoustic Prosody)",
   "main": "main.js",
   "author": "Vishwa, Vicky, Subash, Ashwin",
   "license": "MIT",
@@ -17,8 +17,8 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.aips.emotionrecognition",
-    "productName": "Human Emotion Recognition AI",
+    "appId": "com.emotix.ai",
+    "productName": "EmotiX - Emotion Recognition System",
     "directories": {
       "output": "dist"
     },

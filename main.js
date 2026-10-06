@@ -131,14 +131,16 @@ function checkCloudAvailability(url, timeoutMs = 2500) {
 }
 
 function createMainWindow(port) {
-  const iconPath = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.png');
+  const icoPath = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.ico');
+  const pngPath = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.png');
+  const iconPath = (process.platform === 'win32' && fs.existsSync(icoPath)) ? icoPath : pngPath;
 
   mainWindow = new BrowserWindow({
     width: 1366,
     height: 860,
     minWidth: 1024,
     minHeight: 680,
-    title: 'Human Emotion Recognition AI',
+    title: 'EmotiX — Emotion Recognition System (Facial | Voice)',
     backgroundColor: '#0B0F19',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     autoHideMenuBar: true,
