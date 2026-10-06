@@ -1,13 +1,17 @@
-const { app, BrowserWindow, session, Menu } = require('electron');
+const { app, BrowserWindow, session, Menu, globalShortcut } = require('electron');
 const path = require('path');
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 
 let mainWindow = null;
 let server = null;
 let serverPort = 0;
 
-// MIME types for static asset serving
+// Production Cloud URL (Synced to GitHub main branch via Vercel)
+const CLOUD_PRODUCTION_URL = 'https://ai-based-emotion-recognition-system.vercel.app';
+
+// MIME types for embedded local server
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -27,8 +31,8 @@ const MIME_TYPES = {
 };
 
 /**
- * Embedded Lightweight Local Host Server
- * Guarantees Secure Context for Camera & Web Audio API
+ * Embedded Local Offline Server
+ * Guarantees 100% offline functionality whenever no internet is present
  */
 function startLocalServer() {
   return new Promise((resolve, reject) => {
@@ -40,7 +44,6 @@ function startLocalServer() {
 
       const filePath = path.join(staticDir, reqPath);
 
-      // Security check: ensure path is inside staticDir
       if (!filePath.startsWith(staticDir)) {
         res.writeHead(403);
         res.end('Access Denied');
@@ -49,7 +52,6 @@ function startLocalServer() {
 
       fs.stat(filePath, (err, stats) => {
         if (err || !stats.isFile()) {
-          // Fallback to index.html for SPA routing
           const indexPath = path.join(staticDir, 'index.html');
           fs.readFile(indexPath, (readErr, data) => {
             if (readErr) {
@@ -66,7 +68,6 @@ function startLocalServer() {
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-        // Support HTTP Range requests for video/audio seeking
         const range = req.headers.range;
         if (range && (contentType.startsWith('video/') || contentType.startsWith('audio/'))) {
           const totalSize = stats.size;
@@ -101,52 +102,89 @@ function startLocalServer() {
 
     server.listen(0, '127.0.0.1', () => {
       serverPort = server.address().port;
-      console.log(`[AIPS Desktop Software] Local server running on http://127.0.0.1:${serverPort}`);
+      console.log(`[AIPS Offline Engine] Local fallback server active on http://127.0.0.1:${serverPort}`);
       resolve(serverPort);
     });
 
-    server.on('error', (err) => {
-      reject(err);
-    });
+    server.on('error', (err) => reject(err));
+  });
+}
+
+/**
+ * Fast Cloud Connectivity Probe
+ */
+function checkCloudAvailability(url, timeoutMs = 2500) {
+  return new Promise((resolve) => {
+    try {
+      const req = https.get(url, { timeout: timeoutMs }, (res) => {
+        resolve(res.statusCode >= 200 && res.statusCode < 400);
+      });
+      req.on('timeout', () => {
+        req.destroy();
+        resolve(false);
+      });
+      req.on('error', () => resolve(false));
+    } catch {
+      resolve(false);
+    }
   });
 }
 
 function createMainWindow(port) {
+  const iconPath = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.png');
+
   mainWindow = new BrowserWindow({
     width: 1366,
     height: 860,
     minWidth: 1024,
     minHeight: 680,
-    title: 'Human Emotion Recognition AI - Desktop Software',
+    title: 'Human Emotion Recognition AI',
     backgroundColor: '#0B0F19',
+    icon: fs.existsSync(iconPath) ? iconPath : undefined,
     autoHideMenuBar: true,
     show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: true,
-      allowRunningInsecureContent: false,
       backgroundThrottling: false
     }
   });
 
-  // Remove native default menu for modern software aesthetic
   Menu.setApplicationMenu(null);
 
-  // Automatically approve camera & microphone hardware access
+  // Permanent Media Stream Approvals (Camera & Microphone)
   session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
     const allowed = ['media', 'mediaKeySystem', 'notifications', 'accessibilityEvents'];
-    if (allowed.includes(permission)) {
-      callback(true);
-    } else {
-      callback(true);
-    }
+    callback(allowed.includes(permission) || true);
   });
 
   session.defaultSession.setPermissionCheckHandler(() => true);
 
-  const targetUrl = `http://127.0.0.1:${port}/index.html`;
-  mainWindow.loadURL(targetUrl);
+  // Determine Target URL (Cloud Live-Sync vs Local Offline)
+  checkCloudAvailability(CLOUD_PRODUCTION_URL).then((isOnline) => {
+    const offlineUrl = `http://127.0.0.1:${port}/index.html`;
+
+    if (isOnline) {
+      console.log('[AIPS Software] Cloud Live-Sync Active: Connected to latest GitHub release');
+      mainWindow.loadURL(CLOUD_PRODUCTION_URL).catch(() => {
+        console.warn('[AIPS Software] Cloud load failed, falling back to local offline bundle');
+        mainWindow.loadURL(offlineUrl);
+      });
+    } else {
+      console.log('[AIPS Software] Offline Mode: Running bundled offline local engine');
+      mainWindow.loadURL(offlineUrl);
+    }
+  });
+
+  // Fail-safe fallback: If any page load fails, auto-route to local offline bundle
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    const offlineUrl = `http://127.0.0.1:${port}/index.html`;
+    if (validatedURL !== offlineUrl) {
+      console.warn(`[AIPS Software] Navigation error (${errorCode}: ${errorDescription}). Re-routing to offline bundle...`);
+      mainWindow.loadURL(offlineUrl);
+    }
+  });
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
@@ -170,16 +208,12 @@ app.whenReady().then(async () => {
       }
     });
   } catch (err) {
-    console.error('[AIPS Desktop Software] Initialization error:', err);
+    console.error('[AIPS Software] Initialization error:', err);
     app.quit();
   }
 });
 
 app.on('window-all-closed', () => {
-  if (server) {
-    server.close();
-  }
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  if (server) server.close();
+  if (process.platform !== 'darwin') app.quit();
 });

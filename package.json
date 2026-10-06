@@ -13,7 +13,8 @@
     "dist": "electron-builder --win"
   },
   "devDependencies": {
-    "electron": "^33.4.11"
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "com.aips.emotionrecognition",
@@ -26,7 +27,7 @@
         "portable",
         "nsis"
       ],
-      "icon": "ui/static/demo_samples/app_icon.png"
+      "icon": "ui/static/demo_samples/app_icon.ico"
     },
     "files": [
       "main.js",
