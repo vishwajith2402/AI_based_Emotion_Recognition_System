@@ -1,13 +1,13 @@
 @echo off
-title Human Emotion Recognition AI - Desktop Software
+title EmotiX - Emotion Recognition System
 echo =====================================================================
-echo    Launching Human Emotion Recognition AI (Desktop Software)...
+echo    Launching EmotiX (Multimodal Emotion Recognition Software)...
 echo =====================================================================
 cd /d "%~dp0"
 
-if exist "dist\Human Emotion Recognition AI 1.0.0.exe" (
-    echo Launching standalone executable...
-    start "" "dist\Human Emotion Recognition AI 1.0.0.exe"
+if exist "dist\EmotiX - Emotion Recognition System 1.0.0.exe" (
+    echo Launching EmotiX standalone software...
+    start "" "dist\EmotiX - Emotion Recognition System 1.0.0.exe"
     exit /b 0
 )
 
