@@ -26,46 +26,46 @@
        Obsidian + Ice Cyan + Aurora Violet + Ice White
        ======================================================== */
     :root {
-      /* 🌑 1. Background Hierarchy */
-      --bg-primary: #070A0F;        /* Obsidian (Body) */
-      --bg-secondary: #0B1120;      /* Midnight Navy (Sections / Shell) */
-      --bg-card: rgba(17, 24, 39, 0.60); /* Deep Slate Glass */
-      --bg-card-solid: #111827;     /* Deep Slate Solid */
-      --bg-elevated: #172033;       /* Steel Navy (Elevated / Active) */
+      /* 🌑 1. Background Hierarchy - Quantum Obsidian & Midnight Deep */
+      --bg-primary: #080B10;        /* Deep Obsidian Void */
+      --bg-secondary: #0D131F;      /* Quantum Midnight Navy */
+      --bg-card: rgba(14, 20, 32, 0.65); /* Sleek Glass Panel */
+      --bg-card-solid: #0E1626;     /* Solid Slate Panel */
+      --bg-elevated: #131E33;       /* Elevated Command Deck */
       
       /* Borders & Glass */
-      --border-subtle: #1E293B;     /* Subtle Blue Gray */
-      --border-glass: rgba(148, 163, 184, 0.10);
-      --border-active: rgba(34, 211, 238, 0.30);
-      --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
-      --shadow-active-card: 0 0 40px rgba(34, 211, 238, 0.06);
+      --border-subtle: #1E293B;     /* Crisp Titanium Border */
+      --border-glass: rgba(59, 130, 246, 0.12);
+      --border-active: rgba(0, 242, 254, 0.40);
+      --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+      --shadow-active-card: 0 0 35px rgba(0, 242, 254, 0.08);
       
-      /* 👁️ Vision Accent (Cyan) & 🎙️ Voice Accent (Violet) */
-      --cyan: #22D3EE;              /* Ice Cyan - Vision 👁️ */
-      --cyan-dim: rgba(34, 211, 238, 0.12);
-      --violet: #8B5CF6;            /* Aurora Violet - Voice 🎙️ */
-      --violet-dim: rgba(139, 92, 246, 0.12);
+      /* 👁️ Vision Accent (Ice Cyan) & 🎙️ Voice Accent (Electric Cobalt) */
+      --cyan: #00F2FE;              /* Laser Ice Cyan - Vision 👁️ */
+      --cyan-dim: rgba(0, 242, 254, 0.12);
+      --violet: #2563EB;            /* Electric Cobalt Blue - Voice 🎙️ */
+      --violet-dim: rgba(37, 99, 235, 0.14);
       
-      /* 💎 Signature Gradient: #22D3EE -> #8B5CF6 (AI Fusion 🧠) */
-      --grad-fusion: linear-gradient(135deg, #22D3EE, #8B5CF6);
-      --grad-fusion-subtle: linear-gradient(135deg, rgba(34, 211, 238, 0.35), rgba(139, 92, 246, 0.35));
+      /* 💎 Quantum Biometric Gradient: #00F2FE -> #2563EB (AI Fusion 🧠) */
+      --grad-fusion: linear-gradient(135deg, #00F2FE, #2563EB);
+      --grad-fusion-subtle: linear-gradient(135deg, rgba(0, 242, 254, 0.35), rgba(37, 99, 235, 0.35));
       
-      /* 😊 Emotion-Specific Accents */
-      --accent-happy: #F5C76B;      /* Champagne Gold */
-      --accent-sad: #60A5FA;        /* Sky Blue */
-      --accent-angry: #FB7185;      /* Coral */
-      --accent-surprise: #A78BFA;   /* Lavender */
-      --accent-neutral: #CBD5E1;    /* Silver */
+      /* 😊 Emotion-Specific Accents - Clinical High-Contrast */
+      --accent-happy: #10B981;      /* Emerald Biosignal */
+      --accent-sad: #6366F1;        /* Indigo Deep */
+      --accent-angry: #EF4444;      /* Laser Crimson Alert */
+      --accent-surprise: #00F2FE;   /* High-Frequency Cyan */
+      --accent-neutral: #94A3B8;    /* Precision Titanium */
       
       /* Status Palette */
-      --status-harmony: #34D399;    /* Emerald - Harmony ✓ */
-      --status-warning: #FBBF24;    /* Soft Amber */
-      --status-conflict: #FB7185;   /* Soft Coral - Conflict ⚠️ */
+      --status-harmony: #10B981;    /* Clinical Emerald - Harmony ✓ */
+      --status-warning: #F59E0B;    /* Amber Alert */
+      --status-conflict: #EF4444;   /* Crimson Alert - Conflict ⚠️ */
       
       /* Typography */
-      --text-primary: #F8FAFC;      /* Ice White */
-      --text-secondary: #94A3B8;    /* Cool Gray */
-      --text-muted: #64748B;        /* Slate */
+      --text-primary: #F8FAFC;      /* Pure Crisp White */
+      --text-secondary: #94A3B8;    /* Cool Titanium */
+      --text-muted: #64748B;        /* Muted Steel */
       --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
@@ -101,7 +101,7 @@
       background-color: var(--bg-primary);
       background-image: 
         radial-gradient(ellipse 65% 45% at 50% -12%, rgba(34, 211, 238, 0.06), transparent 75%),
-        radial-gradient(ellipse 45% 35% at 85% 85%, rgba(139, 92, 246, 0.04), transparent 65%);
+        radial-gradient(ellipse 45% 35% at 85% 85%, rgba(37, 99, 235, 0.04), transparent 65%);
       background-attachment: fixed;
       color: var(--text-primary);
       min-height: 100vh;
@@ -231,7 +231,7 @@
     }
 
     .btn-header-cta {
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.22));
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(37, 99, 235, 0.22));
       border: 1px solid rgba(34, 211, 238, 0.45);
       color: var(--cyan);
       font-family: var(--font-main);
@@ -248,7 +248,7 @@
     }
 
     .btn-header-cta:hover {
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(139, 92, 246, 0.35));
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(37, 99, 235, 0.35));
       border-color: var(--cyan);
       box-shadow: 0 0 14px rgba(34, 211, 238, 0.3);
       color: #fff;
@@ -504,7 +504,7 @@
 
     .weight-tag.violet {
       background: var(--violet-dim);
-      border-color: rgba(139, 92, 246, 0.3);
+      border-color: rgba(37, 99, 235, 0.3);
       color: var(--violet);
     }
 
@@ -765,13 +765,13 @@
 
     .voice-lang-select:focus {
       border-color: var(--violet);
-      box-shadow: 0 0 8px rgba(139, 92, 246, 0.25);
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.25);
     }
 
     /* ========================================================
        🧠 5. RIGHT CARD — AI FUSION (Cyan + Violet)
        Background: #111827
-       Border: Subtle gradient #22D3EE -> #8B5CF6
+       Border: Subtle gradient #22D3EE -> #2563EB
        ======================================================== */
     .fusion-card {
       display: flex;
@@ -1031,12 +1031,12 @@
 
     .btn-report-action.primary {
       background: var(--violet-dim);
-      border: 1px solid rgba(139, 92, 246, 0.35);
-      color: #C084FC;
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      color: #38BDF8;
     }
 
     .btn-report-action.primary:hover {
-      background: rgba(139, 92, 246, 0.22);
+      background: rgba(37, 99, 235, 0.22);
       border-color: #A78BFA;
       color: #F5F3FF;
     }
@@ -1148,9 +1148,9 @@
       font-weight: 600;
       padding: 0.2rem 0.7rem;
       border-radius: 6px;
-      background: rgba(139, 92, 246, 0.16);
+      background: rgba(37, 99, 235, 0.16);
       color: #c4b5fd;
-      border: 1px solid rgba(139, 92, 246, 0.35);
+      border: 1px solid rgba(37, 99, 235, 0.35);
       transition: all 0.3s ease;
       text-transform: capitalize;
     }
@@ -1538,7 +1538,7 @@
       align-items: center;
       gap: 0.45rem;
       transition: opacity 0.2s ease;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
     }
 
     .btn-pdf-export:hover {
@@ -1649,7 +1649,7 @@
       position: absolute;
       inset: -1px;
       border-radius: var(--radius-md);
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.5), rgba(139, 92, 246, 0.5));
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.5), rgba(37, 99, 235, 0.5));
       opacity: 0;
       transition: opacity 0.35s ease;
       z-index: 0;
@@ -1666,7 +1666,7 @@
 
     .team-member-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 12px 35px -5px rgba(34, 211, 238, 0.2), 0 0 25px rgba(139, 92, 246, 0.18);
+      box-shadow: 0 12px 35px -5px rgba(34, 211, 238, 0.2), 0 0 25px rgba(37, 99, 235, 0.18);
     }
 
     .team-member-card:hover::before {
@@ -1703,7 +1703,7 @@
     .team-member-card:hover .team-avatar {
       transform: scale(1.1);
       border-color: #A78BFA;
-      box-shadow: 0 0 22px rgba(139, 92, 246, 0.4);
+      box-shadow: 0 0 22px rgba(37, 99, 235, 0.4);
       color: #F8FAFC;
     }
 
@@ -1714,12 +1714,12 @@
       letter-spacing: 0.8px;
       line-height: 1.25;
       margin-bottom: 0.4rem;
-      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 25%, #F0ABFC 50%, #C084FC 75%, #22D3EE 100%);
+      background: linear-gradient(135deg, #00F2FE 0%, #FFFFFF 30%, #93C5FD 65%, #2563EB 100%);
       background-size: 250% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: teamGlowShine 3.5s linear infinite;
-      filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.75)) drop-shadow(0 0 16px rgba(192, 132, 252, 0.55));
+      filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.6)) drop-shadow(0 0 16px rgba(37, 99, 235, 0.4));
       transition: all 0.3s ease;
       position: relative;
       display: inline-flex;
@@ -1727,51 +1727,51 @@
       justify-content: center;
     }
 
-    /* Sparkling Twinkle Star on Team Member Name */
+    /* Precision Telemetry Pulse Dot on Team Member Name */
     .team-name::after {
-      content: '✦';
-      font-size: 0.72em;
-      margin-left: 0.35rem;
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-left: 0.45rem;
       display: inline-block;
       vertical-align: middle;
-      animation: teamSparkleSpin 2.4s ease-in-out infinite;
-      filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 16px currentColor);
+      background: #00F2FE;
+      box-shadow: 0 0 8px #00F2FE, 0 0 14px #2563EB;
+      animation: teamDotPulse 2s ease-in-out infinite alternate;
     }
 
-    /* Asynchronous Twinkle Delays & Custom Hues per Member */
     .team-grid > :nth-child(1) .team-name::after,
     .intro-team-grid > :nth-child(1) .team-name::after {
-      color: #22D3EE;
+      background: #00F2FE;
+      box-shadow: 0 0 8px #00F2FE;
       animation-delay: 0s;
     }
 
     .team-grid > :nth-child(2) .team-name::after,
     .intro-team-grid > :nth-child(2) .team-name::after {
-      color: #C084FC;
-      animation-delay: 0.6s;
+      background: #3B82F6;
+      box-shadow: 0 0 8px #3B82F6;
+      animation-delay: 0.5s;
     }
 
     .team-grid > :nth-child(3) .team-name::after,
     .intro-team-grid > :nth-child(3) .team-name::after {
-      color: #38BDF8;
-      animation-delay: 1.2s;
+      background: #38BDF8;
+      box-shadow: 0 0 8px #38BDF8;
+      animation-delay: 1.0s;
     }
 
     .team-grid > :nth-child(4) .team-name::after,
     .intro-team-grid > :nth-child(4) .team-name::after {
-      color: #F472B6;
-      animation-delay: 1.8s;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+      animation-delay: 1.5s;
     }
 
-    @keyframes teamSparkleSpin {
-      0%, 100% {
-        transform: scale(0.65) rotate(0deg);
-        opacity: 0.4;
-      }
-      50% {
-        transform: scale(1.35) rotate(90deg);
-        opacity: 1;
-      }
+    @keyframes teamDotPulse {
+      0% { transform: scale(0.75); opacity: 0.5; }
+      100% { transform: scale(1.3); opacity: 1; }
     }
 
     @keyframes teamGlowShine {
@@ -1781,7 +1781,7 @@
     }
 
     .team-member-card:hover .team-name {
-      filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.95)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.85)) drop-shadow(0 0 40px rgba(34, 211, 238, 0.6));
+      filter: drop-shadow(0 0 16px rgba(0, 242, 254, 0.95)) drop-shadow(0 0 28px rgba(37, 99, 235, 0.75));
       transform: scale(1.03);
     }
 
@@ -1820,7 +1820,7 @@
        ✨ NEW FEATURES WINDOW: MULTIMODAL MEDIA & VOICE LAB STYLING
        ======================================================== */
     .btn-header-cta.media-lab-btn {
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.18) 0%, rgba(139, 92, 246, 0.22) 100%);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.18) 0%, rgba(37, 99, 235, 0.22) 100%);
       border: 1px solid rgba(34, 211, 238, 0.55);
       color: #F8FAFC;
       display: inline-flex;
@@ -1831,7 +1831,7 @@
     }
 
     .btn-header-cta.media-lab-btn:hover {
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.3) 0%, rgba(139, 92, 246, 0.35) 100%);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.3) 0%, rgba(37, 99, 235, 0.35) 100%);
       border-color: #67E8F9;
       box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
       transform: translateY(-1px);
@@ -2032,12 +2032,12 @@
     }
 
     .btn-file-select.violet-glow {
-      background: rgba(139, 92, 246, 0.12);
-      border: 1px solid rgba(139, 92, 246, 0.4);
+      background: rgba(37, 99, 235, 0.12);
+      border: 1px solid rgba(37, 99, 235, 0.4);
       color: #C4B5FD;
     }
     .btn-file-select.violet-glow:hover {
-      background: rgba(139, 92, 246, 0.22);
+      background: rgba(37, 99, 235, 0.22);
       border-color: #A78BFA;
     }
 
@@ -2287,7 +2287,7 @@
     .btn-run-fusion {
       flex: 1;
       padding: 0.85rem 1.4rem;
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.28) 0%, rgba(139, 92, 246, 0.28) 100%);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.28) 0%, rgba(37, 99, 235, 0.28) 100%);
       border: 1.5px solid var(--cyan);
       color: #F8FAFC;
       font-family: var(--font-main);
@@ -2306,7 +2306,7 @@
     }
 
     .btn-run-fusion:hover {
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.42) 0%, rgba(139, 92, 246, 0.42) 100%);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.42) 0%, rgba(37, 99, 235, 0.42) 100%);
       border-color: #67E8F9;
       box-shadow: 0 6px 26px rgba(34, 211, 238, 0.45);
       transform: translateY(-2px);
@@ -2947,7 +2947,7 @@
       border-radius: 50%;
       pointer-events: none;
       z-index: 0;
-      background: radial-gradient(circle, rgba(34, 211, 238, 0.18) 0%, rgba(192, 132, 252, 0.08) 42%, transparent 70%);
+      background: radial-gradient(circle, rgba(0, 242, 254, 0.16) 0%, rgba(37, 99, 235, 0.09) 45%, transparent 70%);
       filter: blur(28px);
       transition: opacity 0.4s ease;
       will-change: transform;
@@ -2979,7 +2979,7 @@
       box-sizing: border-box;
       position: relative;
       z-index: 1;
-      background: radial-gradient(circle at 50% 32%, rgba(34, 211, 238, 0.08) 0%, rgba(139, 92, 246, 0.05) 45%, transparent 75%);
+      background: radial-gradient(circle at 50% 32%, rgba(34, 211, 238, 0.08) 0%, rgba(37, 99, 235, 0.05) 45%, transparent 75%);
     }
 
     .intro-top-badge {
@@ -3013,7 +3013,7 @@
       margin-bottom: 0.5rem;
     }
 
-    /* ✨ Sparkling Luminous Aura on Main Title */
+    /* ⚡ Laser Telemetry Aura on Main Title */
     .intro-title {
       font-size: clamp(2.6rem, 6.5vw, 4.8rem);
       font-weight: 900;
@@ -3024,56 +3024,44 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.45rem;
-      filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.75)) drop-shadow(0 0 35px rgba(192, 132, 252, 0.55));
+      gap: 0.65rem;
+      filter: drop-shadow(0 0 16px rgba(0, 242, 254, 0.65)) drop-shadow(0 0 35px rgba(37, 99, 235, 0.45));
       animation: titleAuraPulse 3.5s ease-in-out infinite alternate;
     }
 
     .title-shimmer-text {
-      background: linear-gradient(135deg, #22D3EE 0%, #FFFFFF 28%, #F3E8FF 50%, #C084FC 75%, #22D3EE 100%);
+      background: linear-gradient(135deg, #00F2FE 0%, #FFFFFF 30%, #93C5FD 55%, #2563EB 80%, #00F2FE 100%);
       background-size: 250% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: titleSparkleSweep 4s linear infinite;
+      animation: titleSparkleSweep 5s linear infinite;
     }
 
-    .sparkle-star {
-      font-size: 0.44em;
-      display: inline-block;
+    .tech-bracket {
+      font-family: var(--font-mono);
+      font-size: 0.78em;
+      color: #00F2FE;
+      font-weight: 300;
+      opacity: 0.65;
+      filter: drop-shadow(0 0 8px #00F2FE);
+      animation: bracketGlow 2.5s ease-in-out infinite alternate;
       user-select: none;
-      pointer-events: none;
     }
 
-    .star-1 {
-      color: #67E8F9;
-      animation: sparkleFloatTwinkle 2.4s ease-in-out infinite;
-      filter: drop-shadow(0 0 8px #22D3EE) drop-shadow(0 0 16px #22D3EE);
-    }
-    .star-2 {
-      color: #F472B6;
-      animation: sparkleFloatTwinkle 2.8s ease-in-out infinite 0.7s;
-      filter: drop-shadow(0 0 8px #F472B6) drop-shadow(0 0 16px #E879F9);
-    }
-    .star-3 {
-      color: #C084FC;
-      animation: sparkleFloatTwinkle 2.6s ease-in-out infinite 1.3s;
-      filter: drop-shadow(0 0 8px #C084FC) drop-shadow(0 0 16px #A855F7);
-    }
-    .star-4 {
-      color: #38BDF8;
-      animation: sparkleFloatTwinkle 2.2s ease-in-out infinite 1.9s;
-      filter: drop-shadow(0 0 8px #38BDF8) drop-shadow(0 0 16px #0284C7);
+    @keyframes bracketGlow {
+      0% { opacity: 0.4; filter: drop-shadow(0 0 4px #00F2FE); }
+      100% { opacity: 0.9; filter: drop-shadow(0 0 12px #00F2FE); }
     }
 
     @keyframes titleAuraPulse {
       0% {
-        filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.5)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.35));
+        filter: drop-shadow(0 0 14px rgba(0, 242, 254, 0.45)) drop-shadow(0 0 28px rgba(37, 99, 235, 0.3));
       }
       50% {
-        filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.95)) drop-shadow(0 0 55px rgba(192, 132, 252, 0.8)) drop-shadow(0 0 85px rgba(34, 211, 238, 0.45));
+        filter: drop-shadow(0 0 26px rgba(0, 242, 254, 0.85)) drop-shadow(0 0 45px rgba(37, 99, 235, 0.6));
       }
       100% {
-        filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.5)) drop-shadow(0 0 28px rgba(192, 132, 252, 0.35));
+        filter: drop-shadow(0 0 14px rgba(0, 242, 254, 0.45)) drop-shadow(0 0 28px rgba(37, 99, 235, 0.3));
       }
     }
 
@@ -3081,17 +3069,6 @@
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
-    }
-
-    @keyframes sparkleFloatTwinkle {
-      0%, 100% {
-        transform: scale(0.65) rotate(0deg) translateY(0);
-        opacity: 0.35;
-      }
-      50% {
-        transform: scale(1.35) rotate(180deg) translateY(-3px);
-        opacity: 1;
-      }
     }
 
     .intro-tagline {
@@ -3119,7 +3096,7 @@
       font-weight: 800;
       letter-spacing: 2px;
       text-transform: uppercase;
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.25) 0%, rgba(139, 92, 246, 0.3) 100%);
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.22) 0%, rgba(37, 99, 235, 0.28) 100%);
       border: 1.5px solid var(--cyan);
       color: #FFFFFF;
       border-radius: var(--radius-pill);
@@ -3135,7 +3112,7 @@
       transform: translateY(-3px) scale(1.03);
       box-shadow: 0 0 50px rgba(34, 211, 238, 0.6);
       border-color: #67E8F9;
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.4) 0%, rgba(139, 92, 246, 0.45) 100%);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.4) 0%, rgba(37, 99, 235, 0.45) 100%);
     }
 
     .btn-lets-start .btn-start-arrow {
@@ -3189,7 +3166,7 @@
       align-items: center;
       padding: 3.5rem 1.5rem;
       box-sizing: border-box;
-      background: radial-gradient(circle at 50% 35%, rgba(139, 92, 246, 0.12) 0%, rgba(34, 211, 238, 0.08) 50%, transparent 80%);
+      background: radial-gradient(circle at 50% 35%, rgba(37, 99, 235, 0.12) 0%, rgba(34, 211, 238, 0.08) 50%, transparent 80%);
     }
 
     .mode-select-header {
@@ -3251,7 +3228,7 @@
 
     .mode-card.vocal-hover:hover {
       border-color: var(--violet);
-      box-shadow: 0 18px 45px rgba(139, 92, 246, 0.25);
+      box-shadow: 0 18px 45px rgba(37, 99, 235, 0.25);
     }
 
     .mode-card-badge {
@@ -3273,8 +3250,8 @@
     }
 
     .mode-card-badge.violet {
-      background: rgba(139, 92, 246, 0.1);
-      border: 1px solid rgba(139, 92, 246, 0.35);
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.35);
       color: #C4B5FD;
     }
 
@@ -3339,14 +3316,14 @@
     }
 
     .btn-mode-cta.violet-btn {
-      background: rgba(139, 92, 246, 0.14);
+      background: rgba(37, 99, 235, 0.14);
       border: 1.5px solid var(--violet);
       color: #FFFFFF;
     }
 
     .btn-mode-cta.violet-btn:hover {
-      background: rgba(139, 92, 246, 0.28);
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+      background: rgba(37, 99, 235, 0.28);
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
     }
 
     .mode-return-bar {
@@ -3837,11 +3814,9 @@
         </div>
 
         <h1 class="intro-title">
-          <span class="sparkle-star star-1">✦</span>
-          <span class="sparkle-star star-2">✨</span>
+          <span class="tech-bracket">[</span>
           <span class="title-shimmer-text">AFFECT AI</span>
-          <span class="sparkle-star star-3">✦</span>
-          <span class="sparkle-star star-4">✨</span>
+          <span class="tech-bracket">]</span>
         </h1>
         <p class="intro-tagline">Multimodal Human Emotion Recognition System</p>
         <p class="intro-subtagline">
@@ -4941,11 +4916,11 @@
 
     // 😊 6. Final Emotion-Specific Accents
     const EMOTION_COLORS = {
-      Happy: '#F5C76B',      // Champagne Gold
-      Sad: '#60A5FA',        // Sky Blue
-      Angry: '#FB7185',      // Coral
-      Surprise: '#A78BFA',   // Lavender
-      Neutral: '#CBD5E1'     // Silver
+      Happy: '#10B981',      // Emerald Biosignal
+      Sad: '#6366F1',        // Indigo Deep
+      Angry: '#EF4444',      // Laser Crimson Alert
+      Surprise: '#00F2FE',   // High-Frequency Cyan
+      Neutral: '#94A3B8'     // Precision Titanium
     };
 
     const STYLE_MAP = {
@@ -7708,7 +7683,7 @@
         const by = H - barH;
 
         const grad = ctx.createLinearGradient(0, H, 0, by);
-        grad.addColorStop(0, '#8B5CF630');
+        grad.addColorStop(0, '#2563EB30');
         grad.addColorStop(1, '#00F2FE80');
 
         ctx.fillStyle = grad;
@@ -8354,7 +8329,7 @@
           vx: (Math.random() - 0.5) * 0.7,
           vy: (Math.random() - 0.5) * 0.7,
           size: Math.random() * 2 + 1,
-          color: Math.random() > 0.45 ? '#22D3EE' : '#C084FC',
+          color: Math.random() > 0.45 ? '#00F2FE' : '#3B82F6',
           baseAlpha: Math.random() * 0.45 + 0.25,
           pulseSpeed: Math.random() * 0.03 + 0.015,
           pulseVal: Math.random() * Math.PI * 2
@@ -8480,9 +8455,9 @@
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(mouse.x, mouse.y);
             const beamAlpha = (1 - distM / mouse.radius) * 0.45;
-            ctx.strokeStyle = p1.color === '#22D3EE' 
-              ? `rgba(34, 211, 238, ${beamAlpha})` 
-              : `rgba(192, 132, 252, ${beamAlpha})`;
+            ctx.strokeStyle = p1.color === '#00F2FE' 
+              ? `rgba(0, 242, 254, ${beamAlpha})` 
+              : `rgba(59, 130, 246, ${beamAlpha})`;
             ctx.lineWidth = 1.2;
             ctx.stroke();
           }
@@ -8499,7 +8474,7 @@
               ctx.beginPath();
               ctx.moveTo(p1.x, p1.y);
               ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = `rgba(34, 211, 238, ${alpha})`;
+              ctx.strokeStyle = `rgba(0, 242, 254, ${alpha})`;
               ctx.lineWidth = 0.75;
               ctx.stroke();
             }
@@ -8510,9 +8485,9 @@
           const currentAlpha = p1.baseAlpha + Math.sin(p1.pulseVal) * 0.15;
           ctx.beginPath();
           ctx.arc(p1.x, p1.y, p1.size, 0, Math.PI * 2);
-          ctx.fillStyle = p1.color === '#22D3EE'
-            ? `rgba(34, 211, 238, ${Math.max(0.1, currentAlpha)})`
-            : `rgba(192, 132, 252, ${Math.max(0.1, currentAlpha)})`;
+          ctx.fillStyle = p1.color === '#00F2FE'
+            ? `rgba(0, 242, 254, ${Math.max(0.1, currentAlpha)})`
+            : `rgba(59, 130, 246, ${Math.max(0.1, currentAlpha)})`;
           ctx.shadowBlur = 8;
           ctx.shadowColor = p1.color;
           ctx.fill();
