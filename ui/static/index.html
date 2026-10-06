@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AFFECT AI — Multimodal Emotion Intelligence</title>
+  <link rel="icon" type="image/png" href="./demo_samples/app_icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0B0F19">
   
   <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8537,6 +8540,10 @@
       detectAvailableCameras();
       updateFacePrediction();
       updateSpeechPrediction();
+
+      if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
     });
   </script>
 </body>

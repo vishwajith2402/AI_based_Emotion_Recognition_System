@@ -1,0 +1,37 @@
+{
+  "name": "aips-emotion-recognition-software",
+  "productName": "Human Emotion Recognition AI",
+  "version": "1.0.0",
+  "description": "Multimodal AI Emotion Recognition Software (Facial Expressions & Acoustic Prosody)",
+  "main": "main.js",
+  "author": "Vishwa, Vicky, Subash, Ashwin",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "app": "electron .",
+    "build:portable": "electron-builder --win portable",
+    "dist": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11"
+  },
+  "build": {
+    "appId": "com.aips.emotionrecognition",
+    "productName": "Human Emotion Recognition AI",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ],
+      "icon": "ui/static/demo_samples/app_icon.png"
+    },
+    "files": [
+      "main.js",
+      "ui/static/**/*",
+      "package.json"
+    ]
+  }
+}
