@@ -131,8 +131,12 @@ function checkCloudAvailability(url, timeoutMs = 2500) {
 }
 
 function createMainWindow(port) {
-  const icoPath = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.ico');
-  const pngPath = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.png');
+  const assetIco = path.join(__dirname, 'ui', 'static', 'assets', 'app_icon.ico');
+  const demoIco = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.ico');
+  const assetPng = path.join(__dirname, 'ui', 'static', 'assets', 'app_icon.png');
+  const demoPng = path.join(__dirname, 'ui', 'static', 'demo_samples', 'app_icon.png');
+  const icoPath = fs.existsSync(assetIco) ? assetIco : demoIco;
+  const pngPath = fs.existsSync(assetPng) ? assetPng : demoPng;
   const iconPath = (process.platform === 'win32' && fs.existsSync(icoPath)) ? icoPath : pngPath;
 
   mainWindow = new BrowserWindow({

@@ -1,6 +1,6 @@
 {
   "name": "emotix-emotion-recognition",
-  "productName": "EmotiX - Emotion Recognition System",
+  "productName": "EmotiX",
   "version": "1.0.0",
   "description": "EmotiX: Multimodal Emotion Recognition Software (Facial Action Units & Acoustic Prosody)",
   "main": "main.js",
@@ -10,7 +10,7 @@
     "start": "electron .",
     "app": "electron .",
     "build:portable": "electron-builder --win portable",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win portable"
   },
   "devDependencies": {
     "electron": "^33.4.11",
@@ -18,16 +18,14 @@
   },
   "build": {
     "appId": "com.emotix.ai",
-    "productName": "EmotiX - Emotion Recognition System",
+    "productName": "EmotiX",
     "directories": {
       "output": "dist"
     },
     "win": {
-      "target": [
-        "portable",
-        "nsis"
-      ],
-      "icon": "ui/static/demo_samples/app_icon.ico"
+      "target": "portable",
+      "artifactName": "EmotiX.exe",
+      "icon": "ui/static/assets/app_icon.ico"
     },
     "files": [
       "main.js",

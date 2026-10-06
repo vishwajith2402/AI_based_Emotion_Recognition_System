@@ -7,5 +7,9 @@ src/
 data/
 reports/
 scripts/
-demo_samples/
+/demo_samples/
 __pycache__/
+
+!ui/static/**
+!ui/static/assets/**
+!ui/static/demo_samples/**

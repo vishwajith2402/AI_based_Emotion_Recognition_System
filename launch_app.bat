@@ -5,6 +5,11 @@ echo    Launching EmotiX (Multimodal Emotion Recognition Software)...
 echo =====================================================================
 cd /d "%~dp0"
 
+if exist "dist\EmotiX.exe" (
+    echo Launching EmotiX standalone software...
+    start "" "dist\EmotiX.exe"
+    exit /b 0
+)
 if exist "dist\EmotiX - Emotion Recognition System 1.0.0.exe" (
     echo Launching EmotiX standalone software...
     start "" "dist\EmotiX - Emotion Recognition System 1.0.0.exe"
