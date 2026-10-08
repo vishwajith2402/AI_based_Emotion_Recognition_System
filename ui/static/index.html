@@ -3326,23 +3326,23 @@
       height: 100%;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.18;
+      opacity: 0.40;
     }
 
     .intro-cursor-glow {
       position: absolute;
       top: 0;
       left: 0;
-      width: 650px;
-      height: 650px;
-      margin-top: -325px;
-      margin-left: -325px;
+      width: 700px;
+      height: 700px;
+      margin-top: -350px;
+      margin-left: -350px;
       border-radius: 50%;
       pointer-events: none;
       z-index: 0;
-      background: radial-gradient(circle, rgba(0, 242, 254, 0.10) 0%, rgba(37, 99, 235, 0.05) 45%, transparent 70%);
-      filter: blur(28px);
-      transition: opacity 0.4s ease;
+      background: radial-gradient(circle, rgba(0, 242, 254, 0.30) 0%, rgba(56, 189, 248, 0.18) 25%, rgba(37, 99, 235, 0.08) 55%, transparent 72%);
+      filter: blur(32px);
+      transition: opacity 0.3s ease;
       will-change: transform;
       opacity: 0;
     }
@@ -3351,14 +3351,14 @@
       position: absolute;
       inset: 0;
       background-image: 
-        linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+        linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px);
       background-size: 48px 48px;
       pointer-events: none;
       z-index: 0;
-      mask-image: radial-gradient(circle 380px at var(--mouse-x, 50%) var(--mouse-y, 45%), black 0%, transparent 100%);
-      -webkit-mask-image: radial-gradient(circle 380px at var(--mouse-x, 50%) var(--mouse-y, 45%), black 0%, transparent 100%);
-      opacity: 0.5;
+      mask-image: radial-gradient(circle 420px at var(--mouse-x, 50%) var(--mouse-y, 45%), black 0%, rgba(0, 0, 0, 0.45) 55%, transparent 100%);
+      -webkit-mask-image: radial-gradient(circle 420px at var(--mouse-x, 50%) var(--mouse-y, 45%), black 0%, rgba(0, 0, 0, 0.45) 55%, transparent 100%);
+      opacity: 0.85;
       transition: opacity 0.3s ease;
     }
 
@@ -11077,7 +11077,7 @@
         mouse.isActive = true;
 
         if (cursorGlow) {
-          cursorGlow.style.opacity = '0.5';
+          cursorGlow.style.opacity = '0.85';
         }
         introSection.style.setProperty('--mouse-x', `${mouse.targetX}px`);
         introSection.style.setProperty('--mouse-y', `${mouse.targetY}px`);
@@ -11094,8 +11094,8 @@
           x: e.clientX - rect.left,
           y: e.clientY - rect.top,
           r: 3,
-          maxR: 45,
-          alpha: 0.35
+          maxR: 55,
+          alpha: 0.65
         });
       });
 
@@ -11105,7 +11105,7 @@
           mouse.targetX = e.touches[0].clientX - rect.left;
           mouse.targetY = e.touches[0].clientY - rect.top;
           mouse.isActive = true;
-          if (cursorGlow) cursorGlow.style.opacity = '0.4';
+          if (cursorGlow) cursorGlow.style.opacity = '0.75';
           introSection.style.setProperty('--mouse-x', `${mouse.targetX}px`);
           introSection.style.setProperty('--mouse-y', `${mouse.targetY}px`);
         }
@@ -11128,22 +11128,37 @@
 
         // Lerp cursor position
         if (mouse.isActive) {
-          mouse.x += (mouse.targetX - mouse.x) * 0.10;
-          mouse.y += (mouse.targetY - mouse.y) * 0.10;
+          mouse.x += (mouse.targetX - mouse.x) * 0.12;
+          mouse.y += (mouse.targetY - mouse.y) * 0.12;
           if (cursorGlow) {
             cursorGlow.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`;
           }
+
+          // Luminous cursor focal ring on canvas
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, 18, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(0, 242, 254, 0.35)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0, 242, 254, 0.60)';
+          ctx.shadowColor = '#00F2FE';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+          ctx.shadowBlur = 0;
         }
 
         // Render soft ripples
         for (let i = ripples.length - 1; i >= 0; i--) {
           const rp = ripples[i];
-          rp.r += 1.8;
+          rp.r += 2.0;
           rp.alpha *= 0.94;
           ctx.beginPath();
           ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(34, 211, 238, ${rp.alpha * 0.4})`;
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = `rgba(34, 211, 238, ${rp.alpha * 0.65})`;
+          ctx.lineWidth = 1.2;
           ctx.stroke();
 
           if (rp.alpha < 0.02 || rp.r > rp.maxR) {
@@ -11151,12 +11166,12 @@
           }
         }
 
-        // Draw gentle, rare filaments between close particles
-        const maxDist = isMobile ? 50 : 75;
+        // Draw filaments between close particles and towards cursor
+        const maxDist = isMobile ? 60 : 90;
         for (let i = 0; i < particles.length; i++) {
           const p1 = particles[i];
 
-          // Slow, subtle particle movement
+          // Particle movement
           p1.x += p1.vx;
           p1.y += p1.vy;
 
@@ -11165,7 +11180,23 @@
           if (p1.y < 0) p1.y = height;
           else if (p1.y > height) p1.y = 0;
 
-          // Rare faint connection lines
+          // Connect to cursor when mouse is active nearby
+          if (mouse.isActive) {
+            const mdx = p1.x - mouse.x;
+            const mdy = p1.y - mouse.y;
+            const mDist = Math.hypot(mdx, mdy);
+            if (mDist < 130) {
+              const mAlpha = (1 - mDist / 130) * 0.38;
+              ctx.beginPath();
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(mouse.x, mouse.y);
+              ctx.strokeStyle = `rgba(0, 242, 254, ${mAlpha})`;
+              ctx.lineWidth = 0.9;
+              ctx.stroke();
+            }
+          }
+
+          // Connection lines between particles
           for (let j = i + 1; j < particles.length; j++) {
             const p2 = particles[j];
             const dx = p1.x - p2.x;
@@ -11173,24 +11204,24 @@
             const dist = Math.hypot(dx, dy);
 
             if (dist < maxDist) {
-              const alpha = (1 - dist / maxDist) * 0.06;
+              const alpha = (1 - dist / maxDist) * 0.12;
               ctx.beginPath();
               ctx.moveTo(p1.x, p1.y);
               ctx.lineTo(p2.x, p2.y);
               ctx.strokeStyle = `rgba(0, 242, 254, ${alpha})`;
-              ctx.lineWidth = 0.5;
+              ctx.lineWidth = 0.6;
               ctx.stroke();
             }
           }
 
-          // Render subtle particle node
+          // Render particle node
           p1.pulseVal += p1.pulseSpeed;
-          const currentAlpha = p1.baseAlpha + Math.sin(p1.pulseVal) * 0.04;
+          const currentAlpha = p1.baseAlpha + Math.sin(p1.pulseVal) * 0.05;
           ctx.beginPath();
           ctx.arc(p1.x, p1.y, p1.size, 0, Math.PI * 2);
           ctx.fillStyle = p1.color === '#00F2FE'
-            ? `rgba(0, 242, 254, ${Math.max(0.04, currentAlpha)})`
-            : `rgba(59, 130, 246, ${Math.max(0.04, currentAlpha)})`;
+            ? `rgba(0, 242, 254, ${Math.max(0.08, currentAlpha)})`
+            : `rgba(59, 130, 246, ${Math.max(0.08, currentAlpha)})`;
           ctx.fill();
         }
 
