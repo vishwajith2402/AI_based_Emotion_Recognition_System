@@ -4,8 +4,8 @@
   "description": "EmotiX: Multimodal Emotion Recognition System using Facial Action Units & Acoustic Prosody",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0B0F19",
-  "theme_color": "#0B0F19",
+  "background_color": "#040406",
+  "theme_color": "#040406",
   "orientation": "any",
   "icons": [
     {
