@@ -9115,13 +9115,28 @@
       const valence = Math.min(1.0, Math.max(-1.0, (au12Smile * 0.013) - (au4Furrow * 0.008) - (au15LipDep * 0.008) - (au1Grief * 0.005)));
       const arousal = Math.min(1.0, Math.max(-1.0, (au5EyeAperture * 0.009) + (au26JawDrop * 0.008) + (au4Furrow * 0.007) - (au15LipDep * 0.003) - 0.18));
 
-      // Balanced Multi-Class Evidentiary Logits (Zero-Skew Calibrated)
+      // Non-linear expressive prominence scaling (amplifies salient AUs above baseline)
+      const fAU = (v, thresh = 12) => {
+        const excess = Math.max(0, v - thresh);
+        return (v * 0.55) + (excess * 1.45);
+      };
+
+      const sAU12 = fAU(au12Smile, 14);
+      const sAU6  = fAU(au6Cheek, 12);
+      const sAU4  = fAU(au4Furrow, 16);
+      const sAU1  = fAU(au1Grief, 14);
+      const sAU15 = fAU(au15LipDep, 14);
+      const sAU5  = fAU(au5EyeAperture, 15);
+      const sAU26 = fAU(au26JawDrop, 15);
+      const sAU23 = fAU(au23LipTight, 14);
+
+      // Balanced Multi-Class Evidentiary Logits (Zero-Skew Calibrated with Super-Linear Prominence)
       const logits = {
-        Happy: 0.05 + (au12Smile * 0.070) + (au6Cheek * 0.038) - (au4Furrow * 0.045) - (au15LipDep * 0.055) - (au1Grief * 0.035),
-        Surprise: 0.00 + (au5EyeAperture * 0.058) + (au26JawDrop * 0.062) + (au1Grief * 0.018) - (au4Furrow * 0.035) - (au15LipDep * 0.045),
-        Sad: 0.00 + (au1Grief * 0.065) + (au15LipDep * 0.058) - (au12Smile * 0.075) - (au5EyeAperture * 0.035),
-        Angry: 0.00 + (au4Furrow * 0.068) + (au23LipTight * 0.038) - (au12Smile * 0.065) - (au26JawDrop * 0.035),
-        Neutral: 0.12 - (au12Smile * 0.042) - (au5EyeAperture * 0.042) - (au26JawDrop * 0.042) - (au4Furrow * 0.042) - (au1Grief * 0.042) - (au15LipDep * 0.042)
+        Happy: 0.05 + (sAU12 * 0.082) + (sAU6 * 0.042) - (sAU4 * 0.045) - (sAU15 * 0.055) - (sAU1 * 0.035),
+        Surprise: 0.00 + (sAU5 * 0.068) + (sAU26 * 0.072) + (sAU1 * 0.020) - (sAU4 * 0.035) - (sAU15 * 0.045),
+        Sad: 0.00 + (sAU1 * 0.078) + (sAU15 * 0.070) - (sAU12 * 0.080) - (sAU5 * 0.035),
+        Angry: 0.00 + (sAU4 * 0.082) + (sAU23 * 0.045) - (sAU12 * 0.075) - (sAU26 * 0.035),
+        Neutral: 0.10 - (sAU12 * 0.052) - (sAU5 * 0.048) - (sAU26 * 0.048) - (sAU4 * 0.050) - (sAU1 * 0.050) - (sAU15 * 0.050)
       };
 
       // Softmax with temperature scaling (tau = 1.05)
@@ -9143,6 +9158,21 @@
         if (p > maxP) {
           maxP = p;
           topEmo = k;
+        }
+      }
+
+      // Expressive Salience Calibration: prevent resting baseline Neutral from overpowering active expressions
+      if (topEmo === 'Neutral') {
+        const candidates = [
+          { emo: 'Happy', p: probs['Happy'], trigger: au12Smile >= 16 || au6Cheek >= 20 },
+          { emo: 'Sad', p: probs['Sad'], trigger: au1Grief >= 16 || au15LipDep >= 16 },
+          { emo: 'Angry', p: probs['Angry'], trigger: au4Furrow >= 20 || au23LipTight >= 22 },
+          { emo: 'Surprise', p: probs['Surprise'], trigger: au5EyeAperture >= 18 || au26JawDrop >= 18 }
+        ];
+        const activeCands = candidates.filter(c => c.trigger && c.p >= 0.20);
+        if (activeCands.length > 0) {
+          activeCands.sort((a, b) => b.p - a.p);
+          topEmo = activeCands[0].emo;
         }
       }
 
