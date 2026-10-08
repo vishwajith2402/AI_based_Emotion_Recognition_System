@@ -1209,24 +1209,136 @@
     }
 
     /* ========================================================
-       📊 7. EMOTION DISTRIBUTION (Mostly Monochrome with Winning Accent)
+       📊 7. AFFECT ANALYTICS GRID & RUSSELL 2D CIRCUMPLEX
        ======================================================== */
+    .affect-analytics-grid {
+      display: grid;
+      grid-template-columns: 215px 1fr;
+      gap: 1.15rem;
+      align-items: center;
+      margin-top: 0.85rem;
+      background: rgba(8, 8, 14, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      position: relative;
+    }
+
+    @media (max-width: 960px) {
+      .affect-analytics-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+
+    .circumplex-live-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #030307;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.75rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .circumplex-live-widget::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(56, 189, 248, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .circumplex-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .circumplex-title {
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .circumplex-telemetry {
+      color: var(--accent-cyan);
+      font-weight: 600;
+      background: rgba(56, 189, 248, 0.08);
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .circumplex-canvas-wrap {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #liveCircumplexCanvas {
+      width: 100%;
+      max-width: 200px;
+      height: 130px;
+      display: block;
+      border-radius: 4px;
+      background: rgba(2, 2, 5, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .circumplex-footer {
+      width: 100%;
+      margin-top: 0.45rem;
+      text-align: center;
+    }
+
+    .circumplex-quadrant-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(245, 199, 107, 0.12);
+      color: var(--accent-happy);
+      border: 1px solid rgba(245, 199, 107, 0.3);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .distribution-list {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-      margin-top: 0.35rem;
+      gap: 0.55rem;
+      width: 100%;
     }
 
     .dist-row {
       display: grid;
-      grid-template-columns: 28px 90px 1fr 50px;
+      grid-template-columns: 20px 65px 56px 1fr 40px;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.65rem;
       font-family: var(--font-mono);
       font-size: 0.72rem;
       color: var(--text-secondary);
-      padding: 0.35rem 0;
+      padding: 0.25rem 0;
     }
 
     .dist-idx {
@@ -1237,6 +1349,15 @@
       font-family: var(--font-main);
       font-weight: 600;
       color: var(--text-primary);
+    }
+
+    .dist-sparkline {
+      width: 56px;
+      height: 18px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: block;
     }
 
     .dist-track {
@@ -4755,51 +4876,73 @@
               <span id="concordanceText"><b>HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align</span>
             </div>
 
-            <!-- Emotion Probability Distribution Bars -->
-            <div class="distribution-list" id="probBarsContainer" style="margin-top: 0.85rem;">
-              <div class="dist-row" id="rowHappy">
-                <span class="dist-idx">01</span>
-                <span class="dist-label">Happy</span>
-                <div class="dist-track">
-                  <div class="dist-bar dominant" id="barHappy" style="width: 94%;"></div>
+            <!-- Emotion Probability Distribution Bars & 2D Russell Circumplex -->
+            <div class="affect-analytics-grid">
+              <!-- Live 2D Russell Circumplex Widget -->
+              <div class="circumplex-live-widget">
+                <div class="circumplex-header">
+                  <span class="circumplex-title">2D Russell Affect</span>
+                  <span class="circumplex-telemetry" id="circumplexCoords">V: +0.78 | A: +0.52</span>
                 </div>
-                <span class="dist-val dominant" id="valHappy">94%</span>
+                <div class="circumplex-canvas-wrap">
+                  <canvas id="liveCircumplexCanvas" width="200" height="130"></canvas>
+                </div>
+                <div class="circumplex-footer">
+                  <span class="circumplex-quadrant-tag" id="circumplexQuadrantTag">Q1: ACTIVATED PLEASURE</span>
+                </div>
               </div>
 
-              <div class="dist-row" id="rowSurprise">
-                <span class="dist-idx">02</span>
-                <span class="dist-label">Surprise</span>
-                <div class="dist-track">
-                  <div class="dist-bar" id="barSurprise" style="width: 3%;"></div>
+              <!-- Real-Time Distribution Spectrum with 30s Sparklines -->
+              <div class="distribution-list" id="probBarsContainer">
+                <div class="dist-row" id="rowHappy">
+                  <span class="dist-idx">01</span>
+                  <span class="dist-label">Happy</span>
+                  <canvas class="dist-sparkline" id="sparkHappy" width="56" height="18"></canvas>
+                  <div class="dist-track">
+                    <div class="dist-bar dominant" id="barHappy" style="width: 94%;"></div>
+                  </div>
+                  <span class="dist-val dominant" id="valHappy">94%</span>
                 </div>
-                <span class="dist-val" id="valSurprise">3%</span>
-              </div>
 
-              <div class="dist-row" id="rowSad">
-                <span class="dist-idx">03</span>
-                <span class="dist-label">Sad</span>
-                <div class="dist-track">
-                  <div class="dist-bar" id="barSad" style="width: 2%;"></div>
+                <div class="dist-row" id="rowSurprise">
+                  <span class="dist-idx">02</span>
+                  <span class="dist-label">Surprise</span>
+                  <canvas class="dist-sparkline" id="sparkSurprise" width="56" height="18"></canvas>
+                  <div class="dist-track">
+                    <div class="dist-bar" id="barSurprise" style="width: 3%;"></div>
+                  </div>
+                  <span class="dist-val" id="valSurprise">3%</span>
                 </div>
-                <span class="dist-val" id="valSad">2%</span>
-              </div>
 
-              <div class="dist-row" id="rowNeutral">
-                <span class="dist-idx">04</span>
-                <span class="dist-label">Neutral</span>
-                <div class="dist-track">
-                  <div class="dist-bar" id="barNeutral" style="width: 1%;"></div>
+                <div class="dist-row" id="rowSad">
+                  <span class="dist-idx">03</span>
+                  <span class="dist-label">Sad</span>
+                  <canvas class="dist-sparkline" id="sparkSad" width="56" height="18"></canvas>
+                  <div class="dist-track">
+                    <div class="dist-bar" id="barSad" style="width: 2%;"></div>
+                  </div>
+                  <span class="dist-val" id="valSad">2%</span>
                 </div>
-                <span class="dist-val" id="valNeutral">1%</span>
-              </div>
 
-              <div class="dist-row" id="rowAngry">
-                <span class="dist-idx">05</span>
-                <span class="dist-label">Angry</span>
-                <div class="dist-track">
-                  <div class="dist-bar" id="barAngry" style="width: 0%;"></div>
+                <div class="dist-row" id="rowNeutral">
+                  <span class="dist-idx">04</span>
+                  <span class="dist-label">Neutral</span>
+                  <canvas class="dist-sparkline" id="sparkNeutral" width="56" height="18"></canvas>
+                  <div class="dist-track">
+                    <div class="dist-bar" id="barNeutral" style="width: 1%;"></div>
+                  </div>
+                  <span class="dist-val" id="valNeutral">1%</span>
                 </div>
-                <span class="dist-val" id="valAngry">0%</span>
+
+                <div class="dist-row" id="rowAngry">
+                  <span class="dist-idx">05</span>
+                  <span class="dist-label">Angry</span>
+                  <canvas class="dist-sparkline" id="sparkAngry" width="56" height="18"></canvas>
+                  <div class="dist-track">
+                    <div class="dist-bar" id="barAngry" style="width: 0%;"></div>
+                  </div>
+                  <span class="dist-val" id="valAngry">0%</span>
+                </div>
               </div>
             </div>
 
@@ -6625,6 +6768,303 @@
       updateMultimodalFusion();
     }
 
+    // ========================================================
+    // 🧭 2D RUSSELL CIRCUMPLEX & REAL-TIME SPARKLINE ENGINE
+    // ========================================================
+    const RUSSELL_EMOTION_COORDS = {
+      Happy:    { v:  0.78, a:  0.52 },
+      Surprise: { v:  0.32, a:  0.82 },
+      Angry:    { v: -0.72, a:  0.68 },
+      Sad:      { v: -0.75, a: -0.58 },
+      Neutral:  { v:  0.00, a:  0.00 }
+    };
+
+    const SPARKLINE_LEN = 30;
+    const sparklineBuffers = {
+      Happy:    new Array(SPARKLINE_LEN).fill(0.15),
+      Surprise: new Array(SPARKLINE_LEN).fill(0.04),
+      Sad:      new Array(SPARKLINE_LEN).fill(0.02),
+      Neutral:  new Array(SPARKLINE_LEN).fill(0.05),
+      Angry:    new Array(SPARKLINE_LEN).fill(0.01)
+    };
+    sparklineBuffers.Happy[SPARKLINE_LEN - 1] = 0.94;
+
+    const circumplexState = {
+      currentV: 0.78,
+      currentA: 0.52,
+      targetV: 0.78,
+      targetA: 0.52,
+      currentColor: '#F5C76B',
+      currentEmotion: 'Happy',
+      trail: [],
+      animLoopActive: false
+    };
+
+    function getRussellQuadrant(v, a) {
+      if (Math.abs(v) < 0.15 && Math.abs(a) < 0.15) {
+        return { name: 'BASELINE NEUTRAL', tag: 'STABLE EQUILIBRIUM', color: '#94a3b8' };
+      }
+      if (v >= 0 && a >= 0) {
+        return { name: 'Q1: EXCITED / JOY', tag: 'ACTIVATED PLEASURE', color: '#F5C76B' };
+      }
+      if (v < 0 && a >= 0) {
+        return { name: 'Q2: ALARM / ANGER', tag: 'ACTIVATED TENSION', color: '#FB7185' };
+      }
+      if (v < 0 && a < 0) {
+        return { name: 'Q3: GLOOM / DEPRESSED', tag: 'DEACTIVATED DYSPHORIA', color: '#60A5FA' };
+      }
+      return { name: 'Q4: SERENE / CALM', tag: 'DEACTIVATED CONTENTMENT', color: '#34D399' };
+    }
+
+    function drawCircumplexCanvas() {
+      const cvs = document.getElementById('liveCircumplexCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      if (!ctx) return;
+
+      const w = cvs.width;
+      const h = cvs.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const xSpan = (w / 2) - 14;
+      const ySpan = (h / 2) - 12;
+
+      // 1. Clear & Background
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#030307';
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Subtle Quadrant Backdrop Tinting
+      ctx.fillStyle = 'rgba(245, 199, 107, 0.035)'; // Q1 top-right
+      ctx.fillRect(cx, 0, cx, cy);
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.035)'; // Q2 top-left
+      ctx.fillRect(0, 0, cx, cy);
+      ctx.fillStyle = 'rgba(96, 165, 250, 0.035)';  // Q3 bottom-left
+      ctx.fillRect(0, cy, cx, cy);
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.035)';  // Q4 bottom-right
+      ctx.fillRect(cx, cy, cx, cy);
+
+      // 3. Grid Rings
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.min(xSpan, ySpan) * 0.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.min(xSpan, ySpan), 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 4. Hairline Crosshairs (Dashed)
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+      ctx.beginPath();
+      ctx.moveTo(12, cy);
+      ctx.lineTo(w - 12, cy);
+      ctx.moveTo(cx, 8);
+      ctx.lineTo(cx, h - 8);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 5. Quadrant Labels (High-contrast, subtle mono)
+      ctx.font = '600 7px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+      ctx.textAlign = 'left';
+      ctx.fillText('+V / +A  JOY', cx + 18, 13);
+      ctx.textAlign = 'right';
+      ctx.fillText('+A / -V  ANGER', cx - 18, 13);
+      ctx.fillText('-A / -V  SAD', cx - 18, h - 7);
+      ctx.textAlign = 'left';
+      ctx.fillText('+V / -A  CALM', cx + 18, h - 7);
+
+      // Axis tags
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.50)';
+      ctx.fillText('VALENCE →', w - 50, cy - 3);
+      ctx.fillText('↑ AROUSAL', cx + 4, 18);
+
+      // 6. Comet Motion Trail
+      for (let i = circumplexState.trail.length - 1; i >= 0; i--) {
+        const pt = circumplexState.trail[i];
+        const px = cx + pt.v * xSpan;
+        const py = cy - pt.a * ySpan;
+        const alpha = Math.max(0.04, (1 - pt.age / 16) * 0.45);
+        const radius = Math.max(1.5, 3.2 * (1 - pt.age / 16));
+
+        ctx.fillStyle = pt.color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(px, py, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1.0;
+
+      // 7. Glowing Coordinate Puck
+      const puckX = cx + circumplexState.currentV * xSpan;
+      const puckY = cy - circumplexState.currentA * ySpan;
+      const themeColor = circumplexState.currentColor || '#F5C76B';
+
+      // Outer radar pulse
+      ctx.strokeStyle = themeColor;
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.40;
+      ctx.beginPath();
+      ctx.arc(puckX, puckY, 9, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Neon glow halo
+      ctx.shadowColor = themeColor;
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = themeColor;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.arc(puckX, puckY, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Puck Core White Center
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 1.0;
+      ctx.beginPath();
+      ctx.arc(puckX, puckY, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function startCircumplexLoop() {
+      if (circumplexState.animLoopActive) return;
+      circumplexState.animLoopActive = true;
+
+      function frame() {
+        const dv = circumplexState.targetV - circumplexState.currentV;
+        const da = circumplexState.targetA - circumplexState.currentA;
+
+        circumplexState.currentV += dv * 0.16;
+        circumplexState.currentA += da * 0.16;
+
+        if (Math.abs(dv) > 0.003 || Math.abs(da) > 0.003 || circumplexState.trail.length === 0) {
+          circumplexState.trail.unshift({
+            v: circumplexState.currentV,
+            a: circumplexState.currentA,
+            color: circumplexState.currentColor,
+            age: 0
+          });
+          if (circumplexState.trail.length > 14) {
+            circumplexState.trail.pop();
+          }
+        }
+
+        for (let i = 0; i < circumplexState.trail.length; i++) {
+          circumplexState.trail[i].age += 1;
+        }
+        circumplexState.trail = circumplexState.trail.filter(pt => pt.age < 16);
+
+        drawCircumplexCanvas();
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function updateLiveCircumplex(v, a, topEmotion) {
+      circumplexState.targetV = Math.max(-0.95, Math.min(0.95, v));
+      circumplexState.targetA = Math.max(-0.95, Math.min(0.95, a));
+      circumplexState.currentEmotion = topEmotion;
+      circumplexState.currentColor = EMOTION_COLORS[topEmotion] || '#F5C76B';
+
+      const quad = getRussellQuadrant(circumplexState.targetV, circumplexState.targetA);
+
+      const elCoords = document.getElementById('circumplexCoords');
+      if (elCoords) {
+        const vSign = circumplexState.targetV >= 0 ? '+' : '';
+        const aSign = circumplexState.targetA >= 0 ? '+' : '';
+        elCoords.innerText = `V: ${vSign}${circumplexState.targetV.toFixed(2)} | A: ${aSign}${circumplexState.targetA.toFixed(2)}`;
+      }
+
+      const elTag = document.getElementById('circumplexQuadrantTag');
+      if (elTag) {
+        elTag.innerText = quad.tag;
+        elTag.style.color = circumplexState.currentColor;
+        elTag.style.borderColor = `${circumplexState.currentColor}50`;
+        elTag.style.background = `${circumplexState.currentColor}15`;
+      }
+
+      startCircumplexLoop();
+    }
+
+    function renderSparkline(canvasId, buffer, isDominant, color) {
+      const cvs = document.getElementById(canvasId);
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      if (!ctx) return;
+
+      const w = cvs.width;
+      const h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      if (!buffer || buffer.length < 2) return;
+
+      const step = w / (buffer.length - 1);
+      const points = buffer.map((val, idx) => ({
+        x: idx * step,
+        y: h - Math.max(1, Math.min(h - 2, val * (h - 3) + 2))
+      }));
+
+      // Draw Gradient Area Fill under Sparkline
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, h);
+      ctx.lineTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.lineTo(points[points.length - 1].x, h);
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      if (isDominant) {
+        grad.addColorStop(0, `${color}40`);
+        grad.addColorStop(1, `${color}00`);
+      } else {
+        grad.addColorStop(0, 'rgba(148, 163, 184, 0.15)');
+        grad.addColorStop(1, 'rgba(148, 163, 184, 0.00)');
+      }
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Draw Sparkline Path
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.strokeStyle = isDominant ? color : 'rgba(148, 163, 184, 0.45)';
+      ctx.lineWidth = isDominant ? 1.5 : 1.0;
+      ctx.shadowColor = isDominant ? color : 'transparent';
+      ctx.shadowBlur = isDominant ? 6 : 0;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Draw Current Endpoint Dot
+      const last = points[points.length - 1];
+      ctx.fillStyle = isDominant ? '#ffffff' : 'rgba(148, 163, 184, 0.8)';
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, isDominant ? 2.2 : 1.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function updateLiveSparklines(fusedProbs, topEmotion) {
+      const emotions = ['Happy', 'Surprise', 'Sad', 'Neutral', 'Angry'];
+      emotions.forEach(e => {
+        const val = fusedProbs[e] !== undefined ? fusedProbs[e] : 0;
+        const buf = sparklineBuffers[e];
+        if (buf) {
+          buf.shift();
+          buf.push(val);
+          const isDom = (e === topEmotion);
+          const col = EMOTION_COLORS[e] || '#38BDF8';
+          renderSparkline(`spark${e}`, buf, isDom, col);
+        }
+      });
+    }
+
     // Multimodal 70/30 Decision Fusion
     function updateMultimodalFusion() {
       if (!state.latestFaceProbs || !state.latestSpeechProbs) return;
@@ -6737,6 +7177,30 @@
           }
         }
       });
+
+      // Update Real-Time Sparklines
+      updateLiveSparklines(fusedProbs, topEmotion);
+
+      // Calculate Target Valence & Arousal for Live 2D Russell Circumplex
+      let targetV = 0, targetA = 0;
+      emotions.forEach(e => {
+        const p = fusedProbs[e] || 0;
+        const coord = RUSSELL_EMOTION_COORDS[e] || { v: 0, a: 0 };
+        targetV += p * coord.v;
+        targetA += p * coord.a;
+      });
+
+      // If FACS telemetry valence/arousal is present, fuse 60% prob coords + 40% FACS
+      if (window.labState && window.labState.visualMetrics && window.labState.visualMetrics.valence !== undefined) {
+        const fV = parseFloat(window.labState.visualMetrics.valence);
+        const fA = parseFloat(window.labState.visualMetrics.arousal || 0);
+        if (!isNaN(fV) && !isNaN(fA)) {
+          targetV = targetV * 0.60 + fV * 0.40;
+          targetA = targetA * 0.60 + fA * 0.40;
+        }
+      }
+
+      updateLiveCircumplex(targetV, targetA, topEmotion);
     }
 
     // Preset Scenario Loader
