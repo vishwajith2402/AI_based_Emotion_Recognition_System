@@ -23,14 +23,14 @@ from torch.utils.data import Dataset, DataLoader
 
 from src.config import (
     SPEECH_TRAIN_DIR, SPEECH_VAL_DIR, SPEECH_MODEL_PATH,
-    EMOTION_CLASSES, CLASS_TO_IDX, NUM_CLASSES, N_MFCC, REPORTS_DIR
+    EMOTION_CLASSES, CLASS_TO_IDX, NUM_CLASSES, N_MFCC, SPEECH_FEATURE_DIM, REPORTS_DIR
 )
 from src.speech_preprocessing import SpeechPreprocessor
 from src.speech_model import SpeechBiLSTM
 
 
 class SpeechDataset(Dataset):
-    """PyTorch Dataset for labeled speech audio files with MFCC extraction and SpecAugment."""
+    """PyTorch Dataset for labeled speech audio files with Shivam Burnwal Multi-Feature extraction (82-d) and SpecAugment."""
 
     def __init__(self, root_dir: Path, augment: bool = False):
         self.root_dir = Path(root_dir)
@@ -50,17 +50,17 @@ class SpeechDataset(Dataset):
                         self.samples.append((file_path, cls_idx))
                 break
 
-        print(f"Loading and extracting MFCCs for {len(self.samples)} audio files from {self.root_dir}...", flush=True)
+        print(f"Loading and extracting 82-d acoustic features (MFCC+ZCR+RMS+Mel) for {len(self.samples)} audio files from {self.root_dir}...", flush=True)
         self.cached_data = []
         for file_path, cls_idx in self.samples:
             try:
                 audio = self.preprocessor.load_audio_file(str(file_path))
-                mfcc = self.preprocessor.extract_mfcc(audio)  # Shape (100, 40)
-                tensor = torch.from_numpy(mfcc).float()
+                feats = self.preprocessor.extract_features(audio)  # Shape (100, 82)
+                tensor = torch.from_numpy(feats).float()
                 self.cached_data.append((tensor, cls_idx))
             except Exception:
                 pass
-        print(f"Extracted and cached {len(self.cached_data)} MFCC feature tensors in RAM.", flush=True)
+        print(f"Extracted and cached {len(self.cached_data)} acoustic feature tensors (82-d) in RAM.", flush=True)
 
     def __len__(self):
         return len(self.cached_data)
@@ -105,26 +105,29 @@ def train_speech_model(epochs: int = 15, batch_size: int = 32, lr: float = 5e-4,
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    model = SpeechBiLSTM(input_dim=N_MFCC, num_classes=NUM_CLASSES).to(device)
+    model = SpeechBiLSTM(input_dim=SPEECH_FEATURE_DIM, num_classes=NUM_CLASSES).to(device)
 
     best_val_acc = 0.0
     if resume and SPEECH_MODEL_PATH.exists():
         try:
             sd = torch.load(SPEECH_MODEL_PATH, map_location=device, weights_only=True)
-            model.load_state_dict(sd)
-            print(f"[Checkpoint] Resumed prior weights from {SPEECH_MODEL_PATH} for fine-tuning.", flush=True)
+            if "fc_in.weight" in sd and sd["fc_in.weight"].size(1) == SPEECH_FEATURE_DIM:
+                model.load_state_dict(sd)
+                print(f"[Checkpoint] Resumed prior 82-d weights from {SPEECH_MODEL_PATH} for fine-tuning.", flush=True)
 
-            model.eval()
-            init_correct, init_total = 0, 0
-            with torch.no_grad():
-                for inputs, targets in val_loader:
-                    inputs, targets = inputs.to(device), targets.to(device)
-                    outputs = model(inputs)
-                    _, preds = torch.max(outputs, 1)
-                    init_correct += (preds == targets).sum().item()
-                    init_total += targets.size(0)
-            best_val_acc = (init_correct / init_total) * 100.0
-            print(f"[Baseline] Prior checkpoint Val Accuracy: {best_val_acc:.2f}%", flush=True)
+                model.eval()
+                init_correct, init_total = 0, 0
+                with torch.no_grad():
+                    for inputs, targets in val_loader:
+                        inputs, targets = inputs.to(device), targets.to(device)
+                        outputs = model(inputs)
+                        _, preds = torch.max(outputs, 1)
+                        init_correct += (preds == targets).sum().item()
+                        init_total += targets.size(0)
+                best_val_acc = (init_correct / init_total) * 100.0
+                print(f"[Baseline] Prior checkpoint Val Accuracy: {best_val_acc:.2f}%", flush=True)
+            else:
+                print(f"[Notice] Prior checkpoint was {sd.get('fc_in.weight', torch.empty(0, 40)).size(1)}-d. Initializing fresh 82-d Multi-Feature BiLSTM.", flush=True)
         except Exception as e:
             print(f"[Warning] Could not load checkpoint ({e}), initializing fresh.", flush=True)
 

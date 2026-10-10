@@ -27,7 +27,7 @@ from src.config import (
     EMOTION_CLASSES, CLASS_TO_IDX, NUM_CLASSES, REPORTS_DIR
 )
 from src.face_preprocessing import FacePreprocessor
-from src.face_model import FacialCNN
+from src.face_model import FacialCNN, VGGFERNetwork
 
 
 class FacialDataset(Dataset):
@@ -106,11 +106,11 @@ class FacialDataset(Dataset):
         return tensor, torch.tensor(label, dtype=torch.long)
 
 
-def train_facial_model(epochs: int = 10, batch_size: int = 128, lr: float = 3e-4, resume: bool = True):
-    """Executes high-precision facial CNN training and checkpointing."""
+def train_facial_model(epochs: int = 10, batch_size: int = 128, lr: float = 3e-4, resume: bool = True, arch: str = "vgg"):
+    """Executes high-precision facial CNN / VGG-FER training and checkpointing."""
     torch.set_num_threads(os.cpu_count() or 8)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"\n[Training] Initializing Facial CNN on device: {device} (threads: {torch.get_num_threads()})", flush=True)
+    print(f"\n[Training] Initializing Facial {arch.upper()} on device: {device} (threads: {torch.get_num_threads()})", flush=True)
 
     # Datasets and Loaders
     train_dataset = FacialDataset(FACIAL_TRAIN_DIR, augment=True)
@@ -124,8 +124,11 @@ def train_facial_model(epochs: int = 10, batch_size: int = 128, lr: float = 3e-4
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    # Initialize Model
-    model = FacialCNN(num_classes=NUM_CLASSES).to(device)
+    # Initialize Model: VGG-FER Deep Backbone or Baseline FacialCNN
+    if arch.lower() == "vgg":
+        model = VGGFERNetwork(num_classes=NUM_CLASSES).to(device)
+    else:
+        model = FacialCNN(num_classes=NUM_CLASSES).to(device)
 
     best_val_acc = 0.0
     if resume and FACE_MODEL_PATH.exists():
@@ -237,12 +240,13 @@ def train_facial_model(epochs: int = 10, batch_size: int = 128, lr: float = 3e-4
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train Facial CNN Emotion Model")
+    parser = argparse.ArgumentParser(description="Train Facial CNN / VGG-FER Emotion Model")
     parser.add_argument("--epochs", type=int, default=10, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
     parser.add_argument("--lr", type=float, default=3e-4, help="Learning rate")
+    parser.add_argument("--arch", type=str, default="vgg", choices=["vgg", "cnn"], help="Architecture: vgg (VGG-FER) or cnn")
     parser.add_argument("--no-resume", action="store_true", help="Do not resume prior weights")
     args = parser.parse_args()
 
-    train_facial_model(epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, resume=not args.no_resume)
+    train_facial_model(epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, resume=not args.no_resume, arch=args.arch)
 

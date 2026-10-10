@@ -8,29 +8,34 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from pathlib import Path
-from typing import Dict, Tuple
-from src.config import N_MFCC, NUM_CLASSES, EMOTION_CLASSES, SPEECH_MODEL_PATH
+from src.config import N_MFCC, SPEECH_FEATURE_DIM, NUM_CLASSES, EMOTION_CLASSES, SPEECH_MODEL_PATH
 
 
 class SpeechBiLSTM(nn.Module):
     """
     Bidirectional LSTM Network for Speech Emotion Recognition.
-    Processes sequential MFCC features of shape (B, T, 40).
+    Processes sequential acoustic features of shape (B, T, 82) or (B, T, 40).
+    Incorporates MFCCs, Zero Crossing Rate, RMS energy, and Mel Spectrogram filterbanks
+    from Shivam Burnwal's Speech Emotion Recognition pipeline.
     """
 
     def __init__(
         self,
-        input_dim: int = N_MFCC,
+        input_dim: int = SPEECH_FEATURE_DIM,
         hidden_dim: int = 64,
         num_layers: int = 2,
         num_classes: int = NUM_CLASSES,
         dropout: float = 0.25
     ):
         super(SpeechBiLSTM, self).__init__()
+        self.input_dim = input_dim
         
-        # Projection layer
+        # Projection layer: accommodates 82 multi-feature dimensions (with fallback for legacy 40)
         self.fc_in = nn.Linear(input_dim, 64)
         self.bn_in = nn.BatchNorm1d(64)
+        
+        # Optional adapter for legacy 40-dim MFCC tensors
+        self.legacy_adapter = nn.Linear(N_MFCC, input_dim) if input_dim != N_MFCC else None
         
         # BiLSTM Layers
         self.bilstm = nn.LSTM(
@@ -54,10 +59,23 @@ class SpeechBiLSTM(nn.Module):
     def forward_features(self, x: torch.Tensor) -> torch.Tensor:
         """
         Extracts 128-dimensional pooled acoustic embedding.
-        x shape: (Batch, Time_Steps, Features)
+        x shape: (Batch, Time_Steps, Features) where Features is 82 or 40.
         """
         B, T, F_dim = x.size()
         
+        # Adapt if tensor dimension differs from layer input_dim
+        if F_dim != self.input_dim:
+            if F_dim == N_MFCC and self.legacy_adapter is not None:
+                x = self.legacy_adapter(x)
+                F_dim = self.input_dim
+            elif F_dim > self.input_dim:
+                x = x[:, :, :self.input_dim]
+                F_dim = self.input_dim
+            elif F_dim < self.input_dim:
+                pad = torch.zeros(B, T, self.input_dim - F_dim, device=x.device, dtype=x.dtype)
+                x = torch.cat([x, pad], dim=-1)
+                F_dim = self.input_dim
+
         # Project frame features: (B * T, F_dim) -> (B * T, 64)
         x_flat = x.view(-1, F_dim)
         x_proj = F.relu(self.bn_in(self.fc_in(x_flat)))
@@ -88,7 +106,7 @@ class SpeechEmotionModel:
 
     def __init__(self, model_path: str = None, device: str = None):
         self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
-        self.model = SpeechBiLSTM().to(self.device)
+        self.model = SpeechBiLSTM(input_dim=SPEECH_FEATURE_DIM).to(self.device)
         self.model_path = Path(model_path) if model_path else SPEECH_MODEL_PATH
         self.is_loaded = False
 
@@ -98,13 +116,18 @@ class SpeechEmotionModel:
             print(f"[Info] Speech weights not found at {self.model_path}. Model initialized with default weights.")
 
     def load_weights(self, path: Path):
-        """Loads speech model state dictionary safely."""
+        """Loads speech model state dictionary safely with shape flexibility."""
         try:
             state_dict = torch.load(path, map_location=self.device, weights_only=True)
+            # Detect whether checkpoint was trained with 40-dim or 82-dim input
+            if "fc_in.weight" in state_dict:
+                ckpt_input_dim = state_dict["fc_in.weight"].size(1)
+                if ckpt_input_dim != self.model.input_dim:
+                    self.model = SpeechBiLSTM(input_dim=ckpt_input_dim).to(self.device)
             self.model.load_state_dict(state_dict)
             self.model.eval()
             self.is_loaded = True
-            print(f"[Speech Model] Successfully loaded weights from {path}")
+            print(f"[Speech Model] Successfully loaded weights ({self.model.input_dim}-d features) from {path}")
         except Exception as e:
             print(f"[Error] Failed to load speech model weights: {e}")
 

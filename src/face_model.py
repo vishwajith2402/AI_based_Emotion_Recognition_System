@@ -77,12 +77,103 @@ class FacialCNN(nn.Module):
         return logits
 
 
-class FacialEmotionModel:
-    """Wrapper class managing loading, inference, and predictions for Facial CNN."""
+class VGGFERNetwork(nn.Module):
+    """
+    VGG-inspired Deep Convolutional Network for FER (Enes Ozturk VGG19/FER-2013 adaptation).
+    Features 4 convolutional blocks with double 3x3 convs, batch normalization,
+    max-pooling and dual dropout for high-capacity facial feature representations.
+    Input: (B, 1, 48, 48) -> Output: (B, num_classes)
+    """
 
-    def __init__(self, model_path: str = None, device: str = None):
+    def __init__(self, num_classes: int = NUM_CLASSES):
+        super(VGGFERNetwork, self).__init__()
+
+        # VGG Block 1: 48x48 -> 24x24 (32 channels)
+        self.conv1_1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+        self.bn1_1 = nn.BatchNorm2d(32)
+        self.conv1_2 = nn.Conv2d(32, 32, kernel_size=3, padding=1)
+        self.bn1_2 = nn.BatchNorm2d(32)
+        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.drop1 = nn.Dropout2d(0.20)
+
+        # VGG Block 2: 24x24 -> 12x12 (64 channels)
+        self.conv2_1 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.bn2_1 = nn.BatchNorm2d(64)
+        self.conv2_2 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        self.bn2_2 = nn.BatchNorm2d(64)
+        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.drop2 = nn.Dropout2d(0.25)
+
+        # VGG Block 3: 12x12 -> 6x6 (128 channels)
+        self.conv3_1 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.bn3_1 = nn.BatchNorm2d(128)
+        self.conv3_2 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
+        self.bn3_2 = nn.BatchNorm2d(128)
+        self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.drop3 = nn.Dropout2d(0.30)
+
+        # VGG Block 4: 6x6 -> 3x3 (256 channels)
+        self.conv4_1 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
+        self.bn4_1 = nn.BatchNorm2d(256)
+        self.conv4_2 = nn.Conv2d(256, 256, kernel_size=3, padding=1)
+        self.bn4_2 = nn.BatchNorm2d(256)
+        self.pool4 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.drop4 = nn.Dropout2d(0.35)
+
+        # VGG Dense Classification Head: 256 * 3 * 3 = 2304 -> 512 -> 256 -> num_classes
+        self.fc1 = nn.Linear(256 * 3 * 3, 512)
+        self.bn_fc1 = nn.BatchNorm1d(512)
+        self.drop_fc1 = nn.Dropout(0.50)
+
+        self.fc2 = nn.Linear(512, 256)
+        self.bn_fc2 = nn.BatchNorm1d(256)
+        self.drop_fc2 = nn.Dropout(0.40)
+
+        self.fc_out = nn.Linear(256, num_classes)
+
+    def forward_features(self, x: torch.Tensor) -> torch.Tensor:
+        """Extracts 256-dimensional penultimate representation."""
+        x = F.relu(self.bn1_1(self.conv1_1(x)))
+        x = F.relu(self.bn1_2(self.conv1_2(x)))
+        x = self.drop1(self.pool1(x))
+
+        x = F.relu(self.bn2_1(self.conv2_1(x)))
+        x = F.relu(self.bn2_2(self.conv2_2(x)))
+        x = self.drop2(self.pool2(x))
+
+        x = F.relu(self.bn3_1(self.conv3_1(x)))
+        x = F.relu(self.bn3_2(self.conv3_2(x)))
+        x = self.drop3(self.pool3(x))
+
+        x = F.relu(self.bn4_1(self.conv4_1(x)))
+        x = F.relu(self.bn4_2(self.conv4_2(x)))
+        x = self.drop4(self.pool4(x))
+
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.bn_fc1(self.fc1(x)))
+        x = self.drop_fc1(x)
+        features = F.relu(self.bn_fc2(self.fc2(x)))
+        return features
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Standard forward pass returning raw logits."""
+        features = self.forward_features(x)
+        features_dropped = self.drop_fc2(features)
+        logits = self.fc_out(features_dropped)
+        return logits
+
+
+class FacialEmotionModel:
+    """Wrapper class managing loading, inference, and predictions for Facial CNN / VGG-FER."""
+
+    def __init__(self, model_path: str = None, device: str = None, model_type: str = "vgg"):
         self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
-        self.model = FacialCNN(num_classes=NUM_CLASSES).to(self.device)
+        self.model_type = model_type
+        if model_type == "vgg":
+            self.model = VGGFERNetwork(num_classes=NUM_CLASSES).to(self.device)
+        else:
+            self.model = FacialCNN(num_classes=NUM_CLASSES).to(self.device)
+
         self.model_path = Path(model_path) if model_path else FACE_MODEL_PATH
         self.is_loaded = False
 
@@ -92,13 +183,23 @@ class FacialEmotionModel:
             print(f"[Info] Facial weights not found at {self.model_path}. Model initialized with default weights.")
 
     def load_weights(self, path: Path):
-        """Loads model state dictionary safely."""
+        """Loads model state dictionary safely with architecture auto-detection."""
         try:
             state_dict = torch.load(path, map_location=self.device, weights_only=True)
+            # Detect architecture: VGGFERNetwork has conv4_1.weight
+            if "conv4_1.weight" in state_dict:
+                if not isinstance(self.model, VGGFERNetwork):
+                    self.model = VGGFERNetwork(num_classes=NUM_CLASSES).to(self.device)
+                self.model_type = "vgg"
+            else:
+                if not isinstance(self.model, FacialCNN):
+                    self.model = FacialCNN(num_classes=NUM_CLASSES).to(self.device)
+                self.model_type = "cnn"
+
             self.model.load_state_dict(state_dict)
             self.model.eval()
             self.is_loaded = True
-            print(f"[Facial Model] Successfully loaded weights from {path}")
+            print(f"[Facial Model] Successfully loaded {self.model_type.upper()} weights from {path}")
         except Exception as e:
             print(f"[Error] Failed to load facial model weights: {e}")
 

@@ -111,19 +111,84 @@ class SpeechPreprocessor:
 
         return mfcc_t.astype(np.float32)
 
-    def to_tensor(self, mfcc_features: np.ndarray) -> torch.Tensor:
-        """Converts (time_steps, n_mfcc) array into PyTorch batch tensor: (1, time_steps, n_mfcc)."""
-        tensor = torch.from_numpy(mfcc_features).unsqueeze(0)  # (1, T, F)
+    def extract_features(self, audio: np.ndarray) -> np.ndarray:
+        """
+        Extracts comprehensive multi-feature acoustic representation based on
+        Shivam Burnwal's Speech Emotion Recognition pipeline:
+        - MFCC (40 coefficients)
+        - Zero Crossing Rate (ZCR) (1 dimension)
+        - Root Mean Square Energy (RMS) (1 dimension)
+        - Mel Spectrogram (40 mel filterbanks)
+        Total feature dimensionality: 82 features per time frame.
+        Returns array of shape: (max_frames, 82) e.g., (100, 82).
+        """
+        normalized_audio = self.normalize_and_trim(audio)
+
+        # 1. MFCC (40 dimensions)
+        mfcc = librosa.feature.mfcc(
+            y=normalized_audio,
+            sr=self.sample_rate,
+            n_mfcc=self.n_mfcc,
+            n_fft=N_FFT,
+            hop_length=HOP_LENGTH
+        )
+        mfcc_m = np.mean(mfcc, axis=1, keepdims=True)
+        mfcc_s = np.std(mfcc, axis=1, keepdims=True) + 1e-6
+        mfcc_norm = (mfcc - mfcc_m) / mfcc_s
+
+        # 2. Zero Crossing Rate (1 dimension)
+        zcr = librosa.feature.zero_crossing_rate(y=normalized_audio, hop_length=HOP_LENGTH)
+        zcr_m = np.mean(zcr, axis=1, keepdims=True)
+        zcr_s = np.std(zcr, axis=1, keepdims=True) + 1e-6
+        zcr_norm = (zcr - zcr_m) / zcr_s
+
+        # 3. Root Mean Square Energy (1 dimension)
+        rms = librosa.feature.rms(y=normalized_audio, hop_length=HOP_LENGTH)
+        rms_m = np.mean(rms, axis=1, keepdims=True)
+        rms_s = np.std(rms, axis=1, keepdims=True) + 1e-6
+        rms_norm = (rms - rms_m) / rms_s
+
+        # 4. Mel Spectrogram (40 dimensions)
+        mel = librosa.feature.melspectrogram(
+            y=normalized_audio,
+            sr=self.sample_rate,
+            n_mels=self.n_mfcc,
+            n_fft=N_FFT,
+            hop_length=HOP_LENGTH
+        )
+        mel_db = librosa.power_to_db(mel, ref=np.max)
+        mel_m = np.mean(mel_db, axis=1, keepdims=True)
+        mel_s = np.std(mel_db, axis=1, keepdims=True) + 1e-6
+        mel_norm = (mel_db - mel_m) / mel_s
+
+        # Concatenate along feature axis: (40 + 1 + 1 + 40 = 82, time_steps)
+        combined = np.concatenate([mfcc_norm, zcr_norm, rms_norm, mel_norm], axis=0)
+
+        # Transpose to (time_steps, 82)
+        combined_t = combined.T
+
+        # Pad or truncate to max_frames
+        if combined_t.shape[0] < self.max_frames:
+            pad_len = self.max_frames - combined_t.shape[0]
+            combined_t = np.pad(combined_t, ((0, pad_len), (0, 0)), mode='constant')
+        else:
+            combined_t = combined_t[:self.max_frames, :]
+
+        return combined_t.astype(np.float32)
+
+    def to_tensor(self, features: np.ndarray) -> torch.Tensor:
+        """Converts (time_steps, feature_dim) array into PyTorch batch tensor: (1, time_steps, feature_dim)."""
+        tensor = torch.from_numpy(features).unsqueeze(0)  # (1, T, F)
         return tensor.float()
 
     def process_audio(self, audio_data: np.ndarray):
         """
         Full pipeline for an audio array.
         Returns:
-            tensor: torch.Tensor of shape (1, 100, 40)
+            tensor: torch.Tensor of shape (1, 100, 82)
             silent: bool indicating if audio is below energy threshold
         """
         silent = self.is_silent(audio_data)
-        mfcc = self.extract_mfcc(audio_data)
-        tensor = self.to_tensor(mfcc)
+        features = self.extract_features(audio_data)
+        tensor = self.to_tensor(features)
         return tensor, silent

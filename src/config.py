@@ -51,6 +51,8 @@ FACE_MODEL_PATH = MODELS_DIR / "facial_cnn.pth"
 AUDIO_SAMPLE_RATE = 16000    # 16 kHz standard
 AUDIO_DURATION = 3.0         # 3 seconds fixed buffer window
 N_MFCC = 40                  # 40 Mel-frequency cepstral coefficients
+N_MELS = 40                  # 40 Mel filterbanks (Shivam Burnwal Multi-Feature suite)
+SPEECH_FEATURE_DIM = 82      # 40 MFCC + 1 ZCR + 1 RMS + 40 Mel = 82 acoustic features
 N_FFT = 2048
 HOP_LENGTH = 512
 MAX_AUDIO_FRAMES = 100       # Time frames (3.0 * 16000 / 512 ~ 94, padded to 100)
