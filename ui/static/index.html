@@ -586,9 +586,9 @@
 
     .hud-metrics-overlay {
       position: absolute;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -600,9 +600,9 @@
 
     .hud-top-telemetry-overlay {
       position: absolute;
-      top: 12px;
-      left: 12px;
-      right: 140px; /* leaves breathing room for the top-right flip button */
+      top: 10px;
+      left: 10px;
+      right: 130px; /* leaves breathing room for the floating flip button */
       display: flex;
       align-items: center;
       gap: 6px;
@@ -613,26 +613,30 @@
 
     .hud-chip {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.63rem;
       letter-spacing: 0.5px;
-      background: rgba(7, 10, 15, 0.90);
-      backdrop-filter: blur(8px);
-      padding: 0.25rem 0.6rem;
-      border-radius: 6px;
-      border: 1px solid var(--border-subtle);
+      background: rgba(10, 14, 23, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 0.22rem 0.55rem;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
       color: var(--text-secondary);
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+      line-height: 1.2;
     }
 
     .hud-quality-badge {
-      font-size: 0.58rem;
+      font-size: 0.55rem;
       font-weight: 700;
       padding: 1px 5px;
       border-radius: 3px;
       text-transform: uppercase;
       letter-spacing: 0.4px;
+      line-height: 1.2;
     }
 
     .hud-quality-badge.optimal {
