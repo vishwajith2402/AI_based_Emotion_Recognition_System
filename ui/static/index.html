@@ -592,7 +592,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
       z-index: 10;
+      pointer-events: none;
+    }
+
+    .hud-top-telemetry-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 140px; /* leaves breathing room for the top-right flip button */
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      z-index: 12;
       pointer-events: none;
     }
 
@@ -606,6 +621,36 @@
       border-radius: 6px;
       border: 1px solid var(--border-subtle);
       color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hud-quality-badge {
+      font-size: 0.58rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .hud-quality-badge.optimal {
+      background: rgba(34, 197, 94, 0.20);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.40);
+    }
+
+    .hud-quality-badge.warning {
+      background: rgba(245, 158, 11, 0.20);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.40);
+    }
+
+    .hud-quality-badge.danger {
+      background: rgba(239, 68, 68, 0.20);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.40);
     }
 
     .hud-chip.locked {
@@ -4944,12 +4989,25 @@
               <span class="flip-cam-badge" id="floatingFlipBadge">FRONT CAM</span>
             </button>
 
+            <!-- Upper HUD Overlay: Real-Time Geometric Telemetry (Distance, Angles, Frame Ratio) -->
+            <div class="hud-top-telemetry-overlay" id="camHudTopTelemetry" style="display: none;">
+              <span class="hud-chip" id="hudDistanceChip">
+                <span style="color: var(--cyan); font-weight: 700;">DIST:</span> <span id="hudDistanceVal">-- cm</span> <span id="hudDistanceBadge" class="hud-quality-badge">OPTIMAL</span>
+              </span>
+              <span class="hud-chip" id="hudRatioChip">
+                <span style="color: var(--accent-happy); font-weight: 700;">RATIO:</span> <span id="hudRatioVal">--%</span> <span id="hudRatioBadge" class="hud-quality-badge">GOOD</span>
+              </span>
+              <span class="hud-chip" id="hudAnglesChip">
+                <span style="color: #a78bfa; font-weight: 700;">ANGLES:</span> <span id="hudAnglesVal">P: 0° Y: 0° R: 0°</span>
+              </span>
+            </div>
+
             <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
               <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
               <span class="hud-chip" id="hudCalibrationChip">AUTO-CALIBRATING...</span>
               <span class="hud-chip" id="hudEngineChip">ENGINE: AFFECTNET 14-AU</span>
               <span class="hud-chip" id="hudDemographicChip" style="background: rgba(34, 197, 94, 0.18); border-color: rgba(34, 197, 94, 0.45); color: #4ade80;">🇮🇳 INDIC CALIBRATED</span>
-              <span class="hud-chip" id="hudCoords">PITCH: 0° ROLL: 0°</span>
+              <span class="hud-chip" id="hudPoseGuidance" style="color: var(--cyan);">POSE: READY</span>
             </div>
           </div>
 
@@ -6258,6 +6316,8 @@
           if (tip) tip.style.display = 'none';
           const hud = document.getElementById('camHudOverlay');
           if (hud) hud.style.display = 'flex';
+          const hudTop = document.getElementById('camHudTopTelemetry');
+          if (hudTop) hudTop.style.display = 'flex';
           
           // Detect available cameras now that permission is granted
           detectAvailableCameras();
@@ -6281,6 +6341,8 @@
         if (tip) tip.style.display = 'block';
         const hud = document.getElementById('camHudOverlay');
         if (hud) hud.style.display = 'none';
+        const hudTop = document.getElementById('camHudTopTelemetry');
+        if (hudTop) hudTop.style.display = 'none';
         tracker.smoothedProbs = null;
         tracker.isCalibrating = false;
       }
@@ -6482,13 +6544,25 @@
       } else {
         tracker.isLocked = false;
         const hudStatus = document.getElementById('hudTrackStatus');
-        const hudCoords = document.getElementById('hudCoords');
+        const elDistVal = document.getElementById('hudDistanceVal');
+        const elDistBadge = document.getElementById('hudDistanceBadge');
+        const elRatioVal = document.getElementById('hudRatioVal');
+        const elRatioBadge = document.getElementById('hudRatioBadge');
+        const elAnglesVal = document.getElementById('hudAnglesVal');
+        const elPoseGuidance = document.getElementById('hudPoseGuidance');
+
         if (hudStatus) {
           hudStatus.innerText = '○ SEARCHING FACE...';
           hudStatus.className = 'hud-chip';
         }
-        if (hudCoords) {
-          hudCoords.innerText = 'PITCH: -- ROLL: --';
+        if (elDistVal) elDistVal.innerText = '-- cm';
+        if (elDistBadge) { elDistBadge.innerText = 'SEARCHING'; elDistBadge.className = 'hud-quality-badge warning'; }
+        if (elRatioVal) elRatioVal.innerText = '--%';
+        if (elRatioBadge) { elRatioBadge.innerText = 'SEARCHING'; elRatioBadge.className = 'hud-quality-badge warning'; }
+        if (elAnglesVal) elAnglesVal.innerText = 'P: -- Y: -- R: --';
+        if (elPoseGuidance) {
+          elPoseGuidance.innerText = 'POSE: POSITION FACE IN FRAME';
+          elPoseGuidance.style.color = '#fbbf24';
         }
       }
     }
@@ -6970,10 +7044,75 @@
       if (elForehead) elForehead.innerText = browText;
       if (elSummary) elSummary.innerText = `${liveEmotion} (AffectNet AU: Active)`;
 
-      // Live HUD Telemetry
-      const hudCoords = document.getElementById('hudCoords');
-      if (hudCoords) {
-        hudCoords.innerText = `PITCH: ${Math.round(tracker.headPose.pitch)}° ROLL: ${Math.round(tracker.headPose.roll)}°`;
+      // Live HUD Telemetry & Distance / Angle / Ratio Guidance
+      const elDistVal = document.getElementById('hudDistanceVal');
+      const elDistBadge = document.getElementById('hudDistanceBadge');
+      const elRatioVal = document.getElementById('hudRatioVal');
+      const elRatioBadge = document.getElementById('hudRatioBadge');
+      const elAnglesVal = document.getElementById('hudAnglesVal');
+      const elPoseGuidance = document.getElementById('hudPoseGuidance');
+
+      // 1. Estimate Distance via Inter-Ocular & Face-Height Pin-Hole Model
+      // Average human adult outer eye distance is ~6.3 cm; nasion-to-chin is ~11.5 cm.
+      // Mediapipe normalized dEye ~ 0.22 at 50 cm on typical 75-80 deg FOV webcam.
+      const dEyeNorm = dist(lm[33], lm[263]);
+      const estDistanceCm = Math.max(20, Math.min(180, Math.round(11.2 / Math.max(0.06, dEyeNorm))));
+
+      if (elDistVal) elDistVal.innerText = `${estDistanceCm} cm`;
+      if (elDistBadge) {
+        if (estDistanceCm >= 45 && estDistanceCm <= 75) {
+          elDistBadge.innerText = 'OPTIMAL';
+          elDistBadge.className = 'hud-quality-badge optimal';
+        } else if (estDistanceCm < 45) {
+          elDistBadge.innerText = 'TOO CLOSE (<45)';
+          elDistBadge.className = 'hud-quality-badge warning';
+        } else {
+          elDistBadge.innerText = 'TOO FAR (>75)';
+          elDistBadge.className = 'hud-quality-badge warning';
+        }
+      }
+
+      // 2. Face to Frame Ratio (Percentage of camera frame occupied by face)
+      const frameArea = Math.max(1, faceCanvas.width * faceCanvas.height);
+      const faceArea = Math.max(1, tracker.w * tracker.h);
+      const faceRatioPct = Math.min(99, Math.max(5, Math.round((faceArea / frameArea) * 100)));
+
+      if (elRatioVal) elRatioVal.innerText = `${faceRatioPct}%`;
+      if (elRatioBadge) {
+        if (faceRatioPct >= 20 && faceRatioPct <= 45) {
+          elRatioBadge.innerText = 'GOOD';
+          elRatioBadge.className = 'hud-quality-badge optimal';
+        } else if (faceRatioPct < 20) {
+          elRatioBadge.innerText = 'LOW (<20%)';
+          elRatioBadge.className = 'hud-quality-badge warning';
+        } else {
+          elRatioBadge.innerText = 'HIGH (>45%)';
+          elRatioBadge.className = 'hud-quality-badge warning';
+        }
+      }
+
+      // 3. Angles (Pitch, Yaw, Roll in degrees)
+      const pDeg = Math.round(tracker.headPose.pitch);
+      const yDeg = Math.round(tracker.headPose.yaw);
+      const rDeg = Math.round(tracker.headPose.roll);
+
+      if (elAnglesVal) elAnglesVal.innerText = `P: ${pDeg > 0 ? '+' : ''}${pDeg}° Y: ${yDeg > 0 ? '+' : ''}${yDeg}° R: ${rDeg > 0 ? '+' : ''}${rDeg}°`;
+
+      // 4. Integrated Pose & Calibration Guidance
+      if (elPoseGuidance) {
+        if (Math.abs(pDeg) > 18 || Math.abs(yDeg) > 22 || Math.abs(rDeg) > 20) {
+          elPoseGuidance.innerText = 'POSE: ALIGN HEAD FOR OPTIMAL ACCURACY';
+          elPoseGuidance.style.color = '#fbbf24';
+        } else if (estDistanceCm < 45) {
+          elPoseGuidance.innerText = 'POSE: STEP BACK SLIGHTLY (~50-60cm)';
+          elPoseGuidance.style.color = '#fbbf24';
+        } else if (estDistanceCm > 85) {
+          elPoseGuidance.innerText = 'POSE: MOVE CLOSER (~50-60cm)';
+          elPoseGuidance.style.color = '#fbbf24';
+        } else {
+          elPoseGuidance.innerText = 'POSE: OPTIMAL GEOMETRY ✓';
+          elPoseGuidance.style.color = '#4ade80';
+        }
       }
 
       // 7. Real-Time UI Synchronization
