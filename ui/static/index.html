@@ -6596,17 +6596,17 @@
       },
       weights: {
         Angry: {
-          bias: -0.20,
-          inner_brow_dist: -2.8,
-          brow_height: -2.2,
-          ear_eyes: -1.8,
-          mouth_width: 0.4,
-          mouth_aperture: 0.8,
-          smile_elev: -1.5,
-          grief_slant: -0.8,
-          lip_corner_depress: 0.9,
+          bias: 0.15,
+          inner_brow_dist: -3.8,
+          brow_height: -2.8,
+          ear_eyes: -2.4,
+          mouth_width: 0.2,
+          mouth_aperture: 0.6,
+          smile_elev: -2.5,
+          grief_slant: -0.6,
+          lip_corner_depress: 1.2,
           duchenne_eye_corner: 0.0,
-          lip_stretch: 0.5
+          lip_stretch: 0.8
         },
         Happy: {
           bias: -0.15,
@@ -6622,7 +6622,7 @@
           lip_stretch: 1.8
         },
         Neutral: {
-          bias: 0.20,
+          bias: 0.05,
           smile_elev: -1.6,
           mouth_width: -0.8,
           duchenne_eye_corner: 0.2,
@@ -6693,7 +6693,7 @@
       // Cheek lift / Duchenne (AU6)
       const duchenneEyeCorner = ((lm[61].y - lm[145].y) + (lm[291].y - lm[374].y)) / (2 * dFaceH * cosPitch);
 
-      // Eyebrows
+      // Eyebrows (AU4 Corrugator Brow Furrow & Lowering)
       const rawInnerBrowDist = dist(lm[107], lm[336]) / dEye;
       const leftBrowH = (lm[159].y - lm[105].y) / dFaceH;
       const rightBrowH = (lm[386].y - lm[334].y) / dFaceH;
@@ -6754,11 +6754,12 @@
       if (rawSmileElev > 0.010 && duchenneEyeCorner > 0.35) {
         rawFeatures.smile_elev = Math.max(rawFeatures.smile_elev, 0.018);
       }
-      // 2. Contemplative brow de-biasing: Attentive listening, concentration, or deep engagement
-      //    in Indian facial expressions routinely exhibits moderate inner brow lowering (AU1/AU4)
-      //    WITHOUT lip narrowing or tension. Prevent false 'Angry' misclassification.
-      if (innerBrowDist < 0.35 && mouthWidth < 0.84 && lipCornerDepress < 0.012 && rawSmileElev >= -0.012) {
-        rawFeatures.inner_brow_dist = Math.max(rawFeatures.inner_brow_dist, 0.36);
+      // 2. High-Precision Angry Detection: Active corrugator brow furrowing (innerBrowDist < 0.33 or browHeight < 0.14)
+      //    combined with lowered eye aperture or mouth compression triggers decisive Angry response.
+      //    Only de-bias if user is clearly relaxed with neutral smooth brows.
+      if (innerBrowDist < 0.32 || (browHeight < 0.135 && earEyes < 0.24)) {
+        rawFeatures.inner_brow_dist = Math.min(rawFeatures.inner_brow_dist, 0.27);
+        rawFeatures.brow_height = Math.min(rawFeatures.brow_height, 0.12);
       }
 
       // 5. Compute Z-Scores based on AffectNet statistics
@@ -6918,12 +6919,17 @@
         liveEmotion = topE;
       }
 
+      // Salience check: When subtle anger brow furrow or tension is present, prevent over-damping by Neutral
+      if (liveEmotion === 'Neutral' && effectiveProbs.Angry >= 0.24 && (effectiveProbs.Neutral - effectiveProbs.Angry) < 0.20) {
+        liveEmotion = 'Angry';
+      }
+
       // 5. Adaptive EMA Temporal Smoothing
       if (!tracker.smoothedProbs) {
         tracker.smoothedProbs = { ...effectiveProbs };
       } else {
         const prevDom = tracker.selectedEmotion || 'Neutral';
-        const alpha = (liveEmotion !== prevDom && effectiveProbs[liveEmotion] > 0.55) ? 0.40 : 0.22;
+        const alpha = (liveEmotion !== prevDom && (effectiveProbs[liveEmotion] > 0.45 || liveEmotion === 'Angry')) ? 0.45 : 0.22;
         for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
           tracker.smoothedProbs[e] = alpha * effectiveProbs[e] + (1 - alpha) * tracker.smoothedProbs[e];
         }

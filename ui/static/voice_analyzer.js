@@ -421,11 +421,11 @@ class VoiceAnalyzer {
         }
         // Indian vocal expressiveness: subtle pitch modulation with high harmonic stability reflects warmth/happiness
         if (z.harmonic_stability > 0.15 && z.pitch_variance > 0.25) {
-          logits.Happy += 0.45;
+          logits.Happy += 0.35;
         }
-        // Prevent normal Indian emphatic speech volume from over-triggering anger
-        if (z.loudness_db < 0.25 && logits.Angry !== undefined) {
-          logits.Angry -= 0.40;
+        // Emphatic vs Genuine Anger: Boost anger when BOTH loudness and high spectral brightness or sharp pitch rise occur
+        if (z.loudness_db > 0.40 && (z.spectral_brightness > 0.30 || z.pitch_semitones > 0.50)) {
+          logits.Angry += 0.75;
         }
       }
 

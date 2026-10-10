@@ -280,13 +280,13 @@ class FacialStyleAnalyzer:
         if e_style == "Partially Closed (Drooping)":
             scores["Sad"] += 0.50
 
-        # 3. ANGRY: Forehead shrink/wrinkles + eyes wide/glaring + full open or tense mouth
+        # 3. ANGRY: Forehead shrink/wrinkles + eyes glaring/wide + tense/compressed or open mouth
         if f_style == "Shrunk / Wrinkles (Furrowed)":
-            scores["Angry"] += 0.60
+            scores["Angry"] += 0.85
         if m_style in ["Tense / Compressed", "Full Open"]:
-            scores["Angry"] += 0.45
-        if e_style == "Wide Open" and f_style == "Shrunk / Wrinkles (Furrowed)":
             scores["Angry"] += 0.60
+        if e_style in ["Wide Open", "Partially Closed (Drooping)"] and f_style == "Shrunk / Wrinkles (Furrowed)":
+            scores["Angry"] += 0.70
 
         # 4. SURPRISE: Wide open eyes + full open O-mouth + raised forehead lines
         if m_style == "Full Open":
