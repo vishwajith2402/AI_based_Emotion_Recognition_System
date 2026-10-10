@@ -6674,23 +6674,23 @@
       },
       weights: {
         Angry: {
-          bias: 0.15,
-          inner_brow_dist: -3.8,
+          bias: 0.10,
+          inner_brow_dist: -3.5,
           brow_height: -2.8,
-          ear_eyes: -2.4,
+          ear_eyes: -2.2,
           mouth_width: 0.2,
-          mouth_aperture: 0.6,
+          mouth_aperture: 0.5,
           smile_elev: -2.5,
-          grief_slant: -0.6,
+          grief_slant: -0.8,
           lip_corner_depress: 1.2,
           duchenne_eye_corner: 0.0,
           lip_stretch: 0.8
         },
         Happy: {
-          bias: -0.15,
+          bias: 0.10,
           smile_elev: 3.8,
-          mouth_width: 2.4,
-          duchenne_eye_corner: -2.1,
+          mouth_width: 2.6,
+          duchenne_eye_corner: -2.2,
           ear_eyes: -0.6,
           inner_brow_dist: 0.5,
           brow_height: 0.3,
@@ -6700,8 +6700,8 @@
           lip_stretch: 1.8
         },
         Neutral: {
-          bias: 0.05,
-          smile_elev: -1.6,
+          bias: -0.15,
+          smile_elev: -1.8,
           mouth_width: -0.8,
           duchenne_eye_corner: 0.2,
           inner_brow_dist: 0.8,
@@ -6713,11 +6713,11 @@
           lip_stretch: -0.7
         },
         Sad: {
-          bias: -0.20,
-          grief_slant: 3.2,
-          lip_corner_depress: 3.0,
-          smile_elev: -2.8,
-          ear_eyes: -1.4,
+          bias: 0.10,
+          grief_slant: 3.5,
+          lip_corner_depress: 3.4,
+          smile_elev: -3.0,
+          ear_eyes: -1.6,
           inner_brow_dist: -0.6,
           brow_height: 0.8,
           mouth_aperture: -0.8,
@@ -6726,12 +6726,12 @@
           lip_stretch: -0.9
         },
         Surprise: {
-          bias: -0.20,
-          mouth_aperture: 3.9,
-          brow_height: 3.1,
-          ear_eyes: 2.8,
-          inner_brow_dist: 1.2,
-          smile_elev: 0.4,
+          bias: 0.10,
+          mouth_aperture: 3.8,
+          brow_height: 3.4,
+          ear_eyes: 3.0,
+          inner_brow_dist: 1.5,
+          smile_elev: 0.2,
           mouth_width: -0.5,
           grief_slant: -0.5,
           lip_corner_depress: -1.5,
@@ -6826,18 +6826,26 @@
         lip_stretch: lipStretch
       };
 
-      // 4b. Indian Demographic & Morphology Calibration (South Asian FACS Fine-Tuning)
-      // 1. Subtle smile sensitivity: South Asian conversational smiles frequently register
-      //    moderate cheek lift (AU6) and subtle zygomatic elevation (AU12) without wide lip stretch.
-      if (rawSmileElev > 0.010 && duchenneEyeCorner > 0.35) {
-        rawFeatures.smile_elev = Math.max(rawFeatures.smile_elev, 0.018);
+      // 4b. Multi-Expression FACS Action Unit Calibration (Equally Sensitive across Happy, Sad, Angry, Surprise)
+      // 1. HAPPY (AU12 Zygomatic Major + AU6 Duchenne Cheek Lift)
+      if (rawSmileElev > 0.008 || (duchenneEyeCorner > 0.38 && rawMouthWidth > 0.80)) {
+        rawFeatures.smile_elev = Math.max(rawFeatures.smile_elev, 0.022);
       }
-      // 2. High-Precision Angry Detection: Active corrugator brow furrowing (innerBrowDist < 0.33 or browHeight < 0.14)
-      //    combined with lowered eye aperture or mouth compression triggers decisive Angry response.
-      //    Only de-bias if user is clearly relaxed with neutral smooth brows.
+      // 2. SURPRISE (AU26 Jaw Drop + AU1/AU2 Frontalis Brow Elevation + AU5 Eye Widen)
+      if (rawMouthAperture > 0.12 || (rawBrowH > 0.185 && avgEAR > 0.26)) {
+        rawFeatures.mouth_aperture = Math.max(rawFeatures.mouth_aperture, 0.14);
+        rawFeatures.brow_height = Math.max(rawFeatures.brow_height, 0.20);
+        rawFeatures.ear_eyes = Math.max(rawFeatures.ear_eyes, 0.28);
+      }
+      // 3. ANGRY (AU4 Corrugator Brow Furrow + Lowered Brow Height + Eye Tightening)
       if (innerBrowDist < 0.32 || (browHeight < 0.135 && earEyes < 0.24)) {
         rawFeatures.inner_brow_dist = Math.min(rawFeatures.inner_brow_dist, 0.27);
         rawFeatures.brow_height = Math.min(rawFeatures.brow_height, 0.12);
+      }
+      // 4. SAD (AU15 Depressor Anguli Oris + AU1 Inner Brow Lift Grief Slant)
+      if (rawLipCornerDepress > 0.008 || rawGriefSlant > 0.018) {
+        rawFeatures.lip_corner_depress = Math.max(rawFeatures.lip_corner_depress, 0.028);
+        rawFeatures.grief_slant = Math.max(rawFeatures.grief_slant, 0.025);
       }
 
       // 5. Compute Z-Scores based on AffectNet statistics
@@ -6997,17 +7005,27 @@
         liveEmotion = topE;
       }
 
-      // Salience check: When subtle anger brow furrow or tension is present, prevent over-damping by Neutral
-      if (liveEmotion === 'Neutral' && effectiveProbs.Angry >= 0.24 && (effectiveProbs.Neutral - effectiveProbs.Angry) < 0.20) {
-        liveEmotion = 'Angry';
+      // Salience check: When genuine expression cues appear for Happy, Sad, Angry, or Surprise,
+      // prevent over-damping by an indifferent Neutral baseline.
+      if (liveEmotion === 'Neutral') {
+        const nonNeutral = {
+          Happy: effectiveProbs.Happy || 0,
+          Sad: effectiveProbs.Sad || 0,
+          Angry: effectiveProbs.Angry || 0,
+          Surprise: effectiveProbs.Surprise || 0
+        };
+        const bestEmotion = Object.keys(nonNeutral).reduce((a, b) => nonNeutral[a] > nonNeutral[b] ? a : b);
+        if (nonNeutral[bestEmotion] >= 0.22 && (effectiveProbs.Neutral - nonNeutral[bestEmotion]) < 0.20) {
+          liveEmotion = bestEmotion;
+        }
       }
 
-      // 5. Adaptive EMA Temporal Smoothing
+      // 5. Adaptive EMA Temporal Smoothing (Responsive transition for any genuine facial change)
       if (!tracker.smoothedProbs) {
         tracker.smoothedProbs = { ...effectiveProbs };
       } else {
         const prevDom = tracker.selectedEmotion || 'Neutral';
-        const alpha = (liveEmotion !== prevDom && (effectiveProbs[liveEmotion] > 0.45 || liveEmotion === 'Angry')) ? 0.45 : 0.22;
+        const alpha = (liveEmotion !== prevDom && (effectiveProbs[liveEmotion] > 0.40 || liveEmotion !== 'Neutral')) ? 0.45 : 0.22;
         for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
           tracker.smoothedProbs[e] = alpha * effectiveProbs[e] + (1 - alpha) * tracker.smoothedProbs[e];
         }
