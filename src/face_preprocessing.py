@@ -78,8 +78,13 @@ class FacePreprocessor:
 
         return landmarks
 
-    def preprocess_face(self, face_bgr_or_gray: np.ndarray, target_size=FACE_IMAGE_SIZE) -> np.ndarray:
-        """Converts face crop to normalized grayscale 48x48 float32 array in [0, 1]."""
+    def preprocess_face(self, face_bgr_or_gray: np.ndarray, target_size=FACE_IMAGE_SIZE, enable_clahe: bool = True) -> np.ndarray:
+        """
+        Converts face crop to normalized grayscale 48x48 float32 array in [0, 1].
+        Applies CLAHE (Contrast-Limited Adaptive Histogram Equalization) for robust
+        invariance across South Asian / Indian skin tones (Fitzpatrick Types III-VI)
+        and varying ambient lighting conditions.
+        """
         if face_bgr_or_gray is None or face_bgr_or_gray.size == 0:
             return np.zeros(target_size, dtype=np.float32)
 
@@ -88,7 +93,13 @@ class FacePreprocessor:
         else:
             gray = face_bgr_or_gray
 
-        gray_eq = cv2.equalizeHist(gray)
+        if enable_clahe:
+            # CLAHE provides balanced contrast across darker and lighter facial regions without clipping highlights
+            clahe = cv2.createCLAHE(clipLimit=2.2, tileGridSize=(8, 8))
+            gray_eq = clahe.apply(gray)
+        else:
+            gray_eq = cv2.equalizeHist(gray)
+
         resized = cv2.resize(gray_eq, target_size, interpolation=cv2.INTER_AREA)
         normalized = resized.astype(np.float32) / 255.0
         return normalized

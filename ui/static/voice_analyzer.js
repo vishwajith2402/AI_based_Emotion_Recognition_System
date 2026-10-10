@@ -25,7 +25,7 @@ class VoiceAnalyzer {
       emaAlpha: 0.20,
       numBars: 64,
       simulationMode: false,
-      sttLanguage: 'en-US',
+      sttLanguage: 'en-IN',
       ...options
     };
 
@@ -412,10 +412,27 @@ class VoiceAnalyzer {
         logits[em] = logit;
       }
 
-      // Lexical sentiment reinforcement from Web Speech STT (+1.8 logit boost)
+      // 🇮🇳 Indic & Indian English Acoustic Prosody Calibration
+      const isIndicLang = /^(en-IN|hi-IN|ta-IN|te-IN|kn-IN|ml-IN|mr-IN|bn-IN)$/i.test(this.options.sttLanguage || 'en-IN');
+      if (isIndicLang) {
+        // Compensate for Indian syllable-timed terminal rising pitch (prevents false surprise on declarative sentences)
+        if (logits.Surprise !== undefined) {
+          logits.Surprise -= 0.55;
+        }
+        // Indian vocal expressiveness: subtle pitch modulation with high harmonic stability reflects warmth/happiness
+        if (z.harmonic_stability > 0.15 && z.pitch_variance > 0.25) {
+          logits.Happy += 0.45;
+        }
+        // Prevent normal Indian emphatic speech volume from over-triggering anger
+        if (z.loudness_db < 0.25 && logits.Angry !== undefined) {
+          logits.Angry -= 0.40;
+        }
+      }
+
+      // Lexical sentiment reinforcement from Web Speech STT (+2.0 logit boost)
       if (this.lexicalSentiment && this.lexicalSentiment !== 'Neutral') {
         if (logits[this.lexicalSentiment] !== undefined) {
-          logits[this.lexicalSentiment] += 1.8;
+          logits[this.lexicalSentiment] += 2.0;
         }
       }
 
@@ -784,16 +801,80 @@ class VoiceAnalyzer {
     if (!text || typeof text !== 'string') return 'Neutral';
     const lower = text.toLowerCase();
 
-    const angry = ['angry', 'mad', 'furious', 'hate', 'rage', 'shut up', 'terrible', 'annoying', 'irritated', 'stop it', 'worst', 'stupid', 'horrible', 'gussa', 'krodh', 'naraz', 'bakwas', 'kovam', 'erichal', 'kopam', 'enojado', 'odio', 'wütend', 'colère'];
-    const sad = ['sad', 'unhappy', 'crying', 'depressed', 'sorrow', 'grief', 'lonely', 'miserable', 'heartbroken', 'pain', 'gloomy', 'tears', 'upset', 'hurt', 'udaas', 'dukhi', 'dard', 'kavalai', 'varutham', 'badha', 'triste', 'traurig', 'chagrin'];
-    const happy = ['happy', 'glad', 'joy', 'smile', 'great', 'awesome', 'wonderful', 'excellent', 'love', 'fantastic', 'amazing', 'good', 'pleased', 'cheerful', 'excited', 'yay', 'khush', 'badhiya', 'mast', 'santhosham', 'super', 'arumai', 'feliz', 'content', 'glücklich'];
-    const surprise = ['wow', 'omg', 'surprise', 'surprised', 'unbelievable', 'astonished', 'shocked', 'whoa', 'really', 'no way', 'unexpected', 'arey', 'waah', 'hairan', 'aacharyam', 'guau', 'ouah'];
+    // 🇮🇳 Comprehensive Indic & Indian English Emotional Lexicon
+    const angry = [
+      // English & Indian English
+      'angry', 'mad', 'furious', 'hate', 'rage', 'shut up', 'terrible', 'annoying', 'irritated', 'stop it', 'worst', 'stupid', 'horrible', 'ridiculous', 'nonsense', 'bakwas', 'chup', 'dimaag kharab', 'pagal', 'hadd hai', 'gadbad', 'faltu', 'pareshan', 'dimag kharab', 'bawasir',
+      // Hindi (हिंदी)
+      'gussa', 'krodh', 'naraz', 'chidd', 'jhagda', 'shant', 'maro', 'ladai', 'bekar', 'bhasad',
+      // Tamil (தமிழ்)
+      'kovam', 'erichal', 'sandai', 'kaduppu', 'verupu', 'moodu', 'adada', 'thappu',
+      // Telugu (తెలుగు)
+      'kopam', 'aakrosam', 'godava', 'chiraku', 'aragundu', 'chal',
+      // Malayalam (മലയാളം)
+      'dheshyam', 'deshyam', 'kali', 'vazhakk', 'thettu',
+      // Kannada (ಕನ್ನಡ)
+      'kopa', 'raga', 'thondare', 'jagala', 'bidi',
+      // International Fallbacks
+      'enojado', 'odio', 'wütend', 'colère'
+    ];
+
+    const sad = [
+      // English & Indian English
+      'sad', 'unhappy', 'crying', 'depressed', 'sorrow', 'grief', 'lonely', 'miserable', 'heartbroken', 'pain', 'gloomy', 'tears', 'upset', 'hurt', 'disheartened', 'helpless', 'tension', 'ro ro ke', 'low',
+      // Hindi (हिंदी)
+      'udaas', 'dukhi', 'dard', 'dukh', 'rona', 'takleef', 'pareshani', 'nirash', 'afsos', 'aansu', 'kasht', 'gham',
+      // Tamil (தமிழ்)
+      'kavalai', 'varutham', 'soga', 'azhugai', 'thunbam', 'kashtam', 'vali', 'vedhanai', 'kanneer', 'kashtama',
+      // Telugu (తెలుగు)
+      'badha', 'edupu', 'dukham', 'vedhana', 'chinta', 'kastalau',
+      // Malayalam (മലയാളം)
+      'sankadam', 'vishamam', 'karachil', 'vedhana', 'dukham', 'sankatam',
+      // Kannada (ಕನ್ನಡ)
+      'dukha', 'besara', 'aluvu', 'novu', 'sankata',
+      // International Fallbacks
+      'triste', 'traurig', 'chagrin'
+    ];
+
+    const happy = [
+      // English & Indian English
+      'happy', 'glad', 'joy', 'smile', 'great', 'awesome', 'wonderful', 'excellent', 'love', 'fantastic', 'amazing', 'good', 'pleased', 'cheerful', 'excited', 'yay', 'superb', 'bindaas', 'macha', 'faadu', 'jhakaas', 'zabardast', 'bawaal', 'mast', 'shandar', 'chill', 'pakka', 'mubarak', 'badhai',
+      // Hindi (हिंदी)
+      'khush', 'khushi', 'badhiya', 'anand', 'shaandar', 'shukriya', 'maza', 'prasann', 'dhanyavad', 'accha', 'umda', 'shandar', 'khoob',
+      // Tamil (தமிழ்)
+      'santhosham', 'magizhchi', 'semma', 'super', 'arumai', 'nalla', 'nandri', 'aanantham', 'siripu', 'mass', 'marana mass', 'tharu maru',
+      // Telugu (తెలుగు)
+      'santosham', 'anandam', 'chala bagundi', 'manchi', 'dhanyavadalu', 'navvu', 'keka', 'bavundi', 'adbhutam',
+      // Malayalam (മലയാളം)
+      'santhosham', 'aanandam', 'adipoli', 'nandi', 'chiri', 'kidu', 'polichu', 'nallath',
+      // Kannada (ಕನ್ನಡ)
+      'santosa', 'kushi', 'chennagide', 'dhanyavada', 'nagu', 'channagide',
+      // International Fallbacks
+      'feliz', 'content', 'glücklich'
+    ];
+
+    const surprise = [
+      // English & Indian English
+      'wow', 'omg', 'surprise', 'surprised', 'unbelievable', 'astonished', 'shocked', 'whoa', 'really', 'no way', 'unexpected', 'oh my god', 'what the', 'arre baap re', 'arey waah', 'kya baat', 'gazab', 'sach me', 'are bhai',
+      // Hindi (हिंदी)
+      'hairan', 'chaunk', 'ascharya', 'arey', 'waah', 'baap re', 'kya baat hai', 'achambha',
+      // Tamil (தமிழ்)
+      'aacharyam', 'thikil', 'enna kodumai', 'aaha', 'appadiya', 'nijamava', 'ada paavi',
+      // Telugu (తెలుగు)
+      'aascharyam', 'adbhutam', 'nijamena', 'ammo', 'abbo',
+      // Malayalam (മലയാളം)
+      'athbhutham', 'aashcharyam', 'aada', 'shariyaano',
+      // Kannada (ಕನ್ನಡ)
+      'ashcharya', 'vismaya', 'hauda', 'nijava',
+      // International Fallbacks
+      'guau', 'ouah'
+    ];
 
     let scores = { Angry: 0, Sad: 0, Happy: 0, Surprise: 0 };
-    angry.forEach(w => { if (lower.includes(w)) scores.Angry += 2; });
-    sad.forEach(w => { if (lower.includes(w)) scores.Sad += 2; });
-    happy.forEach(w => { if (lower.includes(w)) scores.Happy += 2; });
-    surprise.forEach(w => { if (lower.includes(w)) scores.Surprise += 2; });
+    angry.forEach(w => { if (lower.includes(w)) scores.Angry += 2.5; });
+    sad.forEach(w => { if (lower.includes(w)) scores.Sad += 2.5; });
+    happy.forEach(w => { if (lower.includes(w)) scores.Happy += 2.5; });
+    surprise.forEach(w => { if (lower.includes(w)) scores.Surprise += 2.5; });
 
     let best = 'Neutral';
     let max = 0;

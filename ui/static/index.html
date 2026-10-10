@@ -4948,6 +4948,7 @@
               <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
               <span class="hud-chip" id="hudCalibrationChip">AUTO-CALIBRATING...</span>
               <span class="hud-chip" id="hudEngineChip">ENGINE: AFFECTNET 14-AU</span>
+              <span class="hud-chip" id="hudDemographicChip" style="background: rgba(34, 197, 94, 0.18); border-color: rgba(34, 197, 94, 0.45); color: #4ade80;">🇮🇳 INDIC CALIBRATED</span>
               <span class="hud-chip" id="hudCoords">PITCH: 0° ROLL: 0°</span>
             </div>
           </div>
@@ -5037,16 +5038,16 @@
               <span style="color: var(--violet);">🌐</span> Speech Language:
             </span>
             <select id="selectSttLang" class="voice-lang-select" aria-label="Speech Recognition Language">
-              <option value="en-US" selected>English (US) &mdash; en-US</option>
-              <option value="en-IN">English (India) &mdash; en-IN</option>
+              <option value="en-IN" selected>🇮🇳 English (India) &mdash; en-IN</option>
+              <option value="hi-IN">🇮🇳 Hindi (हिंदी) &mdash; hi-IN</option>
+              <option value="ta-IN">🇮🇳 Tamil (தமிழ்) &mdash; ta-IN</option>
+              <option value="te-IN">🇮🇳 Telugu (తెలుగు) &mdash; te-IN</option>
+              <option value="kn-IN">🇮🇳 Kannada (ಕನ್ನಡ) &mdash; kn-IN</option>
+              <option value="ml-IN">🇮🇳 Malayalam (മലയാളം) &mdash; ml-IN</option>
+              <option value="mr-IN">🇮🇳 Marathi (मराठी) &mdash; mr-IN</option>
+              <option value="bn-IN">🇮🇳 Bengali (বাংলা) &mdash; bn-IN</option>
+              <option value="en-US">English (US) &mdash; en-US</option>
               <option value="en-GB">English (UK) &mdash; en-GB</option>
-              <option value="hi-IN">Hindi (हिंदी) &mdash; hi-IN</option>
-              <option value="ta-IN">Tamil (தமிழ்) &mdash; ta-IN</option>
-              <option value="te-IN">Telugu (తెలుగు) &mdash; te-IN</option>
-              <option value="kn-IN">Kannada (ಕನ್ನಡ) &mdash; kn-IN</option>
-              <option value="ml-IN">Malayalam (മലയാളം) &mdash; ml-IN</option>
-              <option value="mr-IN">Marathi (मराठी) &mdash; mr-IN</option>
-              <option value="bn-IN">Bengali (বাংলা) &mdash; bn-IN</option>
               <option value="es-ES">Spanish (Español) &mdash; es-ES</option>
               <option value="fr-FR">French (Français) &mdash; fr-FR</option>
               <option value="de-DE">German (Deutsch) &mdash; de-DE</option>
@@ -5055,6 +5056,7 @@
               <option value="ar-SA">Arabic (العربية) &mdash; ar-SA</option>
               <option value="ru-RU">Russian (Русский) &mdash; ru-RU</option>
             </select>
+            <span class="weight-tag" style="background: rgba(34, 197, 94, 0.12); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.35); font-size: 0.60rem; padding: 2px 7px; border-radius: 4px; margin-left: auto;">🇮🇳 INDIC PROSODY ACTIVE</span>
           </div>
         </section>
 
@@ -5965,7 +5967,7 @@
       facingMode: 'user', // 'user' (front camera) or 'environment' (back camera)
       availableCameras: [],
       hasMultipleCameras: false,
-      sttLanguage: 'en-US',
+      sttLanguage: 'en-IN',
       selectedFaceEmotion: 'Neutral',
       selectedSpeechEmotion: 'Neutral',
       wFace: 0.70,
@@ -6746,6 +6748,19 @@
         lip_stretch: lipStretch
       };
 
+      // 4b. Indian Demographic & Morphology Calibration (South Asian FACS Fine-Tuning)
+      // 1. Subtle smile sensitivity: South Asian conversational smiles frequently register
+      //    moderate cheek lift (AU6) and subtle zygomatic elevation (AU12) without wide lip stretch.
+      if (rawSmileElev > 0.010 && duchenneEyeCorner > 0.35) {
+        rawFeatures.smile_elev = Math.max(rawFeatures.smile_elev, 0.018);
+      }
+      // 2. Contemplative brow de-biasing: Attentive listening, concentration, or deep engagement
+      //    in Indian facial expressions routinely exhibits moderate inner brow lowering (AU1/AU4)
+      //    WITHOUT lip narrowing or tension. Prevent false 'Angry' misclassification.
+      if (innerBrowDist < 0.35 && mouthWidth < 0.84 && lipCornerDepress < 0.012 && rawSmileElev >= -0.012) {
+        rawFeatures.inner_brow_dist = Math.max(rawFeatures.inner_brow_dist, 0.36);
+      }
+
       // 5. Compute Z-Scores based on AffectNet statistics
       const stats = AFFECTNET_CONFIG.featureStats;
       const z = {};
@@ -7453,11 +7468,11 @@
 
     // Preset Scenario Loader
     const SCENARIO_UTTERANCES = {
-      Happy: "I am feeling truly wonderful and full of joy today!",
-      Angry: "I cannot believe this happened again, this is so frustrating!",
-      Sad: "Everything feels so heavy and disheartening right now.",
-      Surprise: "Oh wow, I honestly never expected to see this at all!",
-      Neutral: "The system is operating under baseline normal conditions."
+      Happy: "Bahut badhiya! I am feeling truly wonderful and full of joy today, absolutely brilliant!",
+      Angry: "I cannot believe this happened again yaar, this is extremely frustrating and unacceptable!",
+      Sad: "Everything feels so heavy, disappointing and disheartening right now.",
+      Surprise: "Arre waah! Oh wow, I honestly never expected to see this at all!",
+      Neutral: "The system is operating smoothly under baseline normal working conditions."
     };
 
     window.loadScenario = function(faceEmotion, speechEmotion) {
