@@ -46,7 +46,7 @@ class FacialStyleAnalyzer:
         self.smile_cascade = cv2.CascadeClassifier(default_dir + "haarcascade_smile.xml")
 
     def _prepare_face_image(self, face_img: np.ndarray, target_size: Tuple[int, int] = (160, 160)) -> np.ndarray:
-        """Standardizes face crop to 160x160 grayscale matrix."""
+        """Standardizes face crop to 160x160 grayscale matrix with CLAHE for Fitzpatrick skin types III-VI."""
         if face_img is None or face_img.size == 0:
             return np.zeros(target_size, dtype=np.uint8)
 
@@ -56,7 +56,10 @@ class FacialStyleAnalyzer:
             gray = face_img.copy()
 
         resized = cv2.resize(gray, target_size, interpolation=cv2.INTER_CUBIC)
-        return resized
+        # Apply CLAHE to equalize local contrast across diverse skin tones and indoor lighting
+        clahe = cv2.createCLAHE(clipLimit=2.2, tileGridSize=(8, 8))
+        equalized = clahe.apply(resized)
+        return equalized
 
     def _extract_mouth_morphology(self, face: np.ndarray, glab_furrow: float) -> Dict[str, Any]:
         """
@@ -204,13 +207,31 @@ class FacialStyleAnalyzer:
         sob_y = cv2.Sobel(fhead, cv2.CV_64F, 0, 1, ksize=3)
         horiz_energy = float(np.mean(np.abs(sob_y)))
 
-        # 2. Glabellar Brow Furrow (between eyebrows)
+        # 2. Glabellar Brow Furrow (between eyebrows) with Bindi / Tilak Tolerance
         glab = face[int(h * 0.22):int(h * 0.36), int(w * 0.36):int(w * 0.64)]
-        sob_x = cv2.Sobel(glab, cv2.CV_64F, 1, 0, ksize=3)
-        glab_furrow = float(np.mean(np.abs(sob_x)))
+        
+        # Suppress compact circular forehead ornamentation (bindi/tilak) using vertical crease morphological kernel
+        # Genuine corrugator wrinkles form elongated vertical skin folds, whereas bindis are compact circular blobs
+        vert_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 5))
+        glab_creases = cv2.morphologyEx(glab, cv2.MORPH_TOPHAT, vert_kernel)
+        
+        sob_x_raw = cv2.Sobel(glab, cv2.CV_64F, 1, 0, ksize=3)
+        sob_x_crease = cv2.Sobel(glab_creases, cv2.CV_64F, 1, 0, ksize=3)
+        
+        # Check if high variance is concentrated in a tiny central spot (bindi/tilak signature)
+        gh, gw = glab.shape
+        center_roi = glab[int(gh*0.2):int(gh*0.8), int(gw*0.35):int(gw*0.65)]
+        outer_roi = np.hstack([glab[:, :int(gw*0.35)], glab[:, int(gw*0.65):]])
+        has_bindi_spot = (np.std(center_roi) > 35.0 and np.std(outer_roi) < 18.0) if outer_roi.size > 0 else False
+        
+        if has_bindi_spot:
+            # Measure furrow primarily on outer glabella creases to avoid false bindi edge triggers
+            glab_furrow = float(np.mean(np.abs(sob_x_crease))) * 2.2
+        else:
+            glab_furrow = float(0.6 * np.mean(np.abs(sob_x_raw)) + 0.4 * np.mean(np.abs(sob_x_crease)) * 2.0)
 
         # Classify Forehead Style
-        if glab_furrow >= 30.0:
+        if glab_furrow >= 32.0:
             forehead_style = "Shrunk / Wrinkles (Furrowed)"
         elif horiz_energy >= 25.0 or edge_density >= 0.06:
             forehead_style = "Raised Lines"

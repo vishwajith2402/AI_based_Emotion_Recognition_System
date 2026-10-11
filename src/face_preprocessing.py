@@ -94,8 +94,22 @@ class FacePreprocessor:
             gray = face_bgr_or_gray
 
         if enable_clahe:
-            # CLAHE provides balanced contrast across darker and lighter facial regions without clipping highlights
-            clahe = cv2.createCLAHE(clipLimit=2.2, tileGridSize=(8, 8))
+            # Dual-stage illumination normalization for Fitzpatrick Types III-VI:
+            # 1. Dynamic mid-tone luminance adaptation for diverse Indian room lighting (CFL, LED, ambient)
+            mean_lum = float(np.mean(gray))
+            if mean_lum < 95.0:
+                # Underexposed / warm shadow: gentle gamma expansion to uncover subtle facial muscle lines
+                inv_gamma = 1.0 / 0.85
+                table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in range(256)]).astype("uint8")
+                gray = cv2.LUT(gray, table)
+            elif mean_lum > 175.0:
+                # Over-lit / specular highlights: gentle compression to preserve eyebrow & lip contrast
+                gamma = 1.15
+                table = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)]).astype("uint8")
+                gray = cv2.LUT(gray, table)
+
+            # 2. CLAHE provides balanced contrast across darker and lighter facial regions without clipping highlights
+            clahe = cv2.createCLAHE(clipLimit=2.4, tileGridSize=(8, 8))
             gray_eq = clahe.apply(gray)
         else:
             gray_eq = cv2.equalizeHist(gray)

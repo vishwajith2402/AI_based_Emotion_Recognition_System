@@ -25,38 +25,93 @@ class TextEmotionAnalyzer:
     Transcribes spoken audio into text and predicts emotional sentiment probabilities.
     """
 
-    # Comprehensive Affective Emotion Lexicons
+    # Comprehensive Affective Emotion Lexicons with Indic & Indian English Support
     EMOTION_LEXICON = {
         "Angry": {
+            # English & Indian English
             "angry", "mad", "furious", "rage", "hate", "hateful", "annoyed", "irritated",
             "frustrated", "unfair", "stupid", "idiot", "disgust", "awful", "terrible",
             "damn", "hell", "pissed", "unacceptable", "offensive", "horrible", "hostile",
-            "bitter", "yell", "screaming", "ridiculous", "shut", "stop", "worst", "liar"
+            "bitter", "yell", "screaming", "ridiculous", "shut", "stop", "worst", "liar",
+            "bakwas", "chup", "dimaag kharab", "pagal", "hadd hai", "gadbad", "faltu", "pareshan",
+            # Hindi
+            "gussa", "krodh", "naraz", "chidd", "jhagda", "maro", "ladai", "bekar", "bhasad",
+            # Tamil
+            "kovam", "erichal", "sandai", "kaduppu", "verupu", "moodu", "adada", "thappu",
+            # Telugu
+            "kopam", "aakrosam", "godava", "chiraku", "aragundu", "chal",
+            # Kannada
+            "kopa", "raga", "thondare", "jagala", "bidi",
+            # Malayalam
+            "dheshyam", "deshyam", "kali", "vazhakk", "thettu",
+            # Marathi & Bengali
+            "santap", "bhandan", "jhamela"
         },
         "Happy": {
+            # English & Indian English
             "happy", "glad", "joy", "joyful", "smile", "smiling", "great", "wonderful",
             "love", "loving", "awesome", "fantastic", "delighted", "yay", "haha", "laugh",
             "laughing", "beautiful", "enjoy", "enjoying", "best", "good", "proud", "thank",
             "thanks", "congrats", "celebration", "super", "perfect", "blessed", "exciting",
-            "excited", "cheerful", "pleasure", "fun", "cool", "nice", "brilliant"
+            "excited", "cheerful", "pleasure", "fun", "cool", "nice", "brilliant",
+            "bindaas", "macha", "faadu", "jhakaas", "zabardast", "bawaal", "mast", "shandar", "chill",
+            # Hindi
+            "khush", "khushi", "badhiya", "anand", "shaandar", "shukriya", "maza", "prasann",
+            # Tamil
+            "santhosham", "magizhchi", "semma", "arumai", "nalla", "nandri", "aanantham", "siripu", "mass",
+            # Telugu
+            "santosham", "anandam", "chala bagundi", "navvu", "keka", "bavundi", "adbhutam",
+            # Kannada
+            "santosa", "kushi", "chennagide", "nagu", "channagide",
+            # Malayalam
+            "santhosham", "aanandam", "adipoli", "chiri", "kidu", "polichu",
+            # Marathi & Bengali
+            "chan", "hasya", "khup chan", "besh bhalo", "hashi", "sundor"
         },
         "Sad": {
-            "sad", "crying", "cry", "tears", "sorrow", "depressed", "depression", "unhappy",
+            # English & Indian English
+            "sad", "unhappy", "crying", "cry", "tears", "sorrow", "depressed", "depression",
             "lonely", "grief", "pain", "painful", "hurt", "hurts", "miss", "sorry", "loss",
             "lost", "helpless", "hopeless", "down", "gloomy", "miserable", "heartbroken",
-            "regret", "disappointed", "disappointment", "unfortunate", "tragic", "bad"
+            "regret", "disappointed", "disappointment", "unfortunate", "tragic", "bad", "tension", "low",
+            # Hindi
+            "udaas", "dukhi", "dard", "dukh", "rona", "takleef", "pareshani", "nirash", "afsos", "aansu", "kasht", "gham",
+            # Tamil
+            "kavalai", "varutham", "soga", "azhugai", "thunbam", "kashtam", "vali", "vedhanai", "kanneer",
+            # Telugu
+            "badha", "edupu", "dukham", "vedhana", "chinta", "kastalau",
+            # Kannada
+            "dukha", "besara", "aluvu", "novu", "sankata",
+            # Malayalam
+            "sankadam", "vishamam", "karachil", "vedhana",
+            # Marathi & Bengali
+            "radne", "nirasha", "dukkho", "kosto", "kanna", "bedona"
         },
         "Surprise": {
+            # English & Indian English
             "wow", "whoa", "what", "really", "shock", "shocked", "shocking", "omg",
             "unexpected", "unbelievable", "surprise", "surprised", "surprising", "stunned",
             "sudden", "amazing", "amazed", "impossible", "seriously", "gasp", "miracle",
-            "incredible", "unreal", "startling", "astonished"
+            "incredible", "unreal", "startling", "astonished", "arre baap re", "arey waah", "kya baat", "gazab", "sach me",
+            # Hindi
+            "hairan", "chaunk", "ascharya", "arey", "waah", "baap re", "achambha",
+            # Tamil
+            "aacharyam", "thikil", "enna kodumai", "aaha", "appadiya", "nijamava",
+            # Telugu
+            "aascharyam", "adbhutam", "nijamena", "ammo", "abbo",
+            # Kannada
+            "ashcharya", "vismaya", "hauda", "nijava",
+            # Malayalam
+            "athbhutham", "aashcharyam", "shariyaano",
+            # Marathi & Bengali
+            "dhakka", "obak", "ashchorjo"
         },
         "Neutral": {
             "okay", "alright", "fine", "yes", "no", "think", "maybe", "know", "say",
             "today", "tomorrow", "work", "report", "system", "data", "computer", "normal",
             "check", "test", "proceed", "here", "there", "is", "are", "have", "please",
-            "hello", "hi", "morning", "afternoon", "listening", "speaking", "standard"
+            "hello", "hi", "morning", "afternoon", "listening", "speaking", "standard",
+            "theek", "shant", "seri", "sare", "sari", "shari", "thik ache", "paravala"
         }
     }
 
@@ -76,9 +131,10 @@ class TextEmotionAnalyzer:
                 print(f"[Warning] Could not initialize VADER: {e}")
                 self.vader = None
 
-    def transcribe_audio(self, audio_data: np.ndarray, sample_rate: int = 16000) -> str:
+    def transcribe_audio(self, audio_data: np.ndarray, sample_rate: int = 16000, preferred_lang: str = "en-IN") -> str:
         """
         Transcribes numpy audio buffer into text.
+        Prioritizes Indian English ('en-IN') with fallback to 'en-US'.
         Returns empty string if speech is unintelligible, silent, or offline.
         """
         if audio_data is None or len(audio_data) == 0:
@@ -96,8 +152,11 @@ class TextEmotionAnalyzer:
             pcm_bytes = pcm_data.tobytes()
             sr_audio = sr.AudioData(pcm_bytes, sample_rate=sample_rate, sample_width=2)
 
-            # Transcribe via Google Speech Recognition API (zero API key needed)
-            text = self.recognizer.recognize_google(sr_audio, language="en-US")
+            # Transcribe via Google Speech Recognition API (try Indian English first)
+            try:
+                text = self.recognizer.recognize_google(sr_audio, language=preferred_lang)
+            except Exception:
+                text = self.recognizer.recognize_google(sr_audio, language="en-US")
             return text.strip()
         except sr.UnknownValueError:
             # Speech was unintelligible or silence

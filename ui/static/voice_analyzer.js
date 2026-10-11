@@ -413,19 +413,28 @@ class VoiceAnalyzer {
       }
 
       // 🇮🇳 Indic & Indian English Acoustic Prosody Calibration
-      const isIndicLang = /^(en-IN|hi-IN|ta-IN|te-IN|kn-IN|ml-IN|mr-IN|bn-IN)$/i.test(this.options.sttLanguage || 'en-IN');
+      const isIndicLang = /^(en-IN|hi-IN|ta-IN|te-IN|kn-IN|ml-IN|mr-IN|bn-IN|en|hi|ta|te|kn|ml|mr|bn)$/i.test(this.options.sttLanguage || 'en-IN');
       if (isIndicLang) {
-        // Compensate for Indian syllable-timed terminal rising pitch (prevents false surprise on declarative sentences)
-        if (logits.Surprise !== undefined) {
-          logits.Surprise -= 0.55;
+        // 1. Compensate for Indian syllable-timed terminal rising pitch (prevents false surprise on declarative sentences)
+        // True surprise requires BOTH abrupt pitch leap (>0.75) AND sudden energy burst (>0.40)
+        const isTrueSurprise = (z.pitch_semitones > 0.75 && z.loudness_db > 0.40);
+        if (!isTrueSurprise && logits.Surprise !== undefined) {
+          logits.Surprise -= 0.65;
         }
-        // Indian vocal expressiveness: subtle pitch modulation with high harmonic stability reflects warmth/happiness
-        if (z.harmonic_stability > 0.15 && z.pitch_variance > 0.25) {
-          logits.Happy += 0.35;
+
+        // 2. Indian vocal warmth & happiness: melodic pitch inflection with high harmonic resonance
+        if (z.harmonic_stability > 0.10 && z.pitch_variance > 0.18) {
+          logits.Happy += 0.50;
         }
-        // Emphatic vs Genuine Anger: Boost anger when BOTH loudness and high spectral brightness or sharp pitch rise occur
-        if (z.loudness_db > 0.40 && (z.spectral_brightness > 0.30 || z.pitch_semitones > 0.50)) {
-          logits.Angry += 0.75;
+
+        // 3. Indian emphatic anger: elevated loudness paired with harsh spectral brightness or high pitch tension
+        if (z.loudness_db > 0.35 && (z.spectral_brightness > 0.25 || z.pitch_semitones > 0.45)) {
+          logits.Angry += 0.85;
+        }
+
+        // 4. Indian subdued sadness: low acoustic energy, prolonged vowel cadence, and flat pitch contour
+        if (z.loudness_db < -0.25 && z.pitch_variance < -0.15) {
+          logits.Sad += 0.65;
         }
       }
 
