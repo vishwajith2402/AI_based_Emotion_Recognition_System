@@ -6542,8 +6542,14 @@
               drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYE, { color: '#FFFFFFEE', lineWidth: 1.8 });
             }
             if (typeof FACEMESH_LEFT_EYEBROW !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: '#FFFFFFEE', lineWidth: 2.0 });
-              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: '#FFFFFFEE', lineWidth: 2.0 });
+              // Color-code eyebrows based on active dynamic state (Shrunk / Red-Amber vs Raised / Cyan-Gold)
+              let browColor = '#FFFFFFEE';
+              if (tracker.eyebrowLiveState === 'shrunk') browColor = '#EF4444';
+              else if (tracker.eyebrowLiveState === 'enlarged') browColor = '#F59E0B';
+              else if (tracker.eyebrowLiveState === 'sad') browColor = '#60A5FA';
+
+              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: browColor, lineWidth: 2.2 });
+              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: browColor, lineWidth: 2.2 });
             }
             if (typeof FACEMESH_IRISES !== 'undefined') {
               drawConnectors(faceCtx, lm, FACEMESH_IRISES, { color: '#22D3EE', lineWidth: 1.8 });
@@ -7223,14 +7229,18 @@
       let eyesText = 'Normal Open';
       // Real-time geometric eyebrow shrink vs enlarge detection
       let browDynamicText = 'Smooth Plain';
-      if (rawInnerBrowDist < 0.32 && rawBrowH < 0.145) {
+      if (rawInnerBrowDist < 0.325 && rawBrowH < 0.145) {
         browDynamicText = 'Shrunk & Knitted 😠 (AU4 Furrow)';
-      } else if (rawBrowH > 0.175 || rawInnerBrowDist > 0.41) {
+        tracker.eyebrowLiveState = 'shrunk';
+      } else if (rawBrowH > 0.168 || rawInnerBrowDist > 0.40) {
         browDynamicText = 'Enlarged & Raised 😲 (AU1+AU2 Expanse)';
-      } else if (rawGriefSlant > 0.018) {
+        tracker.eyebrowLiveState = 'enlarged';
+      } else if (rawGriefSlant > 0.016) {
         browDynamicText = 'Inner Knotted / Sad 🙁 (AU1 Grief)';
+        tracker.eyebrowLiveState = 'sad';
       } else {
         browDynamicText = 'Smooth Relaxed 😐';
+        tracker.eyebrowLiveState = 'neutral';
       }
 
       if (liveEmotion === 'Happy') {
