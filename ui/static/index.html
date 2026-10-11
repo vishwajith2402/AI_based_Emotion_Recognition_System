@@ -6132,6 +6132,7 @@
       faceTypeFrames: 0,
       currentPipelineStage: 1, // Stage 1: Face Type Profiler, Stage 2: Calibrated Emotion Recognition
       faceTypeDetails: null,
+      hasEverLocked: false,
       isCalibrating: false,
       calibrationFrames: 0,
       baseline: {
@@ -6212,8 +6213,8 @@
           faceMesh.setOptions({
             maxNumFaces: 1,
             refineLandmarks: true,
-            minDetectionConfidence: 0.65,
-            minTrackingConfidence: 0.65
+            minDetectionConfidence: 0.45,
+            minTrackingConfidence: 0.45
           });
           faceMesh.onResults(onFaceMeshResults);
           console.log('[MediaPipe] FaceMesh loaded successfully (High Sensitivity)');
@@ -6500,7 +6501,7 @@
         const lm = results.multiFaceLandmarks[0];
         tracker.isLocked = true;
 
-        // Dynamic Bounding Box from all landmarks
+        // Compute Dynamic Bounding Box from all 468 landmarks
         let minX = 1, maxX = 0, minY = 1, maxY = 0;
         for (let i = 0; i < lm.length; i++) {
           const p = lm[i];
@@ -6510,18 +6511,31 @@
           if (p.y > maxY) maxY = p.y;
         }
 
-        const padX = 0.05;
-        const padY = 0.08;
-        tracker.targetX = Math.max(0, (minX - padX) * W);
-        tracker.targetY = Math.max(0, (minY - padY * 1.5) * H);
-        tracker.targetW = Math.min(W - tracker.targetX, (maxX - minX + padX * 2) * W);
-        tracker.targetH = Math.min(H - tracker.targetY, (maxY - minY + padY * 2.5) * H);
+        const padX = 0.04;
+        const padY = 0.06;
+        const boxMinX = Math.max(0, (minX - padX) * W);
+        const boxMaxX = Math.min(W, (maxX + padX) * W);
+        const boxMinY = Math.max(0, (minY - padY * 1.4) * H);
+        const boxMaxY = Math.min(H, (maxY + padY * 1.8) * H);
 
-        // Smooth spring damping
-        tracker.x += (tracker.targetX - tracker.x) * 0.35;
-        tracker.y += (tracker.targetY - tracker.y) * 0.35;
-        tracker.w += (tracker.targetW - tracker.w) * 0.35;
-        tracker.h += (tracker.targetH - tracker.h) * 0.35;
+        tracker.targetX = boxMinX;
+        tracker.targetY = boxMinY;
+        tracker.targetW = Math.max(20, boxMaxX - boxMinX);
+        tracker.targetH = Math.max(20, boxMaxY - boxMinY);
+
+        // Responsive fast-lock tracking damping
+        if (!tracker.hasEverLocked) {
+          tracker.x = tracker.targetX;
+          tracker.y = tracker.targetY;
+          tracker.w = tracker.targetW;
+          tracker.h = tracker.targetH;
+          tracker.hasEverLocked = true;
+        } else {
+          tracker.x += (tracker.targetX - tracker.x) * 0.70;
+          tracker.y += (tracker.targetY - tracker.y) * 0.70;
+          tracker.w += (tracker.targetW - tracker.w) * 0.70;
+          tracker.h += (tracker.targetH - tracker.h) * 0.70;
+        }
 
         // 1. Draw 468-Point Wireframe Tessellation (High-contrast subtle white)
         if (tracker.meshStyle === 'bw_mesh') {
