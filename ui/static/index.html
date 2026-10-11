@@ -6107,9 +6107,10 @@
     // Google MediaPipe Face Mesh & Tracking Engine
     let faceMesh = null;
     let isProcessingFrame = false;
+    let frameProcessingStartTime = 0;
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth <= 768);
     let lastVideoProcessTime = 0;
-    const targetVideoInterval = isMobileDevice ? 40 : 25; // 25 FPS mobile (~40ms), 40 FPS desktop (~25ms)
+    const targetVideoInterval = isMobileDevice ? 40 : 16; // 25 FPS mobile (~40ms), 60 FPS desktop (~16ms)
 
     const tracker = {
       enabled: true,
@@ -6212,11 +6213,11 @@
           faceMesh.setOptions({
             maxNumFaces: 1,
             refineLandmarks: true,
-            minDetectionConfidence: 0.50,
-            minTrackingConfidence: 0.50
+            minDetectionConfidence: 0.45,
+            minTrackingConfidence: 0.35
           });
           faceMesh.onResults(onFaceMeshResults);
-          console.log('[MediaPipe] FaceMesh loaded successfully (High Sensitivity)');
+          console.log('[MediaPipe] FaceMesh loaded successfully (Ultra-Smooth Tracking)');
         } catch (err) {
           console.warn('[MediaPipe] Init error:', err);
         }
@@ -6454,9 +6455,16 @@
     }
 
     // Real-Time Frame Loop
-    async function processVideoFrame(timestamp) {
+    function processVideoFrame(timestamp) {
       if (!state.isCameraRunning) return;
+      requestAnimationFrame(processVideoFrame);
+
       if (!timestamp) timestamp = performance.now();
+
+      // Watchdog: If MediaPipe inference stalled or hung > 120ms, force unlock so tracking never freezes
+      if (isProcessingFrame && (timestamp - frameProcessingStartTime > 120)) {
+        isProcessingFrame = false;
+      }
 
       if (video.readyState >= 2 && video.videoWidth > 0) {
         if (faceCanvas.width !== video.videoWidth || faceCanvas.height !== video.videoHeight) {
@@ -6471,159 +6479,161 @@
         const elapsed = timestamp - lastVideoProcessTime;
         if (faceMesh && !isProcessingFrame && elapsed >= targetVideoInterval) {
           lastVideoProcessTime = timestamp;
+          frameProcessingStartTime = timestamp;
           isProcessingFrame = true;
-          try {
-            await faceMesh.send({ image: video });
-          } catch (e) {
-            // Frame skip handling
-          } finally {
-            isProcessingFrame = false;
-          }
+
+          faceMesh.send({ image: video })
+            .catch((_e) => {
+              // Frame dropped or skipped
+            })
+            .finally(() => {
+              isProcessingFrame = false;
+            });
         }
       }
-      requestAnimationFrame(processVideoFrame);
     }
 
     // MediaPipe 468-Point FaceMesh Callback
     function onFaceMeshResults(results) {
-      if (typeof handleMediaLabVisualResults === 'function' && window.labState && window.labState.isAnalyzingVisual) {
-        handleMediaLabVisualResults(results);
-        return;
-      }
-      if (!state.isCameraRunning) return;
-      const W = faceCanvas.width;
-      const H = faceCanvas.height;
-      faceCtx.clearRect(0, 0, W, H);
-
-      if (tracker.meshStyle === 'off') return;
-
-      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-        const lm = results.multiFaceLandmarks[0];
-        // Compute Dynamic Bounding Box from all 468 landmarks (Immediate Geometric Lock)
-        let minX = 1, maxX = 0, minY = 1, maxY = 0;
-        for (let i = 0; i < lm.length; i++) {
-          const p = lm[i];
-          if (p.x < minX) minX = p.x;
-          if (p.x > maxX) maxX = p.x;
-          if (p.y < minY) minY = p.y;
-          if (p.y > maxY) maxY = p.y;
+      try {
+        if (typeof handleMediaLabVisualResults === 'function' && window.labState && window.labState.isAnalyzingVisual) {
+          handleMediaLabVisualResults(results);
+          return;
         }
+        if (!state.isCameraRunning) return;
+        const W = faceCanvas.width;
+        const H = faceCanvas.height;
+        faceCtx.clearRect(0, 0, W, H);
 
-        const padX = (maxX - minX) * 0.12;
-        const padY = (maxY - minY) * 0.15;
-        const targetX = Math.max(0, (minX - padX) * W);
-        const targetY = Math.max(0, (minY - padY * 1.4) * H);
-        const targetW = Math.min(W - targetX, (maxX - minX + padX * 2) * W);
-        const targetH = Math.min(H - targetY, (maxY - minY + padY * 2.2) * H);
+        if (tracker.meshStyle === 'off') return;
 
-        tracker.targetX = targetX;
-        tracker.targetY = targetY;
-        tracker.targetW = targetW;
-        tracker.targetH = targetH;
+        if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+          const lm = results.multiFaceLandmarks[0];
+          // Compute Dynamic Bounding Box from all 468 landmarks (Immediate Geometric Lock)
+          let minX = 1, maxX = 0, minY = 1, maxY = 0;
+          for (let i = 0; i < lm.length; i++) {
+            const p = lm[i];
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (p.y < minY) minY = p.y;
+            if (p.y > maxY) maxY = p.y;
+          }
 
-        if (!tracker.isLocked) {
-          // Instant snap on acquisition - eliminate cold-start coordinate drift
+          const padX = (maxX - minX) * 0.12;
+          const padY = (maxY - minY) * 0.15;
+          const targetX = Math.max(0, (minX - padX) * W);
+          const targetY = Math.max(0, (minY - padY * 1.4) * H);
+          const targetW = Math.min(W - targetX, (maxX - minX + padX * 2) * W);
+          const targetH = Math.min(H - targetY, (maxY - minY + padY * 2.2) * H);
+
+          tracker.targetX = targetX;
+          tracker.targetY = targetY;
+          tracker.targetW = targetW;
+          tracker.targetH = targetH;
+
+          // 1:1 Instant geometric follow - hovers and moves seamlessly with face
           tracker.x = targetX;
           tracker.y = targetY;
           tracker.w = targetW;
           tracker.h = targetH;
           tracker.isLocked = true;
+
+          // 1. Draw 468-Point Wireframe Tessellation (High-contrast subtle white)
+          if (tracker.meshStyle === 'bw_mesh') {
+            if (typeof FACEMESH_TESSELATION !== 'undefined' && typeof drawConnectors !== 'undefined') {
+              drawConnectors(faceCtx, lm, FACEMESH_TESSELATION, { color: '#FFFFFF35', lineWidth: 0.8 });
+            }
+          }
+
+          // 2. Draw Facial Contours in Crisp White
+          if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_contours') {
+            if (typeof drawConnectors !== 'undefined') {
+              if (typeof FACEMESH_FACE_OVAL !== 'undefined') {
+                drawConnectors(faceCtx, lm, FACEMESH_FACE_OVAL, { color: '#FFFFFFCC', lineWidth: 1.8 });
+              }
+              if (typeof FACEMESH_LIPS !== 'undefined') {
+                drawConnectors(faceCtx, lm, FACEMESH_LIPS, { color: '#FFFFFF', lineWidth: 2.2 });
+              }
+              if (typeof FACEMESH_LEFT_EYE !== 'undefined') {
+                drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYE, { color: '#FFFFFFEE', lineWidth: 1.8 });
+                drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYE, { color: '#FFFFFFEE', lineWidth: 1.8 });
+              }
+              if (typeof FACEMESH_LEFT_EYEBROW !== 'undefined') {
+                let browColor = '#FFFFFFEE';
+                if (tracker.eyebrowLiveState === 'shrunk') browColor = '#EF4444';
+                else if (tracker.eyebrowLiveState === 'enlarged') browColor = '#F59E0B';
+                else if (tracker.eyebrowLiveState === 'sad') browColor = '#60A5FA';
+
+                drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: browColor, lineWidth: 2.2 });
+                drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: browColor, lineWidth: 2.2 });
+              }
+              if (typeof FACEMESH_IRISES !== 'undefined') {
+                drawConnectors(faceCtx, lm, FACEMESH_IRISES, { color: '#22D3EE', lineWidth: 1.8 });
+              }
+            }
+          }
+
+          // 3. High-Contrast Landmark Dots (White center with crisp Black border)
+          if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_dots') {
+            const keyFeatureIndices = [
+              10, 152, 1, 33, 133, 159, 145, 263, 362, 386, 374,
+              55, 65, 70, 285, 295, 300,
+              61, 291, 0, 17, 13, 14, 78, 308, 168
+            ];
+            for (let k = 0; k < keyFeatureIndices.length; k++) {
+              const p = lm[keyFeatureIndices[k]];
+              if (p) {
+                const px = p.x * W;
+                const py = p.y * H;
+                faceCtx.beginPath();
+                faceCtx.arc(px, py, 2.5, 0, Math.PI * 2);
+                faceCtx.fillStyle = '#FFFFFF';
+                faceCtx.fill();
+                faceCtx.strokeStyle = '#000000';
+                faceCtx.lineWidth = 1.2;
+                faceCtx.stroke();
+              }
+            }
+          }
+
+          // 4. Subtle Tracking Reticle (High-Contrast Corner Brackets - Ice Cyan)
+          drawTrackingReticle(tracker.x, tracker.y, tracker.w, tracker.h);
+
+          // 5. High-Precision Geometric Facial Emotion Recognition (FACS Algorithm)
+          analyzeLiveFacialLandmarks(lm);
+
+          // Update HUD tracking lock state
+          const hudStatus = document.getElementById('hudTrackStatus');
+          if (hudStatus) {
+            hudStatus.innerText = '● 468 PT 3D MESH LOCKED';
+            hudStatus.className = 'hud-chip locked';
+          }
         } else {
-          // Fast-tracking responsive filter: 70% immediate follow + 30% stabilization
-          tracker.x = tracker.x * 0.30 + targetX * 0.70;
-          tracker.y = tracker.y * 0.30 + targetY * 0.70;
-          tracker.w = tracker.w * 0.30 + targetW * 0.70;
-          tracker.h = tracker.h * 0.30 + targetH * 0.70;
-        }
+          tracker.isLocked = false;
+          const hudStatus = document.getElementById('hudTrackStatus');
+          const elDistVal = document.getElementById('hudDistanceVal');
+          const elDistBadge = document.getElementById('hudDistanceBadge');
+          const elRatioVal = document.getElementById('hudRatioVal');
+          const elRatioBadge = document.getElementById('hudRatioBadge');
+          const elAnglesVal = document.getElementById('hudAnglesVal');
+          const elPoseGuidance = document.getElementById('hudPoseGuidance');
 
-        // 1. Draw 468-Point Wireframe Tessellation (High-contrast subtle white)
-        if (tracker.meshStyle === 'bw_mesh') {
-          if (typeof FACEMESH_TESSELATION !== 'undefined' && typeof drawConnectors !== 'undefined') {
-            drawConnectors(faceCtx, lm, FACEMESH_TESSELATION, { color: '#FFFFFF35', lineWidth: 0.8 });
+          if (hudStatus) {
+            hudStatus.innerText = '○ SEARCHING FACE...';
+            hudStatus.className = 'hud-chip';
+          }
+          if (elDistVal) elDistVal.innerText = '-- cm';
+          if (elDistBadge) { elDistBadge.innerText = 'SEARCHING'; elDistBadge.className = 'hud-quality-badge warning'; }
+          if (elRatioVal) elRatioVal.innerText = '--%';
+          if (elRatioBadge) { elRatioBadge.innerText = 'SEARCHING'; elRatioBadge.className = 'hud-quality-badge warning'; }
+          if (elAnglesVal) elAnglesVal.innerText = 'P: -- Y: -- R: --';
+          if (elPoseGuidance) {
+            elPoseGuidance.innerText = 'POSE: POSITION FACE IN FRAME';
+            elPoseGuidance.style.color = '#fbbf24';
           }
         }
-
-        // 2. Draw Facial Contours in Crisp White
-        if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_contours') {
-          if (typeof drawConnectors !== 'undefined') {
-            if (typeof FACEMESH_FACE_OVAL !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_FACE_OVAL, { color: '#FFFFFFCC', lineWidth: 1.8 });
-            }
-            if (typeof FACEMESH_LIPS !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LIPS, { color: '#FFFFFF', lineWidth: 2.2 });
-            }
-            if (typeof FACEMESH_LEFT_EYE !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYE, { color: '#FFFFFFEE', lineWidth: 1.8 });
-              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYE, { color: '#FFFFFFEE', lineWidth: 1.8 });
-            }
-            if (typeof FACEMESH_LEFT_EYEBROW !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_LEFT_EYEBROW, { color: '#FFFFFFEE', lineWidth: 2.0 });
-              drawConnectors(faceCtx, lm, FACEMESH_RIGHT_EYEBROW, { color: '#FFFFFFEE', lineWidth: 2.0 });
-            }
-            if (typeof FACEMESH_IRISES !== 'undefined') {
-              drawConnectors(faceCtx, lm, FACEMESH_IRISES, { color: '#22D3EE', lineWidth: 1.8 });
-            }
-          }
-        }
-
-        // 3. High-Contrast Landmark Dots (White center with crisp Black border)
-        if (tracker.meshStyle === 'bw_mesh' || tracker.meshStyle === 'bw_dots') {
-          const keyFeatureIndices = [
-            10, 152, 1, 33, 133, 159, 145, 263, 362, 386, 374,
-            55, 65, 70, 285, 295, 300,
-            61, 291, 0, 17, 13, 14, 78, 308, 168
-          ];
-          for (let k = 0; k < keyFeatureIndices.length; k++) {
-            const p = lm[keyFeatureIndices[k]];
-            if (p) {
-              const px = p.x * W;
-              const py = p.y * H;
-              faceCtx.beginPath();
-              faceCtx.arc(px, py, 2.5, 0, Math.PI * 2);
-              faceCtx.fillStyle = '#FFFFFF';
-              faceCtx.fill();
-              faceCtx.strokeStyle = '#000000';
-              faceCtx.lineWidth = 1.2;
-              faceCtx.stroke();
-            }
-          }
-        }
-
-        // 4. Subtle Tracking Reticle (High-Contrast Corner Brackets - Ice Cyan)
-        drawTrackingReticle(tracker.x, tracker.y, tracker.w, tracker.h);
-
-        // 5. High-Precision Geometric Facial Emotion Recognition (FACS Algorithm)
-        analyzeLiveFacialLandmarks(lm);
-
-        // Update HUD tracking lock state
-        const hudStatus = document.getElementById('hudTrackStatus');
-        if (hudStatus) {
-          hudStatus.innerText = '● 468 PT 3D MESH LOCKED';
-          hudStatus.className = 'hud-chip locked';
-        }
-      } else {
-        tracker.isLocked = false;
-        const hudStatus = document.getElementById('hudTrackStatus');
-        const elDistVal = document.getElementById('hudDistanceVal');
-        const elDistBadge = document.getElementById('hudDistanceBadge');
-        const elRatioVal = document.getElementById('hudRatioVal');
-        const elRatioBadge = document.getElementById('hudRatioBadge');
-        const elAnglesVal = document.getElementById('hudAnglesVal');
-        const elPoseGuidance = document.getElementById('hudPoseGuidance');
-
-        if (hudStatus) {
-          hudStatus.innerText = '○ SEARCHING FACE...';
-          hudStatus.className = 'hud-chip';
-        }
-        if (elDistVal) elDistVal.innerText = '-- cm';
-        if (elDistBadge) { elDistBadge.innerText = 'SEARCHING'; elDistBadge.className = 'hud-quality-badge warning'; }
-        if (elRatioVal) elRatioVal.innerText = '--%';
-        if (elRatioBadge) { elRatioBadge.innerText = 'SEARCHING'; elRatioBadge.className = 'hud-quality-badge warning'; }
-        if (elAnglesVal) elAnglesVal.innerText = 'P: -- Y: -- R: --';
-        if (elPoseGuidance) {
-          elPoseGuidance.innerText = 'POSE: POSITION FACE IN FRAME';
-          elPoseGuidance.style.color = '#fbbf24';
-        }
+      } catch (err) {
+        console.warn('[FaceMesh] Results processing error:', err);
       }
     }
 
