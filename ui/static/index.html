@@ -6392,6 +6392,7 @@
         if (hudTop) hudTop.style.display = 'none';
         tracker.smoothedProbs = null;
         tracker.isCalibrating = false;
+        tracker.isLocked = false;
       }
     });
 
@@ -6498,9 +6499,7 @@
 
       if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
         const lm = results.multiFaceLandmarks[0];
-        tracker.isLocked = true;
-
-        // Compute Dynamic Bounding Box from all 468 landmarks
+        // Compute Dynamic Bounding Box from all 468 landmarks (Immediate Geometric Lock)
         let minX = 1, maxX = 0, minY = 1, maxY = 0;
         for (let i = 0; i < lm.length; i++) {
           const p = lm[i];
@@ -6510,18 +6509,32 @@
           if (p.y > maxY) maxY = p.y;
         }
 
-        const padX = 0.05;
-        const padY = 0.08;
-        tracker.targetX = Math.max(0, (minX - padX) * W);
-        tracker.targetY = Math.max(0, (minY - padY * 1.5) * H);
-        tracker.targetW = Math.min(W - tracker.targetX, (maxX - minX + padX * 2) * W);
-        tracker.targetH = Math.min(H - tracker.targetY, (maxY - minY + padY * 2.5) * H);
+        const padX = (maxX - minX) * 0.12;
+        const padY = (maxY - minY) * 0.15;
+        const targetX = Math.max(0, (minX - padX) * W);
+        const targetY = Math.max(0, (minY - padY * 1.4) * H);
+        const targetW = Math.min(W - targetX, (maxX - minX + padX * 2) * W);
+        const targetH = Math.min(H - targetY, (maxY - minY + padY * 2.2) * H);
 
-        // Smooth spring damping
-        tracker.x += (tracker.targetX - tracker.x) * 0.35;
-        tracker.y += (tracker.targetY - tracker.y) * 0.35;
-        tracker.w += (tracker.targetW - tracker.w) * 0.35;
-        tracker.h += (tracker.targetH - tracker.h) * 0.35;
+        tracker.targetX = targetX;
+        tracker.targetY = targetY;
+        tracker.targetW = targetW;
+        tracker.targetH = targetH;
+
+        if (!tracker.isLocked) {
+          // Instant snap on acquisition - eliminate cold-start coordinate drift
+          tracker.x = targetX;
+          tracker.y = targetY;
+          tracker.w = targetW;
+          tracker.h = targetH;
+          tracker.isLocked = true;
+        } else {
+          // Fast-tracking responsive filter: 70% immediate follow + 30% stabilization
+          tracker.x = tracker.x * 0.30 + targetX * 0.70;
+          tracker.y = tracker.y * 0.30 + targetY * 0.70;
+          tracker.w = tracker.w * 0.30 + targetW * 0.70;
+          tracker.h = tracker.h * 0.30 + targetH * 0.70;
+        }
 
         // 1. Draw 468-Point Wireframe Tessellation (High-contrast subtle white)
         if (tracker.meshStyle === 'bw_mesh') {
