@@ -46,12 +46,18 @@ class EmotionPredictor:
         self.smoothed_face_probs = None
         self.smoothed_speech_probs = None
         self.smoothed_text_probs = None
+        self.baseline_mouth_curve = None
 
     def reset_smoothing(self):
         """Clears smoothing history for a fresh session."""
         self.smoothed_face_probs = None
         self.smoothed_speech_probs = None
         self.smoothed_text_probs = None
+        self.baseline_mouth_curve = None
+
+    def set_baseline_mouth_curve(self, curve: float):
+        """Calibrates the resting mouth curvature baseline for individual facial geometry."""
+        self.baseline_mouth_curve = float(curve)
 
     def _apply_ema(self, new_probs: Dict[str, float], past_probs: Optional[Dict[str, float]]) -> Dict[str, float]:
         """Applies Exponential Moving Average smoothing over probability dictionary."""
@@ -128,10 +134,12 @@ class EmotionPredictor:
         primary_bbox = bboxes[0]
         raw_emotion, raw_conf, raw_probs = self.face_model.predict(primary_tensor)
 
-        # Morphological Facial Style Analysis on face ROI
+        # Morphological Facial Style Analysis on face ROI with individual resting baseline curve
         x, y, w, h = primary_bbox
         face_crop = image_bgr[max(0, y):min(image_bgr.shape[0], y+h), max(0, x):min(image_bgr.shape[1], x+w)]
-        style_info = self.style_analyzer.analyze_face_style(face_crop, full_frame_bgr=image_bgr, bbox=primary_bbox)
+        style_info = self.style_analyzer.analyze_face_style(
+            face_crop, full_frame_bgr=image_bgr, bbox=primary_bbox, baseline_curve=self.baseline_mouth_curve
+        )
         style_probs = style_info.get("probabilities", raw_probs)
 
         # Ensemble blend: 82% Deep CNN + 18% Morphological Style Rules

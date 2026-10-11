@@ -6142,6 +6142,7 @@
         mouthAperture: 0.015,
         mouthWidth: 0.74,
         griefSlant: 0.00,
+        lipCornerDepress: 0.00,
         isCalibrated: false
       }
     };
@@ -6162,7 +6163,8 @@
       sumSmileElevation: 0,
       sumMouthAperture: 0,
       sumMouthWidth: 0,
-      sumGriefSlant: 0
+      sumGriefSlant: 0,
+      sumLipCornerDepress: 0
     };
 
     function startBaselineCalibration() {
@@ -6920,7 +6922,17 @@
       const griefSlant = (baseline && baseline.isCalibrated)
         ? (rawGriefSlant - baseline.griefSlant + 0.01)
         : rawGriefSlant;
-      const lipCornerDepress = rawLipCornerDepress;
+      // Baseline-relative Lip Corner Depression (Sadness AU15)
+      // Indian anthropometric mouth structures often present a natural resting downturned corner.
+      // We calibrate the resting corner position as Neutral: any downward movement BELOW the resting baseline
+      // is immediately recognized as Sadness (Depressor Anguli Oris activation).
+      const baselineDepress = (baseline && baseline.isCalibrated && baseline.lipCornerDepress !== undefined)
+        ? baseline.lipCornerDepress
+        : 0.005;
+      const relativeDrop = rawLipCornerDepress - baselineDepress;
+      const lipCornerDepress = (baseline && baseline.isCalibrated)
+        ? Math.max(0, relativeDrop + 0.02)
+        : rawLipCornerDepress;
       const lipStretch = rawLipStretch;
 
       const rawFeatures = {
@@ -6973,8 +6985,10 @@
         rawFeatures.brow_height = Math.min(rawFeatures.brow_height, 0.110);
       }
       // 4. SAD (AU15 Depressor Anguli Oris + AU1 Inner Brow Lift Grief Slant)
-      if (rawLipCornerDepress > 0.0065 || rawGriefSlant > 0.014 || (isBrowShrunk && rawLipCornerDepress > 0.004)) {
-        rawFeatures.lip_corner_depress = Math.max(rawFeatures.lip_corner_depress, 0.030);
+      // If curve drops below resting baseline OR grief slant / brow knit is present
+      const isDroppingBelowBaseline = (baseline && baseline.isCalibrated) ? (relativeDrop > 0.0035) : (rawLipCornerDepress > 0.0065);
+      if (isDroppingBelowBaseline || rawGriefSlant > 0.014 || (isBrowShrunk && relativeDrop > 0.002)) {
+        rawFeatures.lip_corner_depress = Math.max(rawFeatures.lip_corner_depress, 0.034);
         rawFeatures.grief_slant = Math.max(rawFeatures.grief_slant, 0.028);
       }
 
@@ -7039,6 +7053,7 @@
         rawMouthAperture,
         rawMouthWidth,
         rawGriefSlant,
+        rawLipCornerDepress,
         datasetBenchmark: 'AffectNet & RAF-DB'
       };
     }
@@ -7128,7 +7143,7 @@
       const affResult = computeAffectNetLandmarkPrediction(lm, tracker.baseline, activeFaceOffsets);
       if (!affResult) return;
 
-      const { cosPitch, avgEAR, rawBrowH, rawInnerBrowDist, rawSmileElev, rawMouthAperture, rawMouthWidth, rawGriefSlant } = affResult;
+      const { cosPitch, avgEAR, rawBrowH, rawInnerBrowDist, rawSmileElev, rawMouthAperture, rawMouthWidth, rawGriefSlant, rawLipCornerDepress } = affResult;
 
       // 3. Adaptive Dynamic Baseline Calibration
       if (tracker.isCalibrating || !tracker.baseline.isCalibrated) {
@@ -7140,6 +7155,7 @@
         baselineAccum.sumMouthAperture += rawMouthAperture;
         baselineAccum.sumMouthWidth += rawMouthWidth;
         baselineAccum.sumGriefSlant += rawGriefSlant;
+        baselineAccum.sumLipCornerDepress += rawLipCornerDepress;
         baselineAccum.count++;
 
         const calChip = document.getElementById('hudCalibrationChip');
@@ -7157,6 +7173,7 @@
           tracker.baseline.mouthAperture = baselineAccum.sumMouthAperture / baselineAccum.count;
           tracker.baseline.mouthWidth = baselineAccum.sumMouthWidth / baselineAccum.count;
           tracker.baseline.griefSlant = baselineAccum.sumGriefSlant / baselineAccum.count;
+          tracker.baseline.lipCornerDepress = baselineAccum.sumLipCornerDepress / baselineAccum.count;
           tracker.baseline.isCalibrated = true;
           tracker.isCalibrating = false;
 
@@ -7256,10 +7273,11 @@
         eyesText = 'Narrowed Glare';
         browText = 'Shrunk & Knitted 😠 (AU4 Furrow)';
       } else if (liveEmotion === 'Sad') {
-        mouthText = 'Curved Down Corners 🙁';
+        mouthText = (relativeDrop > 0.0035) ? 'Depressed Below Resting Baseline 🙁 (AU15)' : 'Curved Down Corners 🙁';
         eyesText = 'Drooping / Soft';
         browText = 'Inner Brow Raised / Knitted 🙁 (AU1)';
       } else {
+        mouthText = (baseline && baseline.isCalibrated) ? 'Resting Baseline (Calibrated Neutral) 😐' : 'Normal Line 😐';
         browText = browDynamicText;
       }
 

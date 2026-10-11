@@ -61,10 +61,12 @@ class FacialStyleAnalyzer:
         equalized = clahe.apply(resized)
         return equalized
 
-    def _extract_mouth_morphology(self, face: np.ndarray, glab_furrow: float) -> Dict[str, Any]:
+    def _extract_mouth_morphology(self, face: np.ndarray, glab_furrow: float, baseline_curve: Optional[float] = None) -> Dict[str, Any]:
         """
         Analyzes the lower facial region (mouth and lips):
         - Detects mouth contour curvature (upwards/smile, downwards/frown, horizontal/neutral)
+        - Uses initial calibrated resting curve as Neutral reference: if live curve drops significantly below
+          the baseline curve, it is classified as Curved Down (Frown / Sadness).
         - Detects vertical gape / mouth opening ratio
         - Checks smile cascade presence
         """
@@ -103,6 +105,7 @@ class FacialStyleAnalyzer:
         aspect = 0.35
         curve = 0.0
         w_c, h_c = 50, 18
+        best = None
         if candidates:
             # Pick contour closest to mouth center with significant area
             candidates.sort(key=lambda item: (item[0], -item[1]))
@@ -121,15 +124,22 @@ class FacialStyleAnalyzer:
             mid_y = (float(pt_top[1]) + float(pt_bot[1])) / 2.0
             curve = float(mid_y - corners_y)
 
-        # 3. Classify Mouth Style
+        # 3. Classify Mouth Style with Baseline Normalization
         mouth_y_pos = best[3][1] if candidates else int(mh * 0.3)
+        
+        # Calculate deviation from resting baseline curve:
+        # If baseline is known, delta < -1.8 indicates genuine depressive mouth corner drop
+        ref_curve = baseline_curve if baseline_curve is not None else 1.5
+        curve_drop = float(curve - ref_curve)
+        is_depressed_from_baseline = (baseline_curve is not None and curve_drop <= -1.8)
+
         if aspect >= 0.68:
             mouth_style = "Full Open"
         elif (has_smile and curve >= 3.5) or curve > 4.5:
             mouth_style = "Curved Up (Smiley)"
         elif aspect < 0.25 and glab_furrow >= 26.0:
             mouth_style = "Tense / Compressed"
-        elif curve <= -1.0:
+        elif is_depressed_from_baseline or curve <= -0.5:
             mouth_style = "Curved Down (Frown)"
         elif abs(curve) <= 3.2 and aspect < 0.55:
             mouth_style = "Neutral Horizontal"
@@ -143,6 +153,7 @@ class FacialStyleAnalyzer:
             "has_smile": has_smile,
             "aspect_ratio": aspect,
             "curvature": curve,
+            "curve_drop_from_baseline": curve_drop,
             "contour_width": w_c,
             "contour_height": h_c
         }
@@ -365,11 +376,13 @@ class FacialStyleAnalyzer:
         self,
         face_bgr_or_gray: np.ndarray,
         full_frame_bgr: Optional[np.ndarray] = None,
-        bbox: Optional[Tuple[int, int, int, int]] = None
+        bbox: Optional[Tuple[int, int, int, int]] = None,
+        baseline_curve: Optional[float] = None
     ) -> Dict[str, Any]:
         """
         Executes end-to-end morphological facial style analysis:
         - Extracts mouth, eye, and forehead morphology
+        - Normalizes mouth downward drop against individual resting baseline_curve
         - Matches human-interpretable micro-expression rules
         - Calculates calibrated probability distribution across 5 emotions
         """
@@ -395,8 +408,8 @@ class FacialStyleAnalyzer:
         forehead_info = self._extract_forehead_morphology(face)
         glab_furrow = forehead_info["glabella_furrow"]
 
-        # 2. Mouth
-        mouth_info = self._extract_mouth_morphology(face, glab_furrow)
+        # 2. Mouth (with baseline resting curvature comparison)
+        mouth_info = self._extract_mouth_morphology(face, glab_furrow, baseline_curve=baseline_curve)
         mouth_aspect = mouth_info["aspect_ratio"]
 
         # 3. Eyes
@@ -504,6 +517,7 @@ class FacialStyleAnalyzer:
                 "aspect_ratio": float(face_type_info["aspect_ratio"]),
                 "fitzpatrick_tone": face_type_info["fitzpatrick_tone"],
                 "mouth_curvature": float(mouth_info["curvature"]),
+                "curve_drop_from_baseline": float(mouth_info["curve_drop_from_baseline"]),
                 "mouth_aspect_ratio": float(mouth_info["aspect_ratio"]),
                 "smile_detected": bool(mouth_info["has_smile"]),
                 "eyes_detected": int(eye_info["eyes_detected"]),
