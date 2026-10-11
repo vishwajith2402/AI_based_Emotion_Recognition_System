@@ -172,12 +172,6 @@ class MultimodalFusion:
                 fused_probs = {k: float(v / total_p) for k, v in fused_probs.items()}
 
             best_emotion = max(fused_probs, key=fused_probs.get)
-            # Expressive Salience Calibration: prevent neutral resting baseline from dominating active expressions
-            if best_emotion == "Neutral":
-                non_neutral = {e: p for e, p in fused_probs.items() if e != "Neutral"}
-                best_nn = max(non_neutral, key=non_neutral.get)
-                if non_neutral[best_nn] >= 0.22 and (fused_probs["Neutral"] - non_neutral[best_nn]) < 0.15:
-                    best_emotion = best_nn
             confidence = fused_probs[best_emotion]
 
             is_conflict, conflict_score, reason = self.compute_tri_conflict(active_modalities)

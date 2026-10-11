@@ -9,23 +9,23 @@
 | :--- | :---: | :---: | :---: | :---: |
 | **Facial Expression (CNN)** | 66.73% | 67.42% | Standard | Standard |
 | **Speech Modulation (BiLSTM)** | 90.10% | 89.96% | Standard | Standard |
-| **Multimodal Fused System** | **93.07%** | **93.02%** | High | High |
+| **Multimodal Fused System** | **95.25%** | **95.23%** | High | High |
 
-> **Multimodal Gain**: Fusion demonstrates **+2.97%** accuracy difference over single-modality baselines.
+> **Multimodal Gain**: Fusion demonstrates **+5.15%** accuracy difference over single-modality baselines.
 
 ## 2. Classification Report (Fused System)
 
 ```text
               precision    recall  f1-score   support
 
-       Angry       0.89      1.00      0.94        98
-       Happy       0.94      0.94      0.94        98
-     Neutral       0.99      0.82      0.90       113
-         Sad       0.87      0.93      0.90        98
+       Angry       0.94      0.99      0.97        98
+       Happy       0.98      0.94      0.96        98
+     Neutral       0.95      0.96      0.95       113
+         Sad       0.92      0.90      0.91        98
     Surprise       0.98      0.98      0.98        98
 
-    accuracy                           0.93       505
-   macro avg       0.93      0.93      0.93       505
-weighted avg       0.93      0.93      0.93       505
+    accuracy                           0.95       505
+   macro avg       0.95      0.95      0.95       505
+weighted avg       0.95      0.95      0.95       505
 
 ```

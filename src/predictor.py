@@ -145,11 +145,6 @@ class EmotionPredictor:
         probs = self._apply_ema(blended, self.smoothed_face_probs)
         self.smoothed_face_probs = probs
         top_emotion = max(probs, key=probs.get)
-        if top_emotion == "Neutral":
-            non_neutral = {e: p for e, p in probs.items() if e != "Neutral"}
-            best_nn = max(non_neutral, key=non_neutral.get)
-            if non_neutral[best_nn] >= 0.22 and (probs["Neutral"] - non_neutral[best_nn]) < 0.15:
-                top_emotion = best_nn
         conf = probs[top_emotion]
 
         return {
