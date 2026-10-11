@@ -11,8 +11,10 @@ venv/
 env/
 ENV/
 
-# Training / Test raw datasets (FER2013, RAVDESS, TESS >300MB)
-data/
+# Training / Test raw datasets (FER2013, RAVDESS, TESS, Face-Types >300MB)
+data/facial/
+data/speech/
+data/face_types/
 
 # Environment / secrets
 .env
