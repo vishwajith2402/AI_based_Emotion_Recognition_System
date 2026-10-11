@@ -241,10 +241,12 @@ class FacePreprocessor:
 
         # Morphological Style Bottom Tag (if provided)
         if style_info and isinstance(style_info, dict):
+            ft = style_info.get("face_type", "")
+            prefix = f"[{ft}] " if ft else ""
             m_s = style_info.get("mouth_style", "Normal").replace("Curved ", "").replace(" (Smiley)", "").replace(" (Frown)", "")
             e_s = style_info.get("eye_style", "Normal").replace(" (Drooping)", "")
             f_s = "Smooth" if "Smooth" in style_info.get("forehead_style", "") else ("Shrunk" if "Shrunk" in style_info.get("forehead_style", "") else "Raised")
-            style_tag = f"Mouth: {m_s} | Eyes: {e_s} | Brow: {f_s}"
+            style_tag = f"{prefix}Mouth: {m_s} | Eyes: {e_s} | Brow: {f_s}"
 
             (st_w, st_h), _ = cv2.getTextSize(style_tag, cv2.FONT_HERSHEY_SIMPLEX, 0.38, 1)
             bot_y = y + h + st_h + 8

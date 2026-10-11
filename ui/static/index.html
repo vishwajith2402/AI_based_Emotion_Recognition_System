@@ -5004,11 +5004,15 @@
               <span class="hud-chip" id="hudAnglesChip">
                 <span style="color: #a78bfa; font-weight: 700;">ANGLES:</span> <span id="hudAnglesVal">P: 0° Y: 0° R: 0°</span>
               </span>
+              <span class="hud-chip" id="hudFaceShapePill" style="border-color: rgba(192, 132, 252, 0.4);">
+                <span style="color: #c084fc; font-weight: 700;">SHAPE:</span> <span id="hudFaceShapeVal">PROFILING...</span>
+              </span>
             </div>
 
             <div class="hud-metrics-overlay" id="camHudOverlay" style="display: none;">
               <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
-              <span class="hud-chip" id="hudCalibrationChip">AUTO-CALIBRATING...</span>
+              <span class="hud-chip" id="hudFaceTypeChip" style="background: rgba(168, 85, 247, 0.22); border-color: rgba(168, 85, 247, 0.55); color: #d8b4fe; font-weight: 700;">STAGE 1: PROFILING FACE TYPE...</span>
+              <span class="hud-chip" id="hudCalibrationChip">STAGE 2: AFFECT READY</span>
               <span class="hud-chip" id="hudEngineChip">ENGINE: AFFECTNET 14-AU</span>
               <span class="hud-chip" id="hudDemographicChip" style="background: rgba(34, 197, 94, 0.18); border-color: rgba(34, 197, 94, 0.45); color: #4ade80;">🇮🇳 INDIC CALIBRATED</span>
               <span class="hud-chip" id="hudPoseGuidance" style="color: var(--cyan);">POSE: READY</span>
@@ -5296,6 +5300,14 @@
           <div class="diag-item">
             <span class="diag-key">Brow Elevation / Furrow</span>
             <span class="diag-val" id="valForehead">Smooth Plain</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">Face Type & Morphology</span>
+            <span class="diag-val" id="valFaceType" style="color: #c084fc;">Profiling Face Type...</span>
+          </div>
+          <div class="diag-item">
+            <span class="diag-key">AI Pipeline Stage</span>
+            <span class="diag-val" id="valPipelineStage" style="color: #38bdf8;">Stage 1: Morphology Profiling</span>
           </div>
           <div class="diag-item">
             <span class="diag-key">Acoustic Sampling</span>
@@ -6115,6 +6127,11 @@
       isLocked: false,
       smoothedProbs: null,
       headPose: { roll: 0, pitch: 0, yaw: 0 },
+      faceType: null,
+      faceTypeLocked: false,
+      faceTypeFrames: 0,
+      currentPipelineStage: 1, // Stage 1: Face Type Profiler, Stage 2: Calibrated Emotion Recognition
+      faceTypeDetails: null,
       isCalibrating: false,
       calibrationFrames: 0,
       baseline: {
@@ -6127,6 +6144,14 @@
         griefSlant: 0.00,
         isCalibrated: false
       }
+    };
+
+    const faceTypeAccum = {
+      count: 0,
+      ratioSum: 0,
+      jawSum: 0,
+      foreheadSum: 0,
+      votes: {}
     };
 
     const baselineAccum = {
@@ -6152,9 +6177,25 @@
       baselineAccum.sumMouthWidth = 0;
       baselineAccum.sumGriefSlant = 0;
 
+      // Reset Stage 1 Face Type Profiling
+      tracker.faceTypeLocked = false;
+      tracker.currentPipelineStage = 1;
+      faceTypeAccum.count = 0;
+      faceTypeAccum.ratioSum = 0;
+      faceTypeAccum.jawSum = 0;
+      faceTypeAccum.foreheadSum = 0;
+      faceTypeAccum.votes = {};
+
+      const elFaceChip = document.getElementById('hudFaceTypeChip');
+      if (elFaceChip) {
+        elFaceChip.innerText = 'STAGE 1: PROFILING FACE TYPE...';
+        elFaceChip.style.color = '#d8b4fe';
+        elFaceChip.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+      }
+
       const calChip = document.getElementById('hudCalibrationChip');
       if (calChip) {
-        calChip.innerText = 'CALIBRATING (1s)... KEEP NEUTRAL';
+        calChip.innerText = 'STAGE 2: CALIBRATING... KEEP NEUTRAL';
         calChip.style.borderColor = 'var(--status-warning)';
         calChip.style.color = 'var(--status-warning)';
       }
@@ -6741,7 +6782,70 @@
       }
     };
 
-    function computeAffectNetLandmarkPrediction(lm, baseline = null) {
+    // 🧬 Stage 1: Anthropometric Face Type & Morphology Profiler
+    function computeFaceType(lm) {
+      if (!lm || lm.length < 468) return null;
+
+      // 1. Key Anthropometric Landmarks
+      // Trichion / Forehead Top: 10
+      // Menton / Chin Tip: 152
+      // Outer Cheekbones (Zygoma): Left 234, Right 454
+      // Jaw Corners (Gonion): Left 172, Right 397
+      // Temple Forehead Width: Left 54, Right 284
+      const faceLength = dist(lm[10], lm[152]);
+      const cheekWidth = Math.max(0.01, dist(lm[234], lm[454]));
+      const jawWidth = Math.max(0.01, dist(lm[172], lm[397]));
+      const foreheadWidth = Math.max(0.01, dist(lm[54], lm[284]));
+
+      const ratio = faceLength / cheekWidth;
+      const jawCheekRatio = jawWidth / cheekWidth;
+      const jawForeheadRatio = jawWidth / foreheadWidth;
+      const foreheadCheekRatio = foreheadWidth / cheekWidth;
+
+      let faceType = 'Oval';
+      let typeDesc = 'Balanced Classical Proportions (Subtle Taper)';
+      let auOffsets = { au6Cheek: 0.0, au12Smile: 0.0, au26Jaw: 0.0, au1Brow: 0.0, au15Depress: 0.0 };
+
+      // Anthropometric Shape Decision Tree
+      if (ratio < 1.18 && jawCheekRatio < 0.85) {
+        faceType = 'Round';
+        typeDesc = 'Fuller Zygomatic Cheeks, Soft Curved Jaw';
+        auOffsets.au6Cheek = -0.045; // neutralize resting cheek fullness
+        auOffsets.au12Smile = 0.002;
+      } else if (ratio < 1.25 && jawCheekRatio >= 0.84) {
+        faceType = 'Square';
+        typeDesc = 'Strong Angular Jawline, Structured Frame';
+        auOffsets.au26Jaw = 0.025; // normalize wide jaw tension
+        auOffsets.au4Furrow = -0.01;
+      } else if (ratio > 1.42) {
+        faceType = 'Oblong';
+        typeDesc = 'Elongated Facial Plane, Slender Vertical Profile';
+        auOffsets.au1Brow = 0.018; // normalize vertical brow displacement
+        auOffsets.au12Smile = -0.003;
+      } else if (foreheadCheekRatio > 0.94 && jawForeheadRatio < 0.76) {
+        faceType = 'Heart';
+        typeDesc = 'Broad Forehead, High Cheekbones, Tapered Pointed Chin';
+        auOffsets.au15Depress = -0.004; // normalize narrow chin tip
+      } else if (foreheadCheekRatio < 0.85 && jawCheekRatio < 0.80) {
+        faceType = 'Diamond';
+        typeDesc = 'Sculpted Cheekbones, Narrow Forehead & Delicate Jaw';
+        auOffsets.au6Cheek = -0.025;
+      } else {
+        faceType = 'Oval';
+        typeDesc = 'Harmonic Proportions, Gentle Soft Jaw Taper';
+      }
+
+      return {
+        faceType,
+        typeDesc,
+        ratio: parseFloat(ratio.toFixed(2)),
+        jawCheekRatio: parseFloat(jawCheekRatio.toFixed(2)),
+        foreheadCheekRatio: parseFloat(foreheadCheekRatio.toFixed(2)),
+        auOffsets
+      };
+    }
+
+    function computeAffectNetLandmarkPrediction(lm, baseline = null, faceOffsets = null) {
       if (!lm || lm.length < 468) return null;
 
       // 1. Distance scales
@@ -6825,6 +6929,15 @@
         lip_corner_depress: lipCornerDepress,
         lip_stretch: lipStretch
       };
+
+      // Apply Stage 1 Face Type offsets to neutralize morphological baseline differences
+      if (faceOffsets) {
+        if (faceOffsets.au6Cheek) rawFeatures.duchenne_eye_corner = Math.max(0, rawFeatures.duchenne_eye_corner + faceOffsets.au6Cheek);
+        if (faceOffsets.au12Smile) rawFeatures.smile_elev = Math.max(0, rawFeatures.smile_elev + faceOffsets.au12Smile);
+        if (faceOffsets.au26Jaw) rawFeatures.mouth_aperture = Math.max(0, rawFeatures.mouth_aperture + faceOffsets.au26Jaw);
+        if (faceOffsets.au1Brow) rawFeatures.brow_height = Math.max(0, rawFeatures.brow_height + faceOffsets.au1Brow);
+        if (faceOffsets.au15Depress) rawFeatures.lip_corner_depress = Math.max(0, rawFeatures.lip_corner_depress + faceOffsets.au15Depress);
+      }
 
       // 4b. Multi-Expression FACS Action Unit Calibration (Tuned for Indian Facial Micro-Expressions & Subtle Affect)
       // 1. HAPPY (Subtle Smile AU12 Zygomatic Major + AU6 Duchenne Cheek Lift)
@@ -6937,8 +7050,68 @@
       tracker.headPose.pitch = deltaPitch * (180 / Math.PI);
       tracker.headPose.yaw = yawRatio * 45;
 
-      // 2. AffectNet & RAF-DB 14-Action Unit Evaluation
-      const affResult = computeAffectNetLandmarkPrediction(lm, tracker.baseline);
+      // ── Stage 1: Analyze Face Type & Anthropometric Geometry ────────────
+      const ftResult = computeFaceType(lm);
+      const elFaceChip = document.getElementById('hudFaceTypeChip');
+      const elShapePill = document.getElementById('hudFaceShapeVal');
+      const elValFaceType = document.getElementById('valFaceType');
+      const elValStage = document.getElementById('valPipelineStage');
+
+      if (ftResult) {
+        if (!tracker.faceTypeLocked) {
+          faceTypeAccum.count++;
+          faceTypeAccum.ratioSum += ftResult.ratio;
+          faceTypeAccum.jawSum += ftResult.jawCheekRatio;
+          faceTypeAccum.foreheadSum += ftResult.foreheadCheekRatio;
+          faceTypeAccum.votes[ftResult.faceType] = (faceTypeAccum.votes[ftResult.faceType] || 0) + 1;
+
+          if (elFaceChip) {
+            elFaceChip.innerText = `STAGE 1: PROFILING FACE TYPE (${Math.max(1, 15 - faceTypeAccum.count)})...`;
+            elFaceChip.style.color = '#d8b4fe';
+            elFaceChip.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+          }
+          if (elShapePill) elShapePill.innerText = 'PROFILING...';
+          if (elValStage) elValStage.innerText = 'Stage 1: Profiling Face Type';
+          if (elValFaceType) elValFaceType.innerText = `${ftResult.faceType} (Analyzing...)`;
+
+          if (faceTypeAccum.count >= 15) {
+            // Lock winning face shape
+            const winningType = Object.keys(faceTypeAccum.votes).reduce((a, b) => faceTypeAccum.votes[a] > faceTypeAccum.votes[b] ? a : b);
+            const avgRatio = (faceTypeAccum.ratioSum / faceTypeAccum.count).toFixed(2);
+            tracker.faceType = winningType;
+            tracker.faceTypeLocked = true;
+            tracker.currentPipelineStage = 2;
+            tracker.faceTypeDetails = {
+              faceType: winningType,
+              avgRatio,
+              typeDesc: ftResult.typeDesc,
+              auOffsets: ftResult.auOffsets
+            };
+
+            if (elFaceChip) {
+              elFaceChip.innerText = `👤 [1] FACE: ${winningType.toUpperCase()} (${avgRatio}) LOCKED ✓`;
+              elFaceChip.style.color = '#34d399';
+              elFaceChip.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+            }
+            if (elShapePill) elShapePill.innerText = `${winningType.toUpperCase()} (${avgRatio})`;
+            if (elValFaceType) elValFaceType.innerText = `${winningType} (${avgRatio} Ratio) - ${ftResult.typeDesc}`;
+            if (elValStage) elValStage.innerText = 'Stage 2: Calibrated Affect Active';
+          }
+        } else if (tracker.faceTypeDetails) {
+          if (elFaceChip) {
+            elFaceChip.innerText = `👤 [1] FACE: ${tracker.faceTypeDetails.faceType.toUpperCase()} (${tracker.faceTypeDetails.avgRatio}) LOCKED ✓`;
+            elFaceChip.style.color = '#34d399';
+            elFaceChip.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+          }
+          if (elShapePill) elShapePill.innerText = `${tracker.faceTypeDetails.faceType.toUpperCase()} (${tracker.faceTypeDetails.avgRatio})`;
+          if (elValFaceType) elValFaceType.innerText = `${tracker.faceTypeDetails.faceType} (${tracker.faceTypeDetails.avgRatio} Ratio)`;
+          if (elValStage) elValStage.innerText = 'Stage 2: Calibrated Affect Active';
+        }
+      }
+
+      // ── Stage 2: Calibrated Emotion Recognition ─────────────────────────
+      const activeFaceOffsets = tracker.faceTypeDetails ? tracker.faceTypeDetails.auOffsets : (ftResult ? ftResult.auOffsets : null);
+      const affResult = computeAffectNetLandmarkPrediction(lm, tracker.baseline, activeFaceOffsets);
       if (!affResult) return;
 
       const { cosPitch, avgEAR, rawBrowH, rawInnerBrowDist, rawSmileElev, rawMouthAperture, rawMouthWidth, rawGriefSlant } = affResult;

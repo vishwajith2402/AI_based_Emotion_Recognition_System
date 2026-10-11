@@ -154,6 +154,8 @@ class EmotionPredictor:
             "probabilities": probs,
             "bboxes": bboxes,
             "landmarks": landmarks_list,
+            "face_type": style_info.get("face_type", "Oval"),
+            "pipeline_stage": style_info.get("pipeline_stage", "Stage 2: Affect Calibrated"),
             "facial_style": style_info,
             "style_description": style_info.get("style_description", "")
         }

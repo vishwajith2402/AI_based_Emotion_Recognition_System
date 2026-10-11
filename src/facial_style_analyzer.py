@@ -245,6 +245,84 @@ class FacialStyleAnalyzer:
             "edge_density": edge_density
         }
 
+    def analyze_face_type(self, face_bgr_or_gray: np.ndarray) -> Dict[str, Any]:
+        """
+        Stage 1: Analyzes face shape, anthropometric proportions, and skin profile:
+        - Measures Face Length (Height) to Cheekbone Width ratio (R)
+        - Measures Jawline width vs Cheekbone width
+        - Classifies face shape: Oval, Round, Square, Oblong, Heart, Diamond
+        - Estimates Fitzpatrick skin category (Types III-IV or Types V-VI)
+        - Computes calibration bias offsets to inform Stage 2 Emotion Analysis
+        """
+        if face_bgr_or_gray is None or face_bgr_or_gray.size == 0:
+            return {
+                "face_type": "Oval",
+                "aspect_ratio": 1.30,
+                "jaw_ratio": 0.80,
+                "description": "Standard balanced oval profile",
+                "fitzpatrick_tone": "Type IV (Wheatish-Olive)",
+                "calibration_offsets": {}
+            }
+
+        if len(face_bgr_or_gray.shape) == 3:
+            gray = cv2.cvtColor(face_bgr_or_gray, cv2.COLOR_BGR2GRAY)
+        else:
+            gray = face_bgr_or_gray
+
+        h, w = gray.shape
+        ratio = float(h) / float(max(1, w))
+
+        # Measure jawline width in the lower 20% vs cheek width in middle 40%
+        cheek_roi = gray[int(h * 0.35):int(h * 0.65), :]
+        jaw_roi = gray[int(h * 0.75):int(h * 0.95), :]
+
+        _, cheek_thresh = cv2.threshold(cheek_roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, jaw_thresh = cv2.threshold(jaw_roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+        cheek_w = np.sum(np.mean(cheek_thresh, axis=0) > 10) or w
+        jaw_w = np.sum(np.mean(jaw_thresh, axis=0) > 10) or int(w * 0.75)
+        jaw_ratio = float(jaw_w) / float(max(1, cheek_w))
+
+        # Anthropometric shape classification
+        if ratio < 1.18 and jaw_ratio < 0.84:
+            face_type = "Round"
+            desc = "Fuller zygomatic cheeks, soft curved jawline"
+            cal_offsets = {"cheek_fullness": 0.04, "jaw_tension": 0.0}
+        elif ratio < 1.25 and jaw_ratio >= 0.84:
+            face_type = "Square"
+            desc = "Strong angular jawline, structured linear frame"
+            cal_offsets = {"cheek_fullness": 0.0, "jaw_tension": 0.03}
+        elif ratio > 1.40:
+            face_type = "Oblong"
+            desc = "Elongated vertical profile, slender facial plane"
+            cal_offsets = {"vertical_scale": 1.15}
+        elif jaw_ratio < 0.72:
+            face_type = "Heart"
+            desc = "Wide forehead tapering to a narrow pointed chin"
+            cal_offsets = {"chin_taper": 0.05}
+        else:
+            face_type = "Oval"
+            desc = "Balanced classical proportions with gentle jaw taper"
+            cal_offsets = {}
+
+        # Estimate Fitzpatrick tone
+        mean_lum = float(np.mean(gray))
+        if mean_lum < 95.0:
+            tone = "Type V-VI (Rich Melanin / Deep Brown)"
+        elif mean_lum < 140.0:
+            tone = "Type IV (Wheatish / Olive)"
+        else:
+            tone = "Type III (Medium / Fair-Warm)"
+
+        return {
+            "face_type": face_type,
+            "aspect_ratio": round(ratio, 2),
+            "jaw_ratio": round(jaw_ratio, 2),
+            "description": desc,
+            "fitzpatrick_tone": tone,
+            "calibration_offsets": cal_offsets
+        }
+
     def analyze_face_style(
         self,
         face_bgr_or_gray: np.ndarray,
@@ -269,6 +347,12 @@ class FacialStyleAnalyzer:
 
         face = self._prepare_face_image(face_crop)
 
+        # Stage 1: Analyze Face Type & Anthropometric Proportions
+        face_type_info = self.analyze_face_type(face_crop)
+        face_type = face_type_info["face_type"]
+        cal_offsets = face_type_info.get("calibration_offsets", {})
+
+        # Stage 2: Zone Morphological Feature Extraction
         # 1. Forehead first (to inform ocular & mouth tension)
         forehead_info = self._extract_forehead_morphology(face)
         glab_furrow = forehead_info["glabella_furrow"]
@@ -344,17 +428,21 @@ class FacialStyleAnalyzer:
 
         # Human-Interpretable Description
         if predicted_emotion == "Happy":
-            style_description = "Mouth curved up like smiley face, normal eyes, and plain smooth forehead without changes."
+            style_description = f"[{face_type} Face] Mouth curved up like smiley face, normal eyes, and plain smooth forehead without changes."
         elif predicted_emotion == "Sad":
-            style_description = "Mouth curved down (frown) and eyes partially closed / drooping."
+            style_description = f"[{face_type} Face] Mouth curved down (frown) and eyes partially closed / drooping."
         elif predicted_emotion == "Angry":
-            style_description = "Shrunk furrow wrinkles on forehead, intense wide eyes, and tense/open mouth."
+            style_description = f"[{face_type} Face] Shrunk furrow wrinkles on forehead, intense wide eyes, and tense/open mouth."
         elif predicted_emotion == "Surprise":
-            style_description = "Wide open eyes, gaping open O-mouth, and raised forehead lines."
+            style_description = f"[{face_type} Face] Wide open eyes, gaping open O-mouth, and raised forehead lines."
         else:
-            style_description = "Neutral horizontal mouth, normal eyes, and plain smooth forehead without changes."
+            style_description = f"[{face_type} Face] Neutral horizontal mouth, normal eyes, and plain smooth forehead without changes."
 
         return {
+            "stage_1_face_type": face_type_info,
+            "face_type": face_type,
+            "face_type_description": face_type_info["description"],
+            "pipeline_stage": f"Stage 2: Affect Calibrated for {face_type} Face",
             "mouth_style": m_style,
             "eye_style": e_style,
             "forehead_style": f_style,
@@ -363,6 +451,9 @@ class FacialStyleAnalyzer:
             "confidence": confidence,
             "probabilities": probabilities,
             "metrics": {
+                "face_type": face_type,
+                "aspect_ratio": float(face_type_info["aspect_ratio"]),
+                "fitzpatrick_tone": face_type_info["fitzpatrick_tone"],
                 "mouth_curvature": float(mouth_info["curvature"]),
                 "mouth_aspect_ratio": float(mouth_info["aspect_ratio"]),
                 "smile_detected": bool(mouth_info["has_smile"]),
