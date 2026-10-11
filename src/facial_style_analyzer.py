@@ -123,20 +123,20 @@ class FacialStyleAnalyzer:
 
         # 3. Classify Mouth Style
         mouth_y_pos = best[3][1] if candidates else int(mh * 0.3)
-        if aspect >= 0.70:
+        if aspect >= 0.68:
             mouth_style = "Full Open"
-        elif has_smile or curve > 3.0:
+        elif (has_smile and curve >= 3.5) or curve > 4.5:
             mouth_style = "Curved Up (Smiley)"
-        elif aspect < 0.32 and glab_furrow > 28.0 and mouth_y_pos < int(mh * 0.4):
+        elif aspect < 0.25 and glab_furrow >= 26.0:
             mouth_style = "Tense / Compressed"
-        elif glab_furrow < 25.0 and not has_smile and aspect < 0.55:
-            mouth_style = "Neutral Horizontal"
-        elif curve < -0.5 or (mouth_y_pos >= int(mh * 0.40) and not has_smile and glab_furrow > 30.0):
+        elif curve <= -1.0:
             mouth_style = "Curved Down (Frown)"
-        elif abs(curve) <= 3.0:
+        elif abs(curve) <= 3.2 and aspect < 0.55:
             mouth_style = "Neutral Horizontal"
+        elif curve < 0.0 or (mouth_y_pos >= int(mh * 0.40) and not has_smile and glab_furrow > 28.0):
+            mouth_style = "Curved Down (Frown)"
         else:
-            mouth_style = "Curved Down (Frown)"
+            mouth_style = "Neutral Horizontal"
 
         return {
             "mouth_style": mouth_style,
@@ -231,7 +231,7 @@ class FacialStyleAnalyzer:
             glab_furrow = float(0.6 * np.mean(np.abs(sob_x_raw)) + 0.4 * np.mean(np.abs(sob_x_crease)) * 2.0)
 
         # Classify Forehead Style
-        if glab_furrow >= 32.0:
+        if glab_furrow >= 28.0:
             forehead_style = "Shrunk / Wrinkles (Furrowed)"
         elif horiz_energy >= 25.0 or edge_density >= 0.06:
             forehead_style = "Raised Lines"
@@ -371,44 +371,54 @@ class FacialStyleAnalyzer:
         # ── Morphological Rule Scoring ─────────────────────────────────────────
         scores = {emo: 0.10 for emo in EMOTION_CLASSES}
 
-        # 1. HAPPY: Mouth curved up (smiley) + normal eyes + plain smooth forehead
+        # 1. HAPPY: Mouth curved up (smiley) + normal eyes
         if m_style == "Curved Up (Smiley)":
-            scores["Happy"] += 0.70
-        if e_style == "Normal Open":
-            scores["Happy"] += 0.20
-        if f_style == "Plain Smooth Forehead":
-            scores["Happy"] += 0.30
-
-        # 2. SAD: Mouth curved down (frown) + eyes partially closed (drooping)
-        if m_style == "Curved Down (Frown)":
-            scores["Sad"] += 0.70
-        if e_style == "Partially Closed (Drooping)":
-            scores["Sad"] += 0.50
-
-        # 3. ANGRY: Forehead shrink/wrinkles + eyes glaring/wide + tense/compressed or open mouth
-        if f_style == "Shrunk / Wrinkles (Furrowed)":
-            scores["Angry"] += 0.85
-        if m_style in ["Tense / Compressed", "Full Open"]:
-            scores["Angry"] += 0.60
-        if e_style in ["Wide Open", "Partially Closed (Drooping)"] and f_style == "Shrunk / Wrinkles (Furrowed)":
-            scores["Angry"] += 0.70
-
-        # 4. SURPRISE: Wide open eyes + full open O-mouth + raised forehead lines
-        if m_style == "Full Open":
-            scores["Surprise"] += 0.65
-        if f_style == "Raised Lines":
-            scores["Surprise"] += 0.45
-        if e_style == "Wide Open":
-            scores["Surprise"] += 0.35
-
-        # 5. NEUTRAL: Neutral horizontal mouth + normal eyes + plain smooth forehead
-        # ONLY award Neutral when the mouth is genuinely neutral horizontal without expressivity
-        if m_style == "Neutral Horizontal" and f_style != "Shrunk / Wrinkles (Furrowed)":
-            scores["Neutral"] += 0.50
+            scores["Happy"] += 0.85
             if e_style == "Normal Open":
-                scores["Neutral"] += 0.25
+                scores["Happy"] += 0.20
             if f_style == "Plain Smooth Forehead":
-                scores["Neutral"] += 0.25
+                scores["Happy"] += 0.25
+
+        # 2. SAD: Mouth curved down (frown) or drooping + squinted/partially closed
+        # Frown mouth is the paramount marker of Sadness; wrinkles here indicate grief / brow knits (AU1+AU4)
+        if m_style == "Curved Down (Frown)":
+            scores["Sad"] += 0.90
+            if e_style == "Partially Closed (Drooping)":
+                scores["Sad"] += 0.40
+            if f_style == "Shrunk / Wrinkles (Furrowed)":
+                scores["Sad"] += 0.25
+
+        # 3. ANGRY: Glabellar furrow + tight/compressed mouth OR furrowed brow with tense corners
+        if f_style == "Shrunk / Wrinkles (Furrowed)":
+            if m_style == "Tense / Compressed":
+                scores["Angry"] += 1.10
+            elif m_style == "Neutral Horizontal":
+                scores["Angry"] += 0.80
+            elif m_style == "Full Open":
+                scores["Angry"] += 0.70
+            elif m_style == "Curved Down (Frown)":
+                # Frown with furrow: Angry if mouth is thin/compressed (aspect < 0.30)
+                if mouth_aspect < 0.30:
+                    scores["Angry"] += 0.95
+                else:
+                    scores["Angry"] += 0.30
+
+        # 4. SURPRISE: Strictly requires Full Open oral cavity (gaping O-mouth)
+        if m_style == "Full Open":
+            scores["Surprise"] += 0.85
+            if f_style == "Raised Lines":
+                scores["Surprise"] += 0.40
+            if e_style == "Wide Open":
+                scores["Surprise"] += 0.35
+
+        # 5. NEUTRAL: Neutral horizontal mouth + non-furrowed brow
+        if m_style == "Neutral Horizontal":
+            if f_style != "Shrunk / Wrinkles (Furrowed)":
+                scores["Neutral"] += 0.85
+                if f_style == "Plain Smooth Forehead":
+                    scores["Neutral"] += 0.25
+                if e_style == "Normal Open":
+                    scores["Neutral"] += 0.20
 
         # Softmax calibration with temperature
         temp = 0.45
