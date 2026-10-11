@@ -50,17 +50,39 @@ class SpeechDataset(Dataset):
                         self.samples.append((file_path, cls_idx))
                 break
 
-        print(f"Loading and extracting 82-d acoustic features (MFCC+ZCR+RMS+Mel) for {len(self.samples)} audio files from {self.root_dir}...", flush=True)
-        self.cached_data = []
-        for file_path, cls_idx in self.samples:
+        cache_file = self.root_dir / ".features_cache_82d.pt"
+        if cache_file.exists():
+            try:
+                cached = torch.load(str(cache_file), weights_only=False)
+                if len(cached) == len(self.samples):
+                    self.cached_data = cached
+                    print(f"Loaded {len(self.cached_data)} acoustic feature tensors (82-d) from disk cache: {cache_file.name}", flush=True)
+                    return
+            except Exception:
+                pass
+
+        print(f"Loading and extracting 82-d acoustic features (MFCC+ZCR+RMS+Mel) for {len(self.samples)} audio files from {self.root_dir} (parallel 8 threads)...", flush=True)
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _process_one(item):
+            file_path, cls_idx = item
             try:
                 audio = self.preprocessor.load_audio_file(str(file_path))
                 feats = self.preprocessor.extract_features(audio)  # Shape (100, 82)
                 tensor = torch.from_numpy(feats).float()
-                self.cached_data.append((tensor, cls_idx))
+                return (tensor, cls_idx)
             except Exception:
-                pass
-        print(f"Extracted and cached {len(self.cached_data)} acoustic feature tensors (82-d) in RAM.", flush=True)
+                return None
+
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            results = list(executor.map(_process_one, self.samples))
+
+        self.cached_data = [r for r in results if r is not None]
+        try:
+            torch.save(self.cached_data, str(cache_file))
+            print(f"Extracted, cached in RAM, and saved to {cache_file.name}: {len(self.cached_data)} tensors.", flush=True)
+        except Exception:
+            print(f"Extracted and cached {len(self.cached_data)} acoustic feature tensors in RAM.", flush=True)
 
     def __len__(self):
         return len(self.cached_data)

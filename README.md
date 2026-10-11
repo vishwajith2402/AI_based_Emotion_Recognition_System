@@ -140,24 +140,27 @@ python run_app.py --evaluate
 ```
 AIPS Prototype/
 ├── data/
-│   ├── facial/                  # Facial emotion datasets (train / val / test)
-│   │   ├── train/               # angry, happy, neutral, sad, surprise (26,589 images)
-│   │   ├── val/                 # (4,698 images)
-│   │   └── test/                # (4,690 images)
-│   ├── speech/                  # 16kHz WAV speech clips (train / val / test)
-│   │   ├── train/               # angry, happy, neutral, sad, surprise (2,342 clips)
-│   │   ├── val/                 # (509 clips)
-│   │   └── test/                # (505 clips)
+│   ├── facial/                  # 100% REAL Human Facial Photos (train / val / test)
+│   │   ├── train/               # angry, happy, neutral, sad, surprise (27,437 images)
+│   │   ├── val/                 # (5,769 images)
+│   │   └── test/                # (5,759 images)
+│   │   └── Total: 38,965 Real Human Facial Portraits (NIFER, Kaggle FER, CK+)
+│   ├── speech/                  # 100% REAL Human 16kHz WAV Speech Clips (train / val / test)
+│   │   ├── train/               # angry, happy, neutral, sad, surprise (3,326 clips)
+│   │   ├── val/                 # (649 clips)
+│   │   └── test/                # (640 clips)
+│   │   └── Total: 4,615 Real Human Voice Clips (Indian Corpus, TESS, RAVDESS)
+│   ├── ingest_real_indian_multimodal_dataset.py # Automated real Indic speech & face ingest
 │   ├── dataset_builder.py       # Curated dataset builder & pre-populator
 │   └── download_datasets.py     # Benchmark downloader (FER-2013, RAVDESS, TESS)
 ├── dist/
-│   └── EmotiX.exe               # Portable Windows standalone executable
+│   └── EmotiX.exe               # Portable Windows standalone executable (76.5MB)
 ├── models/
 │   ├── facial_cnn.pth           # Trained PyTorch weights for VGG-FER Deep Backbone
 │   ├── speech_bilstm.pth        # Trained PyTorch weights for Shivam Burnwal 82-D BiLSTM
 │   └── haarcascade_frontalface_default.xml
 ├── reports/
-│   ├── evaluation_report.md     # 95.25% multimodal benchmark report & classification matrix
+│   ├── evaluation_report.md     # 95.94% multimodal benchmark report & classification matrix
 │   ├── facial_training_history.json
 │   └── speech_training_history.json
 ├── src/

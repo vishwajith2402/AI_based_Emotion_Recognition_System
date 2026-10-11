@@ -3,16 +3,18 @@
 **Department**: Artificial Intelligence and Machine Learning  
 **Project**: Human Emotion Recognition Using Facial Expressions and Speech Modulation (Batch 6)  
 **Project Team**: Vishwajith (Lead / Multimodal AI), Wilson (Computer Vision & Geometry), Vadivazhagi (Speech & Acoustic DSP), Viseka (NLP & UI Systems)  
-**Current Milestone**: **95.25% Multimodal Test Accuracy** | VGG-FER Backbone | Shivam Burnwal 82-D Acoustic Suite | Indic Demographic & Prosody Calibration | 3D Camera Telemetry  
+**Current Milestone**: **95.94% Multimodal Test Accuracy** | 100% Real Human Datasets (Zero Synthetic Data) | VGG-FER Backbone | Shivam Burnwal 82-D Acoustic Suite | Indic Demographic & Prosody Calibration | 3D Camera Telemetry  
 
 ---
 
 ## 🌟 Quick Project Pitch (1-Minute Elevator Summary)
 > *"Respected guide and examiners, our project is **Human Emotion Recognition Using Facial Expressions and Speech Modulation**. While single-modality systems face severe operational failure modes—such as illumination changes, facial occlusions, acoustic background noise, or human silence—we have engineered an end-to-end, real-time multimodal deep learning system calibrated for real-world robustness.
 > 
+> Our system is trained exclusively on **100% authentic, real-world human datasets**—incorporating authentic Indian regional speech from the **Indian Emotional Speech Corpus** across all 4 zones of India, diverse dark-skin tone / South Asian facial portraits from **NIFER**, and gold-standard **Kaggle FER-2013, CK+, and TESS** benchmarks (with zero procedural or artificial data).
+> 
 > Our visual channel leverages a **VGG-FER 4-block deep convolutional backbone** augmented with **CLAHE adaptive contrast equalization** and **morphological Facial Action Coding System (FACS)** analysis calibrated for South Asian / Indian facial features. Our acoustic channel integrates **Shivam Burnwal's 82-dimensional multi-feature speech pipeline** (40 MFCCs, Zero Crossing Rate, RMS energy, and 40 Mel filterbanks) processed through a **Bidirectional LSTM with Dual Temporal Pooling**. Spoken words are continuously analyzed via a **multilingual Indic NLP sentiment engine** supporting 8 Indian regional languages.
 > 
-> These streams are synthesized via a **calibrated Multimodal Decision Fusion Engine** that achieves **95.25% test accuracy** (+5.15% gain over unimodal baselines) with automated conflict detection for sarcasm and failover redundancy. The system is packaged with live 3D head pose, distance measuring (45–75 cm), face-to-frame ratio telemetry, and an interactive 2D Russell Circumplex quadrant HUD.*"
+> These streams are synthesized via a **calibrated Multimodal Decision Fusion Engine** that achieves **95.94% test accuracy** (+2.19% gain over unimodal baselines) with automated conflict detection for sarcasm and failover redundancy. The system is packaged with live 3D head pose, distance measuring (45–75 cm), face-to-frame ratio telemetry, and an interactive 2D Russell Circumplex quadrant HUD.*"
 
 ---
 
@@ -24,7 +26,7 @@ Unimodal systems process either visual or acoustic data in isolation, leading to
 1. **Visual Failure Modes**: Dim or uneven lighting, facial occlusions (hands on face, glasses, masks), extreme head rotations (>30°), or camera angle offsets.
 2. **Acoustic Failure Modes**: Background ambient chatter, microphone clipping, acoustic reverberation, or natural conversational pauses/silence.
 3. **Information Complementarity**: Psychological research shows human affective expression is inherently distributed: facial micro-movements reflect immediate affect, vocal intonation conveys physiological arousal, and spoken vocabulary delivers semantic context.
-By combining visual, acoustic, and linguistic signals, **multimodal recognition achieves complementary cross-modal compensation**. When one modality is corrupted or ambiguous, the remaining modalities provide strong compensatory evidence, boosting overall accuracy from unimodal baselines (66.73% Vision, 90.10% Audio) to **95.25% Multimodal Accuracy** (+5.15% gain).
+By combining visual, acoustic, and linguistic signals, **multimodal recognition achieves complementary cross-modal compensation**. When one modality is corrupted or ambiguous, the remaining modalities provide strong compensatory evidence, boosting overall accuracy from unimodal baselines (65.31% Vision, 93.75% Audio) to **95.94% Multimodal Accuracy** (+2.19% gain).
 
 ---
 

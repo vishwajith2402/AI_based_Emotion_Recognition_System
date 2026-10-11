@@ -15,6 +15,7 @@ ENV/
 data/facial/
 data/speech/
 data/face_types/
+data/raw_indian_speech/
 
 # Environment / secrets
 .env
