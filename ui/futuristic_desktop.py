@@ -74,6 +74,28 @@ def launch_futuristic_app():
             background_color="#070B14",
             resizable=True
         )
+
+        def _apply_windows_dark_theme():
+            time.sleep(0.8)
+            try:
+                import ctypes
+                user32 = ctypes.windll.user32
+                dwmapi = ctypes.windll.dwmapi
+                hwnd = user32.FindWindowW(None, "Human Emotion Recognition — Multimodal AI Dashboard")
+                if hwnd:
+                    # DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+                    val = ctypes.c_int(1)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 20, ctypes.byref(val), ctypes.sizeof(val))
+                    # DWMWA_CAPTION_COLOR = 35 (BGR for #040406: 0x060404)
+                    caption_color = ctypes.c_int(0x060404)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 35, ctypes.byref(caption_color), ctypes.sizeof(caption_color))
+                    # DWMWA_TEXT_COLOR = 36 (BGR for #00F5FF: 0xFFF500)
+                    text_color = ctypes.c_int(0xFFF500)
+                    dwmapi.DwmSetWindowAttribute(hwnd, 36, ctypes.byref(text_color), ctypes.sizeof(text_color))
+            except Exception:
+                pass
+
+        threading.Thread(target=_apply_windows_dark_theme, daemon=True).start()
         webview.start()
     except Exception as e:
         print(f"[Desktop Notice] pywebview native window info: {e}")

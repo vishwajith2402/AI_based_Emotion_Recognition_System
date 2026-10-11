@@ -1,8 +1,13 @@
-const { app, BrowserWindow, session, Menu, globalShortcut } = require('electron');
+const { app, BrowserWindow, session, Menu, globalShortcut, nativeTheme } = require('electron');
 const path = require('path');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+
+// Force dark mode globally across all OS chrome, context menus, and native title bars
+if (nativeTheme) {
+  nativeTheme.themeSource = 'dark';
+}
 
 let mainWindow = null;
 let server = null;
@@ -145,10 +150,16 @@ function createMainWindow(port) {
     minWidth: 1024,
     minHeight: 680,
     title: 'EmotiX — Emotion Recognition System (Facial | Voice)',
-    backgroundColor: '#0B0F19',
+    backgroundColor: '#040406',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     autoHideMenuBar: true,
     show: false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#040406',
+      symbolColor: '#00F5FF',
+      height: 38
+    },
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
