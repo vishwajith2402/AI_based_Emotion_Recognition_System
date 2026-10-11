@@ -80,6 +80,7 @@
       --radius-md: 14px;
       --radius-lg: 18px;
       --radius-pill: 9999px;
+      --titlebar-h: 38px;
     }
 
     * {
@@ -126,13 +127,13 @@
     ::-webkit-scrollbar-thumb:hover { background: rgba(0, 245, 255, 0.45); }
 
     /* ========================================================
-       TOP HEADER (Minimalist Research Lab Banner)
+       TOP WORKSPACE HEADER (Live Analysis & Media Upload Studio)
        ======================================================== */
-    header {
+    header:not(.emotix-titlebar) {
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
-      background: rgba(4, 4, 6, 0.90);
+      background: rgba(4, 4, 6, 0.94);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border-subtle);
@@ -141,10 +142,10 @@
       align-items: center;
       justify-content: space-between;
       position: sticky;
-      top: 0;
+      top: var(--titlebar-h, 38px);
       left: 0;
       right: 0;
-      z-index: 100;
+      z-index: 1000;
     }
 
     .brand-group {
@@ -417,7 +418,7 @@
       display: flex;
       flex-direction: column;
       position: sticky;
-      top: 1rem;
+      top: calc(var(--titlebar-h, 38px) + 5rem);
     }
 
     .cam-view-col .glass-card {
@@ -3598,7 +3599,7 @@
     .app-view {
       display: none !important;
       width: 100%;
-      min-height: 100vh;
+      min-height: calc(100vh - var(--titlebar-h, 38px));
       opacity: 0;
       transition: opacity 0.3s ease;
       box-sizing: border-box;
@@ -3608,6 +3609,13 @@
       display: flex !important;
       flex-direction: column;
       opacity: 1;
+    }
+
+    /* Clear fixed OS titlebar so workspace headers start cleanly below it */
+    #viewLiveApp,
+    #viewMediaUpload {
+      padding-top: var(--titlebar-h, 38px);
+      box-sizing: border-box;
     }
 
     /* ---------------- VIEW 1: INTRO LANDING HERO ---------------- */
@@ -3662,12 +3670,12 @@
     }
 
     .intro-hero-wrapper {
-      min-height: 100vh;
+      min-height: calc(100vh - var(--titlebar-h, 38px));
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 3rem 1.5rem 2.5rem;
+      padding: calc(var(--titlebar-h, 38px) + 2rem) 1.5rem 2.5rem;
       box-sizing: border-box;
       position: relative;
       z-index: 1;
@@ -3870,12 +3878,12 @@
 
     /* ---------------- VIEW 2: MODE SELECTION HUB ---------------- */
     .mode-select-wrapper {
-      min-height: 100vh;
+      min-height: calc(100vh - var(--titlebar-h, 38px));
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 3.5rem 1.5rem;
+      padding: calc(var(--titlebar-h, 38px) + 2.4rem) 1.5rem 3.5rem;
       box-sizing: border-box;
       background: radial-gradient(circle at 50% 35%, rgba(37, 99, 235, 0.12) 0%, rgba(34, 211, 238, 0.08) 50%, transparent 80%);
       transition: background 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
@@ -4225,14 +4233,14 @@
     /* ---------------- MOBILE SMARTPHONES (<= 640px) ---------------- */
     @media (max-width: 640px) {
       /* Mobile App Headers: 2-Tier Architecture */
-      header {
+      header:not(.emotix-titlebar) {
         flex-direction: column !important;
         align-items: stretch !important;
         gap: 0.65rem !important;
         padding: max(0.75rem, env(safe-area-inset-top, 0.75rem)) 0.85rem 0.75rem !important;
         position: sticky;
-        top: 0;
-        z-index: 100;
+        top: var(--titlebar-h, 38px);
+        z-index: 1000;
         backdrop-filter: blur(24px) !important;
       }
 
@@ -4785,12 +4793,13 @@
        SEAMLESS DARK CYBER TITLE BAR / DRAG REGION
        Blends smoothly with Electron titleBarOverlay & Browser HUD
        ======================================================== */
-    .emotix-titlebar {
+    .emotix-titlebar,
+    .emotisync-titlebar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 38px;
+      height: var(--titlebar-h, 38px);
       background: rgba(4, 4, 6, 0.98);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -5070,7 +5079,7 @@
   <section class="app-view" id="viewLiveApp">
 
     <!-- TOP HEADER -->
-    <header>
+    <header class="workspace-header">
       <div class="brand-group">
         <div class="brand-mark">
           <img src="./assets/emotisync_medallion.png" alt="EmotiSync" class="brand-logo-img" onerror="this.onerror=null;this.src='./demo_samples/emotisync_medallion.png';">
@@ -5722,7 +5731,7 @@
   <section class="app-view" id="viewMediaUpload">
     
     <!-- TOP HEADER -->
-    <header>
+    <header class="workspace-header">
       <div class="brand-group">
         <div class="brand-mark">
           <img src="./assets/emotisync_medallion.png" alt="EmotiSync" class="brand-logo-img" onerror="this.onerror=null;this.src='./demo_samples/emotisync_medallion.png';">
