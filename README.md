@@ -108,7 +108,7 @@ python run_app.py
 
 #### Option 2: Pre-compiled Windows Standalone Binary
 ```bash
-.\dist\EmotiX.exe
+.\dist\EmotiSync.exe
 ```
 *Launches the portable single-executable standalone application without requiring a local Python installation.*
 
@@ -154,7 +154,7 @@ AIPS Prototype/
 │   ├── dataset_builder.py       # Curated dataset builder & pre-populator
 │   └── download_datasets.py     # Benchmark downloader (FER-2013, RAVDESS, TESS)
 ├── dist/
-│   └── EmotiX.exe               # Portable Windows standalone executable (76.5MB)
+│   └── EmotiSync.exe            # Portable Windows standalone executable (76.5MB)
 ├── models/
 │   ├── facial_cnn.pth           # Trained PyTorch weights for VGG-FER Deep Backbone
 │   ├── speech_bilstm.pth        # Trained PyTorch weights for Shivam Burnwal 82-D BiLSTM
@@ -314,7 +314,7 @@ weighted avg       0.95      0.95      0.95       505
 | **v2.12.0**| 2026-10-06 | Calibrated facial and vocal pipelines for Indian demographic diversity: CLAHE illumination filter (Fitzpatrick types III–VI), tilak/bindi forehead invariance, subtle smile (AU12) calibration, and 150+ multilingual Indic keywords across 8 Indian languages. |
 | **v2.13.0**| 2026-10-07 | Upgraded deep visual architecture to **VGG-FER 4-Block Convolutional Backbone** and speech architecture to **Shivam Burnwal 82-Dimensional SER Suite** (40 MFCC + 1 ZCR + 1 RMS + 40 Mel Spectrogram filterbanks). |
 | **v2.14.0**| 2026-10-07 | Integrated Real-Time Camera Geometry Telemetry: Pin-hole distance measurement (**45–75 cm optimal range**), Face-to-Frame Area Ratio (**20%–45%**), 3D Head Pose Euler angles (Pitch, Yaw, Roll), and dynamic HUD pose alignment guidance. |
-| **v3.0.0** *(Current)* | 2026-10-11 | **Benchmark Milestone: 95.25% Multimodal Test Accuracy**: Fine-tuned decision fusion engine achieving +5.15% gain over best unimodal baseline. Polished obsidian UI telemetry chips and verified single portable executable binary (`dist/EmotiX.exe`). Updated comprehensive academic documentation and 20-question viva defense guide. |
+| **v3.0.0** *(Current)* | 2026-10-11 | **Benchmark Milestone: 95.25% Multimodal Test Accuracy**: Fine-tuned decision fusion engine achieving +5.15% gain over best unimodal baseline. Polished obsidian UI telemetry chips and verified single portable executable binary (`dist/EmotiSync.exe`). Updated comprehensive academic documentation and 20-question viva defense guide. |
 
 ---
 

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EmotiX — Emotion Recognition System (Facial | Voice)</title>
-  <link rel="icon" type="image/png" href="./assets/emotix_medallion.png">
+  <title>EmotiSync — Emotion Recognition System (Facial | Voice)</title>
+  <link rel="icon" type="image/png" href="./assets/emotisync_medallion.png">
   <link rel="shortcut icon" href="./assets/favicon.ico">
   <link rel="apple-touch-icon" href="./assets/app_icon.png">
   <link rel="manifest" href="./manifest.json">
@@ -24,7 +24,7 @@
 
   <style>
     /* ========================================================
-       EmotiX — ULTRA-MODERN BLACK & HIGH-CONTRAST DESIGN SYSTEM
+       EmotiSync — ULTRA-MODERN BLACK & HIGH-CONTRAST DESIGN SYSTEM
        Deep OLED Black + Razor Hairline Contrast + Vivid Biometrics
        ======================================================== */
     :root {
@@ -154,23 +154,25 @@
     }
 
     .brand-mark {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: #000000;
-      border: 1.5px solid rgba(0, 245, 255, 0.75);
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, #040406 80%);
+      border: 1.5px solid rgba(234, 179, 8, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      box-shadow: 0 0 18px rgba(0, 245, 255, 0.40);
+      box-shadow: 0 0 16px rgba(234, 179, 8, 0.35);
       flex-shrink: 0;
+      padding: 0;
     }
 
     .brand-logo-img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center;
       display: block;
     }
 
@@ -3700,33 +3702,54 @@
     }
 
     .intro-ai-orb {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
     }
 
-    .emotix-crest-badge {
-      width: 124px;
-      height: 124px;
+    .emotix-crest-badge,
+    .emotisync-crest-badge {
+      width: 136px;
+      height: 136px;
       border-radius: 50%;
-      padding: 4px;
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.7), rgba(37, 99, 235, 0.35), rgba(0, 242, 254, 0.7));
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+      padding: 0;
+      position: relative;
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.18) 0%, rgba(4, 4, 6, 0.95) 75%);
+      border: 2px solid rgba(234, 179, 8, 0.85);
+      box-shadow: 0 0 30px rgba(234, 179, 8, 0.35), 0 0 50px rgba(0, 245, 255, 0.20), inset 0 0 16px rgba(234, 179, 8, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.25s ease;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      margin: 0 auto;
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
-    .emotix-crest-badge:hover {
-      transform: scale(1.04);
+    .emotix-crest-badge:hover,
+    .emotisync-crest-badge:hover {
+      transform: scale(1.05);
+      border-color: #FDE047;
+      box-shadow: 0 0 40px rgba(234, 179, 8, 0.6), 0 0 70px rgba(0, 245, 255, 0.35);
     }
 
-    .emotix-crest-img {
+    .emotix-crest-img,
+    .emotisync-crest-img {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center;
       display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .emotix-crest-badge:hover .emotix-crest-img,
+    .emotisync-crest-badge:hover .emotisync-crest-img {
+      transform: scale(1.02);
     }
 
     /* Laser Telemetry on Main Title */
@@ -4793,12 +4816,15 @@
       align-items: center;
       gap: 10px;
     }
-    .emotix-titlebar-icon {
-      width: 20px;
-      height: 20px;
+    .emotix-titlebar-icon,
+    .emotisync-titlebar-icon {
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      object-fit: cover;
-      filter: drop-shadow(0 0 6px rgba(0, 245, 255, 0.5));
+      object-fit: contain;
+      object-position: center;
+      filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.5));
+      flex-shrink: 0;
     }
     .emotix-titlebar-brand {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -4856,8 +4882,8 @@
   <header class="emotix-titlebar" id="emotixTitlebar">
     <div class="emotix-titlebar-drag">
       <div class="emotix-titlebar-left">
-        <img src="./assets/emotix_medallion.png" alt="EmotiX" class="emotix-titlebar-icon" onerror="this.src='./demo_samples/emotix_medallion.png';">
-        <span class="emotix-titlebar-brand">EmotiX</span>
+        <img src="./assets/emotisync_medallion.png" alt="EmotiSync" class="emotix-titlebar-icon" onerror="this.src='./demo_samples/emotisync_medallion.png';">
+        <span class="emotix-titlebar-brand">EmotiSync</span>
         <span class="emotix-titlebar-sep">/</span>
         <span class="emotix-titlebar-title">Emotion Recognition System (Facial &bull; Voice)</span>
       </div>
@@ -4890,14 +4916,14 @@
       <!-- Centerpiece: Title, Taglines & "Let's Start" CTA -->
       <div class="intro-centerpiece">
         <div class="intro-ai-orb">
-          <div class="emotix-crest-badge" title="EmotiX Biometric AI Emblem">
-            <img src="./assets/emotix_medallion.png" alt="EmotiX Emblem" class="emotix-crest-img" onerror="this.onerror=null;this.src='./demo_samples/emotix_medallion.png';">
+          <div class="emotix-crest-badge" title="EmotiSync Biometric AI Emblem">
+            <img src="./assets/emotisync_medallion.png" alt="EmotiSync Emblem" class="emotix-crest-img" onerror="this.onerror=null;this.src='./demo_samples/emotisync_medallion.png';">
           </div>
         </div>
 
         <h1 class="intro-title">
           <span class="tech-bracket">[</span>
-          <span class="title-shimmer-text">EmotiX</span>
+          <span class="title-shimmer-text">EmotiSync</span>
           <span class="tech-bracket">]</span>
         </h1>
         <p class="intro-tagline">EMOTION RECOGNITION SYSTEM &bull; FACIAL | VOICE</p>
@@ -5047,10 +5073,10 @@
     <header>
       <div class="brand-group">
         <div class="brand-mark">
-          <img src="./assets/emotix_medallion.png" alt="EmotiX" class="brand-logo-img" onerror="this.onerror=null;this.src='./demo_samples/emotix_medallion.png';">
+          <img src="./assets/emotisync_medallion.png" alt="EmotiSync" class="brand-logo-img" onerror="this.onerror=null;this.src='./demo_samples/emotisync_medallion.png';">
         </div>
         <div class="brand-text">
-          <h1>EmotiX</h1>
+          <h1>EmotiSync</h1>
           <p>Live Multimodal Stream</p>
         </div>
       </div>
@@ -5519,14 +5545,14 @@
     <section class="glass-card about-card" id="aboutSection">
       <div class="card-meta-header">
         <div class="card-title-group">
-          <h2>About EmotiX</h2>
+          <h2>About EmotiSync</h2>
           <p>System Overview &amp; Multimodal Architecture</p>
         </div>
         <span class="weight-tag cyan">RESEARCH &amp; INNOVATION</span>
       </div>
 
       <div class="about-lead-text">
-        <strong>EmotiX</strong> is an advanced, high-precision <em>Multimodal Human Emotion Recognition System</em> engineered to capture, analyze, and fuse human affective signals in real time. By uniting high-fidelity <strong>468-point 3D facial landmark geometry (70% decision weight)</strong> with <strong>acoustic prosody and vocal frequency modulation (30% decision weight)</strong>, the platform delivers instantaneous, scientifically grounded classification across five core emotional states: <em>Happy, Sad, Angry, Surprise, and Neutral</em>. The architecture features automated resting baseline calibration, cross-modal concordance/conflict detection, and client-side forensic diagnostic reporting.
+        <strong>EmotiSync</strong> is an advanced, high-precision <em>Multimodal Human Emotion Recognition System</em> engineered to capture, analyze, and fuse human affective signals in real time. By uniting high-fidelity <strong>468-point 3D facial landmark geometry (70% decision weight)</strong> with <strong>acoustic prosody and vocal frequency modulation (30% decision weight)</strong>, the platform delivers instantaneous, scientifically grounded classification across five core emotional states: <em>Happy, Sad, Angry, Surprise, and Neutral</em>. The architecture features automated resting baseline calibration, cross-modal concordance/conflict detection, and client-side forensic diagnostic reporting.
       </div>
 
       <div class="about-highlights-row">
@@ -5592,7 +5618,7 @@
        FOOTER STATUS BAR
        ======================================================== -->
   <footer>
-    <div>EmotiX &mdash; Multimodal Emotion Intelligence System</div>
+    <div>EmotiSync &mdash; Multimodal Emotion Intelligence System</div>
     <div>MediaPipe 468-pt Mesh &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
   </footer>
   </section> <!-- /viewLiveApp -->
@@ -5699,10 +5725,10 @@
     <header>
       <div class="brand-group">
         <div class="brand-mark">
-          <img src="./assets/emotix_medallion.png" alt="EmotiX" class="brand-logo-img" onerror="this.onerror=null;this.src='./demo_samples/emotix_medallion.png';">
+          <img src="./assets/emotisync_medallion.png" alt="EmotiSync" class="brand-logo-img" onerror="this.onerror=null;this.src='./demo_samples/emotisync_medallion.png';">
         </div>
         <div class="brand-text">
-          <h1>EmotiX</h1>
+          <h1>EmotiSync</h1>
           <p>Media &amp; Voice Upload Studio</p>
         </div>
       </div>
@@ -6179,7 +6205,7 @@
 
     <!-- FOOTER -->
     <footer>
-      <div>EmotiX &mdash; Multimodal Media &amp; Voice Studio</div>
+      <div>EmotiSync &mdash; Multimodal Media &amp; Voice Studio</div>
       <div>468-pt Mesh Kinematics &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
     </footer>
   </section>
@@ -9209,7 +9235,7 @@
 
       sCtx.fillStyle = 'rgba(34, 211, 238, 0.85)';
       sCtx.font = 'bold 10px "JetBrains Mono", monospace';
-      sCtx.fillText('EMOTIX 468-PT MESH SNAPSHOT', 18, 28);
+      sCtx.fillText('EMOTISYNC 468-PT MESH SNAPSHOT', 18, 28);
       sCtx.font = '8px monospace';
       sCtx.fillStyle = '#94A3B8';
       sCtx.fillText(`CAPTURE: ${new Date().toLocaleTimeString()} • BIOMETRIC LOCK`, 18, 40);
@@ -9253,12 +9279,12 @@
       doc.setTextColor(34, 211, 238);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
-      doc.text('EmotiX — MULTIMODAL FORENSIC INTELLIGENCE REPORT', margin + 6, y + 8);
+      doc.text('EmotiSync — MULTIMODAL FORENSIC INTELLIGENCE REPORT', margin + 6, y + 8);
 
       doc.setTextColor(148, 163, 184);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
-      doc.text(`ASSESSMENT DOSSIER • DATE: ${data.timestamp || new Date().toLocaleString()} • ENGINE: EmotiX v2.4 LTS`, margin + 6, y + 15);
+      doc.text(`ASSESSMENT DOSSIER • DATE: ${data.timestamp || new Date().toLocaleString()} • ENGINE: EmotiSync v3.0 LTS`, margin + 6, y + 15);
       doc.text('CLASSIFICATION: AFFECT FORENSICS (RESTRICTED)', margin + contentWidth - 66, y + 15);
 
       y += 28;
@@ -9462,7 +9488,7 @@
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(7.2);
       doc.setTextColor(148, 163, 184);
-      doc.text('EmotiX Multimodal Emotion Intelligence System | Forensic Intelligence Dossier', margin, 289);
+      doc.text('EmotiSync Multimodal Emotion Intelligence System | Forensic Intelligence Dossier', margin, 289);
       doc.text('Page 1 of 2', margin + contentWidth - 14, 289);
 
       // ========================================================
@@ -9477,7 +9503,7 @@
       doc.setTextColor(167, 139, 250);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(13);
-      doc.text('EmotiX — FACS ACTION UNIT MATRIX & ACOUSTIC TELEMETRY', margin + 6, y + 7.5);
+      doc.text('EmotiSync — FACS ACTION UNIT MATRIX & ACOUSTIC TELEMETRY', margin + 6, y + 7.5);
       doc.setTextColor(148, 163, 184);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
@@ -9613,10 +9639,10 @@
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(7.2);
       doc.setTextColor(148, 163, 184);
-      doc.text('EmotiX Multimodal Emotion Intelligence System | Confidential Biometric Telemetry Record', margin, 289);
+      doc.text('EmotiSync Multimodal Emotion Intelligence System | Confidential Biometric Telemetry Record', margin, 289);
       doc.text('Page 2 of 2', margin + contentWidth - 14, 289);
 
-      const fileName = `EmotiX_Forensic_Report_${topFinal}_${Date.now().toString().slice(-6)}.pdf`;
+      const fileName = `EmotiSync_Forensic_Report_${topFinal}_${Date.now().toString().slice(-6)}.pdf`;
       doc.save(fileName);
     }
 
@@ -9668,7 +9694,7 @@
     document.getElementById('btnDownloadPdf').addEventListener('click', downloadPdfReport);
     document.getElementById('btnSpeakReport').addEventListener('click', () => {
       const top = state.currentFinalEmotion;
-      speakPhrase(`EmotiX report summary. Final recognized emotion is ${top}.`);
+      speakPhrase(`EmotiSync report summary. Final recognized emotion is ${top}.`);
     });
 
     // ========================================================
@@ -11635,7 +11661,7 @@
     if (btnExportLabJson) {
       btnExportLabJson.addEventListener('click', () => {
         const payload = {
-          system: 'EmotiX Multimodal Media Lab',
+          system: 'EmotiSync Multimodal Media Lab',
           timestamp: new Date().toISOString(),
           verdict: {
             fusedEmotion: window.labState.fusedEmotion,

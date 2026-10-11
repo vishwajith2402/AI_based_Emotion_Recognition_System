@@ -1,8 +1,8 @@
 {
-  "name": "emotix-emotion-recognition",
-  "productName": "EmotiX",
+  "name": "emotisync-emotion-recognition",
+  "productName": "EmotiSync",
   "version": "1.0.0",
-  "description": "EmotiX: Multimodal Emotion Recognition Software (Facial Action Units & Acoustic Prosody)",
+  "description": "EmotiSync: Multimodal Emotion Recognition Software (Facial Action Units & Acoustic Prosody)",
   "main": "main.js",
   "author": "Vishwa, Vicky, Subash, Ashwin",
   "license": "MIT",
@@ -17,14 +17,14 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.emotix.ai",
-    "productName": "EmotiX",
+    "appId": "com.emotisync.ai",
+    "productName": "EmotiSync",
     "directories": {
       "output": "dist"
     },
     "win": {
       "target": "portable",
-      "artifactName": "EmotiX.exe",
+      "artifactName": "EmotiSync.exe",
       "icon": "ui/static/assets/app_icon.ico"
     },
     "files": [

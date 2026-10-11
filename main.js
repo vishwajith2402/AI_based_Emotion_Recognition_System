@@ -149,7 +149,7 @@ function createMainWindow(port) {
     height: 860,
     minWidth: 1024,
     minHeight: 680,
-    title: 'EmotiX — Emotion Recognition System (Facial | Voice)',
+    title: 'EmotiSync — Emotion Recognition System (Facial | Voice)',
     backgroundColor: '#040406',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     autoHideMenuBar: true,
