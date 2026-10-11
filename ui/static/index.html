@@ -7213,24 +7213,36 @@
       // 6. Live Diagnostics & HUD Updates
       let mouthText = 'Normal Line 😐';
       let eyesText = 'Normal Open';
-      let browText = 'Smooth Plain';
+      // Real-time geometric eyebrow shrink vs enlarge detection
+      let browDynamicText = 'Smooth Plain';
+      if (rawInnerBrowDist < 0.32 && rawBrowH < 0.145) {
+        browDynamicText = 'Shrunk & Knitted 😠 (AU4 Furrow)';
+      } else if (rawBrowH > 0.175 || rawInnerBrowDist > 0.41) {
+        browDynamicText = 'Enlarged & Raised 😲 (AU1+AU2 Expanse)';
+      } else if (rawGriefSlant > 0.018) {
+        browDynamicText = 'Inner Knotted / Sad 🙁 (AU1 Grief)';
+      } else {
+        browDynamicText = 'Smooth Relaxed 😐';
+      }
 
       if (liveEmotion === 'Happy') {
         mouthText = 'Curved Up Smile 🙂';
         eyesText = avgEAR < 0.23 ? 'Smiling Eye Crease' : 'Normal Open';
-        browText = 'Relaxed / Arched';
+        browText = (rawBrowH > 0.170) ? 'Enlarged & Raised 😲 (AU1+AU2)' : 'Relaxed / Smooth';
       } else if (liveEmotion === 'Surprise') {
         mouthText = 'Wide O-Shape 😮';
         eyesText = 'Wide Stare';
-        browText = 'Raised High';
+        browText = 'Enlarged High Arch 😲 (AU1+AU2)';
       } else if (liveEmotion === 'Angry') {
         mouthText = 'Tense / Compressed';
         eyesText = 'Narrowed Glare';
-        browText = 'Furrowed & Wrinkled 😠';
+        browText = 'Shrunk & Knitted 😠 (AU4 Furrow)';
       } else if (liveEmotion === 'Sad') {
         mouthText = 'Curved Down Corners 🙁';
         eyesText = 'Drooping / Soft';
-        browText = 'Inner Brow Raised';
+        browText = 'Inner Brow Raised / Knitted 🙁 (AU1)';
+      } else {
+        browText = browDynamicText;
       }
 
       const elMouth = document.getElementById('valMouth');

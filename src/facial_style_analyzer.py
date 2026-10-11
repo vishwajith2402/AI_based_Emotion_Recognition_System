@@ -193,25 +193,19 @@ class FacialStyleAnalyzer:
 
     def _extract_forehead_morphology(self, face: np.ndarray) -> Dict[str, Any]:
         """
-        Analyzes the upper forehead and glabellar brow region:
-        - Detects skin wrinkles / horizontal worry lines (Frontalis muscle activation)
-        - Detects corrugator glabellar furrow / vertical shrink (Angry frown)
-        - Detects plain smooth forehead without changes (Happy / Neutral)
+        Analyzes the upper forehead and eyebrow surrounding regions:
+        - Detects Glabellar Corrugator Furrow (AU4: eyebrows pulled together/down -> Shrink / Wrinkles)
+        - Detects Inter-Eyebrow Span & Shrink Ratio (narrowed in anger/sadness vs widened in surprise/neutral)
+        - Detects Frontalis Eyebrow Elevation (AU1+AU2: high arched brows -> Enlarged Forehead Expanse / Raised Lines)
+        - Detects Medial Brow Knots / Grief Slant (AU1 Inner Brow Knots in sadness)
+        - Detects Plain Smooth Forehead baseline (relaxed / smiling)
         """
         h, w = face.shape
 
-        # 1. Forehead horizontal worry lines
-        fhead = face[int(h * 0.06):int(h * 0.28), int(w * 0.22):int(w * 0.78)]
-        edges = cv2.Canny(fhead, 35, 110)
-        edge_density = float(np.mean(edges > 0))
-        sob_y = cv2.Sobel(fhead, cv2.CV_64F, 0, 1, ksize=3)
-        horiz_energy = float(np.mean(np.abs(sob_y)))
-
-        # 2. Glabellar Brow Furrow (between eyebrows) with Bindi / Tilak Tolerance
-        glab = face[int(h * 0.22):int(h * 0.36), int(w * 0.36):int(w * 0.64)]
+        # 1. Glabellar Brow Furrow (between eyebrows) with Bindi / Tilak Tolerance
+        glab = face[int(h * 0.20):int(h * 0.38), int(w * 0.36):int(w * 0.64)]
         
         # Suppress compact circular forehead ornamentation (bindi/tilak) using vertical crease morphological kernel
-        # Genuine corrugator wrinkles form elongated vertical skin folds, whereas bindis are compact circular blobs
         vert_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 5))
         glab_creases = cv2.morphologyEx(glab, cv2.MORPH_TOPHAT, vert_kernel)
         
@@ -225,22 +219,66 @@ class FacialStyleAnalyzer:
         has_bindi_spot = (np.std(center_roi) > 35.0 and np.std(outer_roi) < 18.0) if outer_roi.size > 0 else False
         
         if has_bindi_spot:
-            # Measure furrow primarily on outer glabella creases to avoid false bindi edge triggers
             glab_furrow = float(np.mean(np.abs(sob_x_crease))) * 2.2
         else:
             glab_furrow = float(0.6 * np.mean(np.abs(sob_x_raw)) + 0.4 * np.mean(np.abs(sob_x_crease)) * 2.0)
 
-        # Classify Forehead Style
-        if glab_furrow >= 28.0:
-            forehead_style = "Shrunk / Wrinkles (Furrowed)"
-        elif horiz_energy >= 25.0 or edge_density >= 0.06:
+        # 2. Eyebrow Band Analysis (Inter-eyebrow span & Shrink / Enlarge dynamics)
+        brow_band = face[int(h * 0.18):int(h * 0.38), int(w * 0.15):int(w * 0.85)]
+        bw = brow_band.shape[1]
+        left_brow = brow_band[:, :int(bw * 0.45)]
+        right_brow = brow_band[:, int(bw * 0.55):]
+        
+        left_col = np.argmin(np.mean(left_brow, axis=0))
+        right_col = int(bw * 0.55) + np.argmin(np.mean(right_brow, axis=0))
+        inter_brow_span = max(10, right_col - left_col)
+        
+        # Eyebrow vertical positions
+        left_y = np.argmin(np.mean(left_brow, axis=1))
+        right_y = np.argmin(np.mean(right_brow, axis=1))
+        brow_y_avg = float(left_y + right_y) / 2.0
+        
+        # 3. Forehead Horizontal Skin Tension / Frontalis Expansion (Enlarged Brow Arch)
+        fhead = face[int(h * 0.06):int(h * 0.28), int(w * 0.22):int(w * 0.78)]
+        edges = cv2.Canny(fhead, 35, 110)
+        edge_density = float(np.mean(edges > 0))
+        sob_y = cv2.Sobel(fhead, cv2.CV_64F, 0, 1, ksize=3)
+        horiz_energy = float(np.mean(np.abs(sob_y)))
+
+        # Eyebrow Slant / Inner Brow Knots (Medial lift AU1)
+        medial_roi = brow_band[:, int(bw * 0.38):int(bw * 0.62)]
+        medial_y = np.argmin(np.mean(medial_roi, axis=1))
+        inner_brow_lift = float(brow_y_avg - medial_y)
+
+        # Classify Eyebrow Dynamic State: Shrink, Enlarge, or Normal
+        # Shrink (AU4): Eyebrows pulled together towards center (narrow inter-brow span < 88px) with glabella furrow
+        # Enlarge (AU1+AU2): Eyebrows pulled upward/spread outward (wide inter-brow span >= 98px) with high forehead expanse
+        is_wide_span = inter_brow_span >= 98
+        is_narrow_span = inter_brow_span < 88
+
+        if is_wide_span and (horiz_energy >= 45.0 or edge_density >= 0.08):
             forehead_style = "Raised Lines"
+            eyebrow_state = "Enlarged & Raised (AU1+AU2)"
+        elif glab_furrow >= 28.0 and (is_narrow_span or inner_brow_lift > 2.0 or horiz_energy < 35.0):
+            forehead_style = "Shrunk / Wrinkles (Furrowed)"
+            eyebrow_state = "Shrunk & Knitted (AU4)"
+        elif inner_brow_lift > 4.0:
+            forehead_style = "Shrunk / Wrinkles (Furrowed)"
+            eyebrow_state = "Inner Brow Knitted (AU1)"
+        elif horiz_energy >= 45.0 or edge_density >= 0.08:
+            forehead_style = "Raised Lines"
+            eyebrow_state = "Enlarged & Raised (AU1+AU2)"
         else:
             forehead_style = "Plain Smooth Forehead"
+            eyebrow_state = "Relaxed Neutral"
 
         return {
             "forehead_style": forehead_style,
+            "eyebrow_state": eyebrow_state,
             "glabella_furrow": glab_furrow,
+            "inter_brow_span": float(inter_brow_span),
+            "brow_elevation": float(brow_y_avg),
+            "inner_brow_lift": inner_brow_lift,
             "horiz_energy": horiz_energy,
             "edge_density": edge_density
         }
@@ -456,6 +494,7 @@ class FacialStyleAnalyzer:
             "mouth_style": m_style,
             "eye_style": e_style,
             "forehead_style": f_style,
+            "eyebrow_state": forehead_info["eyebrow_state"],
             "style_description": style_description,
             "predicted_emotion": predicted_emotion,
             "confidence": confidence,
@@ -469,7 +508,11 @@ class FacialStyleAnalyzer:
                 "smile_detected": bool(mouth_info["has_smile"]),
                 "eyes_detected": int(eye_info["eyes_detected"]),
                 "eye_aperture_ratio": float(eye_info["aperture_ratio"]),
+                "eyebrow_state": forehead_info["eyebrow_state"],
                 "glabella_furrow": float(forehead_info["glabella_furrow"]),
+                "inter_brow_span": float(forehead_info["inter_brow_span"]),
+                "brow_elevation": float(forehead_info["brow_elevation"]),
+                "inner_brow_lift": float(forehead_info["inner_brow_lift"]),
                 "forehead_edge_density": float(forehead_info["edge_density"]),
                 "horiz_energy": float(forehead_info["horiz_energy"])
             }
