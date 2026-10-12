@@ -124,7 +124,15 @@ def train_speech_model(epochs: int = 15, batch_size: int = 32, lr: float = 5e-4,
         print("[Error] No speech training data found! Run data/dataset_builder.py first.", flush=True)
         return
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    # Balanced Class Sampler for speech dataset
+    class_counts = torch.zeros(NUM_CLASSES)
+    for _, lbl in train_dataset.samples:
+        class_counts[lbl] += 1
+    class_weights = 1.0 / torch.clamp(class_counts, min=1.0)
+    sample_weights = [class_weights[lbl].item() for _, lbl in train_dataset.samples]
+    sampler = torch.utils.data.WeightedRandomSampler(sample_weights, num_samples=len(sample_weights), replacement=True)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
     model = SpeechBiLSTM(input_dim=SPEECH_FEATURE_DIM, num_classes=NUM_CLASSES).to(device)
@@ -153,13 +161,8 @@ def train_speech_model(epochs: int = 15, batch_size: int = 32, lr: float = 5e-4,
         except Exception as e:
             print(f"[Warning] Could not load checkpoint ({e}), initializing fresh.", flush=True)
 
-    # Class-weighted loss
-    class_counts = torch.zeros(NUM_CLASSES)
-    for _, lbl in train_dataset.samples:
-        class_counts[lbl] += 1
-    total_samples = len(train_dataset.samples)
-    class_weights = total_samples / (NUM_CLASSES * class_counts)
-    criterion = nn.CrossEntropyLoss(weight=class_weights.to(device), label_smoothing=0.03)
+    # Cross-entropy with subtle label smoothing to prevent acoustic overconfidence
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.02)
 
     optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-5)

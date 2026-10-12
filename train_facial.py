@@ -51,29 +51,30 @@ class FacialDataset(Dataset):
                         self.samples.append((file_path, cls_idx))
                 break
 
-        print(f"Loading and caching {len(self.samples)} facial samples into memory from {self.root_dir}...", flush=True)
-        n = len(self.samples)
-        self.images = np.zeros((n, 48, 48), dtype=np.uint8)
-        self.labels = np.zeros(n, dtype=np.int64)
+        print(f"Loading, filtering, and caching facial samples into memory from {self.root_dir}...", flush=True)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        valid_images = []
+        valid_labels = []
 
-        for i, (file_path, cls_idx) in enumerate(self.samples):
+        for file_path, cls_idx in self.samples:
             img = cv2.imread(str(file_path), cv2.IMREAD_GRAYSCALE)
-            if img is None:
-                img = np.zeros((48, 48), dtype=np.uint8)
-            else:
-                img = cv2.equalizeHist(img)
-                if img.shape != (48, 48):
-                    img = cv2.resize(img, (48, 48), interpolation=cv2.INTER_AREA)
-            self.images[i] = img
-            self.labels[i] = cls_idx
+            if img is None or img.size == 0 or img.std() < 5.0:
+                continue  # Skip corrupt, zero-variance, or blank files
+            img = clahe.apply(img)
+            if img.shape != (48, 48):
+                img = cv2.resize(img, (48, 48), interpolation=cv2.INTER_AREA)
+            valid_images.append(img)
+            valid_labels.append(cls_idx)
 
-        print(f"Cached {n} samples ({self.images.nbytes / (1024*1024):.1f} MB) in RAM ready for training.", flush=True)
+        self.images = np.array(valid_images, dtype=np.uint8)
+        self.labels = np.array(valid_labels, dtype=np.int64)
+        print(f"Cached {len(self.images)} healthy samples ({self.images.nbytes / (1024*1024):.1f} MB) in RAM ready for training.", flush=True)
 
     def __len__(self):
-        return len(self.samples)
+        return len(self.images)
 
     def __getitem__(self, idx):
-        img = self.images[idx]
+        img = self.images[idx].copy()
         label = self.labels[idx]
 
         # Rich real-time data augmentation on training set
@@ -82,31 +83,39 @@ class FacialDataset(Dataset):
             if np.random.rand() > 0.5:
                 img = np.ascontiguousarray(np.fliplr(img))
 
-            # 2. Random subtle rotation (-6 to +6 degrees) (40%)
+            # 2. Random subtle rotation (-8 to +8 degrees) (40%)
             if np.random.rand() > 0.6:
-                angle = float(np.random.uniform(-6.0, 6.0))
+                angle = float(np.random.uniform(-8.0, 8.0))
                 M = cv2.getRotationMatrix2D((24, 24), angle, 1.0)
                 img = cv2.warpAffine(img, M, (48, 48), borderMode=cv2.BORDER_REFLECT)
 
-            # 3. Random subtle translation (-2 to +2 pixels) (40%)
+            # 3. Random subtle translation (-3 to +3 pixels) (40%)
             if np.random.rand() > 0.6:
-                dx = int(np.random.randint(-2, 3))
-                dy = int(np.random.randint(-2, 3))
+                dx = int(np.random.randint(-3, 4))
+                dy = int(np.random.randint(-3, 4))
                 M = np.float32([[1, 0, dx], [0, 1, dy]])
                 img = cv2.warpAffine(img, M, (48, 48), borderMode=cv2.BORDER_REFLECT)
 
             # 4. Random contrast & brightness scaling (40%)
             if np.random.rand() > 0.6:
-                alpha = float(np.random.uniform(0.90, 1.10))
-                beta = float(np.random.uniform(-8.0, 8.0))
+                alpha = float(np.random.uniform(0.88, 1.12))
+                beta = float(np.random.uniform(-10.0, 10.0))
                 img = np.clip(img.astype(np.float32) * alpha + beta, 0.0, 255.0).astype(np.uint8)
+
+            # 5. Cutout / Random Erasing (30% probability)
+            if np.random.rand() > 0.7:
+                h_cut = int(np.random.randint(4, 10))
+                w_cut = int(np.random.randint(4, 10))
+                y_cut = int(np.random.randint(0, 48 - h_cut))
+                x_cut = int(np.random.randint(0, 48 - w_cut))
+                img[y_cut : y_cut + h_cut, x_cut : x_cut + w_cut] = int(img.mean())
 
         # Convert to normalized float32 tensor (1, 48, 48) in [0, 1]
         tensor = torch.from_numpy(img).float().div_(255.0).unsqueeze(0)
         return tensor, torch.tensor(label, dtype=torch.long)
 
 
-def train_facial_model(epochs: int = 10, batch_size: int = 128, lr: float = 3e-4, resume: bool = True, arch: str = "vgg"):
+def train_facial_model(epochs: int = 12, batch_size: int = 128, lr: float = 2.5e-4, resume: bool = True, arch: str = "vgg"):
     """Executes high-precision facial CNN / VGG-FER training and checkpointing."""
     torch.set_num_threads(os.cpu_count() or 8)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -120,8 +129,15 @@ def train_facial_model(epochs: int = 10, batch_size: int = 128, lr: float = 3e-4
         print("[Error] No training data found! Run data/dataset_builder.py first.", flush=True)
         return
 
-    # num_workers=0 is required on Windows to avoid multiprocessing deadlocks
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    # Healthy Balanced Sampler: equal representation per epoch across all 5 emotions
+    class_counts = torch.zeros(NUM_CLASSES)
+    for lbl in train_dataset.labels:
+        class_counts[lbl] += 1
+    class_weights = 1.0 / torch.clamp(class_counts, min=1.0)
+    sample_weights = [class_weights[lbl].item() for lbl in train_dataset.labels]
+    sampler = torch.utils.data.WeightedRandomSampler(sample_weights, num_samples=len(sample_weights), replacement=True)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
     # Initialize Model: VGG-FER Deep Backbone or Baseline FacialCNN
@@ -152,13 +168,8 @@ def train_facial_model(epochs: int = 10, batch_size: int = 128, lr: float = 3e-4
         except Exception as e:
             print(f"[Warning] Could not load checkpoint ({e}), initializing fresh.", flush=True)
 
-    # Class-weighted loss with label smoothing to prevent overfitting
-    class_counts = torch.zeros(NUM_CLASSES)
-    for _, lbl in train_dataset.samples:
-        class_counts[lbl] += 1
-    total_samples = len(train_dataset.samples)
-    class_weights = total_samples / (NUM_CLASSES * class_counts)
-    criterion = nn.CrossEntropyLoss(weight=class_weights.to(device), label_smoothing=0.04)
+    # Cross-entropy loss with label smoothing to prevent overconfidence
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.03)
 
     optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-5)

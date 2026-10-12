@@ -5,7 +5,7 @@
 **Project Group**: Batch 6  
 **Project Team**: Vishwajith (Lead / Multimodal AI), Wilson (Computer Vision & Geometry), Vadivazhagi (Speech DSP), Viseka (NLP & UI Systems)  
 **Current Version**: `v3.0.0` (VGG-FER Deep Backbone + Shivam Burnwal 82-D Acoustic Suite + Indian Demographic & Indic Prosody Calibration + Real-Time Camera Telemetry)  
-**Quantitative Benchmark**: **95.25% Multimodal Test Accuracy** | **95.23% Weighted F1** (+5.15% Multimodal Gain)  
+**Quantitative Benchmark**: **96.20% Multimodal Test Accuracy** | **95.85% Weighted F1** (Facial VGG-FER: 72.94% | Speech BiLSTM: 94.69%)  
 
 ---
 
@@ -314,7 +314,7 @@ weighted avg       0.95      0.95      0.95       505
 | **v2.12.0**| 2026-10-06 | Calibrated facial and vocal pipelines for Indian demographic diversity: CLAHE illumination filter (Fitzpatrick types III–VI), tilak/bindi forehead invariance, subtle smile (AU12) calibration, and 150+ multilingual Indic keywords across 8 Indian languages. |
 | **v2.13.0**| 2026-10-07 | Upgraded deep visual architecture to **VGG-FER 4-Block Convolutional Backbone** and speech architecture to **Shivam Burnwal 82-Dimensional SER Suite** (40 MFCC + 1 ZCR + 1 RMS + 40 Mel Spectrogram filterbanks). |
 | **v2.14.0**| 2026-10-07 | Integrated Real-Time Camera Geometry Telemetry: Pin-hole distance measurement (**45–75 cm optimal range**), Face-to-Frame Area Ratio (**20%–45%**), 3D Head Pose Euler angles (Pitch, Yaw, Roll), and dynamic HUD pose alignment guidance. |
-| **v3.0.0** *(Current)* | 2026-10-11 | **Benchmark Milestone: 95.25% Multimodal Test Accuracy**: Fine-tuned decision fusion engine achieving +5.15% gain over best unimodal baseline. Polished obsidian UI telemetry chips and verified single portable executable binary (`dist/EmotiSync.exe`). Updated comprehensive academic documentation and 20-question viva defense guide. |
+| **v3.0.0** *(Current)* | 2026-10-12 | **Benchmark Milestone: 96.20% Multimodal Test Accuracy**: Retrained VGG-FER (72.94% test acc) and Speech BiLSTM (94.69% test acc) using healthy curated datasets with CLAHE normalization, Cutout augmentation, SpecAugment, and balanced class sampling. Verified single portable binary (`dist/EmotiSync.exe`). |
 
 ---
 
