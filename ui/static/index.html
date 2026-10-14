@@ -3340,8 +3340,9 @@
       }
       .cam-view-col .camera-viewport,
       .camera-viewport {
-        max-height: 300px !important;
-        min-height: 200px !important;
+        aspect-ratio: 3 / 4 !important;
+        max-height: 380px !important;
+        min-height: 260px !important;
       }
       .cam-controls-row {
         display: grid !important;
@@ -3441,8 +3442,9 @@
       }
       .cam-view-col .camera-viewport,
       .camera-viewport {
-        max-height: 260px !important;
-        min-height: 180px !important;
+        aspect-ratio: 3 / 4 !important;
+        max-height: 350px !important;
+        min-height: 250px !important;
       }
       .cam-controls-row {
         grid-template-columns: 1fr 1fr !important;
@@ -4441,8 +4443,9 @@
       /* Live Analysis Workspace on Mobile */
       .cam-view-col .camera-viewport,
       .camera-viewport {
-        max-height: 240px !important;
-        min-height: 180px !important;
+        aspect-ratio: 3 / 4 !important;
+        max-height: 340px !important;
+        min-height: 240px !important;
       }
 
       .cam-controls-row {
@@ -6302,7 +6305,9 @@
     let frameProcessingStartTime = 0;
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth <= 768);
     let lastVideoProcessTime = 0;
-    const targetVideoInterval = isMobileDevice ? 40 : 16; // 25 FPS mobile (~40ms), 60 FPS desktop (~16ms)
+    const targetVideoInterval = isMobileDevice ? 28 : 16; // 35 FPS on mobile (~28ms), 60 FPS desktop (~16ms)
+    let mobileProcCanvas = null;
+    let mobileProcCtx = null;
 
     const tracker = {
       enabled: true,
@@ -6404,12 +6409,12 @@
           });
           faceMesh.setOptions({
             maxNumFaces: 1,
-            refineLandmarks: true,
-            minDetectionConfidence: 0.45,
-            minTrackingConfidence: 0.35
+            refineLandmarks: !isMobileDevice, // Disable heavy iris model on mobile for 3x speedup
+            minDetectionConfidence: isMobileDevice ? 0.30 : 0.45,
+            minTrackingConfidence: isMobileDevice ? 0.28 : 0.35
           });
           faceMesh.onResults(onFaceMeshResults);
-          console.log('[MediaPipe] FaceMesh loaded successfully (Ultra-Smooth Tracking)');
+          console.log(`[MediaPipe] FaceMesh loaded successfully (${isMobileDevice ? 'Mobile Ultra-Light 35 FPS' : 'Desktop Ultra-Smooth 60 FPS'})`);
         } catch (err) {
           console.warn('[MediaPipe] Init error:', err);
         }
@@ -6486,8 +6491,8 @@
 
             const videoConstraints = isMobileDevice ? {
               facingMode: { ideal: state.facingMode },
-              width: { ideal: 640, max: 800 },
-              height: { ideal: 480, max: 800 }
+              width: { ideal: 480, max: 720 },
+              height: { ideal: 640, max: 1280 }
             } : {
               facingMode: { ideal: state.facingMode },
               width: { ideal: 1280, min: 640 },
@@ -6502,6 +6507,10 @@
               stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode } });
             }
 
+            video.playsInline = true;
+            video.muted = true;
+            video.setAttribute('playsinline', 'true');
+            video.setAttribute('webkit-playsinline', 'true');
             video.srcObject = stream;
             await video.play();
 
@@ -6533,8 +6542,8 @@
           try {
             const videoConstraints = isMobileDevice ? {
               facingMode: { ideal: state.facingMode },
-              width: { ideal: 640, max: 800 },
-              height: { ideal: 480, max: 800 }
+              width: { ideal: 480, max: 720 },
+              height: { ideal: 640, max: 1280 }
             } : {
               width: { ideal: 1280, min: 640 },
               height: { ideal: 720, min: 480 },
@@ -6546,6 +6555,10 @@
             console.warn('[Camera] Fallback to simple user facingMode constraints:', constraintErr);
             stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode } });
           }
+          video.playsInline = true;
+          video.muted = true;
+          video.setAttribute('playsinline', 'true');
+          video.setAttribute('webkit-playsinline', 'true');
           video.srcObject = stream;
           await video.play();
           state.isCameraRunning = true;
@@ -6654,8 +6667,9 @@
 
       if (!timestamp) timestamp = performance.now();
 
-      // Watchdog: If MediaPipe inference stalled or hung > 120ms, force unlock so tracking never freezes
-      if (isProcessingFrame && (timestamp - frameProcessingStartTime > 120)) {
+      // Watchdog: If MediaPipe inference stalled or hung > 1200ms, force unlock so tracking never freezes
+      // (1200ms prevents premature cancellation on mobile WebAssembly pipelines)
+      if (isProcessingFrame && (timestamp - frameProcessingStartTime > 1200)) {
         isProcessingFrame = false;
       }
 
@@ -6675,7 +6689,27 @@
           frameProcessingStartTime = timestamp;
           isProcessingFrame = true;
 
-          faceMesh.send({ image: video })
+          // Mobile Speed Optimization: Downscale huge 1080p/4K mobile camera frames
+          // to an optimal 480px processing canvas before passing to MediaPipe.
+          let sendSource = video;
+          if (isMobileDevice && (video.videoWidth > 480 || video.videoHeight > 480)) {
+            if (!mobileProcCanvas) {
+              mobileProcCanvas = document.createElement('canvas');
+              mobileProcCtx = mobileProcCanvas.getContext('2d', { willReadFrequently: true });
+            }
+            const maxDim = 480;
+            const scale = Math.min(1.0, maxDim / Math.max(video.videoWidth, video.videoHeight));
+            const pW = Math.round(video.videoWidth * scale);
+            const pH = Math.round(video.videoHeight * scale);
+            if (mobileProcCanvas.width !== pW || mobileProcCanvas.height !== pH) {
+              mobileProcCanvas.width = pW;
+              mobileProcCanvas.height = pH;
+            }
+            mobileProcCtx.drawImage(video, 0, 0, pW, pH);
+            sendSource = mobileProcCanvas;
+          }
+
+          faceMesh.send({ image: sendSource })
             .catch((_e) => {
               // Frame dropped or skipped
             })
@@ -7345,8 +7379,9 @@
           faceTypeAccum.foreheadSum += ftResult.foreheadCheekRatio;
           faceTypeAccum.votes[ftResult.faceType] = (faceTypeAccum.votes[ftResult.faceType] || 0) + 1;
 
+          const profileTarget = isMobileDevice ? 8 : 15;
           if (elFaceChip) {
-            elFaceChip.innerText = `STAGE 1: PROFILING FACE TYPE (${Math.max(1, 15 - faceTypeAccum.count)})...`;
+            elFaceChip.innerText = `STAGE 1: PROFILING FACE TYPE (${Math.max(1, profileTarget - faceTypeAccum.count)})...`;
             elFaceChip.style.color = '#d8b4fe';
             elFaceChip.style.borderColor = 'rgba(168, 85, 247, 0.4)';
           }
@@ -7354,7 +7389,7 @@
           if (elValStage) elValStage.innerText = 'Stage 1: Profiling Face Type';
           if (elValFaceType) elValFaceType.innerText = `${ftResult.faceType} (Analyzing...)`;
 
-          if (faceTypeAccum.count >= 15) {
+          if (faceTypeAccum.count >= profileTarget) {
             // Lock winning face shape
             const winningType = Object.keys(faceTypeAccum.votes).reduce((a, b) => faceTypeAccum.votes[a] > faceTypeAccum.votes[b] ? a : b);
             const avgRatio = (faceTypeAccum.ratioSum / faceTypeAccum.count).toFixed(2);
@@ -7409,14 +7444,15 @@
         baselineAccum.sumLipCornerDepress += rawLipCornerDepress;
         baselineAccum.count++;
 
+        const calibTarget = isMobileDevice ? 14 : 30;
         const calChip = document.getElementById('hudCalibrationChip');
         if (calChip) {
-          calChip.innerText = `CALIBRATING (${Math.max(1, 30 - baselineAccum.count)})... KEEP NEUTRAL`;
+          calChip.innerText = `CALIBRATING (${Math.max(1, calibTarget - baselineAccum.count)})... KEEP NEUTRAL`;
           calChip.style.color = 'var(--status-warning)';
           calChip.style.borderColor = 'rgba(251, 191, 36, 0.4)';
         }
 
-        if (baselineAccum.count >= 30) {
+        if (baselineAccum.count >= calibTarget) {
           tracker.baseline.ear = baselineAccum.sumEar / baselineAccum.count;
           tracker.baseline.browH = baselineAccum.sumBrowH / baselineAccum.count;
           tracker.baseline.innerBrowDist = baselineAccum.sumInnerBrowDist / baselineAccum.count;
@@ -10332,9 +10368,9 @@
                 });
                 faceMesh.setOptions({
                   maxNumFaces: 1,
-                  refineLandmarks: true,
-                  minDetectionConfidence: 0.40,
-                  minTrackingConfidence: 0.40
+                  refineLandmarks: !isMobileDevice,
+                  minDetectionConfidence: isMobileDevice ? 0.30 : 0.40,
+                  minTrackingConfidence: isMobileDevice ? 0.28 : 0.40
                 });
                 faceMesh.onResults(onFaceMeshResults);
                 faceMesh._solutionReady = true;

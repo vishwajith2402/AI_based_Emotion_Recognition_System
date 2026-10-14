@@ -1,5 +1,5 @@
 // Cache-first offline service worker for standalone software mode
-const CACHE_NAME = 'aips-emotion-software-v1';
+const CACHE_NAME = 'emotisync-v2-mobile-fast';
 const ASSETS_TO_CACHE = [
   './index.html',
   './voice_analyzer.js',
