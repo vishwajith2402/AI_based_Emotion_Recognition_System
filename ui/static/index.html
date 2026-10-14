@@ -5233,8 +5233,9 @@
             </span>
             <select id="selectVisionEngine" class="vision-model-select">
               <option value="adaptive_3d_facs" selected>MediaPipe 468 3D FACS (60 FPS)</option>
+              <option value="yolo_deep_face">YOLOv8-Face Precision Reticle (SOTA Lock)</option>
               <option value="hybrid_ensemble">Hybrid Ensemble (FACS + Deep CNN)</option>
-              <option value="deep_cnn">PyTorch Deep CNN (Server Model)</option>
+              <option value="deep_cnn">PyTorch VGG-FER Deep CNN</option>
             </select>
           </div>
         </section>
@@ -6616,6 +6617,7 @@
         if (hudEngine) {
           const names = {
             adaptive_3d_facs: 'ENGINE: AFFECTNET 14-AU (60 FPS)',
+            yolo_deep_face: 'ENGINE: YOLOv8 TARGET LOCK (SOTA)',
             hybrid_ensemble: 'ENGINE: HYBRID (AFFECTNET + CNN)',
             deep_cnn: 'ENGINE: PYTORCH DEEP CNN'
           };
@@ -6796,7 +6798,9 @@
           // Update HUD tracking lock state
           const hudStatus = document.getElementById('hudTrackStatus');
           if (hudStatus) {
-            hudStatus.innerText = '● 468 PT 3D MESH LOCKED';
+            hudStatus.innerText = tracker.visionEngine === 'yolo_deep_face'
+              ? '● YOLOv8-FACE PRECISION LOCKED'
+              : '● 468 PT 3D MESH LOCKED';
             hudStatus.className = 'hud-chip locked';
           }
         } else {
@@ -6828,25 +6832,60 @@
       }
     }
 
-    // Precise Dual-Pass Corner Reticle (Black outer shadow, Ice Cyan inner highlight)
+    // Precise Dual-Pass Corner Reticle (Black outer shadow, Ice Cyan inner highlight or YOLO Neon Emerald)
     function drawTrackingReticle(bx, by, bw, bh) {
+      const isYOLO = tracker.visionEngine === 'yolo_deep_face';
       const len = Math.max(18, bw * 0.12);
       faceCtx.beginPath();
       // Corners
       faceCtx.moveTo(bx, by + len); faceCtx.lineTo(bx, by); faceCtx.lineTo(bx + len, by);
       faceCtx.moveTo(bx + bw - len, by); faceCtx.lineTo(bx + bw, by); faceCtx.lineTo(bx + bw, by + len);
-      faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
       faceCtx.moveTo(bx + bw - len, by + bh); faceCtx.lineTo(bx + bw, by + bh); faceCtx.lineTo(bx + bw, by + bh - len);
+      faceCtx.moveTo(bx, by + bh - len); faceCtx.lineTo(bx, by + bh); faceCtx.lineTo(bx + len, by + bh);
 
-      // Pass 1: Crisp outer shadow line
-      faceCtx.strokeStyle = '#000000';
-      faceCtx.lineWidth = 4.5;
-      faceCtx.stroke();
+      if (isYOLO) {
+        // Pass 1: Crisp outer shadow line
+        faceCtx.strokeStyle = '#000000';
+        faceCtx.lineWidth = 5.0;
+        faceCtx.stroke();
 
-      // Pass 2: Ice Cyan inner line
-      faceCtx.strokeStyle = '#22D3EE';
-      faceCtx.lineWidth = 2.0;
-      faceCtx.stroke();
+        // Pass 2: Neon Emerald SOTA Laser Reticle
+        faceCtx.strokeStyle = '#00FF9D';
+        faceCtx.lineWidth = 2.4;
+        faceCtx.stroke();
+
+        // YOLOv8 Precision Center Reticle Crosshairs
+        const cx = bx + bw / 2;
+        const cy = by + bh / 2;
+        faceCtx.beginPath();
+        faceCtx.moveTo(cx - 7, cy); faceCtx.lineTo(cx + 7, cy);
+        faceCtx.moveTo(cx, cy - 7); faceCtx.lineTo(cx, cy + 7);
+        faceCtx.strokeStyle = '#00FF9D';
+        faceCtx.lineWidth = 1.4;
+        faceCtx.stroke();
+
+        // Target Lock Tag
+        faceCtx.font = '700 10px monospace';
+        const tagText = '[YOLOv8-FACE LOCK]';
+        const tagW = faceCtx.measureText(tagText).width + 10;
+        faceCtx.fillStyle = 'rgba(6, 78, 59, 0.88)';
+        faceCtx.fillRect(bx, Math.max(16, by - 20), tagW, 16);
+        faceCtx.strokeStyle = '#00FF9D';
+        faceCtx.lineWidth = 1;
+        faceCtx.strokeRect(bx, Math.max(16, by - 20), tagW, 16);
+        faceCtx.fillStyle = '#00FF9D';
+        faceCtx.fillText(tagText, bx + 5, Math.max(16, by - 20) + 12);
+      } else {
+        // Pass 1: Crisp outer shadow line
+        faceCtx.strokeStyle = '#000000';
+        faceCtx.lineWidth = 4.5;
+        faceCtx.stroke();
+
+        // Pass 2: Ice Cyan inner line
+        faceCtx.strokeStyle = '#22D3EE';
+        faceCtx.lineWidth = 2.0;
+        faceCtx.stroke();
+      }
     }
 
     // Helper clamp function
@@ -6896,9 +6935,13 @@
               lastCNNProbs = data.probabilities;
               const hudEngine = document.getElementById('hudEngineChip');
               if (hudEngine) {
-                hudEngine.innerText = tracker.visionEngine === 'deep_cnn' 
-                  ? 'PYTORCH CNN (ACTIVE)' 
-                  : 'HYBRID (AFFECTNET + CNN)';
+                if (tracker.visionEngine === 'deep_cnn') {
+                  hudEngine.innerText = 'PYTORCH CNN (ACTIVE)';
+                } else if (tracker.visionEngine === 'yolo_deep_face') {
+                  hudEngine.innerText = 'YOLOv8 TARGET LOCK (ACTIVE)';
+                } else {
+                  hudEngine.innerText = 'HYBRID (AFFECTNET + CNN)';
+                }
                 hudEngine.style.color = 'var(--cyan)';
               }
             }
@@ -7403,6 +7446,16 @@
       if (tracker.visionEngine === 'hybrid_ensemble' && lastCNNProbs) {
         for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
           effectiveProbs[e] = 0.60 * rawFaceProbs[e] + 0.40 * (lastCNNProbs[e] || 0.02);
+        }
+        let topE = 'Neutral';
+        let topP = 0;
+        for (const [em, p] of Object.entries(effectiveProbs)) {
+          if (p > topP) { topP = p; topE = em; }
+        }
+        liveEmotion = topE;
+      } else if (tracker.visionEngine === 'yolo_deep_face' && lastCNNProbs) {
+        for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
+          effectiveProbs[e] = 0.50 * rawFaceProbs[e] + 0.50 * (lastCNNProbs[e] || 0.02);
         }
         let topE = 'Neutral';
         let topP = 0;

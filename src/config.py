@@ -46,6 +46,7 @@ EMOTION_ICONS = {
 FACE_IMAGE_SIZE = (48, 48)   # (Height, Width)
 FACE_CHANNELS = 1            # Grayscale for standardized FER
 FACE_MODEL_PATH = MODELS_DIR / "facial_cnn.pth"
+YOLO_FACE_MODEL_PATH = MODELS_DIR / "yolov8n-face.pt"
 
 # Speech Pipeline Settings
 AUDIO_SAMPLE_RATE = 16000    # 16 kHz standard

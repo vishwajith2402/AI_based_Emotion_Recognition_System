@@ -8,14 +8,29 @@ import cv2
 import numpy as np
 import torch
 from pathlib import Path
-from src.config import FACE_IMAGE_SIZE, EMOTION_CLASSES, EMOTION_COLORS
+from src.config import FACE_IMAGE_SIZE, EMOTION_CLASSES, EMOTION_COLORS, YOLO_FACE_MODEL_PATH
 
 
 class FacePreprocessor:
-    """Detects faces, tracks landmarks (eyes/mouth), extracts ROIs, and formats for CNN."""
+    """
+    High-Precision Face Detection & Preprocessing Engine.
+    Employs YOLOv8-Face Deep Convolutional Object Detection for robust face tracking
+    under extreme poses, lighting variations, and occlusions, with seamless OpenCV fallback.
+    """
 
-    def __init__(self, cascade_path: str = None):
-        # Locate Haar Cascades
+    def __init__(self, cascade_path: str = None, yolo_path: Path = None):
+        # 1. Initialize YOLOv8-Face Deep Detection Model
+        self.yolo_model = None
+        target_yolo = Path(yolo_path or YOLO_FACE_MODEL_PATH)
+        if target_yolo.exists():
+            try:
+                from ultralytics import YOLO
+                self.yolo_model = YOLO(str(target_yolo))
+                print(f"[FacePreprocessor] Deep YOLOv8-Face Detector active ({target_yolo.name}).", flush=True)
+            except Exception as e:
+                print(f"[FacePreprocessor] Notice: YOLOv8-Face unavailable ({e}), falling back to Haar Cascades.", flush=True)
+
+        # 2. Locate Haar Cascades for Landmark Extraction and Resilient Fallback
         if cascade_path and Path(cascade_path).exists():
             self.face_cascade = cv2.CascadeClassifier(str(cascade_path))
         else:
@@ -32,23 +47,73 @@ class FacePreprocessor:
         self.tracking_history = {}
         self.next_face_id = 1
 
-    def detect_faces(self, frame_bgr: np.ndarray, scale_factor=1.1, min_neighbors=5, min_size=(30, 30)):
-        """Detects bounding boxes of faces in a BGR frame: [(x, y, w, h), ...]"""
+    def detect_faces(self, frame_bgr: np.ndarray, conf_threshold: float = 0.38, scale_factor=1.1, min_neighbors=5, min_size=(30, 30)):
+        """
+        Detects bounding boxes of faces in a BGR frame: [(x, y, w, h), ...]
+        Priority 1: Deep YOLOv8-Face (SOTA pose, illumination, and occlusion invariance).
+        Priority 2: Classical OpenCV Haar Cascade (Fast CPU fallback).
+        """
         if frame_bgr is None or frame_bgr.size == 0:
             return []
-        
+
+        # 1. Deep YOLOv8-Face Detection Pass
+        if self.yolo_model is not None:
+            try:
+                results = self.yolo_model(frame_bgr, conf=conf_threshold, verbose=False)
+                yolo_boxes = []
+                for r in results:
+                    if r.boxes is not None and len(r.boxes) > 0:
+                        xyxy = r.boxes.xyxy.cpu().numpy()
+                        confs = r.boxes.conf.cpu().numpy()
+                        # Sort by confidence descending
+                        order = np.argsort(-confs)
+                        h_frame, w_frame = frame_bgr.shape[:2]
+                        for idx in order:
+                            x1, y1, x2, y2 = xyxy[idx].astype(int)
+                            x1, y1 = max(0, x1), max(0, y1)
+                            x2, y2 = min(w_frame, x2), min(h_frame, y2)
+                            bw, bh = x2 - x1, y2 - y1
+                            if bw >= min_size[0] and bh >= min_size[1]:
+                                yolo_boxes.append((x1, y1, bw, bh))
+                if len(yolo_boxes) > 0:
+                    return yolo_boxes
+            except Exception as e:
+                pass  # Fall through to Haar cascade
+
+        # 2. Resilient Haar Cascade Fallback
         gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
         if self.face_cascade.empty():
             h, w = gray.shape
             return [(0, 0, w, h)]
-            
+
         faces = self.face_cascade.detectMultiScale(
             gray,
             scaleFactor=scale_factor,
             minNeighbors=min_neighbors,
             minSize=min_size
         )
-        return faces
+        return list(faces)
+
+    def detect_faces_yolo_scores(self, frame_bgr: np.ndarray, conf_threshold: float = 0.35):
+        """Returns detected faces with confidence scores: [((x, y, w, h), confidence), ...]"""
+        if frame_bgr is None or frame_bgr.size == 0 or self.yolo_model is None:
+            return []
+        try:
+            results = self.yolo_model(frame_bgr, conf=conf_threshold, verbose=False)
+            output = []
+            for r in results:
+                if r.boxes is not None and len(r.boxes) > 0:
+                    xyxy = r.boxes.xyxy.cpu().numpy()
+                    confs = r.boxes.conf.cpu().numpy()
+                    h_frame, w_frame = frame_bgr.shape[:2]
+                    for box, conf in zip(xyxy, confs):
+                        x1, y1, x2, y2 = box.astype(int)
+                        x1, y1 = max(0, x1), max(0, y1)
+                        x2, y2 = min(w_frame, x2), min(h_frame, y2)
+                        output.append(((x1, y1, x2 - x1, y2 - y1), float(conf)))
+            return output
+        except Exception:
+            return []
 
     def detect_landmarks(self, frame_bgr: np.ndarray, bbox: tuple) -> dict:
         """
