@@ -77,6 +77,41 @@ async def serve_dashboard():
     return HTMLResponse(content="<h1>Dashboard UI building in progress...</h1>")
 
 
+@app.get("/manifest.json")
+async def get_manifest():
+    manifest_file = STATIC_DIR / "manifest.json"
+    if manifest_file.exists():
+        return FileResponse(str(manifest_file), media_type="application/json")
+    raise HTTPException(status_code=404, detail="manifest.json not found")
+
+
+@app.get("/sw.js")
+async def get_service_worker():
+    sw_file = STATIC_DIR / "sw.js"
+    if sw_file.exists():
+        return FileResponse(str(sw_file), media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="sw.js not found")
+
+
+DIST_DIR = PROJECT_ROOT / "dist"
+
+@app.get("/dist/EmotiSync.exe")
+async def download_windows_executable():
+    exe_path = DIST_DIR / "EmotiSync.exe"
+    if exe_path.exists():
+        return FileResponse(
+            path=str(exe_path),
+            filename="EmotiSync.exe",
+            media_type="application/octet-stream"
+        )
+    raise HTTPException(status_code=404, detail="EmotiSync.exe not found in dist. Run 'npm run dist' to build.")
+
+
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+app.mount("/assets", StaticFiles(directory=str(STATIC_DIR / "assets")), name="assets")
+app.mount("/demo_samples", StaticFiles(directory=str(STATIC_DIR / "demo_samples")), name="demo_samples")
+
+
 @app.get("/api/system/status")
 async def get_system_status():
     """Returns real-time system metrics, hardware states, and model statuses."""

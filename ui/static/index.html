@@ -3844,6 +3844,245 @@
       transform: translateX(5px);
     }
 
+    /* Action Row: Let's Start + Install Software */
+    .intro-actions-row {
+      margin-top: 1.35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.15rem;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .intro-actions-row .btn-lets-start {
+      margin-top: 0;
+    }
+
+    .btn-install-software {
+      padding: 0.95rem 2.2rem;
+      font-family: var(--font-main);
+      font-size: 0.96rem;
+      font-weight: 800;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.32) 100%);
+      border: 1.5px solid #10B981;
+      color: #FFFFFF;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 0 28px rgba(16, 185, 129, 0.35);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-install-software:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 45px rgba(16, 185, 129, 0.65);
+      border-color: #34D399;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.38) 0%, rgba(5, 150, 105, 0.48) 100%);
+    }
+
+    .install-btn-icon {
+      font-size: 1.15rem;
+      filter: drop-shadow(0 0 6px #10B981);
+    }
+
+    .install-btn-badge {
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.25);
+      border: 1px solid rgba(52, 211, 153, 0.6);
+      color: #6EE7B7;
+    }
+
+    /* Install Software Modal Windows & Cards */
+    .install-modal-window {
+      max-width: 780px !important;
+      width: 95% !important;
+      padding: 1.75rem !important;
+    }
+
+    .install-options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+    }
+
+    .install-card {
+      background: rgba(12, 13, 20, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .install-card:hover {
+      border-color: rgba(34, 211, 238, 0.45);
+      background: rgba(16, 18, 28, 0.85);
+      transform: translateY(-2px);
+    }
+
+    .mobile-install-card:hover {
+      border-color: rgba(16, 185, 129, 0.55);
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+    }
+
+    .desktop-install-card:hover {
+      border-color: rgba(34, 211, 238, 0.55);
+      box-shadow: 0 0 25px rgba(34, 211, 238, 0.15);
+    }
+
+    .install-card-badge {
+      align-self: flex-start;
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .mobile-badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: #34D399;
+    }
+
+    .desktop-badge {
+      background: rgba(34, 211, 238, 0.15);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      color: #22D3EE;
+    }
+
+    .install-card-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .install-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin: 0;
+    }
+
+    .install-card-desc {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .btn-direct-pwa-install {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #040406;
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-direct-pwa-install:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.7);
+      background: linear-gradient(135deg, #34D399 0%, #6EE7B7 100%);
+    }
+
+    .btn-desktop-download {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #040406;
+      background: linear-gradient(135deg, #22D3EE 0%, #06B6D4 100%);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .btn-desktop-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(34, 211, 238, 0.7);
+      background: linear-gradient(135deg, #67E8F9 0%, #22D3EE 100%);
+    }
+
+    .install-step-sub {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      text-align: center;
+      font-family: var(--font-mono);
+    }
+
+    .install-steps-list {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-top: auto;
+    }
+
+    .install-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      color: var(--text-secondary);
+    }
+
+    .install-step-item .step-num {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--cyan);
+      background: rgba(34, 211, 238, 0.12);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.65rem;
+    }
+
     .intro-team-footer {
       width: 100%;
       max-width: 1100px;
@@ -4321,14 +4560,27 @@
         padding: 0 0.5rem;
       }
 
-      .btn-lets-start {
-        width: 100%;
-        max-width: 320px;
-        padding: 0.9rem 1.6rem;
-        font-size: 0.96rem;
-        justify-content: center;
-        min-height: 52px;
-        box-sizing: border-box;
+      .intro-actions-row {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        width: 100% !important;
+        align-items: center !important;
+      }
+
+      .btn-lets-start,
+      .btn-install-software {
+        width: 100% !important;
+        max-width: 320px !important;
+        padding: 0.9rem 1.6rem !important;
+        font-size: 0.94rem !important;
+        justify-content: center !important;
+        min-height: 52px !important;
+        box-sizing: border-box !important;
+      }
+
+      .install-options-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
       }
 
       /* 2x2 Clean Compact Grid for R&D Team on Phones */
@@ -4943,12 +5195,20 @@
           Advanced real-time multimodal fusion of 468-point 3D facial landmark geometry (70% decision weight) and acoustic vocal prosodic modulation (30% decision weight) for robust affective intelligence.
         </p>
 
-        <!-- Main "Let's Start" CTA Button -->
-        <button class="btn-lets-start" id="btnHeroLetsStart">
-          <span>🚀</span>
-          <span>LET'S START</span>
-          <span class="btn-start-arrow">&rarr;</span>
-        </button>
+        <!-- Action Row: Let's Start CTA + Install App/Software CTA -->
+        <div class="intro-actions-row">
+          <button class="btn-lets-start" id="btnHeroLetsStart">
+            <span>🚀</span>
+            <span>LET'S START</span>
+            <span class="btn-start-arrow">&rarr;</span>
+          </button>
+
+          <button class="btn-install-software" id="btnHeroInstallSoftware" title="Install EmotiSync as Mobile App or Desktop PC Software">
+            <span class="install-btn-icon">📥</span>
+            <span>INSTALL SOFTWARE</span>
+            <span class="install-btn-badge" id="installBtnBadge">MOBILE &bull; PC</span>
+          </button>
+        </div>
       </div>
 
       <!-- Team Members Section in the Bottom of the Window -->
@@ -5635,6 +5895,90 @@
     <div>MediaPipe 468-pt Mesh &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
   </footer>
   </section> <!-- /viewLiveApp -->
+
+  <!-- ========================================================
+       MODAL 0: INSTALL SOFTWARE (MOBILE PWA & DESKTOP EXE)
+       ======================================================== -->
+  <div class="modal-backdrop" id="installSoftwareModal">
+    <div class="modal-window install-modal-window">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <span style="font-size: 1.35rem;">📥</span>
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; letter-spacing: 0.5px; margin: 0;">Install EmotiSync Software</h2>
+            <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; font-family: var(--font-mono);">STANDALONE BIOMETRIC AI FOR MOBILE &amp; DESKTOP</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseInstallModal">✕</button>
+      </div>
+
+      <div class="install-options-grid">
+        <!-- Option 1: Mobile Phone (Android & iOS) -->
+        <div class="install-card mobile-install-card">
+          <div class="install-card-badge mobile-badge">
+            <span>📱</span> MOBILE SOFTWARE (ANDROID / IOS)
+          </div>
+          <div class="install-card-icon">📲</div>
+          <h3>Install on Smartphone</h3>
+          <p class="install-card-desc">
+            Installs as a standalone full-screen mobile application with native camera access, offline support, and high-speed 35 FPS facial tracking.
+          </p>
+          
+          <div class="install-instructions-box" id="mobilePwaDirectAction">
+            <button class="btn-direct-pwa-install" id="btnTriggerPwaInstall">
+              <span>⚡</span> ONE-CLICK INSTALL APP
+            </button>
+            <div class="install-step-sub" id="pwaStatusSub">Instant standalone installation for Android Chrome &amp; Samsung Internet</div>
+          </div>
+
+          <div class="install-steps-list">
+            <div class="install-step-item">
+              <span class="step-num">1</span>
+              <span><b>Android:</b> Click "One-Click Install App" or browser menu <b style="color: var(--cyan);">⋮</b> &rarr; <i>"Install App"</i> / <i>"Add to Home Screen"</i>.</span>
+            </div>
+            <div class="install-step-item">
+              <span class="step-num">2</span>
+              <span><b>iPhone / iPad (Safari):</b> Tap the Share button <b style="color: var(--cyan);">⎙</b> &rarr; select <b style="color: #34d399;">"Add to Home Screen" ➕</b>.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Desktop Computer (Windows PC / Mac / Linux) -->
+        <div class="install-card desktop-install-card">
+          <div class="install-card-badge desktop-badge">
+            <span>💻</span> DESKTOP PC (WINDOWS / CHROME)
+          </div>
+          <div class="install-card-icon">🖥️</div>
+          <h3>Install on Computer</h3>
+          <p class="install-card-desc">
+            Run as a standalone desktop software with native hardware acceleration, offline YOLOv8-Face targeting, and DSP audio pipeline.
+          </p>
+
+          <div class="desktop-action-container">
+            <a class="btn-desktop-download" id="btnDownloadDesktopExe" href="/dist/EmotiSync.exe" download="EmotiSync.exe">
+              <span>⬇️</span> DOWNLOAD WINDOWS (.EXE)
+            </a>
+            <div class="install-step-sub">Portable Standalone Executable (76.4 MB) &bull; Zero Installation Required</div>
+          </div>
+
+          <div class="install-steps-list">
+            <div class="install-step-item">
+              <span class="step-num">✓</span>
+              <span><b>Chrome / Edge Desktop:</b> Click the Install icon in the address bar (top right) to pin as a desktop software window.</span>
+            </div>
+            <div class="install-step-item">
+              <span class="step-num">✓</span>
+              <span><b>Offline Portable EXE:</b> Download <code style="color: var(--cyan);">EmotiSync.exe</code> and double-click to launch anywhere without internet.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 1.25rem;">
+        <button class="btn-ghost-sm" id="btnDismissInstall">CLOSE WINDOW</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ========================================================
        MODAL 1: RESEARCH GUIDE
@@ -11863,6 +12207,92 @@
     if (btnHeroLetsStart) {
       btnHeroLetsStart.addEventListener('click', () => {
         switchView('viewModeSelect');
+      });
+    }
+
+    // 1b. Install Software Modal & PWA Prompt Handlers
+    let deferredInstallPrompt = null;
+    const installSoftwareModal = document.getElementById('installSoftwareModal');
+    const btnHeroInstallSoftware = document.getElementById('btnHeroInstallSoftware');
+    const btnCloseInstallModal = document.getElementById('btnCloseInstallModal');
+    const btnDismissInstall = document.getElementById('btnDismissInstall');
+    const btnTriggerPwaInstall = document.getElementById('btnTriggerPwaInstall');
+    const pwaStatusSub = document.getElementById('pwaStatusSub');
+    const installBtnBadge = document.getElementById('installBtnBadge');
+
+    // Capture standard PWA install event on Mobile Chrome / Desktop Chrome / Edge
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      if (installBtnBadge) installBtnBadge.innerText = 'INSTALL READY ⚡';
+      if (pwaStatusSub) pwaStatusSub.innerText = 'One-click direct installation ready for your device!';
+      if (btnTriggerPwaInstall) {
+        btnTriggerPwaInstall.innerHTML = '<span>⚡</span> INSTALL NOW (INSTANT)';
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      if (installSoftwareModal) installSoftwareModal.style.display = 'none';
+      if (installBtnBadge) installBtnBadge.innerText = 'INSTALLED ✓';
+      setSystemStatus('EMOTISYNC SOFTWARE INSTALLED ✓', 'var(--status-harmony)');
+    });
+
+    // Check if running in standalone PWA or Electron desktop
+    const isStandaloneApp = window.matchMedia('(display-mode: standalone)').matches || 
+                            window.navigator.standalone === true || 
+                            (typeof navigator !== 'undefined' && /Electron/i.test(navigator.userAgent));
+    if (isStandaloneApp && installBtnBadge) {
+      installBtnBadge.innerText = 'APP ACTIVE ✓';
+    }
+
+    if (btnHeroInstallSoftware) {
+      btnHeroInstallSoftware.addEventListener('click', () => {
+        if (installSoftwareModal) {
+          installSoftwareModal.style.display = 'flex';
+        }
+      });
+    }
+
+    if (btnTriggerPwaInstall) {
+      btnTriggerPwaInstall.addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          const { outcome } = await deferredInstallPrompt.userChoice;
+          if (outcome === 'accepted') {
+            if (installSoftwareModal) installSoftwareModal.style.display = 'none';
+            setSystemStatus('INSTALLING EMOTISYNC...', 'var(--cyan)');
+          }
+          deferredInstallPrompt = null;
+        } else {
+          // If iOS Safari or unsupported, show friendly guidance
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+          if (isIOS) {
+            alert('To install on iPhone/iPad:\n1. Tap the Share button at the bottom of Safari (square with arrow ⎙)\n2. Scroll and tap "Add to Home Screen" ➕\n3. Tap "Add"');
+          } else {
+            alert('To install on Android or PC:\nTap your browser menu (⋮) in the top-right corner and select "Install App" or "Add to Home Screen".');
+          }
+        }
+      });
+    }
+
+    if (btnCloseInstallModal) {
+      btnCloseInstallModal.addEventListener('click', () => {
+        if (installSoftwareModal) installSoftwareModal.style.display = 'none';
+      });
+    }
+
+    if (btnDismissInstall) {
+      btnDismissInstall.addEventListener('click', () => {
+        if (installSoftwareModal) installSoftwareModal.style.display = 'none';
+      });
+    }
+
+    if (installSoftwareModal) {
+      installSoftwareModal.addEventListener('click', (e) => {
+        if (e.target === installSoftwareModal) {
+          installSoftwareModal.style.display = 'none';
+        }
       });
     }
 
