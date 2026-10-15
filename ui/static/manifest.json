@@ -1,39 +1,56 @@
 {
   "name": "EmotiSync - Emotion Recognition System",
   "short_name": "EmotiSync",
-  "id": "/?source=pwa",
-  "start_url": "./index.html",
-  "scope": "./",
-  "description": "EmotiSync: Multimodal Emotion Recognition Software using Facial Action Units & Acoustic Prosody",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "description": "EmotiSync: Multimodal Biometric Emotion Recognition Software utilizing Facial Action Units & Acoustic Prosody Analysis.",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#040406",
   "theme_color": "#040406",
   "orientation": "any",
-  "categories": ["utilities", "productivity", "health"],
+  "categories": ["utilities", "productivity", "health", "artificial-intelligence"],
   "icons": [
     {
-      "src": "./demo_samples/app_icon_192.png",
+      "src": "/demo_samples/app_icon_192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./demo_samples/app_icon_192.png",
+      "src": "/demo_samples/app_icon_192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "./demo_samples/app_icon.png",
+      "src": "/demo_samples/app_icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./demo_samples/app_icon.png",
+      "src": "/demo_samples/app_icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Camera Biometrics",
+      "short_name": "Live Camera",
+      "description": "Launch live camera facial and speech emotion tracking",
+      "url": "/?mode=live",
+      "icons": [{ "src": "/demo_samples/app_icon_192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Media Upload Analyzer",
+      "short_name": "Media Upload",
+      "description": "Analyze video, audio, or photo files for emotions",
+      "url": "/?mode=media",
+      "icons": [{ "src": "/demo_samples/app_icon_192.png", "sizes": "192x192" }]
     }
   ]
 }

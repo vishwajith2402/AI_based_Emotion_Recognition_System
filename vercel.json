@@ -9,6 +9,14 @@
   ],
   "routes": [
     {
+      "src": "/dist/EmotiSync-Windows.zip",
+      "dest": "/ui/static/downloads/EmotiSync-Windows.zip"
+    },
+    {
+      "src": "/downloads/EmotiSync-Windows.zip",
+      "dest": "/ui/static/downloads/EmotiSync-Windows.zip"
+    },
+    {
       "src": "/dist/EmotiSync.exe",
       "dest": "/ui/static/downloads/EmotiSync.exe"
     },

@@ -110,6 +110,19 @@ async def download_windows_executable():
     raise HTTPException(status_code=404, detail="EmotiSync.exe not found.")
 
 
+@app.get("/dist/EmotiSync-Windows.zip")
+@app.get("/downloads/EmotiSync-Windows.zip")
+async def download_windows_zip():
+    zip_path = STATIC_DIR / "downloads" / "EmotiSync-Windows.zip"
+    if zip_path.exists():
+        return FileResponse(
+            path=str(zip_path),
+            filename="EmotiSync-Windows.zip",
+            media_type="application/zip"
+        )
+    raise HTTPException(status_code=404, detail="EmotiSync-Windows.zip not found.")
+
+
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.mount("/assets", StaticFiles(directory=str(STATIC_DIR / "assets")), name="assets")
 app.mount("/demo_samples", StaticFiles(directory=str(STATIC_DIR / "demo_samples")), name="demo_samples")
