@@ -1,18 +1,39 @@
 {
   "name": "EmotiSync - Emotion Recognition System",
   "short_name": "EmotiSync",
-  "description": "EmotiSync: Multimodal Emotion Recognition System using Facial Action Units & Acoustic Prosody",
+  "id": "/?source=pwa",
   "start_url": "./index.html",
+  "scope": "./",
+  "description": "EmotiSync: Multimodal Emotion Recognition Software using Facial Action Units & Acoustic Prosody",
   "display": "standalone",
   "background_color": "#040406",
   "theme_color": "#040406",
   "orientation": "any",
+  "categories": ["utilities", "productivity", "health"],
   "icons": [
+    {
+      "src": "./demo_samples/app_icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./demo_samples/app_icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "./demo_samples/app_icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./demo_samples/app_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

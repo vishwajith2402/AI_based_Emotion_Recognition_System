@@ -96,15 +96,18 @@ async def get_service_worker():
 DIST_DIR = PROJECT_ROOT / "dist"
 
 @app.get("/dist/EmotiSync.exe")
+@app.get("/downloads/EmotiSync.exe")
 async def download_windows_executable():
-    exe_path = DIST_DIR / "EmotiSync.exe"
-    if exe_path.exists():
+    static_exe = STATIC_DIR / "downloads" / "EmotiSync.exe"
+    dist_exe = DIST_DIR / "EmotiSync.exe"
+    target = static_exe if static_exe.exists() else dist_exe
+    if target.exists():
         return FileResponse(
-            path=str(exe_path),
+            path=str(target),
             filename="EmotiSync.exe",
             media_type="application/octet-stream"
         )
-    raise HTTPException(status_code=404, detail="EmotiSync.exe not found in dist. Run 'npm run dist' to build.")
+    raise HTTPException(status_code=404, detail="EmotiSync.exe not found.")
 
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")

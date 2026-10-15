@@ -9,6 +9,22 @@
   ],
   "routes": [
     {
+      "src": "/dist/EmotiSync.exe",
+      "dest": "/ui/static/downloads/EmotiSync.exe"
+    },
+    {
+      "src": "/downloads/EmotiSync.exe",
+      "dest": "/ui/static/downloads/EmotiSync.exe"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/ui/static/manifest.json"
+    },
+    {
+      "src": "/sw.js",
+      "dest": "/ui/static/sw.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "/ui/static/$1"
     }

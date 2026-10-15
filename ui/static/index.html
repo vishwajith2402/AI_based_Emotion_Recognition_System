@@ -5928,17 +5928,21 @@
             <button class="btn-direct-pwa-install" id="btnTriggerPwaInstall">
               <span>⚡</span> ONE-CLICK INSTALL APP
             </button>
-            <div class="install-step-sub" id="pwaStatusSub">Instant standalone installation for Android Chrome &amp; Samsung Internet</div>
+            <div class="install-step-sub" id="pwaStatusSub">Instant standalone installation for Android &amp; Chrome</div>
           </div>
 
           <div class="install-steps-list">
             <div class="install-step-item">
               <span class="step-num">1</span>
-              <span><b>Android:</b> Click "One-Click Install App" or browser menu <b style="color: var(--cyan);">⋮</b> &rarr; <i>"Install App"</i> / <i>"Add to Home Screen"</i>.</span>
+              <span><b>Android (Chrome / Samsung):</b> Tap <b>"One-Click Install App"</b> or tap browser menu <b style="color: var(--cyan);">⋮</b> &rarr; select <b style="color: #34d399;">"Install app"</b> or <i>"Add to Home screen"</i>.</span>
             </div>
             <div class="install-step-item">
               <span class="step-num">2</span>
-              <span><b>iPhone / iPad (Safari):</b> Tap the Share button <b style="color: var(--cyan);">⎙</b> &rarr; select <b style="color: #34d399;">"Add to Home Screen" ➕</b>.</span>
+              <span><b>iPhone / iPad (Safari):</b> Tap the Share button <b style="color: var(--cyan);">⎙</b> at bottom &rarr; tap <b style="color: #34d399;">"Add to Home Screen" ➕</b> &rarr; tap <b>Add</b>.</span>
+            </div>
+            <div class="install-step-item" style="border-top: 1px dashed rgba(255, 255, 255, 0.1); padding-top: 0.4rem; color: #fbbf24;">
+              <span class="step-num" style="color: #fbbf24; background: rgba(251, 191, 36, 0.15);">ℹ</span>
+              <span><b>Note:</b> Mobile phones cannot run .exe files. The phone app installs directly via your browser's "Add to Home Screen" feature!</span>
             </div>
           </div>
         </div>
@@ -5955,10 +5959,13 @@
           </p>
 
           <div class="desktop-action-container">
-            <a class="btn-desktop-download" id="btnDownloadDesktopExe" href="/dist/EmotiSync.exe" download="EmotiSync.exe">
+            <a class="btn-desktop-download" id="btnDownloadDesktopExe" href="./downloads/EmotiSync.exe" download="EmotiSync.exe">
               <span>⬇️</span> DOWNLOAD WINDOWS (.EXE)
             </a>
-            <div class="install-step-sub">Portable Standalone Executable (76.4 MB) &bull; Zero Installation Required</div>
+            <div class="install-step-sub" id="desktopDownloadStatusSub">Portable Standalone Executable (76.4 MB) &bull; Zero Installation Required</div>
+            <a href="https://github.com/vishwajith2402/AI_based_Emotion_Recognition_System/raw/main/ui/static/downloads/EmotiSync.exe" class="desktop-github-mirror" target="_blank" rel="noopener">
+              <span>🔗</span> Alternate GitHub Direct Download Mirror
+            </a>
           </div>
 
           <div class="install-steps-list">
@@ -12273,6 +12280,22 @@
             alert('To install on Android or PC:\nTap your browser menu (⋮) in the top-right corner and select "Install App" or "Add to Home Screen".');
           }
         }
+      });
+    }
+
+    const btnDownloadDesktopExe = document.getElementById('btnDownloadDesktopExe');
+    if (btnDownloadDesktopExe) {
+      btnDownloadDesktopExe.addEventListener('click', (e) => {
+        if (isMobileDevice) {
+          e.preventDefault();
+          alert('📱 Notice for Mobile Devices:\n\nEmotiSync.exe is a Windows PC desktop application and cannot run on an Android or iPhone.\n\nTo install EmotiSync on your phone, use the "ONE-CLICK INSTALL APP" button above, or tap your mobile browser menu (⋮) and select "Install App" / "Add to Home Screen"!');
+          return;
+        }
+
+        setSystemStatus('DOWNLOADING EMOTISYNC.EXE...', 'var(--cyan)');
+        setTimeout(() => {
+          alert('🎉 EmotiSync.exe Download Started!\n\n📌 How to Run:\nEmotiSync is a Portable Standalone Application.\nOnce downloaded, open your Downloads folder and double-click "EmotiSync.exe" to launch immediately.\n\nNo installation setup wizard or administrator rights required!');
+        }, 800);
       });
     }
 

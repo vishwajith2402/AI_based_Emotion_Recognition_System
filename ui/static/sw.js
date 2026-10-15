@@ -1,10 +1,11 @@
 // Cache-first offline service worker for standalone software mode
-const CACHE_NAME = 'emotisync-v2-mobile-fast';
+const CACHE_NAME = 'emotisync-v3-pwa-ready';
 const ASSETS_TO_CACHE = [
   './index.html',
   './voice_analyzer.js',
   './manifest.json',
-  './demo_samples/app_icon.png'
+  './demo_samples/app_icon.png',
+  './demo_samples/app_icon_192.png'
 ];
 
 self.addEventListener('install', (event) => {
