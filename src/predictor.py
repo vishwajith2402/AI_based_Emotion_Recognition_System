@@ -157,6 +157,13 @@ class EmotionPredictor:
         probs = self._apply_ema(blended, self.smoothed_face_probs)
         self.smoothed_face_probs = probs
         top_emotion = max(probs, key=probs.get)
+        if top_emotion == "Neutral":
+            non_neutral = {e: p for e, p in probs.items() if e != "Neutral"}
+            best_nn = max(non_neutral, key=non_neutral.get)
+            thresh = 0.22 if best_nn == "Sad" else 0.28
+            margin = 0.16 if best_nn == "Sad" else 0.12
+            if non_neutral[best_nn] >= thresh and (probs["Neutral"] - non_neutral[best_nn]) < margin:
+                top_emotion = best_nn
         conf = probs[top_emotion]
         va = self.face_model.get_valence_arousal(probs)
 

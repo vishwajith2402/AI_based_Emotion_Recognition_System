@@ -7882,8 +7882,8 @@
       const outerBrowY = (rLeftOuterBrow.y + rRightOuterBrow.y) / 2;
       const rawGriefSlant = ((outerBrowY - innerBrowY) / dMidFace) / cosPitch;
 
-      // Lip corner depressor (AU15 DAO)
-      const rawLipCornerDepress = Math.max(0, ((cornerAvgY - stomionY) / dMidFace) / cosPitch);
+      // Lip corner depressor (AU15 DAO): signed displacement to capture subtle downward movement even from slightly upturned resting corners
+      const rawLipCornerDepress = ((cornerAvgY - stomionY) / dMidFace) / cosPitch;
 
       // Lip thinning/tension (AU23/AU24)
       const rawLipHeight = (dist(lm[0], lm[13]) + dist(lm[14], lm[17])) / dEye;
@@ -7896,7 +7896,7 @@
       const bInnerBrow = (baseline && baseline.isCalibrated) ? baseline.innerBrowDist : 0.355;
       const bBrowH = (baseline && baseline.isCalibrated) ? baseline.browH : 0.155;
       const bGrief = (baseline && baseline.isCalibrated) ? baseline.griefSlant : 0.008;
-      const bCornerDepress = (baseline && baseline.isCalibrated && baseline.lipCornerDepress !== undefined) ? baseline.lipCornerDepress : 0.004;
+      const bCornerDepress = (baseline && baseline.isCalibrated && baseline.lipCornerDepress !== undefined) ? baseline.lipCornerDepress : 0.000;
       const bEyeCheek = (baseline && baseline.isCalibrated && baseline.eyeCheekDist !== undefined) ? baseline.eyeCheekDist : 0.28;
       const bLipHeight = (baseline && baseline.isCalibrated && baseline.lipHeight !== undefined) ? baseline.lipHeight : 0.088;
 
@@ -7908,6 +7908,7 @@
       const dBrowDrop = bBrowH - rawBrowH; // brows pull down
       const dBrowRaise = rawBrowH - bBrowH; // brows raise up
       const dEyeWiden = avgEAR - bEAR; // eyes open wider
+      const dEyeSlump = Math.max(0, bEAR - avgEAR); // eyes droop / aperture narrows in grief
       const dJawDrop = rawMouthAperture - bAperture; // jaw opens
       const dCornerDrop = rawLipCornerDepress - bCornerDepress; // corners droop
       const dGriefSlant = rawGriefSlant - bGrief; // inner brows arch upward
@@ -7968,11 +7969,11 @@
       // AU26: Jaw Drop (Surprise jaw drop)
       let au26JawDrop = clamp01(Math.max(0, dJawDrop + 0.005) / maxJawDrop);
 
-      // AU15: Lip Corner Depressor (Sadness frown)
-      let au15LipDepress = clamp01(Math.max(0, dCornerDrop + 0.003) / 0.015);
+      // AU15: Lip Corner Depressor (Calibrated for subtle human frowns 0.003 - 0.009 dMidFace)
+      let au15LipDepress = clamp01(Math.max(0, dCornerDrop + 0.002) / 0.0085);
 
-      // AU1: Inner Brow Grief Slant (Sadness brow arch)
-      let au1GriefSlant = clamp01(Math.max(0, dGriefSlant + 0.003) / 0.016);
+      // AU1: Inner Brow Grief Slant (Medial Frontalis subtle arching 0.003 - 0.009 dMidFace)
+      let au1GriefSlant = clamp01(Math.max(0, dGriefSlant + 0.002) / 0.0090);
 
       // AU23: Lip Tightener / Pressor (Anger tension)
       let au23LipTight = clamp01(Math.max(0, dLipThin + 0.003) / 0.018);
@@ -7990,15 +7991,16 @@
         au1_2BrowRaise = au1_2BrowRaise * 1.15;
       }
 
-      // Gaze synergy reinforcement:
-      const evSadGazeBonus = (gazeDirection === 'DOWNWARD' && (au15LipDepress > 0.20 || au1GriefSlant > 0.20)) ? 1.25 : 0.0;
+      // Gaze & Eyelid Slump synergy reinforcement:
+      const evSadGazeBonus = (gazeDirection === 'DOWNWARD' && (au15LipDepress > 0.15 || au1GriefSlant > 0.15)) ? 1.35 : 0.0;
+      const evSadEyeSlumpBonus = (dEyeSlump > 0.012 && (au15LipDepress > 0.15 || au1GriefSlant > 0.15)) ? Math.min(1.2, (dEyeSlump / 0.035) * 1.10) : 0.0;
       const evSurpriseGazeBonus = (gazeDirection === 'FORWARD' && au1_2BrowRaise > 0.25 && au5EyeAperture > 0.25) ? 0.85 : 0.0;
 
       // 8. Positive Evidentiary Scoring (FACS Grounded)
       const evHappy = (au12Smile * 3.8) + (au6Cheek * 2.2);
       const evSurprise = (au1_2BrowRaise * 2.8) + (au5EyeAperture * 2.6) + (au26JawDrop * 2.4) + evSurpriseGazeBonus;
       const evAngry = (au4Furrow * 3.6) + (au23LipTight * 1.8);
-      const evSad = (au15LipDepress * 3.4) + (au1GriefSlant * 2.6) + evSadGazeBonus;
+      const evSad = (au15LipDepress * 4.6) + (au1GriefSlant * 3.4) + evSadGazeBonus + evSadEyeSlumpBonus;
 
       // Total expressive tension across all emotions:
       const maxExpressiveTension = Math.max(evHappy, evSurprise, evAngry, evSad);
@@ -8022,14 +8024,14 @@
       }
       phaseState.phase = facialPhase;
 
-      // Neutral logit: High at rest, smoothly yields only when genuine expression occurs
-      const logitNeutral = 2.4 - (maxExpressiveTension * 1.35);
+      // Neutral logit: High at rest, smoothly yields; sad frown directly suppresses neutral baseline
+      const logitNeutral = 2.3 - (maxExpressiveTension * 1.45) - (au15LipDepress * 1.25);
 
       const logits = {
         Happy: -0.4 + evHappy - (au4Furrow * 1.8) - (au15LipDepress * 2.0),
         Surprise: -0.5 + evSurprise - (au4Furrow * 1.5) - (au12Smile * 0.8),
         Angry: -0.5 + evAngry - (au12Smile * 2.5) - (au26JawDrop * 1.4),
-        Sad: -0.5 + evSad - (au12Smile * 2.8) - (au5EyeAperture * 1.2),
+        Sad: -0.2 + evSad - (au12Smile * 3.2) - (au5EyeAperture * 1.4),
         Neutral: Math.max(-0.6, logitNeutral)
       };
 
@@ -8373,8 +8375,9 @@
         const targetP = effectiveProbs[liveEmotion] || 0;
 
         if (currentEmotion === 'Neutral') {
-          // Transition from Neutral to an active emotion requires clear signal (>= 35% & > Neutral)
-          if (targetP >= 0.35 && targetP > currentP) {
+          // Transition from Neutral to active emotion: allow subtle low-arousal Sadness to break out at >= 28%
+          const breakoutThreshold = (liveEmotion === 'Sad') ? 0.28 : 0.35;
+          if (targetP >= breakoutThreshold && targetP > currentP) {
             targetEmotion = liveEmotion;
           } else {
             targetEmotion = 'Neutral';
@@ -8382,14 +8385,15 @@
         } else {
           // Returning to Neutral requires Neutral to lead with confident margin
           if (liveEmotion === 'Neutral') {
-            if (targetP > currentP + 0.06 || currentP < 0.28) {
+            const returnMargin = (currentEmotion === 'Sad') ? 0.08 : 0.06;
+            if (targetP > currentP + returnMargin || currentP < 0.24) {
               targetEmotion = 'Neutral';
             } else {
               targetEmotion = currentEmotion;
             }
           } else {
-            // Switching between active emotions requires at least 8% margin or >= 52% absolute
-            if (targetP > currentP + 0.08 || targetP >= 0.52) {
+            // Switching between active emotions requires at least 8% margin or >= 50% absolute
+            if (targetP > currentP + 0.08 || targetP >= 0.50) {
               targetEmotion = liveEmotion;
             } else {
               targetEmotion = currentEmotion;
@@ -11494,11 +11498,11 @@
       const outerBrowY = (rLeftOuterBrow.y + rRightOuterBrow.y) / 2;
       // In sadness, inner brow pulls up while outer brow slopes down (outerBrowY > innerBrowY in screen coords)
       const griefSlant = (outerBrowY - innerBrowY) / dMidFace;
-      const au1Grief = Math.min(100, Math.max(0, (griefSlant - 0.012) * 1250));
+      const au1Grief = Math.min(100, Math.max(0, (griefSlant - 0.004) * 1650));
 
       // 7. AU15: Lip Corner Depressor (Sadness Frown)
       const cornerDepression = (cornerAvgY - stomionY) / dMidFace;
-      const au15LipDep = Math.min(100, Math.max(0, (cornerDepression - 0.005) * 1750));
+      const au15LipDep = Math.min(100, Math.max(0, (cornerDepression - 0.001) * 2200));
 
       // 8. AU23/AU24: Lip Tightener / Pressor (Anger)
       const vermilionHeight = (dist3d(lm[0], lm[13]) + dist3d(lm[14], lm[17])) / dEye;
@@ -11518,8 +11522,8 @@
       const sAU12 = fAU(au12Smile, 14);
       const sAU6  = fAU(au6Cheek, 12);
       const sAU4  = fAU(au4Furrow, 16);
-      const sAU1  = fAU(au1Grief, 14);
-      const sAU15 = fAU(au15LipDep, 14);
+      const sAU1  = fAU(au1Grief, 12);
+      const sAU15 = fAU(au15LipDep, 12);
       const sAU5  = fAU(au5EyeAperture, 15);
       const sAU26 = fAU(au26JawDrop, 15);
       const sAU23 = fAU(au23LipTight, 14);
@@ -11528,7 +11532,7 @@
       const logits = {
         Happy: 0.05 + (sAU12 * 0.082) + (sAU6 * 0.042) - (sAU4 * 0.045) - (sAU15 * 0.055) - (sAU1 * 0.035),
         Surprise: 0.00 + (sAU5 * 0.068) + (sAU26 * 0.072) + (sAU1 * 0.020) - (sAU4 * 0.035) - (sAU15 * 0.045),
-        Sad: 0.00 + (sAU1 * 0.078) + (sAU15 * 0.070) - (sAU12 * 0.080) - (sAU5 * 0.035),
+        Sad: 0.05 + (sAU1 * 0.088) + (sAU15 * 0.085) - (sAU12 * 0.080) - (sAU5 * 0.035),
         Angry: 0.00 + (sAU4 * 0.082) + (sAU23 * 0.045) - (sAU12 * 0.075) - (sAU26 * 0.035),
         Neutral: 0.10 - (sAU12 * 0.052) - (sAU5 * 0.048) - (sAU26 * 0.048) - (sAU4 * 0.050) - (sAU1 * 0.050) - (sAU15 * 0.050)
       };
@@ -11559,11 +11563,11 @@
       if (topEmo === 'Neutral') {
         const candidates = [
           { emo: 'Happy', p: probs['Happy'], trigger: au12Smile >= 16 || au6Cheek >= 20 },
-          { emo: 'Sad', p: probs['Sad'], trigger: au1Grief >= 16 || au15LipDep >= 16 },
+          { emo: 'Sad', p: probs['Sad'], trigger: au1Grief >= 12 || au15LipDep >= 12 },
           { emo: 'Angry', p: probs['Angry'], trigger: au4Furrow >= 20 || au23LipTight >= 22 },
           { emo: 'Surprise', p: probs['Surprise'], trigger: au5EyeAperture >= 18 || au26JawDrop >= 18 }
         ];
-        const activeCands = candidates.filter(c => c.trigger && c.p >= 0.20);
+        const activeCands = candidates.filter(c => c.trigger && c.p >= (c.emo === 'Sad' ? 0.18 : 0.20));
         if (activeCands.length > 0) {
           activeCands.sort((a, b) => b.p - a.p);
           topEmo = activeCands[0].emo;

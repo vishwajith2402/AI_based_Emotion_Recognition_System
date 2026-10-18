@@ -128,10 +128,10 @@ class FacialStyleAnalyzer:
         mouth_y_pos = best[3][1] if candidates else int(mh * 0.3)
         
         # Calculate deviation from resting baseline curve:
-        # If baseline is known, delta < -1.8 indicates genuine depressive mouth corner drop
+        # If baseline is known, delta < -0.8 indicates genuine depressive mouth corner drop
         ref_curve = baseline_curve if baseline_curve is not None else 1.5
         curve_drop = float(curve - ref_curve)
-        is_depressed_from_baseline = (baseline_curve is not None and curve_drop <= -1.8)
+        is_depressed_from_baseline = (baseline_curve is not None and curve_drop <= -0.8)
 
         if aspect >= 0.68:
             mouth_style = "Full Open"
@@ -139,7 +139,7 @@ class FacialStyleAnalyzer:
             mouth_style = "Curved Up (Smiley)"
         elif aspect < 0.25 and glab_furrow >= 26.0:
             mouth_style = "Tense / Compressed"
-        elif is_depressed_from_baseline or curve <= -0.5:
+        elif is_depressed_from_baseline or curve <= -0.2:
             mouth_style = "Curved Down (Frown)"
         elif abs(curve) <= 3.2 and aspect < 0.55:
             mouth_style = "Neutral Horizontal"
@@ -418,6 +418,8 @@ class FacialStyleAnalyzer:
         m_style = mouth_info["mouth_style"]
         e_style = eye_info["eye_style"]
         f_style = forehead_info["forehead_style"]
+        curve_drop = mouth_info.get("curve_drop_from_baseline", 0.0)
+        is_depressed = (baseline_curve is not None and curve_drop <= -0.8)
 
         # ── Morphological Rule Scoring ─────────────────────────────────────────
         scores = {emo: 0.10 for emo in EMOTION_CLASSES}
@@ -433,11 +435,13 @@ class FacialStyleAnalyzer:
         # 2. SAD: Mouth curved down (frown) or drooping + squinted/partially closed
         # Frown mouth is the paramount marker of Sadness; wrinkles here indicate grief / brow knits (AU1+AU4)
         if m_style == "Curved Down (Frown)":
-            scores["Sad"] += 0.90
+            scores["Sad"] += 1.25
             if e_style == "Partially Closed (Drooping)":
-                scores["Sad"] += 0.40
+                scores["Sad"] += 0.45
             if f_style == "Shrunk / Wrinkles (Furrowed)":
-                scores["Sad"] += 0.25
+                scores["Sad"] += 0.35
+            if is_depressed or curve_drop <= -0.6:
+                scores["Sad"] += 0.40
 
         # 3. ANGRY: Glabellar furrow + tight/compressed mouth OR furrowed brow with tense corners
         if f_style == "Shrunk / Wrinkles (Furrowed)":
