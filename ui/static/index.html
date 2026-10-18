@@ -8,7 +8,7 @@
   <link rel="shortcut icon" href="./assets/favicon.ico">
   <link rel="apple-touch-icon" href="./assets/app_icon.png">
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#040406">
+  <meta name="theme-color" content="#121324">
   
   <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,55 +24,60 @@
 
   <style>
     /* ========================================================
-       EmotiSync — ULTRA-MODERN BLACK & HIGH-CONTRAST DESIGN SYSTEM
-       Deep OLED Black + Razor Hairline Contrast + Vivid Biometrics
+       EmotiSync — SIGNATURE MIDNIGHT INDIGO & VANILLA DESIGN SYSTEM
+       Signature Primary: #282B4A (Midnight Indigo)
+       Signature Surface / Text: #EEEBDA (Warm Vanilla)
+       Harmonized with Celestial Aqua, Iris Violet, and Sandstone
        ======================================================== */
     :root {
-      /* 🌑 1. Background Hierarchy — True Pitch-Black OLED Void & Smoked Glass */
-      --bg-primary: #040406;        /* Deep OLED Black Void */
-      --bg-secondary: #0A0A0F;      /* Matte Obsidian Carbon Plate */
-      --bg-card: rgba(14, 14, 20, 0.82); /* High-Density Smoked Frosted Glass */
-      --bg-card-solid: #0E0E14;     /* Solid Precision Titanium Surface */
-      --bg-elevated: #15151F;       /* Elevated Command Deck */
-      --bg-surface-hover: #1E1E2B;  /* High-Contrast Interactive Hover State */
-      --bg-input: #08080C;         /* Recessed High-Contrast Input Well */
+      /* 🌌 1. Background Hierarchy — Rich Midnight Indigo Void & Frosted Indigo Glass */
+      --bg-primary: #121324;        /* Deep Midnight Void (#121324) */
+      --bg-secondary: #1A1C33;      /* Matte Midnight Indigo Carbon (#1A1C33) */
+      --bg-card: rgba(40, 43, 74, 0.78); /* Signature Midnight Indigo Glass (#282B4A at 78%) */
+      --bg-card-solid: #282B4A;     /* Solid Signature Midnight Indigo Surface (#282B4A) */
+      --bg-elevated: #32365C;       /* Elevated Midnight Command Deck (#32365C) */
+      --bg-surface-hover: #3E4370;  /* Luminous Interactive Indigo Hover (#3E4370) */
+      --bg-input: #16182B;         /* Recessed High-Contrast Indigo Well (#16182B) */
       
-      /* ⚡ 2. Razor-Sharp Hairline Borders & High-Contrast Edge Rings */
-      --border-subtle: rgba(255, 255, 255, 0.11);    /* Crisp 1px Hairline White Border */
-      --border-medium: rgba(255, 255, 255, 0.18);    /* Pronounced Structural Edge */
-      --border-glass: rgba(255, 255, 255, 0.14);     /* Frosted Glass Perimeter */
-      --border-contrast: rgba(255, 255, 255, 0.28);  /* Ultra-Crisp Boundary */
-      --border-active: rgba(0, 245, 255, 0.75);      /* Laser Cyan Luminous Focus Ring */
-      --shadow-subtle: 0 18px 40px -10px rgba(0, 0, 0, 0.95);
-      --shadow-active-card: 0 0 35px rgba(0, 245, 255, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.10);
+      /* ⚡ 2. Vanilla Hairline Borders & High-Contrast Edge Rings */
+      --border-subtle: rgba(238, 235, 218, 0.12);   /* Crisp 1px Hairline Vanilla Border */
+      --border-medium: rgba(238, 235, 218, 0.22);   /* Pronounced Structural Edge */
+      --border-glass: rgba(238, 235, 218, 0.16);    /* Frosted Glass Perimeter */
+      --border-contrast: rgba(238, 235, 218, 0.35); /* Ultra-Crisp Vanilla Boundary */
+      --border-active: rgba(165, 180, 252, 0.85);   /* Luminous Iris Focus Ring */
+      --shadow-subtle: 0 18px 45px -10px rgba(10, 11, 20, 0.90);
+      --shadow-active-card: 0 0 35px rgba(165, 180, 252, 0.18), inset 0 1px 0 0 rgba(238, 235, 218, 0.14);
       
-      /* 👁️ Vision Accent (Laser Cyan) & 🎙️ Voice Accent (Electric Cobalt) */
-      --cyan: #00F5FF;              /* Hyper-Vivid Laser Cyan - Vision 👁️ */
-      --cyan-dim: rgba(0, 245, 255, 0.12);
-      --violet: #3B82F6;            /* Electric Sapphire Blue - Voice 🎙️ */
-      --violet-dim: rgba(59, 130, 246, 0.14);
+      /* 👁️ Vision Accent (Celestial Cyan) & 🎙️ Voice Accent (Electric Iris Indigo) */
+      --cyan: #38BDF8;              /* Celestial Aqua Cyan - Vision 👁️ (#38BDF8) */
+      --cyan-dim: rgba(56, 189, 248, 0.15);
+      --violet: #818CF8;            /* Electric Iris Violet - Voice 🎙️ (#818CF8) */
+      --violet-dim: rgba(129, 140, 248, 0.18);
+      --vanilla: #EEEBDA;           /* Pure Vanilla Token (#EEEBDA) */
+      --vanilla-dim: rgba(238, 235, 218, 0.14);
       
-      /* 💎 Quantum Biometric Gradient: #00F5FF -> #3B82F6 (AI Fusion 🧠) */
-      --grad-fusion: linear-gradient(135deg, #00F5FF, #3B82F6);
-      --grad-fusion-subtle: linear-gradient(135deg, rgba(0, 245, 255, 0.40), rgba(59, 130, 246, 0.40));
+      /* 💎 Quantum Biometric Gradient: Celestial Aqua -> Electric Iris over Midnight */
+      --grad-fusion: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
+      --grad-fusion-subtle: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(129, 140, 248, 0.35));
+      --grad-vanilla: linear-gradient(135deg, #EEEBDA 0%, #C7C4B7 100%);
       
-      /* 😊 Emotion-Specific Accents — High-Contrast Neon Luminescence */
-      --accent-happy: #00FF9D;      /* Electric Neon Emerald (Luminous) */
-      --accent-sad: #818CF8;        /* Vivid Electric Iris */
-      --accent-angry: #FF2E4D;      /* Laser Scarlet Alert */
-      --accent-surprise: #00F5FF;   /* Laser Cyan Shockwave */
-      --accent-neutral: #E2E8F0;    /* High-Contrast Platinum Metal */
+      /* 😊 Emotion-Specific Accents — High-Contrast Luminescence against Midnight Indigo */
+      --accent-happy: #34D399;      /* Luminous Emerald Mint (Joy) */
+      --accent-sad: #818CF8;        /* Soft Electric Iris (Sorrow) */
+      --accent-angry: #FB7185;      /* Laser Coral Scarlet (Alert / Anger) */
+      --accent-surprise: #FBBF24;   /* Solar Amber (Surprise) */
+      --accent-neutral: #EEEBDA;    /* Warm Vanilla (Equanimity / Neutral) */
       
       /* Status Palette */
-      --status-harmony: #00FF9D;    /* Electric Emerald - Harmony ✓ */
-      --status-warning: #FFB800;    /* High-Voltage Amber */
-      --status-conflict: #FF2E4D;   /* Laser Scarlet - Conflict ⚠️ */
+      --status-harmony: #34D399;    /* Luminous Emerald - Harmony ✓ */
+      --status-warning: #FBBF24;    /* High-Voltage Amber */
+      --status-conflict: #FB7185;   /* Laser Scarlet - Conflict ⚠️ */
       
-      /* 🔤 Contrast-Engineered Typography */
-      --text-primary: #FFFFFF;      /* 100% Pure Luminous White */
-      --text-secondary: #E4E4E7;    /* Bright Zinc-200 Titanium (Max Legibility) */
-      --text-muted: #A1A1AA;        /* Crisp Silver-Steel Zinc-400 */
-      --text-faint: #71717A;        /* Discreet Metadata */
+      /* 🔤 Contrast-Engineered Typography: Warm Vanilla Palette */
+      --text-primary: #EEEBDA;      /* Signature Warm Vanilla (#EEEBDA - Max Legibility) */
+      --text-secondary: #C7C4B7;    /* Soft Sandstone Cream (#C7C4B7) */
+      --text-muted: #9592A6;        /* Subtle Indigo Slate (#9592A6) */
+      --text-faint: #676579;        /* Discreet Metadata (#676579) */
       --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
@@ -108,8 +113,9 @@
       font-family: var(--font-main);
       background-color: var(--bg-primary);
       background-image: 
-        radial-gradient(ellipse 70% 35% at 50% -5%, rgba(0, 245, 255, 0.05), transparent 70%),
-        radial-gradient(ellipse 50% 35% at 90% 90%, rgba(59, 130, 246, 0.04), transparent 60%);
+        radial-gradient(ellipse 70% 40% at 50% -5%, rgba(129, 140, 248, 0.12), transparent 70%),
+        radial-gradient(ellipse 50% 35% at 90% 90%, rgba(56, 189, 248, 0.08), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 10% 80%, rgba(40, 43, 74, 0.45), transparent 70%);
       background-attachment: fixed;
       color: var(--text-primary);
       min-height: 100vh;
@@ -123,8 +129,8 @@
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 245, 255, 0.45); }
+    ::-webkit-scrollbar-thumb { background: rgba(238, 235, 218, 0.20); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(165, 180, 252, 0.55); }
 
     /* ========================================================
        TOP WORKSPACE HEADER (Live Analysis & Media Upload Studio)
@@ -133,7 +139,7 @@
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
-      background: rgba(4, 4, 6, 0.94);
+      background: rgba(18, 19, 36, 0.94);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border-subtle);
@@ -158,7 +164,7 @@
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, #040406 80%);
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, #1A1C33 80%);
       border: 1.5px solid rgba(234, 179, 8, 0.85);
       display: flex;
       align-items: center;
@@ -3726,7 +3732,7 @@
       border-radius: 50%;
       padding: 0;
       position: relative;
-      background: radial-gradient(circle, rgba(234, 179, 8, 0.18) 0%, rgba(4, 4, 6, 0.95) 75%);
+      background: radial-gradient(circle, rgba(234, 179, 8, 0.18) 0%, rgba(26, 28, 51, 0.95) 75%);
       border: 2px solid rgba(234, 179, 8, 0.85);
       box-shadow: 0 0 30px rgba(234, 179, 8, 0.35), 0 0 50px rgba(0, 245, 255, 0.20), inset 0 0 16px rgba(234, 179, 8, 0.25);
       display: flex;
@@ -4134,12 +4140,12 @@
     /* Dynamic Window Background Glow on Mode Hover */
     .mode-select-wrapper:has(#btnSelectLiveMode:hover),
     .mode-select-wrapper.hover-live-purple {
-      background: radial-gradient(circle at 35% 45%, rgba(168, 85, 247, 0.32) 0%, rgba(126, 34, 206, 0.16) 42%, rgba(4, 4, 6, 0.98) 78%) !important;
+      background: radial-gradient(circle at 35% 45%, rgba(168, 85, 247, 0.32) 0%, rgba(126, 34, 206, 0.16) 42%, rgba(18, 19, 36, 0.98) 78%) !important;
     }
 
     .mode-select-wrapper:has(#btnSelectMediaMode:hover),
     .mode-select-wrapper.hover-media-lemongreen {
-      background: radial-gradient(circle at 65% 45%, rgba(204, 255, 0, 0.26) 0%, rgba(132, 204, 22, 0.14) 42%, rgba(4, 4, 6, 0.98) 78%) !important;
+      background: radial-gradient(circle at 65% 45%, rgba(204, 255, 0, 0.26) 0%, rgba(132, 204, 22, 0.14) 42%, rgba(18, 19, 36, 0.98) 78%) !important;
     }
 
     .mode-select-header {
@@ -5055,7 +5061,7 @@
       left: 0;
       right: 0;
       height: var(--titlebar-h, 38px);
-      background: rgba(4, 4, 6, 0.98);
+      background: rgba(18, 19, 36, 0.98);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -9388,15 +9394,15 @@
       const W = canvas.width;
       const H = canvas.height;
 
-      // Dark cyber background
-      ctx.fillStyle = '#040406';
+      // Midnight Indigo telemetry background
+      ctx.fillStyle = '#141628';
       ctx.fillRect(0, 0, W, H);
-      ctx.strokeStyle = 'rgba(0, 245, 255, 0.35)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
       ctx.lineWidth = 2;
       ctx.strokeRect(1, 1, W - 2, H - 2);
 
-      // Title
-      ctx.fillStyle = '#22D3EE';
+      // Title in Warm Vanilla
+      ctx.fillStyle = '#EEEBDA';
       ctx.font = 'bold 13px "JetBrains Mono", monospace';
       ctx.textAlign = 'left';
       ctx.fillText('8-ACTION-UNIT FACS BIOMETRIC MESH MATRIX', 16, 26);
@@ -9522,15 +9528,15 @@
       const W = canvas.width;
       const H = canvas.height;
 
-      // Dark cyber background
-      ctx.fillStyle = '#040406';
+      // Midnight Indigo telemetry background
+      ctx.fillStyle = '#141628';
       ctx.fillRect(0, 0, W, H);
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.35)';
+      ctx.strokeStyle = 'rgba(129, 140, 248, 0.35)';
       ctx.lineWidth = 2;
       ctx.strokeRect(1, 1, W - 2, H - 2);
 
-      // Title
-      ctx.fillStyle = '#A78BFA';
+      // Title in Warm Vanilla
+      ctx.fillStyle = '#EEEBDA';
       ctx.font = 'bold 13px "JetBrains Mono", monospace';
       ctx.textAlign = 'left';
       ctx.fillText('2D CIRCUMPLEX AFFECT SPACE (RUSSELL MODEL)', 16, 26);
@@ -9672,7 +9678,7 @@
       snapCanvas.height = 360;
       const sCtx = snapCanvas.getContext('2d');
 
-      sCtx.fillStyle = '#040406';
+      sCtx.fillStyle = '#141628';
       sCtx.fillRect(0, 0, 480, 360);
 
       let drawn = false;

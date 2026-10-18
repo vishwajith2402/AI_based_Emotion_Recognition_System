@@ -523,14 +523,14 @@ class VoiceAnalyzer {
     const w = canvas.width;
     const h = canvas.height;
 
-    // 1. Clear background
+    // 1. Clear background with Midnight Indigo Void
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = '#080c16';
+    ctx.fillStyle = '#141628';
     ctx.fillRect(0, 0, w, h);
 
-    // 2. Subtle Technical Cyber-Grid
+    // 2. Subtle Technical Cyber-Grid in Warm Vanilla
     ctx.save();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.strokeStyle = 'rgba(238, 235, 218, 0.05)';
     ctx.lineWidth = 1 * dpr;
 
     const gridStepX = 38 * dpr;
@@ -557,9 +557,9 @@ class VoiceAnalyzer {
     const maxBarH = h * 0.42;
 
     const barGrad = ctx.createLinearGradient(0, h, 0, h - maxBarH);
-    barGrad.addColorStop(0, '#8b5cf6');   // Aurora Violet bottom
-    barGrad.addColorStop(0.5, '#6366f1'); // Indigo middle
-    barGrad.addColorStop(1, '#00f2fe');   // Cyber Cyan top
+    barGrad.addColorStop(0, '#818CF8');   // Iris Indigo
+    barGrad.addColorStop(0.5, '#A5B4FC'); // Soft Lavender
+    barGrad.addColorStop(1, '#38BDF8');   // Celestial Cyan
 
     ctx.fillStyle = barGrad;
 

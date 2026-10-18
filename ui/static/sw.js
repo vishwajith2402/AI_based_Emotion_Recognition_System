@@ -1,5 +1,5 @@
 // Cache-first offline service worker for standalone software mode
-const CACHE_NAME = 'emotisync-v3-pwa-ready';
+const CACHE_NAME = 'emotisync-v4-midnight-indigo';
 const ASSETS_TO_CACHE = [
   './index.html',
   './voice_analyzer.js',

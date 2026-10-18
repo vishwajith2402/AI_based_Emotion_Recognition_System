@@ -7,8 +7,8 @@
   "description": "EmotiSync: Multimodal Biometric Emotion Recognition Software utilizing Facial Action Units & Acoustic Prosody Analysis.",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "background_color": "#040406",
-  "theme_color": "#040406",
+  "background_color": "#121324",
+  "theme_color": "#121324",
   "orientation": "any",
   "categories": ["utilities", "productivity", "health", "artificial-intelligence"],
   "icons": [
