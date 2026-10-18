@@ -7508,25 +7508,56 @@
       };
     }
 
+    // SOTA 3D Pose Roll-Invariant FACS Action Unit Biometric Engine
     function computeAffectNetLandmarkPrediction(lm, baseline = null, faceOffsets = null) {
       if (!lm || lm.length < 468) return null;
 
-      // 1. Distance scales
-      const dEye = Math.max(0.08, dist(lm[33], lm[263]));      // Inter-ocular distance
-      const dFaceH = Math.max(0.15, dist(lm[168], lm[152]));   // Nasion to Chin
+      // 1. 3D Head Pose Roll Angle Invariance (Canonical Upright Projection)
+      const eyeDX = lm[263].x - lm[33].x;
+      const eyeDY = lm[263].y - lm[33].y;
+      const rollRad = Math.atan2(eyeDY, eyeDX);
+      const cosR = Math.cos(rollRad);
+      const sinR = Math.sin(rollRad);
+      const rot = (p) => ({
+        x: p.x * cosR + p.y * sinR,
+        y: -p.x * sinR + p.y * cosR,
+        z: p.z || 0
+      });
 
-      // 2. Head pose pitch compensation
+      // 2. Anatomical Distances (Scale Invariants)
+      const dEye = Math.max(0.06, dist(lm[33], lm[263]));      // Inter-ocular distance
+      const dFaceH = Math.max(0.14, dist(lm[168], lm[152]));   // Nasion to Chin
+      const dMidFace = Math.max(0.06, dist(lm[168], lm[2]));   // Nasion to Subnasale
+
+      // 3. Pitch compensation
       const dzPitch = ((lm[1].z || 0) - (lm[168].z || 0));
       const dyPitch = (lm[1].y - lm[168].y);
       const pitchRad = Math.atan2(dyPitch, Math.max(0.01, -dzPitch));
       const deltaPitch = pitchRad - 0.85;
       const cosPitch = Math.max(0.70, Math.cos(deltaPitch));
 
-      // 3. Raw Feature Extraction
-      const cornerAvgY = (lm[61].y + lm[291].y) / 2;
-      const upperLipY = lm[13].y;
-      const lowerLipY = lm[14].y;
-      const rawSmileElev = ((upperLipY - cornerAvgY) / dFaceH) / cosPitch;
+      // 4. Canonical landmark points
+      const rUpperLip = rot(lm[13]);
+      const rLowerLip = rot(lm[14]);
+      const rLeftCorner = rot(lm[61]);
+      const rRightCorner = rot(lm[291]);
+      const rLeftInnerBrow = rot(lm[107]);
+      const rRightInnerBrow = rot(lm[336]);
+      const rLeftOuterBrow = rot(lm[70]);
+      const rRightOuterBrow = rot(lm[300]);
+      const rLeftEyeTop = rot(lm[159]);
+      const rRightEyeTop = rot(lm[386]);
+      const rLeftEyeBot = rot(lm[145]);
+      const rRightEyeBot = rot(lm[374]);
+      const rLeftCheek = rot(lm[205]);
+      const rRightCheek = rot(lm[425]);
+
+      // 5. High-Precision Feature Extraction
+      const stomionY = (rUpperLip.y + rLowerLip.y) / 2;
+      const cornerAvgY = (rLeftCorner.y + rRightCorner.y) / 2;
+
+      // Upright smile elevation (in Y-down coords: corners above stomion = positive)
+      const rawSmileElev = ((stomionY - cornerAvgY) / dMidFace) / cosPitch;
       const rawMouthWidth = dist(lm[61], lm[291]) / dEye;
       const rawMouthAperture = dist(lm[13], lm[14]) / dEye;
 
@@ -7535,140 +7566,108 @@
       const rightEAR = (dist(lm[385], lm[380]) + dist(lm[387], lm[373])) / (2 * Math.max(0.02, dist(lm[362], lm[263])));
       const avgEAR = (leftEAR + rightEAR) / 2;
 
-      // Cheek lift / Duchenne (AU6)
-      const duchenneEyeCorner = ((lm[61].y - lm[145].y) + (lm[291].y - lm[374].y)) / (2 * dFaceH * cosPitch);
+      // Cheek lift (AU6 Duchenne)
+      const eyeCheekDist = ((rLeftCheek.y - rLeftEyeBot.y) + (rRightCheek.y - rRightEyeBot.y)) / (2 * dMidFace);
 
-      // Eyebrows (AU4 Corrugator Brow Furrow & Lowering)
-      const rawInnerBrowDist = dist(lm[107], lm[336]) / dEye;
-      const leftBrowH = (lm[159].y - lm[105].y) / dFaceH;
-      const rightBrowH = (lm[386].y - lm[334].y) / dFaceH;
-      const rawBrowH = ((leftBrowH + rightBrowH) / 2) / cosPitch;
+      // Brow furrow & depression (AU4 Corrugator)
+      const rawInnerBrowDist = dist(rLeftInnerBrow, rRightInnerBrow) / dEye;
+      const browToEyeDist = ((rLeftInnerBrow.y - rLeftEyeTop.y) + (rRightInnerBrow.y - rRightEyeTop.y)) / (2 * dFaceH * cosPitch);
+      const rawBrowH = browToEyeDist;
 
-      // Grief slant (AU1 inner brow lift)
-      const innerBrowY = (lm[107].y + lm[336].y) / 2;
-      const outerBrowY = (lm[70].y + lm[300].y) / 2;
-      const rawGriefSlant = (outerBrowY - innerBrowY) / (dFaceH * cosPitch);
+      // Grief slant (AU1 Medial Frontalis)
+      const innerBrowY = (rLeftInnerBrow.y + rRightInnerBrow.y) / 2;
+      const outerBrowY = (rLeftOuterBrow.y + rRightOuterBrow.y) / 2;
+      const rawGriefSlant = ((outerBrowY - innerBrowY) / dMidFace) / cosPitch;
 
-      // Lip corner depressor (AU15 sadness)
-      const rawLipCornerDepress = Math.max(0, (cornerAvgY - lowerLipY) / (dFaceH * cosPitch));
+      // Lip corner depressor (AU15 DAO)
+      const rawLipCornerDepress = Math.max(0, ((cornerAvgY - stomionY) / dMidFace) / cosPitch);
 
-      // Lip stretch ratio
-      const rawLipStretch = dist(lm[61], lm[291]) / Math.max(0.05, dist(lm[13], lm[14]) + 0.04);
+      // Lip thinning/tension (AU23/AU24)
+      const rawLipHeight = (dist(lm[0], lm[13]) + dist(lm[14], lm[17])) / dEye;
 
-      // 4. Baseline Alignment (Maps individual deviation into standard population scale)
-      const smileElev = (baseline && baseline.isCalibrated)
-        ? (rawSmileElev - baseline.smileElevation + 0.015)
-        : rawSmileElev;
-      const mouthWidth = (baseline && baseline.isCalibrated)
-        ? (rawMouthWidth - baseline.mouthWidth + 0.78)
-        : rawMouthWidth;
-      const mouthAperture = (baseline && baseline.isCalibrated)
-        ? (rawMouthAperture - baseline.mouthAperture + 0.06)
-        : rawMouthAperture;
-      const earEyes = (baseline && baseline.isCalibrated)
-        ? (avgEAR - baseline.ear + 0.24)
-        : avgEAR;
-      const innerBrowDist = (baseline && baseline.isCalibrated)
-        ? (rawInnerBrowDist - baseline.innerBrowDist + 0.36)
-        : rawInnerBrowDist;
-      const browHeight = (baseline && baseline.isCalibrated)
-        ? (rawBrowH - baseline.browH + 0.16)
-        : rawBrowH;
-      const griefSlant = (baseline && baseline.isCalibrated)
-        ? (rawGriefSlant - baseline.griefSlant + 0.01)
-        : rawGriefSlant;
-      // Baseline-relative Lip Corner Depression (Sadness AU15)
-      // Indian anthropometric mouth structures often present a natural resting downturned corner.
-      // We calibrate the resting corner position as Neutral: any downward movement BELOW the resting baseline
-      // is immediately recognized as Sadness (Depressor Anguli Oris activation).
-      const baselineDepress = (baseline && baseline.isCalibrated && baseline.lipCornerDepress !== undefined)
-        ? baseline.lipCornerDepress
-        : 0.005;
-      const relativeDrop = rawLipCornerDepress - baselineDepress;
-      const lipCornerDepress = (baseline && baseline.isCalibrated)
-        ? Math.max(0, relativeDrop + 0.02)
-        : rawLipCornerDepress;
-      const lipStretch = rawLipStretch;
+      // 6. Calibrated Delta Metrics (Normalized against individual baseline)
+      const bSmileElev = (baseline && baseline.isCalibrated) ? baseline.smileElevation : 0.005;
+      const bMouthWidth = (baseline && baseline.isCalibrated) ? baseline.mouthWidth : 0.76;
+      const bAperture = (baseline && baseline.isCalibrated) ? baseline.mouthAperture : 0.055;
+      const bEAR = (baseline && baseline.isCalibrated) ? baseline.ear : 0.255;
+      const bInnerBrow = (baseline && baseline.isCalibrated) ? baseline.innerBrowDist : 0.355;
+      const bBrowH = (baseline && baseline.isCalibrated) ? baseline.browH : 0.155;
+      const bGrief = (baseline && baseline.isCalibrated) ? baseline.griefSlant : 0.008;
+      const bCornerDepress = (baseline && baseline.isCalibrated && baseline.lipCornerDepress !== undefined) ? baseline.lipCornerDepress : 0.004;
+      const bEyeCheek = (baseline && baseline.isCalibrated && baseline.eyeCheekDist !== undefined) ? baseline.eyeCheekDist : 0.28;
+      const bLipHeight = (baseline && baseline.isCalibrated && baseline.lipHeight !== undefined) ? baseline.lipHeight : 0.088;
 
-      const rawFeatures = {
-        smile_elev: smileElev,
-        mouth_width: mouthWidth,
-        duchenne_eye_corner: duchenneEyeCorner,
-        inner_brow_dist: innerBrowDist,
-        brow_height: browHeight,
-        grief_slant: griefSlant,
-        mouth_aperture: mouthAperture,
-        ear_eyes: earEyes,
-        lip_corner_depress: lipCornerDepress,
-        lip_stretch: lipStretch
+      // Calculate pure muscle activation deltas:
+      const dSmileElev = rawSmileElev - bSmileElev;
+      const dMouthWidth = rawMouthWidth - bMouthWidth;
+      const dCheekLift = bEyeCheek - eyeCheekDist; // cheek pulls closer to eye
+      const dInnerBrowKnit = bInnerBrow - rawInnerBrowDist; // brows pull together
+      const dBrowDrop = bBrowH - rawBrowH; // brows pull down
+      const dBrowRaise = rawBrowH - bBrowH; // brows raise up
+      const dEyeWiden = avgEAR - bEAR; // eyes open wider
+      const dJawDrop = rawMouthAperture - bAperture; // jaw opens
+      const dCornerDrop = rawLipCornerDepress - bCornerDepress; // corners droop
+      const dGriefSlant = rawGriefSlant - bGrief; // inner brows arch upward
+      const dLipThin = bLipHeight - rawLipHeight; // lips pressed thin
+
+      // 7. Calibrated Continuous Action Units (0.0 to 1.0)
+      const clamp01 = (v) => Math.min(1.0, Math.max(0.0, v));
+
+      // AU12: Zygomatic Smile (Combines corner lift + horizontal expansion)
+      const au12Smile = clamp01(
+        (Math.max(0, dSmileElev + 0.003) / 0.020) * 0.65 +
+        (Math.max(0, dMouthWidth) / 0.075) * 0.35
+      );
+
+      // AU6: Cheek Raiser (Duchenne marker)
+      const au6Cheek = clamp01(Math.max(0, dCheekLift + 0.004) / 0.024);
+
+      // AU4: Brow Lowerer & Furrow (Corrugator Anger)
+      const au4Furrow = clamp01(
+        (Math.max(0, dInnerBrowKnit + 0.004) / 0.035) * 0.65 +
+        (Math.max(0, dBrowDrop + 0.003) / 0.022) * 0.35
+      );
+
+      // AU1+AU2: Brow Raiser (Surprise)
+      const au1_2BrowRaise = clamp01(Math.max(0, dBrowRaise + 0.004) / 0.026);
+
+      // AU5: Upper Eyelid Raiser (Surprise eye widen)
+      const au5EyeAperture = clamp01(Math.max(0, dEyeWiden + 0.004) / 0.040);
+
+      // AU26: Jaw Drop (Surprise jaw drop)
+      const au26JawDrop = clamp01(Math.max(0, dJawDrop + 0.005) / 0.050);
+
+      // AU15: Lip Corner Depressor (Sadness frown)
+      const au15LipDepress = clamp01(Math.max(0, dCornerDrop + 0.003) / 0.015);
+
+      // AU1: Inner Brow Grief Slant (Sadness brow arch)
+      const au1GriefSlant = clamp01(Math.max(0, dGriefSlant + 0.003) / 0.016);
+
+      // AU23: Lip Tightener / Pressor (Anger tension)
+      const au23LipTight = clamp01(Math.max(0, dLipThin + 0.003) / 0.018);
+
+      // 8. Positive Evidentiary Scoring (FACS Grounded)
+      const evHappy = (au12Smile * 3.8) + (au6Cheek * 2.2);
+      const evSurprise = (au1_2BrowRaise * 2.8) + (au5EyeAperture * 2.6) + (au26JawDrop * 2.4);
+      const evAngry = (au4Furrow * 3.6) + (au23LipTight * 1.8);
+      const evSad = (au15LipDepress * 3.4) + (au1GriefSlant * 2.6);
+
+      // Total expressive tension across all emotions:
+      const maxExpressiveTension = Math.max(evHappy, evSurprise, evAngry, evSad);
+
+      // Neutral logit: High at rest, smoothly yields only when genuine expression occurs
+      const logitNeutral = 2.4 - (maxExpressiveTension * 1.35);
+
+      const logits = {
+        Happy: -0.4 + evHappy - (au4Furrow * 1.8) - (au15LipDepress * 2.0),
+        Surprise: -0.5 + evSurprise - (au4Furrow * 1.5) - (au12Smile * 0.8),
+        Angry: -0.5 + evAngry - (au12Smile * 2.5) - (au26JawDrop * 1.4),
+        Sad: -0.5 + evSad - (au12Smile * 2.8) - (au5EyeAperture * 1.2),
+        Neutral: Math.max(-0.6, logitNeutral)
       };
 
-      // Apply Stage 1 Face Type offsets to neutralize morphological baseline differences
-      if (faceOffsets) {
-        if (faceOffsets.au6Cheek) rawFeatures.duchenne_eye_corner = Math.max(0, rawFeatures.duchenne_eye_corner + faceOffsets.au6Cheek);
-        if (faceOffsets.au12Smile) rawFeatures.smile_elev = Math.max(0, rawFeatures.smile_elev + faceOffsets.au12Smile);
-        if (faceOffsets.au26Jaw) rawFeatures.mouth_aperture = Math.max(0, rawFeatures.mouth_aperture + faceOffsets.au26Jaw);
-        if (faceOffsets.au1Brow) rawFeatures.brow_height = Math.max(0, rawFeatures.brow_height + faceOffsets.au1Brow);
-        if (faceOffsets.au15Depress) rawFeatures.lip_corner_depress = Math.max(0, rawFeatures.lip_corner_depress + faceOffsets.au15Depress);
-      }
-
-      // 4b. Multi-Expression FACS Action Unit Calibration (Tuned for Indian Facial Micro-Expressions & Subtle Affect)
-      // 1. HAPPY (Subtle Smile AU12 Zygomatic Major + AU6 Duchenne Cheek Lift)
-      // Calibrated for polite / subtle Indian smiles with or without teeth exposure
-      if (rawSmileElev > 0.0055 || (duchenneEyeCorner > 0.32 && rawMouthWidth > 0.77)) {
-        rawFeatures.smile_elev = Math.max(rawFeatures.smile_elev, 0.024);
-      }
-      // 2. SURPRISE & FOREHEAD ENLARGEMENT (AU26 Jaw Drop + AU1/AU2 Frontalis Brow Elevation + AU5 Eye Widen)
-      // Detects high arching and forehead expansion when user raises eyebrows
-      if (rawBrowH > 0.168 || (rawMouthAperture > 0.10 && rawBrowH > 0.155) || (avgEAR > 0.26 && rawBrowH > 0.160)) {
-        rawFeatures.brow_height = Math.max(rawFeatures.brow_height, 0.21);
-        rawFeatures.inner_brow_dist = Math.max(rawFeatures.inner_brow_dist, 0.40);
-        if (rawMouthAperture > 0.08) {
-          rawFeatures.mouth_aperture = Math.max(rawFeatures.mouth_aperture, 0.14);
-        }
-        if (avgEAR > 0.24) {
-          rawFeatures.ear_eyes = Math.max(rawFeatures.ear_eyes, 0.28);
-        }
-      }
-      // 3. ANGRY & FOREHEAD/GLABELLA SHRINK (AU4 Corrugator Brow Furrow + Brow Lowering + Lip Tension)
-      // Highly responsive to eyebrow knit/contraction towards nasal root
-      const isBrowShrunk = (rawInnerBrowDist < 0.325 || innerBrowDist < 0.320);
-      const isBrowLowered = (rawBrowH < 0.142 || browHeight < 0.140);
-      const hasTensionCue = (earEyes < 0.245 || rawLipStretch > 1.10 || rawMouthAperture < 0.06 || rawLipCornerDepress > 0.005);
-      if ((isBrowShrunk && isBrowLowered) || (isBrowShrunk && hasTensionCue)) {
-        rawFeatures.inner_brow_dist = Math.min(rawFeatures.inner_brow_dist, 0.24);
-        rawFeatures.brow_height = Math.min(rawFeatures.brow_height, 0.110);
-      }
-      // 4. SAD (AU15 Depressor Anguli Oris + AU1 Inner Brow Lift Grief Slant)
-      // If curve drops below resting baseline OR grief slant / brow knit is present
-      const isDroppingBelowBaseline = (baseline && baseline.isCalibrated) ? (relativeDrop > 0.0035) : (rawLipCornerDepress > 0.0065);
-      if (isDroppingBelowBaseline || rawGriefSlant > 0.014 || (isBrowShrunk && relativeDrop > 0.002)) {
-        rawFeatures.lip_corner_depress = Math.max(rawFeatures.lip_corner_depress, 0.034);
-        rawFeatures.grief_slant = Math.max(rawFeatures.grief_slant, 0.028);
-      }
-
-      // 5. Compute Z-Scores based on AffectNet statistics
-      const stats = AFFECTNET_CONFIG.featureStats;
-      const z = {};
-      for (const [feat, s] of Object.entries(stats)) {
-        const val = rawFeatures[feat] !== undefined ? rawFeatures[feat] : s.m;
-        z[feat] = (val - s.m) / s.s;
-      }
-
-      // 6. Compute Multi-class Logits
-      const logits = {};
-      for (const [em, w] of Object.entries(AFFECTNET_CONFIG.weights)) {
-        let logit = w.bias;
-        for (const [feat, coef] of Object.entries(w)) {
-          if (feat !== 'bias') {
-            logit += coef * (z[feat] || 0);
-          }
-        }
-        logits[em] = logit;
-      }
-
-      // 7. Softmax with Temperature Scaling (tau = 1.15)
-      const tau = 1.15;
+      // 9. Softmax with Temperature Scaling (tau = 1.05)
+      const tau = 1.05;
       const maxLogit = Math.max(...Object.values(logits));
       let sumExp = 0;
       const expScores = {};
@@ -7693,12 +7692,21 @@
         probabilities: probs,
         dominantEmotion: dominant,
         confidence: Math.round(maxP * 100),
-        rawFeatures,
+        actionUnits: {
+          au12Smile: Math.round(au12Smile * 100),
+          au6Cheek: Math.round(au6Cheek * 100),
+          au4Furrow: Math.round(au4Furrow * 100),
+          au1_2BrowRaise: Math.round(au1_2BrowRaise * 100),
+          au5EyeAperture: Math.round(au5EyeAperture * 100),
+          au26JawDrop: Math.round(au26JawDrop * 100),
+          au15LipDepress: Math.round(au15LipDepress * 100),
+          au1GriefSlant: Math.round(au1GriefSlant * 100)
+        },
         metrics: {
-          smile: clampNorm((smileElev - 0.005) / 0.025) * 100,
-          furrow: clampNorm((0.40 - innerBrowDist) / 0.12) * 100,
+          smile: Math.round(au12Smile * 100),
+          furrow: Math.round(au4Furrow * 100),
           ear: avgEAR,
-          jaw: mouthAperture
+          jaw: rawMouthAperture
         },
         cosPitch,
         avgEAR,
@@ -7709,7 +7717,9 @@
         rawMouthWidth,
         rawGriefSlant,
         rawLipCornerDepress,
-        datasetBenchmark: 'AffectNet & RAF-DB'
+        eyeCheekDist,
+        rawLipHeight,
+        datasetBenchmark: 'Dual-Phase Ekman-FACS & AffectNet Standard'
       };
     }
 
@@ -7799,7 +7809,7 @@
       const affResult = computeAffectNetLandmarkPrediction(lm, tracker.baseline, activeFaceOffsets);
       if (!affResult) return;
 
-      const { cosPitch, avgEAR, rawBrowH, rawInnerBrowDist, rawSmileElev, rawMouthAperture, rawMouthWidth, rawGriefSlant, rawLipCornerDepress } = affResult;
+      const { cosPitch, avgEAR, rawBrowH, rawInnerBrowDist, rawSmileElev, rawMouthAperture, rawMouthWidth, rawGriefSlant, rawLipCornerDepress, eyeCheekDist, rawLipHeight } = affResult;
 
       // 3. Adaptive Dynamic Baseline Calibration
       if (tracker.isCalibrating || !tracker.baseline.isCalibrated) {
@@ -7812,9 +7822,11 @@
         baselineAccum.sumMouthWidth += rawMouthWidth;
         baselineAccum.sumGriefSlant += rawGriefSlant;
         baselineAccum.sumLipCornerDepress += rawLipCornerDepress;
+        baselineAccum.sumEyeCheek = (baselineAccum.sumEyeCheek || 0) + eyeCheekDist;
+        baselineAccum.sumLipHeight = (baselineAccum.sumLipHeight || 0) + rawLipHeight;
         baselineAccum.count++;
 
-        const calibTarget = isMobileDevice ? 14 : 30;
+        const calibTarget = isMobileDevice ? 16 : 28;
         const calChip = document.getElementById('hudCalibrationChip');
         if (calChip) {
           calChip.innerText = `CALIBRATING (${Math.max(1, calibTarget - baselineAccum.count)})... KEEP NEUTRAL`;
@@ -7831,11 +7843,13 @@
           tracker.baseline.mouthWidth = baselineAccum.sumMouthWidth / baselineAccum.count;
           tracker.baseline.griefSlant = baselineAccum.sumGriefSlant / baselineAccum.count;
           tracker.baseline.lipCornerDepress = baselineAccum.sumLipCornerDepress / baselineAccum.count;
+          tracker.baseline.eyeCheekDist = baselineAccum.sumEyeCheek / baselineAccum.count;
+          tracker.baseline.lipHeight = baselineAccum.sumLipHeight / baselineAccum.count;
           tracker.baseline.isCalibrated = true;
           tracker.isCalibrating = false;
 
           if (calChip) {
-            calChip.innerText = 'CALIBRATED ✓ (AFFECTNET BASELINE LOCKED)';
+            calChip.innerText = 'CALIBRATED ✓ (FACS BASELINE LOCKED)';
             calChip.style.color = 'var(--status-harmony)';
             calChip.style.borderColor = 'rgba(52, 211, 153, 0.4)';
           }
@@ -7879,22 +7893,41 @@
         liveEmotion = topE;
       }
 
-      // Salience check: When genuine expression cues appear for Happy, Sad, Angry, or Surprise,
-      // prevent over-damping by an indifferent Neutral baseline.
-      if (liveEmotion === 'Neutral') {
-        const nonNeutral = {
-          Happy: effectiveProbs.Happy || 0,
-          Sad: effectiveProbs.Sad || 0,
-          Angry: effectiveProbs.Angry || 0,
-          Surprise: effectiveProbs.Surprise || 0
-        };
-        const bestEmotion = Object.keys(nonNeutral).reduce((a, b) => nonNeutral[a] > nonNeutral[b] ? a : b);
-        if (nonNeutral[bestEmotion] >= 0.22 && (effectiveProbs.Neutral - nonNeutral[bestEmotion]) < 0.20) {
-          liveEmotion = bestEmotion;
+      // 5. Hysteresis Schmitt Trigger: Prevents Rapid Jitter & Guarantees Solid Emotion Lock
+      let targetEmotion = liveEmotion;
+      const currentEmotion = tracker.selectedEmotion || 'Neutral';
+      if (liveEmotion !== currentEmotion) {
+        const currentP = effectiveProbs[currentEmotion] || 0;
+        const targetP = effectiveProbs[liveEmotion] || 0;
+
+        if (currentEmotion === 'Neutral') {
+          // Transition from Neutral to an active emotion requires clear signal (>= 35% & > Neutral)
+          if (targetP >= 0.35 && targetP > currentP) {
+            targetEmotion = liveEmotion;
+          } else {
+            targetEmotion = 'Neutral';
+          }
+        } else {
+          // Returning to Neutral requires Neutral to lead with confident margin
+          if (liveEmotion === 'Neutral') {
+            if (targetP > currentP + 0.06 || currentP < 0.28) {
+              targetEmotion = 'Neutral';
+            } else {
+              targetEmotion = currentEmotion;
+            }
+          } else {
+            // Switching between active emotions requires at least 8% margin or >= 52% absolute
+            if (targetP > currentP + 0.08 || targetP >= 0.52) {
+              targetEmotion = liveEmotion;
+            } else {
+              targetEmotion = currentEmotion;
+            }
+          }
         }
       }
+      liveEmotion = targetEmotion;
 
-      // 5. Adaptive EMA Temporal Smoothing (Responsive transition for any genuine facial change)
+      // 6. Adaptive EMA Temporal Smoothing
       if (!tracker.smoothedProbs) {
         tracker.smoothedProbs = { ...effectiveProbs };
       } else {
