@@ -118,11 +118,15 @@ class EmotionPredictor:
                     top_emotion = best_nn
             conf = probs[top_emotion]
 
+            va = self.face_model.get_valence_arousal(probs)
             return {
                 "face_detected": False,
                 "top_emotion": top_emotion,
                 "confidence": conf,
                 "probabilities": probs,
+                "valence": round(va[0], 3),
+                "arousal": round(va[1], 3),
+                "circumplex": {"valence": round(va[0], 3), "arousal": round(va[1], 3)},
                 "bboxes": [(0, 0, w, h)],
                 "landmarks": [],
                 "facial_style": style_info,
@@ -154,12 +158,16 @@ class EmotionPredictor:
         self.smoothed_face_probs = probs
         top_emotion = max(probs, key=probs.get)
         conf = probs[top_emotion]
+        va = self.face_model.get_valence_arousal(probs)
 
         return {
             "face_detected": True,
             "top_emotion": top_emotion,
             "confidence": conf,
             "probabilities": probs,
+            "valence": round(va[0], 3),
+            "arousal": round(va[1], 3),
+            "circumplex": {"valence": round(va[0], 3), "arousal": round(va[1], 3)},
             "bboxes": bboxes,
             "landmarks": landmarks_list,
             "face_type": style_info.get("face_type", "Oval"),

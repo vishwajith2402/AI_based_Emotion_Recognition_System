@@ -27,7 +27,7 @@ from src.config import (
     EMOTION_CLASSES, CLASS_TO_IDX, NUM_CLASSES, REPORTS_DIR
 )
 from src.face_preprocessing import FacePreprocessor
-from src.face_model import FacialCNN, VGGFERNetwork
+from src.face_model import FacialCNN, VGGFERNetwork, MultiScaleAffectNet
 
 
 class FacialDataset(Dataset):
@@ -140,8 +140,10 @@ def train_facial_model(epochs: int = 12, batch_size: int = 128, lr: float = 2.5e
     train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler, num_workers=0)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    # Initialize Model: VGG-FER Deep Backbone or Baseline FacialCNN
-    if arch.lower() == "vgg":
+    # Initialize Model: MultiScaleAffectNet, VGG-FER Deep Backbone, or Baseline FacialCNN
+    if arch.lower() in ["multiscale_affectnet", "affectnet"]:
+        model = MultiScaleAffectNet(num_classes=NUM_CLASSES).to(device)
+    elif arch.lower() == "vgg":
         model = VGGFERNetwork(num_classes=NUM_CLASSES).to(device)
     else:
         model = FacialCNN(num_classes=NUM_CLASSES).to(device)
@@ -255,7 +257,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=10, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
     parser.add_argument("--lr", type=float, default=3e-4, help="Learning rate")
-    parser.add_argument("--arch", type=str, default="vgg", choices=["vgg", "cnn"], help="Architecture: vgg (VGG-FER) or cnn")
+    parser.add_argument("--arch", type=str, default="multiscale_affectnet", choices=["multiscale_affectnet", "vgg", "cnn"], help="Architecture: multiscale_affectnet (SOTA AffectNet dual-branch), vgg (VGG-FER), or cnn")
     parser.add_argument("--no-resume", action="store_true", help="Do not resume prior weights")
     args = parser.parse_args()
 
