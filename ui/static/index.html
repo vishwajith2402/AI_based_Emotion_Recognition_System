@@ -8922,7 +8922,7 @@
       });
     }
 
-    // Multimodal 70/30 Decision Fusion
+    // Multimodal Dynamic Gated Decision Fusion (Tier 3 SOTA)
     function updateMultimodalFusion() {
       if (!state.latestFaceProbs || !state.latestSpeechProbs) return;
 
@@ -8934,10 +8934,35 @@
       const hasActiveSpeech = state.selectedSpeechEmotion && state.selectedSpeechEmotion !== 'Neutral';
       const isConcordant = hasActiveFace && hasActiveSpeech && (state.selectedFaceEmotion === state.selectedSpeechEmotion);
 
+      // 1. Dynamic Attention Gating: Speech Activity vs Silence
+      const isAcousticallySpeaking = typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer && voiceAnalyzer.features && voiceAnalyzer.features.isVoiced && voiceAnalyzer.features.rms > 0.016;
+      const isVisuallySpeaking = typeof speechFilter !== 'undefined' && speechFilter && speechFilter.isSpeaking;
+      const isUserSpeaking = isAcousticallySpeaking || isVisuallySpeaking;
+
+      let dynamicWFace = state.wFace;
+      let dynamicWSpeech = state.wSpeech;
+      if (!isUserSpeaking) {
+        // When user is silent, audio is background ambient noise; grant 92% weight to face
+        dynamicWFace = 0.92;
+        dynamicWSpeech = 0.08;
+      } else {
+        // When actively speaking, vocal prosody reveals true autonomic nervous system arousal
+        dynamicWFace = 0.58;
+        dynamicWSpeech = 0.42;
+      }
+
+      // 2. Arousal-Valence Synergy Gating
+      let vocalArousal = 0.0;
+      if (typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer && voiceAnalyzer.features) {
+        const rms = voiceAnalyzer.features.rms || 0;
+        const pVar = voiceAnalyzer.features.pitchVariance || 0;
+        vocalArousal = (rms * 1.6) + (Math.min(50, pVar) / 50.0) - 0.45; // range [-0.5, +1.0]
+      }
+
       emotions.forEach(e => {
         const fp = state.latestFaceProbs[e] || 0;
         const sp = state.latestSpeechProbs[e] || 0;
-        let p = state.wFace * fp + state.wSpeech * sp;
+        let p = dynamicWFace * fp + dynamicWSpeech * sp;
 
         if ((hasActiveFace || hasActiveSpeech) && e === 'Neutral') {
           p *= 0.35;
@@ -8946,6 +8971,19 @@
         // Concordance boost: Cross-modal sensory coherence bonus (+15%)
         if (isConcordant && e === state.selectedFaceEmotion) {
           p *= 1.15;
+        }
+
+        // Arousal synergy modulation:
+        if (isUserSpeaking) {
+          if (vocalArousal > 0.30) {
+            // High vocal energy: validate active emotions (Surprise / Anger), dampen Sadness
+            if (e === 'Surprise' || e === 'Angry') p *= 1.18;
+            if (e === 'Sad') p *= 0.65;
+          } else if (vocalArousal < -0.25) {
+            // Low vocal energy: validate Sadness, dampen Surprise / Anger
+            if (e === 'Sad') p *= 1.20;
+            if (e === 'Surprise' || e === 'Angry') p *= 0.70;
+          }
         }
 
         rawFused[e] = p;
@@ -8967,7 +9005,10 @@
         }
       });
 
+      // 3. Cross-Modal Congruence & Emotional Masking Detection
+      const congruencePct = Math.round(Math.max(0, (1.0 - (divergence / 2.0)) * 100));
       const conflictDetected = (divergence / 2.0) > 0.35 && !isConcordant;
+      const isMaskingDetected = (state.selectedFaceEmotion === 'Happy' && (state.selectedSpeechEmotion === 'Angry' || state.selectedSpeechEmotion === 'Sad'));
       state.currentFinalEmotion = topEmotion;
 
       // Emotion accent color
@@ -8994,19 +9035,31 @@
         heroGlow.style.background = `radial-gradient(circle, ${accentColor}14 0%, transparent 70%)`;
       }
 
-      // Concordance Banner (Level 2: Emerald Harmony vs Coral Conflict)
+      // Concordance Banner (Level 2: Emerald Harmony vs Coral Conflict vs Purple Masking)
       const banner = document.getElementById('concordanceBanner');
       const concordanceText = document.getElementById('concordanceText');
       if (banner && concordanceText) {
-        if (isConcordant) {
+        if (isMaskingDetected) {
+          banner.className = 'harmony-banner conflict';
+          banner.style.borderColor = 'rgba(168, 85, 247, 0.6)';
+          banner.style.background = 'rgba(168, 85, 247, 0.15)';
+          concordanceText.innerHTML = `<b>🎭 AFFECTIVE MASKING DETECTED</b> &mdash; Smiling Expression with ${state.selectedSpeechEmotion.toUpperCase()} Vocal Tone (${congruencePct}% Coherence)`;
+        } else if (isConcordant) {
           banner.className = 'harmony-banner';
-          concordanceText.innerHTML = `<b>● HARMONY CONFIRMED (+15% Concordance)</b> &mdash; AffectNet Visual & RAVDESS Vocal Signals Aligned`;
+          banner.style.borderColor = '';
+          banner.style.background = '';
+          concordanceText.innerHTML = `<b>● HARMONY CONFIRMED (+15% Concordance)</b> &mdash; AffectNet Visual & Vocal Signals Aligned (${congruencePct}% Coherence)`;
         } else if (conflictDetected) {
           banner.className = 'harmony-banner conflict';
-          concordanceText.innerHTML = `<b>△ MODALITY CONFLICT</b> &mdash; Visual (${state.selectedFaceEmotion}) & Vocal (${state.selectedSpeechEmotion}) Differ`;
+          banner.style.borderColor = '';
+          banner.style.background = '';
+          concordanceText.innerHTML = `<b>△ MODALITY DIVERGENCE</b> &mdash; Visual (${state.selectedFaceEmotion}) & Vocal (${state.selectedSpeechEmotion}) Differ (${congruencePct}% Coherence)`;
         } else {
           banner.className = 'harmony-banner';
-          concordanceText.innerHTML = `<b>● HARMONY BALANCED</b> &mdash; AffectNet & RAVDESS Bayesian Fusion`;
+          banner.style.borderColor = '';
+          banner.style.background = '';
+          const gateLabel = isUserSpeaking ? 'Dynamic Active (58/42)' : 'Silent Focus (92/8 Visual)';
+          concordanceText.innerHTML = `<b>● HARMONY BALANCED</b> &mdash; Dynamic Cross-Modal Gating [${gateLabel}]`;
         }
       }
 
