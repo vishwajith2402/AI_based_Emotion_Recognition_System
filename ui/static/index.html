@@ -5473,6 +5473,9 @@
               <span class="hud-chip locked" id="hudTrackStatus">● 468 PT 3D MESH LOCKED</span>
               <span class="hud-chip" id="hudFaceTypeChip" style="background: rgba(168, 85, 247, 0.22); border-color: rgba(168, 85, 247, 0.55); color: #d8b4fe; font-weight: 700;">STAGE 1: PROFILING FACE TYPE...</span>
               <span class="hud-chip" id="hudCalibrationChip">STAGE 2: AFFECT READY</span>
+              <span class="hud-chip" id="hudSpeechFilterChip" style="display:none; background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.55); color: #38bdf8; font-weight: 700;">🎙️ SPEECH FILTER: ACTIVE</span>
+              <span class="hud-chip" id="hudPhaseChip" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: var(--text-secondary);">PHASE: REST</span>
+              <span class="hud-chip" id="hudGazeChip" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: var(--text-secondary);">GAZE: FORWARD</span>
               <span class="hud-chip" id="hudEngineChip">ENGINE: AFFECTNET 14-AU</span>
               <span class="hud-chip" id="hudDemographicChip" style="background: rgba(34, 197, 94, 0.18); border-color: rgba(34, 197, 94, 0.45); color: #4ade80;">🇮🇳 INDIC CALIBRATED</span>
               <span class="hud-chip" id="hudPoseGuidance" style="color: var(--cyan);">POSE: READY</span>
@@ -5490,8 +5493,11 @@
             <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
               <span>🕸️</span> B&W Mesh
             </button>
-            <button class="btn-secondary" id="btnCalibrateFace" title="Recalibrate to your resting neutral baseline">
+            <button class="btn-secondary" id="btnCalibrateFace" title="Quick recalibrate to your resting neutral baseline">
               <span>🎯</span> Calibrate Neutral
+            </button>
+            <button class="btn-secondary" id="btnPersonalizeModal" title="Open 3-Step Guided Face Personalization Wizard">
+              <span>✨</span> Personalize Face
             </button>
           </div>
 
@@ -6094,6 +6100,76 @@
         </button>
         <button class="btn-ghost-sm" id="btnSpeakReport">🔊 Speak</button>
         <button class="btn-ghost-sm" id="btnCloseReportBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 3: 3D FACE GUIDED PERSONALIZATION WIZARD (Tier 1 SOTA)
+       ======================================================== -->
+  <div class="modal-backdrop" id="personalizeFaceModal" style="display: none;">
+    <div class="modal-window" style="max-width: 600px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <span style="font-size: 1.35rem;">✨</span>
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; letter-spacing: 0.5px; margin: 0;">3D Face Personalization Wizard</h2>
+            <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; font-family: var(--font-mono);">INDIVIDUAL BIOMETRIC ANCHOR CALIBRATION</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnClosePersonalizeModal">✕</button>
+      </div>
+
+      <div style="padding: 1.2rem 0;">
+        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.25rem;">
+          Every human face possesses unique bone contours and resting expressions. This interactive 3-step wizard measures your resting neutral anatomy, smile elasticity, and brow range to lock 100% individual-specific accuracy.
+        </p>
+
+        <!-- Progress Steps Indicator -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+          <div id="pStepCard1" style="background: rgba(40, 43, 74, 0.7); border: 1.5px solid var(--primary-accent); border-radius: var(--radius-md); padding: 0.75rem; text-align: center;">
+            <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">😐</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--vanilla-cream);">Step 1: Neutral</div>
+            <div style="font-size: 0.68rem; color: var(--primary-accent);" id="pStepStatus1">Active</div>
+          </div>
+          <div id="pStepCard2" style="background: rgba(40, 43, 74, 0.35); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem; text-align: center; opacity: 0.65;">
+            <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">😊</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--vanilla-cream);">Step 2: Smile</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted);" id="pStepStatus2">Waiting</div>
+          </div>
+          <div id="pStepCard3" style="background: rgba(40, 43, 74, 0.35); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem; text-align: center; opacity: 0.65;">
+            <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">😲</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--vanilla-cream);">Step 3: Brow/Jaw</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted);" id="pStepStatus3">Waiting</div>
+          </div>
+        </div>
+
+        <!-- Wizard Live Feedback Box -->
+        <div id="pFeedbackBox" style="background: rgba(18, 20, 36, 0.6); border: 1px dashed var(--border-glass); border-radius: var(--radius-md); padding: 1.25rem; text-align: center; margin-bottom: 1.25rem;">
+          <div id="pInstructionText" style="font-size: 1.05rem; font-weight: 700; color: var(--vanilla-cream); margin-bottom: 0.35rem;">
+            Look at the camera with a relaxed neutral face
+          </div>
+          <div id="pInstructionSub" style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+            Capturing your natural resting anatomy and zero-point baseline.
+          </div>
+          <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin: 0 auto; max-width: 360px;">
+            <div id="pProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary-accent), var(--cyan)); transition: width 0.15s ease;"></div>
+          </div>
+          <div id="pProgressCount" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-muted); margin-top: 0.4rem;">
+            Camera must be running to begin
+          </div>
+        </div>
+
+        <!-- Personal Profile Status Banner -->
+        <div id="pProfileSavedBanner" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: var(--radius-sm); padding: 0.65rem 0.85rem; font-size: 0.8rem; color: #34d399; margin-bottom: 1rem; align-items: center; justify-content: space-between;">
+          <span>✓ Personalized Profile Active (Permanently saved in local memory)</span>
+          <button id="btnResetPersonalProfile" style="background: transparent; border: 1px solid rgba(16,185,129,0.5); color: #34d399; font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; cursor: pointer;">Reset Profile</button>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button class="btn-secondary" id="btnCancelPersonalize">Close</button>
+        <button class="btn-primary" id="btnStartWizardSeq" style="background: var(--primary-accent); color: var(--vanilla-cream); font-weight: 700; padding: 0.5rem 1.25rem;">Start 3-Step Wizard</button>
       </div>
     </div>
   </div>
@@ -6771,6 +6847,147 @@
       }
     }
 
+    // ── Tier 1: SOTA Behavioral State Engines ───────────────────────────
+    const speechFilter = {
+      history: [],
+      lastAp: 0,
+      isSpeaking: false
+    };
+
+    const phaseState = {
+      lastT: 0,
+      lastTension: 0,
+      phase: 'REST'
+    };
+
+    const wizardState = {
+      active: false,
+      step: 1, // 1: Neutral, 2: Smile, 3: Brow/Jaw
+      count: 0,
+      targetCount: 32,
+      data: {
+        sumEar: 0,
+        sumBrowH: 0,
+        sumInnerBrowDist: 0,
+        sumSmileElevation: 0,
+        sumMouthAperture: 0,
+        sumMouthWidth: 0,
+        sumGriefSlant: 0,
+        sumLipCornerDepress: 0,
+        sumEyeCheek: 0,
+        sumLipHeight: 0,
+        maxSmileElev: 0.020,
+        maxCheekLift: 0.024,
+        maxBrowRaise: 0.026,
+        maxJawDrop: 0.050
+      }
+    };
+
+    function loadSavedPersonalCalibration() {
+      try {
+        const raw = localStorage.getItem('emotisync_personal_profile_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.isCalibrated) {
+            tracker.baseline = Object.assign(tracker.baseline, parsed);
+            tracker.isCalibrating = false;
+            console.log('[Personalization] Loaded personalized profile from localStorage:', parsed);
+            const calChip = document.getElementById('hudCalibrationChip');
+            if (calChip) {
+              calChip.innerText = 'CALIBRATED ✓ (PERSONAL PROFILE LOCKED)';
+              calChip.style.color = 'var(--status-harmony)';
+              calChip.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+            }
+            const banner = document.getElementById('pProfileSavedBanner');
+            if (banner) banner.style.display = 'flex';
+            return true;
+          }
+        }
+      } catch (e) {
+        console.warn('[Personalization] Parse error:', e);
+      }
+      return false;
+    }
+
+    function savePersonalCalibration(profile) {
+      try {
+        localStorage.setItem('emotisync_personal_profile_v1', JSON.stringify(profile));
+        const banner = document.getElementById('pProfileSavedBanner');
+        if (banner) banner.style.display = 'flex';
+        const calChip = document.getElementById('hudCalibrationChip');
+        if (calChip) {
+          calChip.innerText = 'CALIBRATED ✓ (PERSONAL PROFILE LOCKED)';
+          calChip.style.color = 'var(--status-harmony)';
+          calChip.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+        }
+      } catch (e) {
+        console.warn('[Personalization] Save error:', e);
+      }
+    }
+
+    function resetPersonalCalibration() {
+      try {
+        localStorage.removeItem('emotisync_personal_profile_v1');
+        tracker.baseline.personalRanges = null;
+        tracker.baseline.isCalibrated = false;
+        startBaselineCalibration();
+        const banner = document.getElementById('pProfileSavedBanner');
+        if (banner) banner.style.display = 'none';
+        alert('Personalized calibration reset to factory defaults.');
+      } catch (e) {
+        console.warn('[Personalization] Reset error:', e);
+      }
+    }
+
+    function updateWizardUI(step) {
+      const card1 = document.getElementById('pStepCard1');
+      const card2 = document.getElementById('pStepCard2');
+      const card3 = document.getElementById('pStepCard3');
+      const stat1 = document.getElementById('pStepStatus1');
+      const stat2 = document.getElementById('pStepStatus2');
+      const stat3 = document.getElementById('pStepStatus3');
+      const inst = document.getElementById('pInstructionText');
+      const sub = document.getElementById('pInstructionSub');
+
+      if (step === 2) {
+        if (card1) { card1.style.opacity = '0.7'; card1.style.borderColor = 'var(--status-harmony)'; }
+        if (stat1) { stat1.innerText = 'Completed ✓'; stat1.style.color = '#34d399'; }
+        if (card2) { card2.style.opacity = '1.0'; card2.style.borderColor = 'var(--primary-accent)'; card2.style.background = 'rgba(40, 43, 74, 0.8)'; }
+        if (stat2) { stat2.innerText = 'Active (Smiling)'; stat2.style.color = 'var(--primary-accent)'; }
+        if (inst) inst.innerText = 'Show a natural, genuine smile 😊';
+        if (sub) sub.innerText = 'Recording your personal maximum zygomaticus and cheek displacement.';
+      } else if (step === 3) {
+        if (card2) { card2.style.opacity = '0.7'; card2.style.borderColor = 'var(--status-harmony)'; }
+        if (stat2) { stat2.innerText = 'Completed ✓'; stat2.style.color = '#34d399'; }
+        if (card3) { card3.style.opacity = '1.0'; card3.style.borderColor = 'var(--primary-accent)'; card3.style.background = 'rgba(40, 43, 74, 0.8)'; }
+        if (stat3) { stat3.innerText = 'Active (Expressive)'; stat3.style.color = 'var(--primary-accent)'; }
+        if (inst) inst.innerText = 'Raise your eyebrows high or drop jaw 😲';
+        if (sub) sub.innerText = 'Measuring your maximum frontalis brow elevation and jaw mobility.';
+      }
+    }
+
+    function finishWizardUI() {
+      const card3 = document.getElementById('pStepCard3');
+      const stat3 = document.getElementById('pStepStatus3');
+      const inst = document.getElementById('pInstructionText');
+      const sub = document.getElementById('pInstructionSub');
+      const pBar = document.getElementById('pProgressBar');
+      const pCnt = document.getElementById('pProgressCount');
+
+      if (card3) { card3.style.borderColor = 'var(--status-harmony)'; }
+      if (stat3) { stat3.innerText = 'Completed ✓'; stat3.style.color = '#34d399'; }
+      if (inst) inst.innerText = 'Personalization Complete! 🎉';
+      if (sub) sub.innerText = 'Your custom anatomical emotion anchors have been permanently locked and saved.';
+      if (pBar) { pBar.style.width = '100%'; pBar.style.background = 'var(--status-harmony)'; }
+      if (pCnt) pCnt.innerText = '100% Calibrated • Saved to Local Storage';
+
+      const btnStart = document.getElementById('btnStartWizardSeq');
+      if (btnStart) {
+        btnStart.innerText = 'Recalibrate Wizard';
+        btnStart.disabled = false;
+      }
+    }
+
     function initMediaPipe() {
       if (typeof FaceMesh !== 'undefined' && !faceMesh) {
         try {
@@ -6988,6 +7205,92 @@
         } else {
           alert('Please start camera first to calibrate your resting facial baseline.');
         }
+      });
+    }
+
+    // ── Tier 1: Personalization Wizard Modal & Execution Listeners ──────
+    const pModal = document.getElementById('personalizeFaceModal');
+    const btnOpenPersonalize = document.getElementById('btnPersonalizeModal');
+    const btnClosePersonalize = document.getElementById('btnClosePersonalizeModal');
+    const btnCancelPersonalize = document.getElementById('btnCancelPersonalize');
+    const btnStartWizard = document.getElementById('btnStartWizardSeq');
+    const btnResetProfile = document.getElementById('btnResetPersonalProfile');
+
+    if (btnOpenPersonalize && pModal) {
+      btnOpenPersonalize.addEventListener('click', () => {
+        pModal.style.display = 'flex';
+        // Check if profile exists and display banner
+        const raw = localStorage.getItem('emotisync_personal_profile_v1');
+        const banner = document.getElementById('pProfileSavedBanner');
+        if (banner) banner.style.display = raw ? 'flex' : 'none';
+      });
+    }
+
+    const closePModal = () => {
+      if (pModal) pModal.style.display = 'none';
+      if (wizardState.active) {
+        wizardState.active = false;
+        const btnStart = document.getElementById('btnStartWizardSeq');
+        if (btnStart) btnStart.disabled = false;
+      }
+    };
+
+    if (btnClosePersonalize) btnClosePersonalize.addEventListener('click', closePModal);
+    if (btnCancelPersonalize) btnCancelPersonalize.addEventListener('click', closePModal);
+    if (btnResetProfile) btnResetProfile.addEventListener('click', resetPersonalCalibration);
+
+    if (btnStartWizard) {
+      btnStartWizard.addEventListener('click', () => {
+        if (!state.isCameraRunning || !tracker.isLocked) {
+          alert('Please turn ON your camera and look at the screen before starting the wizard.');
+          return;
+        }
+
+        wizardState.active = true;
+        wizardState.step = 1;
+        wizardState.count = 0;
+        wizardState.data = {
+          sumEar: 0,
+          sumBrowH: 0,
+          sumInnerBrowDist: 0,
+          sumSmileElevation: 0,
+          sumMouthAperture: 0,
+          sumMouthWidth: 0,
+          sumGriefSlant: 0,
+          sumLipCornerDepress: 0,
+          sumEyeCheek: 0,
+          sumLipHeight: 0,
+          maxSmileElev: 0.020,
+          maxCheekLift: 0.024,
+          maxBrowRaise: 0.026,
+          maxJawDrop: 0.050
+        };
+
+        btnStartWizard.disabled = true;
+        btnStartWizard.innerText = 'Wizard In Progress...';
+
+        // Reset step indicators
+        const c1 = document.getElementById('pStepCard1');
+        const c2 = document.getElementById('pStepCard2');
+        const c3 = document.getElementById('pStepCard3');
+        const s1 = document.getElementById('pStepStatus1');
+        const s2 = document.getElementById('pStepStatus2');
+        const s3 = document.getElementById('pStepStatus3');
+        const inst = document.getElementById('pInstructionText');
+        const sub = document.getElementById('pInstructionSub');
+        const pBar = document.getElementById('pProgressBar');
+        const pCnt = document.getElementById('pProgressCount');
+
+        if (c1) { c1.style.opacity = '1.0'; c1.style.borderColor = 'var(--primary-accent)'; }
+        if (s1) { s1.innerText = 'Active (Neutral)'; s1.style.color = 'var(--primary-accent)'; }
+        if (c2) { c2.style.opacity = '0.5'; c2.style.borderColor = 'var(--border-subtle)'; }
+        if (s2) { s2.innerText = 'Waiting'; s2.style.color = 'var(--text-muted)'; }
+        if (c3) { c3.style.opacity = '0.5'; c3.style.borderColor = 'var(--border-subtle)'; }
+        if (s3) { s3.innerText = 'Waiting'; s3.style.color = 'var(--text-muted)'; }
+        if (inst) inst.innerText = 'Look at camera with a relaxed neutral face 😐';
+        if (sub) sub.innerText = 'Capturing your natural resting bone structure and baseline.';
+        if (pBar) { pBar.style.width = '0%'; pBar.style.background = 'linear-gradient(90deg, var(--primary-accent), var(--cyan))'; }
+        if (pCnt) pCnt.innerText = 'Step 1 of 3: Sampling Neutral Baseline...';
       });
     }
 
@@ -7613,47 +7916,111 @@
       // 7. Calibrated Continuous Action Units (0.0 to 1.0)
       const clamp01 = (v) => Math.min(1.0, Math.max(0.0, v));
 
+      const maxSmileElev = (baseline && baseline.personalRanges && baseline.personalRanges.maxSmileElev) ? baseline.personalRanges.maxSmileElev : 0.020;
+      const maxCheekLift = (baseline && baseline.personalRanges && baseline.personalRanges.maxCheekLift) ? baseline.personalRanges.maxCheekLift : 0.024;
+      const maxBrowRaise = (baseline && baseline.personalRanges && baseline.personalRanges.maxBrowRaise) ? baseline.personalRanges.maxBrowRaise : 0.026;
+      const maxJawDrop = (baseline && baseline.personalRanges && baseline.personalRanges.maxJawDrop) ? baseline.personalRanges.maxJawDrop : 0.050;
+
+      // 5. Gaze Direction & Iris Tracking (MediaPipe Iris landmarks 468/473 with eyelid fallback)
+      const pupilL = lm[468] ? rot(lm[468]) : { x: (rot(lm[33]).x + rot(lm[133]).x) / 2, y: (rLeftEyeTop.y + rLeftEyeBot.y) / 2 };
+      const pupilR = lm[473] ? rot(lm[473]) : { x: (rot(lm[362]).x + rot(lm[263]).x) / 2, y: (rRightEyeTop.y + rRightEyeBot.y) / 2 };
+      const eyeLMidY = (rLeftEyeTop.y + rLeftEyeBot.y) / 2;
+      const eyeRMidY = (rRightEyeTop.y + rRightEyeBot.y) / 2;
+      const eyeLHeight = Math.max(0.008, rLeftEyeBot.y - rLeftEyeTop.y);
+      const eyeRHeight = Math.max(0.008, rRightEyeBot.y - rRightEyeTop.y);
+      const deltaGazeY = (((pupilL.y - eyeLMidY) / eyeLHeight) + ((pupilR.y - eyeRMidY) / eyeRHeight)) / 2;
+
+      let gazeDirection = 'FORWARD';
+      if (deltaGazeY > 0.24) {
+        gazeDirection = 'DOWNWARD';
+      } else if (deltaGazeY < -0.28) {
+        gazeDirection = 'UPWARD';
+      } else {
+        const eyeLMidX = (rot(lm[33]).x + rot(lm[133]).x) / 2;
+        const eyeLWidth = Math.max(0.015, Math.abs(rot(lm[133]).x - rot(lm[33]).x));
+        const deltaGazeX = Math.abs((pupilL.x - eyeLMidX) / eyeLWidth);
+        if (deltaGazeX > 0.35) {
+          gazeDirection = 'AVERTED';
+        }
+      }
+
       // AU12: Zygomatic Smile (Combines corner lift + horizontal expansion)
-      const au12Smile = clamp01(
-        (Math.max(0, dSmileElev + 0.003) / 0.020) * 0.65 +
+      let au12Smile = clamp01(
+        (Math.max(0, dSmileElev + 0.003) / maxSmileElev) * 0.65 +
         (Math.max(0, dMouthWidth) / 0.075) * 0.35
       );
 
       // AU6: Cheek Raiser (Duchenne marker)
-      const au6Cheek = clamp01(Math.max(0, dCheekLift + 0.004) / 0.024);
+      let au6Cheek = clamp01(Math.max(0, dCheekLift + 0.004) / maxCheekLift);
 
       // AU4: Brow Lowerer & Furrow (Corrugator Anger)
-      const au4Furrow = clamp01(
+      let au4Furrow = clamp01(
         (Math.max(0, dInnerBrowKnit + 0.004) / 0.035) * 0.65 +
         (Math.max(0, dBrowDrop + 0.003) / 0.022) * 0.35
       );
 
       // AU1+AU2: Brow Raiser (Surprise)
-      const au1_2BrowRaise = clamp01(Math.max(0, dBrowRaise + 0.004) / 0.026);
+      let au1_2BrowRaise = clamp01(Math.max(0, dBrowRaise + 0.004) / maxBrowRaise);
 
       // AU5: Upper Eyelid Raiser (Surprise eye widen)
-      const au5EyeAperture = clamp01(Math.max(0, dEyeWiden + 0.004) / 0.040);
+      let au5EyeAperture = clamp01(Math.max(0, dEyeWiden + 0.004) / 0.040);
 
       // AU26: Jaw Drop (Surprise jaw drop)
-      const au26JawDrop = clamp01(Math.max(0, dJawDrop + 0.005) / 0.050);
+      let au26JawDrop = clamp01(Math.max(0, dJawDrop + 0.005) / maxJawDrop);
 
       // AU15: Lip Corner Depressor (Sadness frown)
-      const au15LipDepress = clamp01(Math.max(0, dCornerDrop + 0.003) / 0.015);
+      let au15LipDepress = clamp01(Math.max(0, dCornerDrop + 0.003) / 0.015);
 
       // AU1: Inner Brow Grief Slant (Sadness brow arch)
-      const au1GriefSlant = clamp01(Math.max(0, dGriefSlant + 0.003) / 0.016);
+      let au1GriefSlant = clamp01(Math.max(0, dGriefSlant + 0.003) / 0.016);
 
       // AU23: Lip Tightener / Pressor (Anger tension)
-      const au23LipTight = clamp01(Math.max(0, dLipThin + 0.003) / 0.018);
+      let au23LipTight = clamp01(Math.max(0, dLipThin + 0.003) / 0.018);
+
+      // --- SPEECH DECOUPLING FILTER ("Talking Filter") ---
+      if (typeof speechFilter !== 'undefined' && speechFilter && speechFilter.isSpeaking) {
+        // Suppress articulatory mouth jaw opening from triggering Surprise
+        au26JawDrop = au26JawDrop * 0.20;
+        // Suppress mouth widening from triggering Happy unless genuine cheek squinch (Duchenne) is present
+        if (au6Cheek < 0.28) {
+          au12Smile = au12Smile * 0.25;
+        }
+        // Upper face remains honest during speech: boost brow signals
+        au4Furrow = au4Furrow * 1.15;
+        au1_2BrowRaise = au1_2BrowRaise * 1.15;
+      }
+
+      // Gaze synergy reinforcement:
+      const evSadGazeBonus = (gazeDirection === 'DOWNWARD' && (au15LipDepress > 0.20 || au1GriefSlant > 0.20)) ? 1.25 : 0.0;
+      const evSurpriseGazeBonus = (gazeDirection === 'FORWARD' && au1_2BrowRaise > 0.25 && au5EyeAperture > 0.25) ? 0.85 : 0.0;
 
       // 8. Positive Evidentiary Scoring (FACS Grounded)
       const evHappy = (au12Smile * 3.8) + (au6Cheek * 2.2);
-      const evSurprise = (au1_2BrowRaise * 2.8) + (au5EyeAperture * 2.6) + (au26JawDrop * 2.4);
+      const evSurprise = (au1_2BrowRaise * 2.8) + (au5EyeAperture * 2.6) + (au26JawDrop * 2.4) + evSurpriseGazeBonus;
       const evAngry = (au4Furrow * 3.6) + (au23LipTight * 1.8);
-      const evSad = (au15LipDepress * 3.4) + (au1GriefSlant * 2.6);
+      const evSad = (au15LipDepress * 3.4) + (au1GriefSlant * 2.6) + evSadGazeBonus;
 
       // Total expressive tension across all emotions:
       const maxExpressiveTension = Math.max(evHappy, evSurprise, evAngry, evSad);
+
+      // Micro-Expression Dynamic Phase Tracking (Onset -> Apex -> Offset)
+      const now = performance.now();
+      const dtSec = Math.max(0.016, (now - (phaseState.lastT || now)) / 1000.0);
+      phaseState.lastT = now;
+      const dExpressionSpeed = (maxExpressiveTension - (phaseState.lastTension || 0)) / dtSec;
+      phaseState.lastTension = maxExpressiveTension;
+
+      let facialPhase = 'REST';
+      if (maxExpressiveTension > 0.35) {
+        if (dExpressionSpeed > 0.50) {
+          facialPhase = 'ONSET';
+        } else if (dExpressionSpeed < -0.45) {
+          facialPhase = 'OFFSET';
+        } else {
+          facialPhase = 'APEX';
+        }
+      }
+      phaseState.phase = facialPhase;
 
       // Neutral logit: High at rest, smoothly yields only when genuine expression occurs
       const logitNeutral = 2.4 - (maxExpressiveTension * 1.35);
@@ -7666,8 +8033,8 @@
         Neutral: Math.max(-0.6, logitNeutral)
       };
 
-      // 9. Softmax with Temperature Scaling (tau = 1.05)
-      const tau = 1.05;
+      // 9. Softmax with Temperature Scaling (tau = 0.92 during Apex for crisp certainty, 1.05 at rest)
+      const tau = (facialPhase === 'APEX') ? 0.92 : 1.05;
       const maxLogit = Math.max(...Object.values(logits));
       let sumExp = 0;
       const expScores = {};
@@ -7692,6 +8059,9 @@
         probabilities: probs,
         dominantEmotion: dominant,
         confidence: Math.round(maxP * 100),
+        facialPhase: { phase: facialPhase, speed: parseFloat(dExpressionSpeed.toFixed(2)) },
+        gaze: { direction: gazeDirection, deltaY: parseFloat(deltaGazeY.toFixed(3)) },
+        isSpeaking: typeof speechFilter !== 'undefined' ? speechFilter.isSpeaking : false,
         actionUnits: {
           au12Smile: Math.round(au12Smile * 100),
           au6Cheek: Math.round(au6Cheek * 100),
@@ -7810,6 +8180,108 @@
       if (!affResult) return;
 
       const { cosPitch, avgEAR, rawBrowH, rawInnerBrowDist, rawSmileElev, rawMouthAperture, rawMouthWidth, rawGriefSlant, rawLipCornerDepress, eyeCheekDist, rawLipHeight } = affResult;
+
+      // ── Real-Time Speech Articulation & Kinematics Filter ─────────────────
+      const now = performance.now();
+      const mouthDelta = Math.abs(rawMouthAperture - (speechFilter.lastAp || rawMouthAperture));
+      speechFilter.lastAp = rawMouthAperture;
+      speechFilter.history.push({ ap: rawMouthAperture, dAp: mouthDelta, t: now });
+      if (speechFilter.history.length > 18) speechFilter.history.shift();
+
+      let dirChanges = 0;
+      let totalApFlux = 0;
+      for (let i = 2; i < speechFilter.history.length; i++) {
+        const d1 = speechFilter.history[i-1].ap - speechFilter.history[i-2].ap;
+        const d2 = speechFilter.history[i].ap - speechFilter.history[i-1].ap;
+        if ((d1 > 0.0035 && d2 < -0.0035) || (d1 < -0.0035 && d2 > 0.0035)) dirChanges++;
+        totalApFlux += Math.abs(d2);
+      }
+      const isVoiceActive = (typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer && voiceAnalyzer.features && voiceAnalyzer.features.isVoiced && voiceAnalyzer.features.rms > 0.016);
+      const isVisualSpeech = (dirChanges >= 2 && totalApFlux > 0.038);
+      speechFilter.isSpeaking = isVoiceActive || isVisualSpeech;
+
+      const speechChip = document.getElementById('hudSpeechFilterChip');
+      if (speechChip) {
+        if (speechFilter.isSpeaking) {
+          speechChip.style.display = 'inline-flex';
+          speechChip.innerText = isVoiceActive ? '🎙️ VOICE TALKING: UPPER-FACE FILTER' : '🗣️ MOUTH TALKING: FILTER ACTIVE';
+        } else {
+          speechChip.style.display = 'none';
+        }
+      }
+
+      // ── Personalization Wizard Active Sampling Loop ───────────────────────
+      if (wizardState.active) {
+        wizardState.count++;
+        const pBar = document.getElementById('pProgressBar');
+        const pCnt = document.getElementById('pProgressCount');
+        const pct = Math.min(100, Math.round((wizardState.count / wizardState.targetCount) * 100));
+        if (pBar) pBar.style.width = `${pct}%`;
+        if (pCnt) pCnt.innerText = `Step ${wizardState.step} of 3: Sampling Frame ${wizardState.count}/${wizardState.targetCount}`;
+
+        if (wizardState.step === 1) {
+          // Neutral step: accumulate resting baseline
+          wizardState.data.sumEar += avgEAR;
+          wizardState.data.sumBrowH += rawBrowH;
+          wizardState.data.sumInnerBrowDist += rawInnerBrowDist;
+          wizardState.data.sumSmileElevation += rawSmileElev;
+          wizardState.data.sumMouthAperture += rawMouthAperture;
+          wizardState.data.sumMouthWidth += rawMouthWidth;
+          wizardState.data.sumGriefSlant += rawGriefSlant;
+          wizardState.data.sumLipCornerDepress += rawLipCornerDepress;
+          wizardState.data.sumEyeCheek += eyeCheekDist;
+          wizardState.data.sumLipHeight += rawLipHeight;
+
+          if (wizardState.count >= wizardState.targetCount) {
+            const n = wizardState.count;
+            tracker.baseline.ear = wizardState.data.sumEar / n;
+            tracker.baseline.browH = wizardState.data.sumBrowH / n;
+            tracker.baseline.innerBrowDist = wizardState.data.sumInnerBrowDist / n;
+            tracker.baseline.smileElevation = wizardState.data.sumSmileElevation / n;
+            tracker.baseline.mouthAperture = wizardState.data.sumMouthAperture / n;
+            tracker.baseline.mouthWidth = wizardState.data.sumMouthWidth / n;
+            tracker.baseline.griefSlant = wizardState.data.sumGriefSlant / n;
+            tracker.baseline.lipCornerDepress = wizardState.data.sumLipCornerDepress / n;
+            tracker.baseline.eyeCheekDist = wizardState.data.sumEyeCheek / n;
+            tracker.baseline.lipHeight = wizardState.data.sumLipHeight / n;
+            tracker.baseline.isCalibrated = true;
+
+            wizardState.step = 2;
+            wizardState.count = 0;
+            updateWizardUI(2);
+          }
+        } else if (wizardState.step === 2) {
+          // Smile step: record max smile elevation & cheek lift
+          const dSm = rawSmileElev - tracker.baseline.smileElevation;
+          const dChk = tracker.baseline.eyeCheekDist - eyeCheekDist;
+          if (dSm > wizardState.data.maxSmileElev) wizardState.data.maxSmileElev = dSm;
+          if (dChk > wizardState.data.maxCheekLift) wizardState.data.maxCheekLift = dChk;
+
+          if (wizardState.count >= wizardState.targetCount) {
+            wizardState.step = 3;
+            wizardState.count = 0;
+            updateWizardUI(3);
+          }
+        } else if (wizardState.step === 3) {
+          // Brow & Jaw step: record max brow raise & jaw drop
+          const dBr = rawBrowH - tracker.baseline.browH;
+          const dJw = rawMouthAperture - tracker.baseline.mouthAperture;
+          if (dBr > wizardState.data.maxBrowRaise) wizardState.data.maxBrowRaise = dBr;
+          if (dJw > wizardState.data.maxJawDrop) wizardState.data.maxJawDrop = dJw;
+
+          if (wizardState.count >= wizardState.targetCount) {
+            wizardState.active = false;
+            tracker.baseline.personalRanges = {
+              maxSmileElev: Math.max(0.015, wizardState.data.maxSmileElev),
+              maxCheekLift: Math.max(0.016, wizardState.data.maxCheekLift),
+              maxBrowRaise: Math.max(0.018, wizardState.data.maxBrowRaise),
+              maxJawDrop: Math.max(0.038, wizardState.data.maxJawDrop)
+            };
+            savePersonalCalibration(tracker.baseline);
+            finishWizardUI();
+          }
+        }
+      }
 
       // 3. Adaptive Dynamic Baseline Calibration
       if (tracker.isCalibrating || !tracker.baseline.isCalibrated) {
@@ -7940,6 +8412,37 @@
       tracker.selectedEmotion = liveEmotion;
       state.latestFaceProbs = tracker.smoothedProbs;
       state.selectedFaceEmotion = liveEmotion;
+
+      // Tier 1 HUD Updates: Phase Chip & Gaze Chip
+      const phaseChip = document.getElementById('hudPhaseChip');
+      if (phaseChip && affResult.facialPhase) {
+        phaseChip.innerText = `PHASE: ${affResult.facialPhase.phase}`;
+        if (affResult.facialPhase.phase === 'APEX') {
+          phaseChip.style.borderColor = 'rgba(52, 211, 153, 0.6)';
+          phaseChip.style.color = '#34d399';
+        } else if (affResult.facialPhase.phase === 'ONSET') {
+          phaseChip.style.borderColor = 'rgba(251, 191, 36, 0.6)';
+          phaseChip.style.color = '#fbbf24';
+        } else {
+          phaseChip.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          phaseChip.style.color = 'var(--text-secondary)';
+        }
+      }
+
+      const gazeChip = document.getElementById('hudGazeChip');
+      if (gazeChip && affResult.gaze) {
+        gazeChip.innerText = `GAZE: ${affResult.gaze.direction}`;
+        if (affResult.gaze.direction === 'DOWNWARD') {
+          gazeChip.style.borderColor = 'rgba(99, 102, 241, 0.6)';
+          gazeChip.style.color = '#818cf8';
+        } else if (affResult.gaze.direction === 'FORWARD') {
+          gazeChip.style.borderColor = 'rgba(0, 242, 254, 0.6)';
+          gazeChip.style.color = '#00f2fe';
+        } else {
+          gazeChip.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          gazeChip.style.color = 'var(--text-secondary)';
+        }
+      }
 
       // 6. Live Diagnostics & HUD Updates
       let mouthText = 'Normal Line 😐';
@@ -12773,6 +13276,7 @@
       initViewRouting();
       initIntroBackground();
       initTeamCardInteractions();
+      loadSavedPersonalCalibration();
       warmUpMediaPipe();
       detectAvailableCameras();
       updateFacePrediction();
