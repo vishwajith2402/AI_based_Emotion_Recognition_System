@@ -18,6 +18,16 @@ from src.config import (
 )
 
 
+
+# ── Psychophysiologically Grounded Markov Emotion State Transition Prior ────
+MARKOV_TRANSITION_PRIOR = {
+    "Neutral":  {"Neutral": 0.50, "Happy": 0.16, "Surprise": 0.14, "Sad": 0.11, "Angry": 0.09},
+    "Happy":    {"Happy": 0.62, "Neutral": 0.22, "Surprise": 0.12, "Sad": 0.02, "Angry": 0.02},
+    "Surprise": {"Surprise": 0.56, "Neutral": 0.22, "Happy": 0.13, "Angry": 0.06, "Sad": 0.03},
+    "Sad":      {"Sad": 0.60, "Neutral": 0.23, "Angry": 0.12, "Surprise": 0.03, "Happy": 0.02},
+    "Angry":    {"Angry": 0.60, "Neutral": 0.21, "Sad": 0.13, "Surprise": 0.05, "Happy": 0.01}
+}
+
 class MultimodalFusion:
     """
     Combines visual (facial), acoustic (speech), and linguistic (text) predictions
@@ -33,6 +43,7 @@ class MultimodalFusion:
         self.face_weight = face_weight
         self.speech_weight = speech_weight
         self.text_weight = text_weight
+        self.last_fused_emotion = "Neutral"
         self._normalize_base_weights()
 
     def _normalize_base_weights(self):
@@ -122,7 +133,9 @@ class MultimodalFusion:
         speech_energy: float = 1.0,
         face_confidence: float = 1.0,
         is_speaking: bool = True,
-        dynamic_attention: bool = True
+        dynamic_attention: bool = True,
+        previous_emotion: Optional[str] = None,
+        apply_transition_prior: bool = False
     ) -> Dict:
         """
         Performs SOTA Tri-Modal decision fusion (Vision + Acoustics + Text).
@@ -236,8 +249,19 @@ class MultimodalFusion:
             if total_p > 0:
                 fused_probs = {k: float(v / total_p) for k, v in fused_probs.items()}
 
+            # 4. Markov Psychological State Transition Prior
+            prev_e = previous_emotion or (self.last_fused_emotion if apply_transition_prior else None)
+            if prev_e and prev_e in MARKOV_TRANSITION_PRIOR:
+                prior = MARKOV_TRANSITION_PRIOR[prev_e]
+                for c in EMOTION_CLASSES:
+                    fused_probs[c] = fused_probs[c] * (prior.get(c, 0.20) ** 0.30)
+                tot = sum(fused_probs.values())
+                if tot > 0:
+                    fused_probs = {k: float(v / tot) for k, v in fused_probs.items()}
+
             best_emotion = max(fused_probs, key=fused_probs.get)
             confidence = fused_probs[best_emotion]
+            self.last_fused_emotion = best_emotion
 
             is_conflict, conflict_score, reason = self.compute_tri_conflict(active_modalities)
 

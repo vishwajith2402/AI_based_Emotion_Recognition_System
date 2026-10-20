@@ -6858,7 +6858,10 @@
     const phaseState = {
       lastT: 0,
       lastTension: 0,
-      phase: 'REST'
+      phase: 'REST',
+      kineticBuffer: [], // stores last 15 frame velocities for TCN-style micro-kinetics validation
+      lastAUs: { au12: 0, au4: 0, au1_2: 0, au15: 0 },
+      onlineKalman: { steadyNeutralCount: 0 }
     };
 
     const wizardState = {
@@ -8013,6 +8016,33 @@
       const dExpressionSpeed = (maxExpressiveTension - (phaseState.lastTension || 0)) / dtSec;
       phaseState.lastTension = maxExpressiveTension;
 
+      // AU Velocity Vectors & Micro-Kinetics Trajectory Buffer
+      if (!phaseState.lastAUs) {
+        phaseState.lastAUs = { au12: au12Smile, au4: au4Furrow, au1_2: au1_2BrowRaise, au15: au15LipDepress };
+      }
+      const vAU12 = (au12Smile - phaseState.lastAUs.au12) / dtSec;
+      const vAU4 = (au4Furrow - phaseState.lastAUs.au4) / dtSec;
+      const vAU1_2 = (au1_2BrowRaise - phaseState.lastAUs.au1_2) / dtSec;
+      const vAU15 = (au15LipDepress - phaseState.lastAUs.au15) / dtSec;
+      phaseState.lastAUs = { au12: au12Smile, au4: au4Furrow, au1_2: au1_2BrowRaise, au15: au15LipDepress };
+
+      if (!phaseState.kineticBuffer) phaseState.kineticBuffer = [];
+      phaseState.kineticBuffer.push({ t: now, v12: vAU12, v4: vAU4, v1_2: vAU1_2, v15: vAU15, tension: maxExpressiveTension });
+      if (phaseState.kineticBuffer.length > 15) phaseState.kineticBuffer.shift();
+
+      // Kinetic Trajectory Coherence Validation
+      // Genuine spontaneous micro-expressions accelerate smoothly (0.08 < v < 1.40) over >100ms
+      let kineticBonusHappy = 0.0, kineticBonusAngry = 0.0, kineticBonusSurprise = 0.0, kineticBonusSad = 0.0;
+      if (phaseState.kineticBuffer.length >= 5) {
+        const spanMs = now - phaseState.kineticBuffer[0].t;
+        if (spanMs >= 100 && spanMs <= 850) {
+          if (au12Smile > 0.35 && vAU12 > -0.15) kineticBonusHappy = 0.40;
+          if (au4Furrow > 0.35 && vAU4 > -0.15) kineticBonusAngry = 0.40;
+          if (au1_2BrowRaise > 0.35 && vAU1_2 > -0.15) kineticBonusSurprise = 0.40;
+          if (au15LipDepress > 0.28 && vAU15 > -0.15) kineticBonusSad = 0.45;
+        }
+      }
+
       let facialPhase = 'REST';
       if (maxExpressiveTension > 0.35) {
         if (dExpressionSpeed > 0.50) {
@@ -8029,10 +8059,10 @@
       const logitNeutral = 2.3 - (maxExpressiveTension * 1.45) - (au15LipDepress * 1.25);
 
       const logits = {
-        Happy: -0.4 + evHappy - (au4Furrow * 1.8) - (au15LipDepress * 2.0),
-        Surprise: -0.5 + evSurprise - (au4Furrow * 1.5) - (au12Smile * 0.8),
-        Angry: -0.5 + evAngry - (au12Smile * 2.5) - (au26JawDrop * 1.4),
-        Sad: -0.2 + evSad - (au12Smile * 3.2) - (au5EyeAperture * 1.4),
+        Happy: -0.4 + evHappy + kineticBonusHappy - (au4Furrow * 1.8) - (au15LipDepress * 2.0),
+        Surprise: -0.5 + evSurprise + kineticBonusSurprise - (au4Furrow * 1.5) - (au12Smile * 0.8),
+        Angry: -0.5 + evAngry + kineticBonusAngry - (au12Smile * 2.5) - (au26JawDrop * 1.4),
+        Sad: -0.2 + evSad + kineticBonusSad - (au12Smile * 3.2) - (au5EyeAperture * 1.4),
         Neutral: Math.max(-0.6, logitNeutral)
       };
 
@@ -8056,6 +8086,21 @@
           maxP = p;
           dominant = em;
         }
+      }
+
+      // Online Adaptive Baseline (Kalman Running Drift Compensation)
+      if (dominant === 'Neutral' && maxExpressiveTension < 0.22 && probs.Neutral > 0.65) {
+        if (!phaseState.onlineKalman) phaseState.onlineKalman = { steadyNeutralCount: 0 };
+        phaseState.onlineKalman.steadyNeutralCount++;
+        if (phaseState.onlineKalman.steadyNeutralCount > 75 && tracker.baseline) {
+          // Slow continuous Kalman update (alpha = 0.002, ~90 second half-life for fatigue/ambient drift)
+          tracker.baseline.ear = 0.998 * tracker.baseline.ear + 0.002 * avgEAR;
+          tracker.baseline.browH = 0.998 * tracker.baseline.browH + 0.002 * rawBrowH;
+          tracker.baseline.innerBrowDist = 0.998 * tracker.baseline.innerBrowDist + 0.002 * rawInnerBrowDist;
+          tracker.baseline.lipCornerDepress = 0.998 * tracker.baseline.lipCornerDepress + 0.002 * rawLipCornerDepress;
+        }
+      } else if (phaseState.onlineKalman) {
+        phaseState.onlineKalman.steadyNeutralCount = 0;
       }
 
       return {
@@ -8360,6 +8405,36 @@
         liveEmotion = topE;
       } else if (tracker.visionEngine === 'deep_cnn' && lastCNNProbs) {
         effectiveProbs = { ...lastCNNProbs };
+        let topE = 'Neutral';
+        let topP = 0;
+        for (const [em, p] of Object.entries(effectiveProbs)) {
+          if (p > topP) { topP = p; topE = em; }
+        }
+        liveEmotion = topE;
+      }
+
+      // 4b. Markov Psychological State Transition Prior Matrix (Biophysiological Inertia)
+      const MARKOV_TRANSITION_PRIOR = {
+        Neutral:  { Neutral: 0.50, Happy: 0.16, Surprise: 0.14, Sad: 0.11, Angry: 0.09 },
+        Happy:    { Happy: 0.62, Neutral: 0.22, Surprise: 0.12, Sad: 0.02, Angry: 0.02 },
+        Surprise: { Surprise: 0.56, Neutral: 0.22, Happy: 0.13, Angry: 0.06, Sad: 0.03 },
+        Sad:      { Sad: 0.60, Neutral: 0.23, Angry: 0.12, Surprise: 0.03, Happy: 0.02 },
+        Angry:    { Angry: 0.60, Neutral: 0.21, Sad: 0.13, Surprise: 0.05, Happy: 0.01 }
+      };
+
+      const prevActive = tracker.selectedEmotion || 'Neutral';
+      if (MARKOV_TRANSITION_PRIOR[prevActive]) {
+        const transPrior = MARKOV_TRANSITION_PRIOR[prevActive];
+        let pSum = 0;
+        for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
+          effectiveProbs[e] = effectiveProbs[e] * Math.pow(transPrior[e] || 0.20, 0.30);
+          pSum += effectiveProbs[e];
+        }
+        if (pSum > 0) {
+          for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
+            effectiveProbs[e] = parseFloat((effectiveProbs[e] / pSum).toFixed(4));
+          }
+        }
         let topE = 'Neutral';
         let topP = 0;
         for (const [em, p] of Object.entries(effectiveProbs)) {
