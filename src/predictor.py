@@ -74,7 +74,7 @@ class EmotionPredictor:
             smoothed = {k: v / total for k, v in smoothed.items()}
         return smoothed
 
-    def predict_image(self, image_bgr: np.ndarray) -> Dict[str, Any]:
+    def predict_image(self, image_bgr: np.ndarray, use_yolo: Optional[bool] = None) -> Dict[str, Any]:
         """
         Analyzes a single image or video frame for facial emotion,
         combining deep CNN spatial features with morphological facial style analysis.
@@ -88,7 +88,7 @@ class EmotionPredictor:
                 "facial_style": None
             }
 
-        tensors, bboxes, landmarks_list = self.face_preprocessor.process_frame(image_bgr)
+        tensors, bboxes, landmarks_list = self.face_preprocessor.process_frame(image_bgr, use_yolo=use_yolo)
         if not tensors:
             # Fallback: whole-image crop
             normalized = self.face_preprocessor.preprocess_face(image_bgr)
