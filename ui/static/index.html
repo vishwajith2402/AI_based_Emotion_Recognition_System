@@ -4144,8 +4144,9 @@
     }
 
     .mode-select-wrapper:has(#btnSelectMediaMode:hover),
+    .mode-select-wrapper.hover-media-green,
     .mode-select-wrapper.hover-media-lemongreen {
-      background: radial-gradient(circle at 65% 45%, rgba(204, 255, 0, 0.26) 0%, rgba(132, 204, 22, 0.14) 42%, rgba(18, 19, 36, 0.98) 78%) !important;
+      background: radial-gradient(circle at 65% 45%, rgba(16, 185, 129, 0.30) 0%, rgba(5, 150, 105, 0.16) 42%, rgba(18, 19, 36, 0.98) 78%) !important;
     }
 
     .mode-select-header {
@@ -4224,28 +4225,28 @@
       color: #FFFFFF !important;
     }
 
-    /* 🍋 Mode Option 2: Media Upload — Lemon Green Highlight on Hover */
+    /* 🌿 Mode Option 2: Media Upload — Emerald Green Highlight on Hover */
     .mode-card.vocal-mode:hover,
     #btnSelectMediaMode:hover {
       transform: translateY(-8px) scale(1.015);
-      background: linear-gradient(145deg, rgba(204, 255, 0, 0.22) 0%, rgba(163, 230, 53, 0.14) 50%, rgba(10, 22, 8, 0.94) 100%) !important;
-      border-color: #CCFF00 !important;
-      box-shadow: 0 22px 55px -10px rgba(204, 255, 0, 0.52), 0 0 35px rgba(163, 230, 53, 0.38), inset 0 1px 2px rgba(236, 252, 203, 0.55) !important;
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.24) 0%, rgba(5, 150, 105, 0.15) 50%, rgba(8, 24, 18, 0.94) 100%) !important;
+      border-color: #10B981 !important;
+      box-shadow: 0 22px 55px -10px rgba(16, 185, 129, 0.52), 0 0 35px rgba(52, 211, 153, 0.38), inset 0 1px 2px rgba(167, 243, 208, 0.55) !important;
     }
 
     .mode-card.vocal-mode:hover .mode-card-badge,
     #btnSelectMediaMode:hover .mode-card-badge {
-      background: rgba(204, 255, 0, 0.22) !important;
-      border-color: rgba(204, 255, 0, 0.65) !important;
-      color: #ECFCCB !important;
-      box-shadow: 0 0 14px rgba(204, 255, 0, 0.45);
+      background: rgba(16, 185, 129, 0.22) !important;
+      border-color: rgba(16, 185, 129, 0.65) !important;
+      color: #D1FAE5 !important;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.45);
     }
 
     .mode-card.vocal-mode:hover .btn-mode-cta,
     #btnSelectMediaMode:hover .btn-mode-cta {
-      background: linear-gradient(135deg, rgba(204, 255, 0, 0.48), rgba(163, 230, 53, 0.38)) !important;
-      border-color: #CCFF00 !important;
-      box-shadow: 0 0 25px rgba(204, 255, 0, 0.58) !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.48), rgba(5, 150, 105, 0.38)) !important;
+      border-color: #10B981 !important;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.58) !important;
       color: #FFFFFF !important;
     }
 
@@ -12987,10 +12988,10 @@
       });
       if (modeSelectWrap) {
         btnSelectMediaMode.addEventListener('mouseenter', () => {
-          modeSelectWrap.classList.add('hover-media-lemongreen');
+          modeSelectWrap.classList.add('hover-media-green');
         });
         btnSelectMediaMode.addEventListener('mouseleave', () => {
-          modeSelectWrap.classList.remove('hover-media-lemongreen');
+          modeSelectWrap.classList.remove('hover-media-green');
         });
       }
     }
