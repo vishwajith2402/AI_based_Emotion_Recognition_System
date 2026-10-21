@@ -609,9 +609,9 @@
 
     .hud-top-telemetry-overlay {
       position: absolute;
-      top: 10px;
+      top: 48px; /* sits cleanly below the floating mode buttons with zero overlap */
       left: 10px;
-      right: 130px; /* leaves breathing room for the floating flip button */
+      right: 10px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -709,6 +709,90 @@
       font-size: 0.65rem;
       letter-spacing: 0.5px;
       color: var(--text-primary);
+    }
+
+    .cam-hud-mode-floating-btn {
+      position: absolute;
+      top: 12px;
+      right: 136px;
+      z-index: 15;
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #c084fc;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .cam-hud-mode-floating-btn:hover {
+      background: rgba(168, 85, 247, 0.22);
+      border-color: #c084fc;
+      transform: scale(1.04);
+    }
+
+    .cam-hud-mode-floating-btn:active {
+      transform: scale(0.96);
+    }
+
+    .cam-hud-mode-floating-btn.pro-active {
+      border-color: rgba(34, 211, 238, 0.55);
+      color: var(--cyan);
+    }
+
+    .hud-mode-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.5px;
+      color: var(--text-primary);
+    }
+
+    .cam-minimal-hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 14;
+      pointer-events: none;
+    }
+
+    .minimal-hud-chip {
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 0.28rem 0.65rem;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .minimal-hud-chip .minimal-dot {
+      color: #22c55e;
+      font-size: 0.6rem;
+    }
+
+    .minimal-hud-chip.warning {
+      border-color: rgba(245, 158, 11, 0.55);
+      color: #fbbf24;
+      background: rgba(30, 27, 75, 0.90);
     }
 
     .cam-controls-row {
@@ -5454,6 +5538,22 @@
               <span class="flip-cam-badge" id="floatingFlipBadge">FRONT CAM</span>
             </button>
 
+            <!-- Floating Clean / Pro HUD Mode Toggle Button -->
+            <button class="cam-hud-mode-floating-btn" id="btnFloatingHudMode" title="Toggle Clean View vs Pro Telemetry (Shortcut: H)" style="display: none;">
+              <span id="floatingHudModeIcon">✨</span>
+              <span class="hud-mode-badge" id="floatingHudModeBadge">CLEAN VIEW</span>
+            </button>
+
+            <!-- Minimalist Clean HUD Chip (Only visible in Clean Mode) -->
+            <div class="cam-minimal-hud" id="camMinimalHud" style="display: none;">
+              <span class="minimal-hud-chip" id="minimalHudStatus">
+                <span class="minimal-dot">●</span> <span id="minimalHudStatusText">STANDBY</span>
+              </span>
+              <span class="minimal-hud-chip warning" id="minimalHudWarning" style="display: none;">
+                <span id="minimalHudWarningText">⚠️ TOO FAR</span>
+              </span>
+            </div>
+
             <!-- Upper HUD Overlay: Real-Time Geometric Telemetry (Distance, Angles, Frame Ratio) -->
             <div class="hud-top-telemetry-overlay" id="camHudTopTelemetry" style="display: none;">
               <span class="hud-chip" id="hudDistanceChip">
@@ -5491,8 +5591,11 @@
             <button class="btn-secondary" id="btnFlipCam" title="Switch Front / Back Camera or Toggle Mirror">
               <span id="btnFlipCamIcon">🔄</span> <span id="btnFlipCamText">Front Cam</span>
             </button>
+            <button class="btn-secondary" id="btnToggleHudMode" title="Toggle Clean View vs Pro Telemetry Overlay (Shortcut: H)">
+              <span id="btnToggleHudModeIcon">✨</span> <span id="btnToggleHudModeText">Clean View</span>
+            </button>
             <button class="btn-secondary" id="btnToggleMesh" title="Cycle visual mesh presentation">
-              <span>🕸️</span> B&W Mesh
+              <span>🕸️</span> Hidden
             </button>
             <button class="btn-secondary" id="btnCalibrateFace" title="Quick recalibrate to your resting neutral baseline">
               <span>🎯</span> Calibrate Neutral
@@ -6681,6 +6784,7 @@
     const state = {
       isCameraRunning: false,
       facingMode: 'user', // 'user' (front camera) or 'environment' (back camera)
+      hudMode: 'clean', // 'clean' (uncluttered minimal view) or 'pro' (full diagnostic telemetry)
       availableCameras: [],
       hasMultipleCameras: false,
       sttLanguage: 'en-IN',
@@ -6759,7 +6863,7 @@
     const tracker = {
       enabled: true,
       isMirrored: true,
-      meshStyle: 'bw_mesh', // 'bw_mesh', 'bw_dots', 'bw_contours', 'off'
+      meshStyle: 'off', // 'off' by default in Clean View; cycles to 'bw_contours', 'bw_dots', 'bw_mesh'
       visionEngine: 'adaptive_3d_facs', // 'adaptive_3d_facs', 'hybrid_ensemble', 'deep_cnn'
       x: 0,
       y: 0,
@@ -7158,10 +7262,9 @@
           setSystemStatus(`CAMERA ACTIVE (${state.facingMode === 'user' ? 'FRONT' : 'BACK'})`, 'var(--cyan)');
           const tip = document.getElementById('camTipText');
           if (tip) tip.style.display = 'none';
-          const hud = document.getElementById('camHudOverlay');
-          if (hud) hud.style.display = 'flex';
-          const hudTop = document.getElementById('camHudTopTelemetry');
-          if (hudTop) hudTop.style.display = 'flex';
+          const btnFloatingMode = document.getElementById('btnFloatingHudMode');
+          if (btnFloatingMode) btnFloatingMode.style.display = 'flex';
+          setHudMode(state.hudMode || 'clean');
           
           // Detect available cameras now that permission is granted
           detectAvailableCameras();
@@ -7187,6 +7290,10 @@
         if (hud) hud.style.display = 'none';
         const hudTop = document.getElementById('camHudTopTelemetry');
         if (hudTop) hudTop.style.display = 'none';
+        const btnFloatingMode = document.getElementById('btnFloatingHudMode');
+        if (btnFloatingMode) btnFloatingMode.style.display = 'none';
+        const minHud = document.getElementById('camMinimalHud');
+        if (minHud) minHud.style.display = 'none';
         tracker.smoothedProbs = null;
         tracker.isCalibrating = false;
         tracker.isLocked = false;
@@ -7317,8 +7424,20 @@
     }
 
     // Toggle 468-Point Mesh Styles
-    const meshStyles = ['bw_mesh', 'bw_dots', 'bw_contours', 'off'];
+    const meshStyles = ['off', 'bw_contours', 'bw_dots', 'bw_mesh'];
     let meshStyleIdx = 0;
+    const btnToggleHudMode = document.getElementById('btnToggleHudMode');
+    if (btnToggleHudMode) btnToggleHudMode.addEventListener('click', toggleHudMode);
+
+    const btnFloatingHudMode = document.getElementById('btnFloatingHudMode');
+    if (btnFloatingHudMode) btnFloatingHudMode.addEventListener('click', toggleHudMode);
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.key === 'h' || e.key === 'H') && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+        toggleHudMode();
+      }
+    });
+
     const btnToggleMesh = document.getElementById('btnToggleMesh');
     if (btnToggleMesh) {
       btnToggleMesh.addEventListener('click', () => {
@@ -7335,6 +7454,69 @@
           faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
         }
       });
+    }
+
+    // Clean View vs Pro HUD Mode Manager (Suggestion 1)
+    function setHudMode(mode) {
+      state.hudMode = mode; // 'clean' or 'pro'
+      const isClean = mode === 'clean';
+
+      const hudTop = document.getElementById('camHudTopTelemetry');
+      const hudMetrics = document.getElementById('camHudOverlay');
+      const minHud = document.getElementById('camMinimalHud');
+      const btnFloating = document.getElementById('btnFloatingHudMode');
+      const btnFloatingBadge = document.getElementById('floatingHudModeBadge');
+      const btnFloatingIcon = document.getElementById('floatingHudModeIcon');
+      const btnControlText = document.getElementById('btnToggleHudModeText');
+      const btnControlIcon = document.getElementById('btnToggleHudModeIcon');
+
+      if (state.isCameraRunning) {
+        if (isClean) {
+          if (hudTop) hudTop.style.display = 'none';
+          if (hudMetrics) hudMetrics.style.display = 'none';
+          if (minHud) minHud.style.display = 'flex';
+        } else {
+          if (hudTop) hudTop.style.display = 'flex';
+          if (hudMetrics) hudMetrics.style.display = 'flex';
+          if (minHud) minHud.style.display = 'none';
+        }
+      }
+
+      if (btnFloating) {
+        if (isClean) {
+          btnFloating.classList.remove('pro-active');
+          if (btnFloatingBadge) btnFloatingBadge.innerText = 'CLEAN VIEW';
+          if (btnFloatingIcon) btnFloatingIcon.innerText = '✨';
+          btnFloating.title = 'Switch to Pro Telemetry HUD (Shortcut: H)';
+        } else {
+          btnFloating.classList.add('pro-active');
+          if (btnFloatingBadge) btnFloatingBadge.innerText = 'PRO HUD';
+          if (btnFloatingIcon) btnFloatingIcon.innerText = '🔬';
+          btnFloating.title = 'Switch to Clean Minimal View (Shortcut: H)';
+        }
+      }
+
+      if (btnControlText) btnControlText.innerText = isClean ? 'Clean View' : 'Pro HUD';
+      if (btnControlIcon) btnControlIcon.innerText = isClean ? '✨' : '🔬';
+
+      // Auto-toggle mesh: In clean mode, remove dense spiderweb unless user explicitly chose otherwise
+      if (isClean && tracker.meshStyle === 'bw_mesh') {
+        tracker.meshStyle = 'off';
+        meshStyleIdx = 0;
+        const btnToggleMesh = document.getElementById('btnToggleMesh');
+        if (btnToggleMesh) btnToggleMesh.innerHTML = '<span>🕸️</span> Hidden';
+        faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
+      } else if (!isClean && tracker.meshStyle === 'off') {
+        tracker.meshStyle = 'bw_mesh';
+        meshStyleIdx = 3;
+        const btnToggleMesh = document.getElementById('btnToggleMesh');
+        if (btnToggleMesh) btnToggleMesh.innerHTML = '<span>🕸️</span> B&W Mesh';
+      }
+    }
+
+    function toggleHudMode() {
+      const nextMode = state.hudMode === 'clean' ? 'pro' : 'clean';
+      setHudMode(nextMode);
     }
 
     // Real-Time Frame Loop
@@ -7514,6 +7696,8 @@
               : '● 468 PT 3D MESH LOCKED';
             hudStatus.className = 'hud-chip locked';
           }
+          const minStatus = document.getElementById('minimalHudStatusText');
+          if (minStatus) minStatus.innerText = 'LOCKED';
         } else {
           tracker.isLocked = false;
           const hudStatus = document.getElementById('hudTrackStatus');
@@ -7528,6 +7712,10 @@
             hudStatus.innerText = '○ SEARCHING FACE...';
             hudStatus.className = 'hud-chip';
           }
+          const minStatus = document.getElementById('minimalHudStatusText');
+          if (minStatus) minStatus.innerText = 'SEARCHING...';
+          const minWarn = document.getElementById('minimalHudWarning');
+          if (minWarn) minWarn.style.display = 'none';
           if (elDistVal) elDistVal.innerText = '-- cm';
           if (elDistBadge) { elDistBadge.innerText = 'SEARCHING'; elDistBadge.className = 'hud-quality-badge warning'; }
           if (elRatioVal) elRatioVal.innerText = '--%';
@@ -7592,8 +7780,11 @@
         faceCtx.lineWidth = 4.5;
         faceCtx.stroke();
 
-        // Pass 2: Ice Cyan inner line
-        faceCtx.strokeStyle = '#22D3EE';
+        // Pass 2: Subtle Dynamic Emotion Glow Accent
+        const liveReticleColor = (typeof EMOTION_COLORS !== 'undefined' && EMOTION_COLORS[state.currentFinalEmotion])
+          ? EMOTION_COLORS[state.currentFinalEmotion]
+          : '#22D3EE';
+        faceCtx.strokeStyle = liveReticleColor;
         faceCtx.lineWidth = 2.0;
         faceCtx.stroke();
       }
@@ -8626,6 +8817,26 @@
       const rDeg = Math.round(tracker.headPose.roll);
 
       if (elAnglesVal) elAnglesVal.innerText = `P: ${pDeg > 0 ? '+' : ''}${pDeg}° Y: ${yDeg > 0 ? '+' : ''}${yDeg}° R: ${rDeg > 0 ? '+' : ''}${rDeg}°`;
+
+      // Minimal HUD Smart Contextual Feedback (Suggestion 1)
+      const minStatus = document.getElementById('minimalHudStatusText');
+      if (minStatus) minStatus.innerText = `LOCKED (${estDistanceCm}cm)`;
+      const minWarn = document.getElementById('minimalHudWarning');
+      const minWarnText = document.getElementById('minimalHudWarningText');
+      if (minWarn && minWarnText) {
+        if (estDistanceCm > 75) {
+          minWarnText.innerText = '⚠️ TOO FAR (>75cm)';
+          minWarn.style.display = 'inline-flex';
+        } else if (estDistanceCm < 45) {
+          minWarnText.innerText = '⚠️ TOO CLOSE (<45cm)';
+          minWarn.style.display = 'inline-flex';
+        } else if (Math.abs(pDeg) > 22 || Math.abs(yDeg) > 22) {
+          minWarnText.innerText = '⚠️ ALIGN HEAD';
+          minWarn.style.display = 'inline-flex';
+        } else {
+          minWarn.style.display = 'none';
+        }
+      }
 
       // 4. Integrated Pose & Calibration Guidance
       if (elPoseGuidance) {
