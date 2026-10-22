@@ -19,8 +19,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
-  <!-- jsPDF Library for Client-Side PDF Generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+  <!-- jsPDF Library for Client-Side PDF Generation (Local First with CDN Fallback) -->
+  <script src="jspdf.umd.min.js"></script>
+  <script>
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>');
+    }
+  </script>
 
   <style>
     /* ========================================================
@@ -4266,7 +4271,7 @@
     .mode-select-wrapper:has(#btnSelectMediaMode:hover),
     .mode-select-wrapper.hover-media-green,
     .mode-select-wrapper.hover-media-lemongreen {
-      background: radial-gradient(circle at 65% 45%, rgba(16, 185, 129, 0.30) 0%, rgba(5, 150, 105, 0.16) 42%, rgba(18, 19, 36, 0.98) 78%) !important;
+      background: radial-gradient(circle at 65% 45%, rgba(0, 255, 157, 0.42) 0%, rgba(16, 229, 153, 0.22) 42%, rgba(8, 18, 24, 0.98) 78%) !important;
     }
 
     .mode-select-header {
@@ -4345,29 +4350,54 @@
       color: #FFFFFF !important;
     }
 
-    /* 🌿 Mode Option 2: Media Upload — Emerald Green Highlight on Hover */
+    /* 🌿 Mode Option 2: Media Upload — Vibrant Cyber Neon Green */
+    .mode-card.vocal-mode,
+    #btnSelectMediaMode {
+      border: 1.5px solid rgba(0, 255, 157, 0.45) !important;
+      background: linear-gradient(145deg, rgba(0, 255, 157, 0.08) 0%, rgba(16, 185, 129, 0.04) 50%, rgba(6, 20, 15, 0.88) 100%) !important;
+      box-shadow: 0 10px 32px rgba(0, 255, 157, 0.14), inset 0 1px 0 rgba(0, 255, 157, 0.25);
+    }
+
+    .mode-card.vocal-mode .mode-card-badge,
+    #btnSelectMediaMode .mode-card-badge {
+      background: rgba(0, 255, 157, 0.16) !important;
+      border-color: rgba(0, 255, 157, 0.65) !important;
+      color: #00FF9D !important;
+      box-shadow: 0 0 16px rgba(0, 255, 157, 0.35);
+    }
+
+    .mode-card.vocal-mode .btn-mode-cta,
+    #btnSelectMediaMode .btn-mode-cta {
+      background: linear-gradient(135deg, rgba(0, 255, 157, 0.22) 0%, rgba(16, 185, 129, 0.35) 100%) !important;
+      border: 1.5px solid #00FF9D !important;
+      box-shadow: 0 0 22px rgba(0, 255, 157, 0.42) !important;
+      color: #FFFFFF !important;
+      text-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
+    }
+
     .mode-card.vocal-mode:hover,
     #btnSelectMediaMode:hover {
-      transform: translateY(-8px) scale(1.015);
-      background: linear-gradient(145deg, rgba(16, 185, 129, 0.24) 0%, rgba(5, 150, 105, 0.15) 50%, rgba(8, 24, 18, 0.94) 100%) !important;
-      border-color: #10B981 !important;
-      box-shadow: 0 22px 55px -10px rgba(16, 185, 129, 0.52), 0 0 35px rgba(52, 211, 153, 0.38), inset 0 1px 2px rgba(167, 243, 208, 0.55) !important;
+      transform: translateY(-8px) scale(1.02);
+      background: linear-gradient(145deg, rgba(0, 255, 157, 0.32) 0%, rgba(16, 229, 153, 0.20) 50%, rgba(4, 30, 20, 0.98) 100%) !important;
+      border-color: #00FF9D !important;
+      box-shadow: 0 24px 60px -10px rgba(0, 255, 157, 0.70), 0 0 50px rgba(0, 255, 157, 0.50), inset 0 1px 3px rgba(180, 255, 220, 0.85) !important;
     }
 
     .mode-card.vocal-mode:hover .mode-card-badge,
     #btnSelectMediaMode:hover .mode-card-badge {
-      background: rgba(16, 185, 129, 0.22) !important;
-      border-color: rgba(16, 185, 129, 0.65) !important;
-      color: #D1FAE5 !important;
-      box-shadow: 0 0 14px rgba(16, 185, 129, 0.45);
+      background: rgba(0, 255, 157, 0.28) !important;
+      border-color: #00FF9D !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 22px rgba(0, 255, 157, 0.75);
     }
 
     .mode-card.vocal-mode:hover .btn-mode-cta,
     #btnSelectMediaMode:hover .btn-mode-cta {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.48), rgba(5, 150, 105, 0.38)) !important;
-      border-color: #10B981 !important;
-      box-shadow: 0 0 25px rgba(16, 185, 129, 0.58) !important;
-      color: #FFFFFF !important;
+      background: linear-gradient(135deg, #00FF9D 0%, #05DF72 100%) !important;
+      border-color: #00FF9D !important;
+      box-shadow: 0 0 35px rgba(0, 255, 157, 0.85) !important;
+      color: #022013 !important;
+      font-weight: 800 !important;
     }
 
     .mode-card-badge {
@@ -5431,20 +5461,20 @@
 
         <!-- Mode Option 2: Media Uploads -->
         <div class="mode-card vocal-mode vocal-hover" id="btnSelectMediaMode">
-          <div class="mode-card-badge violet">
+          <div class="mode-card-badge vocal-green">
             <span>📁</span> OFFLINE MULTIMODAL MEDIA
           </div>
-          <div class="mode-card-icon">🎬 + 🎵</div>
-          <h3 class="mode-card-title">Media Uploads</h3>
+          <div class="mode-card-icon" style="filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.5));">🎬 + 🎵</div>
+          <h3 class="mode-card-title" style="color: #F0FDF4;">Media Uploads</h3>
           <p class="mode-card-desc">
             Upload custom video (.mp4) or photo (.png, .jpg) + voice audio (.wav, .mp3) or record voice, extract Action Units &amp; acoustic prosody, and generate 70/30 cross-modal fusion intelligence.
           </p>
           <div class="mode-card-features">
-            <span>✓ Video / Photo Facial Scanner</span>
-            <span>✓ Voice Waveform &amp; Pitch Decoders</span>
-            <span>✓ Full 70/30 Decision Report</span>
+            <span><b style="color: #00FF9D; text-shadow: 0 0 10px rgba(0,255,157,0.7);">✓</b> Video / Photo Facial Scanner</span>
+            <span><b style="color: #00FF9D; text-shadow: 0 0 10px rgba(0,255,157,0.7);">✓</b> Voice Waveform &amp; Pitch Decoders</span>
+            <span><b style="color: #00FF9D; text-shadow: 0 0 10px rgba(0,255,157,0.7);">✓</b> Full 70/30 Decision Report</span>
           </div>
-          <button class="btn-mode-cta violet-btn">
+          <button class="btn-mode-cta green-btn">
             <span>Open Media Uploads</span>
             <span>&rarr;</span>
           </button>
@@ -5871,11 +5901,11 @@
 
             <!-- Level 4 — Post-Analysis Quick Actions -->
             <div class="post-actions-row">
-              <button class="btn-report-action primary" id="btnOpenFullReport">
-                <span>📊</span> View Full Report
+              <button class="btn-report-action primary" id="btnOpenFullReport" title="Open Full Analysis Report Modal">
+                <span>📊</span> View Full Analysis
               </button>
-              <button class="btn-report-action secondary" id="btnExportPdfQuick">
-                <span>📄</span> Export PDF
+              <button class="btn-report-action secondary" id="btnExportPdfQuick" title="Export Full Analysis Dossier as PDF">
+                <span>📄</span> Export Full Analysis
               </button>
             </div>
           </div>
@@ -10383,7 +10413,7 @@
         actionUnits: repAU,
         valence: repAU.valence || 0,
         arousal: repAU.arousal || 0,
-        sourceElement: cameraVideo || null,
+        sourceElement: (typeof video !== 'undefined' ? video : (document.getElementById('webcamVideo') || null)),
         diagnostic: isConcordant
           ? `Over the 30-second assessment, Phase 1 visual facial geometry, Phase 2 vocal acoustic prosody, and Phase 3 verbal linguistic sentiment demonstrated mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`
           : `The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%). Fused decision settled at ${topFinal} (${finalConf.toFixed(1)}%).`
@@ -10798,8 +10828,9 @@
         alert('PDF engine is initializing, please try again in a moment.');
         return;
       }
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 14;
       const contentWidth = pageWidth - (margin * 2);
@@ -11193,10 +11224,17 @@
 
       const fileName = `EmotiSync_Forensic_Report_${topFinal}_${Date.now().toString().slice(-6)}.pdf`;
       doc.save(fileName);
+      } catch (pdfErr) {
+        console.error('Error generating PDF report:', pdfErr);
+        alert('PDF Generation encountered an issue: ' + pdfErr.message);
+      }
     }
 
     // PDF Report Generator trigger using jsPDF
     function downloadPdfReport() {
+      if (!state.lastReportData) {
+        finishAnalyticsSession();
+      }
       const rep = state.lastReportData;
       if (!rep) {
         alert('Please complete an analysis session first to generate a full report.');
@@ -11222,17 +11260,26 @@
     });
 
     document.getElementById('btnOpenFullReport').addEventListener('click', () => {
-      if (!state.lastReportData) {
-        finishAnalyticsSession();
-      } else {
+      try {
+        if (!state.lastReportData) {
+          finishAnalyticsSession();
+        }
+        openAnalyticsReportModal();
+      } catch (err) {
+        console.error('Error opening full report:', err);
         openAnalyticsReportModal();
       }
     });
     document.getElementById('btnExportPdfQuick').addEventListener('click', () => {
-      if (!state.lastReportData) {
-        finishAnalyticsSession();
+      try {
+        if (!state.lastReportData) {
+          finishAnalyticsSession();
+        }
+        downloadPdfReport();
+      } catch (err) {
+        console.error('Error exporting quick PDF:', err);
+        downloadPdfReport();
       }
-      downloadPdfReport();
     });
 
     document.getElementById('btnCloseReport').addEventListener('click', closeAnalyticsReportModal);
