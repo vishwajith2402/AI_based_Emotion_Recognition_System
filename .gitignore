@@ -67,3 +67,5 @@ __pycache__/
 # Node.js
 node_modules/
 package-lock.json
+# Model backups
+models/*_backup.pth
