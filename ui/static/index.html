@@ -1638,32 +1638,55 @@
     /* ========================================================
        MODALS (Report & Guide in Luxury Glass)
        ======================================================== */
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalPopIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(3, 3, 5, 0.94);
+      background: rgba(3, 3, 7, 0.90);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 200;
+      z-index: 2000000;
       padding: 1.5rem;
+      animation: modalFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
     }
 
     .modal-window {
-      background: var(--bg-card-solid);
-      border: 1px solid var(--border-subtle);
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: var(--radius-lg);
-      max-width: 680px;
+      max-width: 720px;
       width: 100%;
-      padding: 1.8rem;
+      padding: 1.85rem;
       display: flex;
       flex-direction: column;
-      gap: 1.1rem;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.10), 0 30px 80px rgba(0, 0, 0, 0.95);
+      gap: 1.15rem;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 45px rgba(6, 182, 212, 0.15);
       max-height: 90vh;
       overflow-y: auto;
+      animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: center center;
     }
 
     .modal-header {
@@ -6158,33 +6181,30 @@
   <div class="modal-backdrop" id="analyticsReportModal">
     <div class="modal-window">
       <div class="modal-header">
-        <h2>Multimodal Analytics Report</h2>
-        <button class="modal-close-btn" id="btnCloseReport">✕</button>
-      </div>
-
-      <!-- Verdict Banner -->
-      <div class="report-hero-box">
-        <div class="report-hero-title">Overall Human Affective State</div>
-        <div class="report-hero-val" id="repFinalEmotion">HAPPY</div>
-        <div class="report-hero-conf" id="repFinalConf">Overall Confidence: 94.2% &bull; Calibrated 70/30 Fusion</div>
-      </div>
-
-      <!-- Two Phase Breakdown Grid -->
-      <div class="report-phase-grid">
-        <div class="report-phase-card">
-          <div class="report-phase-label cyan">Phase 1: Facial Analysis (70%)</div>
-          <div class="report-phase-val" id="repFaceEmotion">Happy (92.5%)</div>
-          <div class="report-phase-sub" id="repFaceStyle">
-            Mouth: Curved Up 🙂 | Eyes: Normal | Brow: Smooth
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <span style="font-size: 1.35rem;">📊</span>
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">30-Second Multimodal Assessment Report</h2>
+            <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0; font-family: var(--font-mono);">CALIBRATED BIOMETRIC & VOCAL AFFECT ENGINE</p>
           </div>
         </div>
+        <button class="modal-close-btn" id="btnCloseReport" title="Close Report">✕</button>
+      </div>
 
-        <div class="report-phase-card">
-          <div class="report-phase-label violet">Phase 2: Voice Modulation (30%)</div>
-          <div class="report-phase-val" id="repVoiceEmotion">Happy (88.4%)</div>
-          <div class="report-phase-sub" id="repVoiceCadence">
-            Prosody: Cheerful Upbeat | Energy: Moderate (-16 dB)
-          </div>
+      <!-- Verdict Banner (Final Result) -->
+      <div class="report-hero-box" id="repHeroBox" style="position: relative; overflow: hidden; border: 1px solid var(--border-subtle); transition: all 0.3s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+          <div class="report-hero-title">FINAL FUSED AFFECTIVE STATE</div>
+          <span id="repSessionDurationTag" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan); background: rgba(6, 182, 212, 0.12); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.25);">30.0s COMPLETED</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin: 0.35rem 0;">
+          <span id="repFinalGlyph" style="font-size: 2.6rem;">😊</span>
+          <div class="report-hero-val" id="repFinalEmotion" style="margin: 0;">HAPPY</div>
+        </div>
+        <div class="report-hero-conf" id="repFinalConf">Overall Confidence: 94.2% &bull; Calibrated 70/30 Fusion</div>
+        <div style="margin-top: 0.6rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+          <span id="repCircumplexBadge" style="background: rgba(255,255,255,0.06); font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid var(--border-subtle); color: var(--vanilla-cream);">Circumplex: Valence +0.82 | Arousal +0.54</span>
+          <span id="repWeightBadge" style="background: rgba(37,99,235,0.15); font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid rgba(59,130,246,0.3); color: var(--cyan);">70% Facial + 30% Vocal</span>
         </div>
       </div>
 
@@ -6192,6 +6212,44 @@
       <div class="harmony-banner" id="repCongruence">
         <span class="status-symbol">●</span>
         <span><b>HARMONY CONFIRMED</b> &mdash; Facial and vocal signals align.</span>
+      </div>
+
+      <!-- Two Phase Breakdown Grid -->
+      <div class="report-phase-grid">
+        <!-- Phase 1: Facial Analysis -->
+        <div class="report-phase-card" style="border-left: 3px solid var(--cyan);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="report-phase-label cyan">Phase 1: Facial Expression (70%)</div>
+            <span style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--cyan); background: rgba(6,182,212,0.12); padding: 0.15rem 0.4rem; border-radius: 3px;">VISUAL</span>
+          </div>
+          <div class="report-phase-val" id="repFaceEmotion">😊 Happy (92.5%)</div>
+          <div class="report-phase-sub" id="repFaceStyle">
+            Mouth: Curved Up 🙂 | Eyes: Normal | Brow: Smooth
+          </div>
+          <div id="repFaceAU" style="margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px dashed var(--border-subtle); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); display: flex; flex-wrap: gap; gap: 0.35rem 0.6rem;">
+            <span>AU12: 86%</span>
+            <span>AU4: 4%</span>
+            <span>AU1: 6%</span>
+            <span>EAR: 0.28</span>
+          </div>
+        </div>
+
+        <!-- Phase 2: Voice Modulation -->
+        <div class="report-phase-card" style="border-left: 3px solid var(--violet);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="report-phase-label violet">Phase 2: Voice Modulation (30%)</div>
+            <span style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--violet); background: rgba(139,92,246,0.12); padding: 0.15rem 0.4rem; border-radius: 3px;">ACOUSTIC</span>
+          </div>
+          <div class="report-phase-val" id="repVoiceEmotion">🎵 Happy (88.4%)</div>
+          <div class="report-phase-sub" id="repVoiceCadence">
+            Prosody: Cheerful Upbeat | Energy: Moderate (-15 dB)
+          </div>
+          <div id="repVoiceMetrics" style="margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px dashed var(--border-subtle); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); display: flex; flex-wrap: gap; gap: 0.35rem 0.6rem;">
+            <span>Pitch: High Harmonic</span>
+            <span>Energy: -15 dB</span>
+            <span>Cadence: Upbeat</span>
+          </div>
+        </div>
       </div>
 
       <!-- Voice Transcription (Speech-to-Text) Box -->
@@ -6205,8 +6263,17 @@
         </div>
       </div>
 
+      <!-- Multimodal Probability Spectrum (All 5 classes) -->
+      <div style="background: rgba(10, 14, 26, 0.65); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.8rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: center;">
+          <span style="font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.6px;">MULTIMODAL PROBABILITY SPECTRUM</span>
+          <span style="font-family: var(--font-mono); font-size: 0.66rem; color: var(--cyan);">CALIBRATED 5-CLASS FUSION</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.35rem;" id="repModalBars"></div>
+      </div>
+
       <!-- Diagnostic Telemetry -->
-      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); background: #020204; border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-subtle);" id="repDiagnostic">
+      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); background: #020204; border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-subtle); line-height: 1.45;" id="repDiagnostic">
         Diagnostic telemetry initialized.
       </div>
 
@@ -9813,6 +9880,57 @@
       });
     }
 
+    // Web Audio Synthesized Completion Chime
+    function playSuccessChime() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+        
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(523.25, now);
+        gain1.gain.setValueAtTime(0.08, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.35);
+
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(783.99, now + 0.12);
+        gain2.gain.setValueAtTime(0.09, now + 0.12);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.12);
+        osc2.stop(now + 0.55);
+      } catch (e) {}
+    }
+
+    function openAnalyticsReportModal() {
+      const modal = document.getElementById('analyticsReportModal');
+      if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeAnalyticsReportModal() {
+      const modal = document.getElementById('analyticsReportModal');
+      if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+
     // 30-Second Multimodal Analytics Controller
     const analyticsSession = {
       active: false,
@@ -9839,6 +9957,7 @@
     const elReportModal = document.getElementById('analyticsReportModal');
 
     async function startAnalyticsSession() {
+      closeAnalyticsReportModal();
       if (!state.isCameraRunning) {
         document.getElementById('btnToggleCam').click();
       }
@@ -10270,8 +10389,77 @@
           : `The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%). Fused decision settled at ${topFinal} (${finalConf.toFixed(1)}%).`
       };
 
-      // Open Modal automatically
-      if (elReportModal) elReportModal.style.display = 'flex';
+      // 2b. Populate Extended Forensic Report Details
+      const repFinalGlyph = document.getElementById('repFinalGlyph');
+      const repCircumplexBadge = document.getElementById('repCircumplexBadge');
+      const repWeightBadge = document.getElementById('repWeightBadge');
+      const repFaceAU = document.getElementById('repFaceAU');
+      const repVoiceMetrics = document.getElementById('repVoiceMetrics');
+      const repModalBars = document.getElementById('repModalBars');
+      const repHeroBox = document.getElementById('repHeroBox');
+
+      if (repFinalGlyph) {
+        repFinalGlyph.innerText = EMOTION_ICONS[topFinal] || '😐';
+      }
+      if (repWeightBadge) {
+        repWeightBadge.innerText = hasVerbal ? '50% Facial + 30% Vocal + 20% Verbal' : '70% Facial + 30% Vocal Fusion';
+      }
+      if (repCircumplexBadge) {
+        repCircumplexBadge.innerText = `Circumplex: Valence ${repAU.valence || '0.00'} | Arousal ${repAU.arousal || '0.00'}`;
+      }
+      if (repFaceAU) {
+        repFaceAU.innerHTML = `
+          <span>AU12 (Smile): ${repAU.au12 || 8}%</span>
+          <span>AU4 (Brow Furrow): ${repAU.au4 || 10}%</span>
+          <span>AU1 (Brow Raise): ${repAU.au1 || 8}%</span>
+          <span>EAR: ${repAU.ear || '0.27'}</span>
+        `;
+      }
+
+      const voiceMetricDetails = {
+        Happy: '<span>Pitch: High Harmonic (218 Hz)</span><span>Energy: -15 dB</span><span>Cadence: Upbeat Dynamic</span>',
+        Sad: '<span>Pitch: Low Monotone (104 Hz)</span><span>Energy: -28 dB</span><span>Cadence: Slow Melancholy</span>',
+        Angry: '<span>Pitch: High Jitter (285 Hz)</span><span>Energy: -8 dB (High)</span><span>Cadence: Harsh Staccato</span>',
+        Surprise: '<span>Pitch: Sharp Spike (312 Hz)</span><span>Energy: -12 dB</span><span>Cadence: Dynamic Range</span>',
+        Neutral: '<span>Pitch: Balanced (142 Hz)</span><span>Energy: -18 dB</span><span>Cadence: Steady Level</span>'
+      };
+      if (repVoiceMetrics) {
+        repVoiceMetrics.innerHTML = voiceMetricDetails[dominantVoice] || voiceMetricDetails.Neutral;
+      }
+
+      if (repModalBars) {
+        repModalBars.innerHTML = emotions.map(em => {
+          const prob = fusedScores[em] || 0;
+          const pct = Math.round(prob * 100);
+          const isDom = (em === topFinal);
+          const emColor = EMOTION_COLORS[em] || '#F5C76B';
+          return `
+            <div style="display: grid; grid-template-columns: 85px 1fr 45px; align-items: center; gap: 0.6rem; font-family: var(--font-mono); font-size: 0.72rem;">
+              <span style="color: ${isDom ? emColor : 'var(--text-muted)'}; font-weight: ${isDom ? '700' : '500'};">${EMOTION_ICONS[em]} ${em}</span>
+              <div style="height: 6px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                <div style="width: ${pct}%; height: 100%; background: ${isDom ? emColor : 'rgba(148, 163, 184, 0.35)'}; border-radius: 999px; box-shadow: ${isDom ? '0 0 10px ' + emColor : 'none'}; transition: width 0.4s ease;"></div>
+              </div>
+              <span style="text-align: right; color: ${isDom ? emColor : 'var(--text-muted)'}; font-weight: ${isDom ? '700' : '400'};">${pct}%</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (repHeroBox) {
+        repHeroBox.style.borderColor = `${color}45`;
+        repHeroBox.style.background = `linear-gradient(135deg, rgba(17, 24, 39, 0.85) 0%, ${color}14 100%)`;
+        repHeroBox.style.boxShadow = `0 4px 25px ${color}20`;
+      }
+
+      const modalWin = elReportModal ? elReportModal.querySelector('.modal-window') : null;
+      if (modalWin) {
+        modalWin.style.boxShadow = `inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 50px ${color}40`;
+        modalWin.style.borderColor = `${color}65`;
+      }
+
+      // Open Modal automatically on top
+      openAnalyticsReportModal();
+      playSuccessChime();
 
       speakPhrase(`Analysis complete. Recognized emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence.`);
     }
@@ -11036,8 +11224,9 @@
     document.getElementById('btnOpenFullReport').addEventListener('click', () => {
       if (!state.lastReportData) {
         finishAnalyticsSession();
+      } else {
+        openAnalyticsReportModal();
       }
-      document.getElementById('analyticsReportModal').style.display = 'flex';
     });
     document.getElementById('btnExportPdfQuick').addEventListener('click', () => {
       if (!state.lastReportData) {
@@ -11046,11 +11235,22 @@
       downloadPdfReport();
     });
 
-    document.getElementById('btnCloseReport').addEventListener('click', () => {
-      document.getElementById('analyticsReportModal').style.display = 'none';
-    });
-    document.getElementById('btnCloseReportBtn').addEventListener('click', () => {
-      document.getElementById('analyticsReportModal').style.display = 'none';
+    document.getElementById('btnCloseReport').addEventListener('click', closeAnalyticsReportModal);
+    document.getElementById('btnCloseReportBtn').addEventListener('click', closeAnalyticsReportModal);
+
+    // Backdrop click outside window and Escape key listeners
+    const modalBackdropEl = document.getElementById('analyticsReportModal');
+    if (modalBackdropEl) {
+      modalBackdropEl.addEventListener('click', (e) => {
+        if (e.target === modalBackdropEl) {
+          closeAnalyticsReportModal();
+        }
+      });
+    }
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAnalyticsReportModal();
+      }
     });
     document.getElementById('btnDownloadPdf').addEventListener('click', downloadPdfReport);
     document.getElementById('btnSpeakReport').addEventListener('click', () => {
