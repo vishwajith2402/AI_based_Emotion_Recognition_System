@@ -3715,6 +3715,19 @@
       position: relative;
       overflow: hidden;
       background: var(--bg-primary);
+      /* Futuristic Neon Cyan Precision Cursor */
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2 2L9.5 21.5L13 14L20.5 10.5L2 2Z' fill='%2300F2FE' stroke='%23020617' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M5 5L10 17.5L12.5 12.5L17.5 10L5 5Z' fill='%23FFFFFF' fill-opacity='0.45'/%3E%3Ccircle cx='3' cy='3' r='1.5' fill='%23FFFFFF'/%3E%3C/svg%3E") 2 2, auto;
+    }
+
+    #viewIntro button,
+    #viewIntro a,
+    #viewIntro .mode-card-interactive,
+    #viewIntro .team-member-card,
+    #viewIntro .nav-switch-btn,
+    #viewIntro [role="button"],
+    #viewIntro .cyber-pill {
+      /* Interactive Holographic Target Reticle Cursor */
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='none'%3E%3Ccircle cx='14' cy='14' r='10' stroke='%2300F2FE' stroke-width='2' stroke-dasharray='3 3' fill='%2300F2FE' fill-opacity='0.22'/%3E%3Ccircle cx='14' cy='14' r='3.5' fill='%2300F2FE'/%3E%3Cpath d='M14 1V5M14 23V27M1 14H5M23 14H27' stroke='%2300F2FE' stroke-width='1.5'/%3E%3C/svg%3E") 14 14, pointer !important;
     }
 
     .intro-bg-canvas {
@@ -13379,13 +13392,15 @@
       let width = 0;
       let height = 0;
 
-      // Cursor tracking with smooth lerp
+      // Cursor tracking locked directly under pointer
       const mouse = {
         x: -1000,
         y: -1000,
         targetX: -1000,
         targetY: -1000,
         isActive: false,
+        isHovering: false,
+        pingRadius: 16,
         radius: 175
       };
 
@@ -13426,10 +13441,16 @@
         const rect = introSection.getBoundingClientRect();
         mouse.targetX = e.clientX - rect.left;
         mouse.targetY = e.clientY - rect.top;
+        mouse.x = mouse.targetX;
+        mouse.y = mouse.targetY;
         mouse.isActive = true;
+
+        const target = e.target;
+        mouse.isHovering = !!(target && target.closest && (target.closest('button') || target.closest('a') || target.closest('.mode-card-interactive') || target.closest('.team-member-card') || target.closest('.nav-switch-btn')));
 
         if (cursorGlow) {
           cursorGlow.style.opacity = '0.85';
+          cursorGlow.style.transform = `translate3d(${mouse.targetX}px, ${mouse.targetY}px, 0)`;
         }
         introSection.style.setProperty('--mouse-x', `${mouse.targetX}px`);
         introSection.style.setProperty('--mouse-y', `${mouse.targetY}px`);
@@ -13478,26 +13499,48 @@
 
         ctx.clearRect(0, 0, width, height);
 
-        // Lerp cursor position
+        // Lock animation directly underneath cursor (zero lagging offset)
         if (mouse.isActive) {
-          mouse.x += (mouse.targetX - mouse.x) * 0.12;
-          mouse.y += (mouse.targetY - mouse.y) * 0.12;
+          mouse.x = mouse.targetX;
+          mouse.y = mouse.targetY;
           if (cursorGlow) {
             cursorGlow.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`;
           }
 
-          // Luminous cursor focal ring on canvas
+          const targetRingRadius = mouse.isHovering ? 24 : 16;
+          const currentCoreRadius = mouse.isHovering ? 4 : 3;
+
+          // 1. Soft glowing aura directly centered under cursor
           ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, 18, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(0, 242, 254, 0.35)';
-          ctx.lineWidth = 1.2;
+          ctx.arc(mouse.x, mouse.y, targetRingRadius + 8, 0, Math.PI * 2);
+          ctx.fillStyle = mouse.isHovering ? 'rgba(0, 242, 254, 0.12)' : 'rgba(0, 242, 254, 0.05)';
+          ctx.fill();
+
+          // 2. High-precision laser reticle ring directly under cursor
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, targetRingRadius, 0, Math.PI * 2);
+          ctx.strokeStyle = mouse.isHovering ? 'rgba(0, 242, 254, 0.75)' : 'rgba(0, 242, 254, 0.40)';
+          ctx.lineWidth = mouse.isHovering ? 1.6 : 1.2;
           ctx.stroke();
 
+          // 3. Subtle expanding radar ping directly under cursor
+          mouse.pingRadius = (mouse.pingRadius || targetRingRadius) + 0.45;
+          if (mouse.pingRadius > targetRingRadius + 14) {
+            mouse.pingRadius = targetRingRadius;
+          }
+          const pingAlpha = Math.max(0, 0.35 * (1 - (mouse.pingRadius - targetRingRadius) / 14));
           ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, 4, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0, 242, 254, 0.60)';
+          ctx.arc(mouse.x, mouse.y, mouse.pingRadius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0, 242, 254, ${pingAlpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+
+          // 4. Center luminous laser dot directly under cursor coordinates
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, currentCoreRadius, 0, Math.PI * 2);
+          ctx.fillStyle = '#00F2FE';
           ctx.shadowColor = '#00F2FE';
-          ctx.shadowBlur = 8;
+          ctx.shadowBlur = mouse.isHovering ? 10 : 6;
           ctx.fill();
           ctx.shadowBlur = 0;
         }
