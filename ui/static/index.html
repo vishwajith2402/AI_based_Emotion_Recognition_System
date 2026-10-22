@@ -4249,6 +4249,11 @@
     }
 
     /* ---------------- VIEW 2: MODE SELECTION HUB ---------------- */
+    #viewModeSelect {
+      background-color: #000000 !important;
+      transition: background-color 0.45s ease;
+    }
+
     .mode-select-wrapper {
       min-height: calc(100vh - var(--titlebar-h, 38px));
       display: flex;
@@ -4257,21 +4262,35 @@
       align-items: center;
       padding: calc(var(--titlebar-h, 38px) + 2.4rem) 1.5rem 3.5rem;
       box-sizing: border-box;
-      background: radial-gradient(circle at 50% 35%, rgba(37, 99, 235, 0.12) 0%, rgba(34, 211, 238, 0.08) 50%, transparent 80%);
-      transition: background 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+      background-color: #000000;
+      background: radial-gradient(circle at 50% 35%, rgba(37, 99, 235, 0.12) 0%, rgba(34, 211, 238, 0.06) 50%, #000000 85%);
+      transition: background 0.45s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.45s ease, box-shadow 0.45s ease;
       position: relative;
     }
 
-    /* Dynamic Window Background Glow on Mode Hover */
+    /* Dynamic Pitch Black Screen Switch with Radiant Mode Illuminations */
     .mode-select-wrapper:has(#btnSelectLiveMode:hover),
     .mode-select-wrapper.hover-live-purple {
-      background: radial-gradient(circle at 35% 45%, rgba(168, 85, 247, 0.32) 0%, rgba(126, 34, 206, 0.16) 42%, rgba(18, 19, 36, 0.98) 78%) !important;
+      background-color: #000000 !important;
+      background: radial-gradient(circle at 35% 50%, rgba(168, 85, 247, 0.55) 0%, rgba(126, 34, 206, 0.24) 22%, rgba(45, 10, 80, 0.10) 45%, #000000 68%) !important;
+      box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
     }
 
     .mode-select-wrapper:has(#btnSelectMediaMode:hover),
     .mode-select-wrapper.hover-media-green,
     .mode-select-wrapper.hover-media-lemongreen {
-      background: radial-gradient(circle at 65% 45%, rgba(0, 255, 157, 0.42) 0%, rgba(16, 229, 153, 0.22) 42%, rgba(8, 18, 24, 0.98) 78%) !important;
+      background-color: #000000 !important;
+      background: radial-gradient(circle at 65% 50%, rgba(0, 255, 157, 0.58) 0%, rgba(16, 229, 153, 0.26) 22%, rgba(3, 75, 45, 0.10) 45%, #000000 68%) !important;
+      box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
+    }
+
+    /* Cinematic Contrast: Unhovered card dims into black so illuminated card pops with supreme vibrancy */
+    .mode-cards-grid:hover .mode-card:not(:hover) {
+      opacity: 0.28 !important;
+      filter: grayscale(50%) brightness(0.60) !important;
+      transform: scale(0.975) !important;
+      border-color: rgba(255, 255, 255, 0.04) !important;
+      box-shadow: none !important;
     }
 
     .mode-select-header {
@@ -4325,29 +4344,30 @@
       overflow: hidden;
     }
 
-    /* 🟣 Mode Option 1: Live Cam — Purple Highlight on Hover */
+    /* 🟣 Mode Option 1: Live Cam — Ultra-Vibrant Violet Illumination */
     .mode-card.visual-mode:hover,
     #btnSelectLiveMode:hover {
-      transform: translateY(-8px) scale(1.015);
-      background: linear-gradient(145deg, rgba(168, 85, 247, 0.24) 0%, rgba(126, 34, 206, 0.15) 50%, rgba(14, 10, 24, 0.94) 100%) !important;
-      border-color: #A855F7 !important;
-      box-shadow: 0 22px 55px -10px rgba(168, 85, 247, 0.52), 0 0 35px rgba(168, 85, 247, 0.38), inset 0 1px 2px rgba(216, 180, 254, 0.55) !important;
+      transform: translateY(-10px) scale(1.025);
+      background: linear-gradient(145deg, rgba(168, 85, 247, 0.38) 0%, rgba(126, 34, 206, 0.22) 50%, rgba(10, 4, 22, 0.98) 100%) !important;
+      border-color: #C084FC !important;
+      box-shadow: 0 25px 65px -10px rgba(168, 85, 247, 0.80), 0 0 60px rgba(168, 85, 247, 0.60), inset 0 1px 3px rgba(233, 213, 255, 0.95) !important;
     }
 
     .mode-card.visual-mode:hover .mode-card-badge,
     #btnSelectLiveMode:hover .mode-card-badge {
-      background: rgba(168, 85, 247, 0.22) !important;
-      border-color: rgba(168, 85, 247, 0.65) !important;
-      color: #E9D5FF !important;
-      box-shadow: 0 0 14px rgba(168, 85, 247, 0.45);
+      background: rgba(168, 85, 247, 0.32) !important;
+      border-color: #C084FC !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 24px rgba(168, 85, 247, 0.85);
     }
 
     .mode-card.visual-mode:hover .btn-mode-cta,
     #btnSelectLiveMode:hover .btn-mode-cta {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.48), rgba(126, 34, 206, 0.38)) !important;
-      border-color: #A855F7 !important;
-      box-shadow: 0 0 25px rgba(168, 85, 247, 0.58) !important;
+      background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%) !important;
+      border-color: #C084FC !important;
+      box-shadow: 0 0 38px rgba(168, 85, 247, 0.90) !important;
       color: #FFFFFF !important;
+      font-weight: 800 !important;
     }
 
     /* 🌿 Mode Option 2: Media Upload — Vibrant Cyber Neon Green */
@@ -13518,11 +13538,14 @@
         switchView('viewLiveApp');
       });
       if (modeSelectWrap) {
+        const viewModeSec = document.getElementById('viewModeSelect');
         btnSelectLiveMode.addEventListener('mouseenter', () => {
           modeSelectWrap.classList.add('hover-live-purple');
+          if (viewModeSec) viewModeSec.classList.add('hover-live-purple');
         });
         btnSelectLiveMode.addEventListener('mouseleave', () => {
           modeSelectWrap.classList.remove('hover-live-purple');
+          if (viewModeSec) viewModeSec.classList.remove('hover-live-purple');
         });
       }
     }
@@ -13533,11 +13556,14 @@
         switchView('viewMediaUpload');
       });
       if (modeSelectWrap) {
+        const viewModeSec = document.getElementById('viewModeSelect');
         btnSelectMediaMode.addEventListener('mouseenter', () => {
           modeSelectWrap.classList.add('hover-media-green');
+          if (viewModeSec) viewModeSec.classList.add('hover-media-green');
         });
         btnSelectMediaMode.addEventListener('mouseleave', () => {
           modeSelectWrap.classList.remove('hover-media-green');
+          if (viewModeSec) viewModeSec.classList.remove('hover-media-green');
         });
       }
     }
