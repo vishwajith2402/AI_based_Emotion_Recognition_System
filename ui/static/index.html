@@ -4268,11 +4268,11 @@
       position: relative;
     }
 
-    /* Dynamic Pitch Black Screen Switch with Radiant Mode Illuminations */
+    /* Dynamic Pitch Black Screen Switch with Radiant Mode Illuminations (Unified Cyan/Blue System) */
     .mode-select-wrapper:has(#btnSelectLiveMode:hover),
     .mode-select-wrapper.hover-live-purple {
       background-color: #000000 !important;
-      background: radial-gradient(circle at 35% 50%, rgba(168, 85, 247, 0.55) 0%, rgba(126, 34, 206, 0.24) 22%, rgba(45, 10, 80, 0.10) 45%, #000000 68%) !important;
+      background: radial-gradient(circle at 35% 50%, rgba(34, 211, 238, 0.45) 0%, rgba(59, 130, 246, 0.20) 22%, rgba(10, 18, 30, 0.95) 55%, #000000 70%) !important;
       box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
     }
 
@@ -4280,7 +4280,7 @@
     .mode-select-wrapper.hover-media-green,
     .mode-select-wrapper.hover-media-lemongreen {
       background-color: #000000 !important;
-      background: radial-gradient(circle at 65% 50%, rgba(0, 255, 157, 0.58) 0%, rgba(16, 229, 153, 0.26) 22%, rgba(3, 75, 45, 0.10) 45%, #000000 68%) !important;
+      background: radial-gradient(circle at 65% 50%, rgba(56, 189, 248, 0.45) 0%, rgba(37, 99, 235, 0.20) 22%, rgba(10, 18, 30, 0.95) 55%, #000000 70%) !important;
       box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
     }
 
@@ -4344,79 +4344,48 @@
       overflow: hidden;
     }
 
-    /* 🟣 Mode Option 1: Live Cam — Ultra-Vibrant Violet Illumination */
+    /* 💠 Unified Cyber Blue System: Live Cam & Media Uploads Cards */
+    .mode-card.visual-mode,
+    .mode-card.vocal-mode,
+    #btnSelectLiveMode,
+    #btnSelectMediaMode {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Option 1 & Option 2: Unified Vibrant Cyber Cyan/Blue Hover Illumination */
     .mode-card.visual-mode:hover,
-    #btnSelectLiveMode:hover {
+    #btnSelectLiveMode:hover,
+    .mode-card.vocal-mode:hover,
+    #btnSelectMediaMode:hover {
       transform: translateY(-10px) scale(1.025);
-      background: linear-gradient(145deg, rgba(168, 85, 247, 0.38) 0%, rgba(126, 34, 206, 0.22) 50%, rgba(10, 4, 22, 0.98) 100%) !important;
-      border-color: #C084FC !important;
-      box-shadow: 0 25px 65px -10px rgba(168, 85, 247, 0.80), 0 0 60px rgba(168, 85, 247, 0.60), inset 0 1px 3px rgba(233, 213, 255, 0.95) !important;
+      background: linear-gradient(145deg, rgba(34, 211, 238, 0.24) 0%, rgba(59, 130, 246, 0.16) 50%, rgba(10, 16, 28, 0.98) 100%) !important;
+      border-color: var(--cyan) !important;
+      box-shadow: 0 25px 65px -10px rgba(34, 211, 238, 0.65), 0 0 55px rgba(34, 211, 238, 0.45), inset 0 1px 3px rgba(186, 230, 253, 0.85) !important;
     }
 
     .mode-card.visual-mode:hover .mode-card-badge,
-    #btnSelectLiveMode:hover .mode-card-badge {
-      background: rgba(168, 85, 247, 0.32) !important;
-      border-color: #C084FC !important;
+    #btnSelectLiveMode:hover .mode-card-badge,
+    .mode-card.vocal-mode:hover .mode-card-badge,
+    #btnSelectMediaMode:hover .mode-card-badge {
+      background: rgba(34, 211, 238, 0.22) !important;
+      border-color: var(--cyan) !important;
       color: #FFFFFF !important;
-      box-shadow: 0 0 24px rgba(168, 85, 247, 0.85);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.75);
     }
 
     .mode-card.visual-mode:hover .btn-mode-cta,
-    #btnSelectLiveMode:hover .btn-mode-cta {
-      background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%) !important;
-      border-color: #C084FC !important;
-      box-shadow: 0 0 38px rgba(168, 85, 247, 0.90) !important;
-      color: #FFFFFF !important;
-      font-weight: 800 !important;
-    }
-
-    /* 🌿 Mode Option 2: Media Upload — Vibrant Cyber Neon Green */
-    .mode-card.vocal-mode,
-    #btnSelectMediaMode {
-      border: 1.5px solid rgba(0, 255, 157, 0.45) !important;
-      background: linear-gradient(145deg, rgba(0, 255, 157, 0.08) 0%, rgba(16, 185, 129, 0.04) 50%, rgba(6, 20, 15, 0.88) 100%) !important;
-      box-shadow: 0 10px 32px rgba(0, 255, 157, 0.14), inset 0 1px 0 rgba(0, 255, 157, 0.25);
-    }
-
-    .mode-card.vocal-mode .mode-card-badge,
-    #btnSelectMediaMode .mode-card-badge {
-      background: rgba(0, 255, 157, 0.16) !important;
-      border-color: rgba(0, 255, 157, 0.65) !important;
-      color: #00FF9D !important;
-      box-shadow: 0 0 16px rgba(0, 255, 157, 0.35);
-    }
-
-    .mode-card.vocal-mode .btn-mode-cta,
-    #btnSelectMediaMode .btn-mode-cta {
-      background: linear-gradient(135deg, rgba(0, 255, 157, 0.22) 0%, rgba(16, 185, 129, 0.35) 100%) !important;
-      border: 1.5px solid #00FF9D !important;
-      box-shadow: 0 0 22px rgba(0, 255, 157, 0.42) !important;
-      color: #FFFFFF !important;
-      text-shadow: 0 0 8px rgba(0, 255, 157, 0.6);
-    }
-
-    .mode-card.vocal-mode:hover,
-    #btnSelectMediaMode:hover {
-      transform: translateY(-8px) scale(1.02);
-      background: linear-gradient(145deg, rgba(0, 255, 157, 0.32) 0%, rgba(16, 229, 153, 0.20) 50%, rgba(4, 30, 20, 0.98) 100%) !important;
-      border-color: #00FF9D !important;
-      box-shadow: 0 24px 60px -10px rgba(0, 255, 157, 0.70), 0 0 50px rgba(0, 255, 157, 0.50), inset 0 1px 3px rgba(180, 255, 220, 0.85) !important;
-    }
-
-    .mode-card.vocal-mode:hover .mode-card-badge,
-    #btnSelectMediaMode:hover .mode-card-badge {
-      background: rgba(0, 255, 157, 0.28) !important;
-      border-color: #00FF9D !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 0 22px rgba(0, 255, 157, 0.75);
-    }
-
+    #btnSelectLiveMode:hover .btn-mode-cta,
     .mode-card.vocal-mode:hover .btn-mode-cta,
     #btnSelectMediaMode:hover .btn-mode-cta {
-      background: linear-gradient(135deg, #00FF9D 0%, #05DF72 100%) !important;
-      border-color: #00FF9D !important;
-      box-shadow: 0 0 35px rgba(0, 255, 157, 0.85) !important;
-      color: #022013 !important;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.32) 0%, rgba(59, 130, 246, 0.32) 100%) !important;
+      border-color: var(--cyan) !important;
+      box-shadow: 0 0 30px rgba(34, 211, 238, 0.70) !important;
+      color: #FFFFFF !important;
       font-weight: 800 !important;
     }
 
@@ -5480,21 +5449,21 @@
         </div>
 
         <!-- Mode Option 2: Media Uploads -->
-        <div class="mode-card vocal-mode vocal-hover" id="btnSelectMediaMode">
-          <div class="mode-card-badge vocal-green">
+        <div class="mode-card vocal-mode" id="btnSelectMediaMode">
+          <div class="mode-card-badge cyan">
             <span>📁</span> OFFLINE MULTIMODAL MEDIA
           </div>
-          <div class="mode-card-icon" style="filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.5));">🎬 + 🎵</div>
-          <h3 class="mode-card-title" style="color: #F0FDF4;">Media Uploads</h3>
+          <div class="mode-card-icon">🎬 + 🎵</div>
+          <h3 class="mode-card-title">Media Uploads</h3>
           <p class="mode-card-desc">
             Upload custom video (.mp4) or photo (.png, .jpg) + voice audio (.wav, .mp3) or record voice, extract Action Units &amp; acoustic prosody, and generate 70/30 cross-modal fusion intelligence.
           </p>
           <div class="mode-card-features">
-            <span><b style="color: #00FF9D; text-shadow: 0 0 10px rgba(0,255,157,0.7);">✓</b> Video / Photo Facial Scanner</span>
-            <span><b style="color: #00FF9D; text-shadow: 0 0 10px rgba(0,255,157,0.7);">✓</b> Voice Waveform &amp; Pitch Decoders</span>
-            <span><b style="color: #00FF9D; text-shadow: 0 0 10px rgba(0,255,157,0.7);">✓</b> Full 70/30 Decision Report</span>
+            <span>✓ Video / Photo Facial Scanner</span>
+            <span>✓ Voice Waveform &amp; Pitch Decoders</span>
+            <span>✓ Full 70/30 Decision Report</span>
           </div>
-          <button class="btn-mode-cta green-btn">
+          <button class="btn-mode-cta cyan-btn">
             <span>Open Media Uploads</span>
             <span>&rarr;</span>
           </button>
