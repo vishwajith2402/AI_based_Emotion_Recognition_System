@@ -4268,11 +4268,11 @@
       position: relative;
     }
 
-    /* Dynamic Pitch Black Screen Switch with Radiant Mode Illuminations (Unified Cyan/Blue System) */
+    /* Dynamic Pitch Black Screen Switch with Radiant Mode Illuminations (Neon Violet & Neon Green) */
     .mode-select-wrapper:has(#btnSelectLiveMode:hover),
     .mode-select-wrapper.hover-live-purple {
       background-color: #000000 !important;
-      background: radial-gradient(circle at 35% 50%, rgba(34, 211, 238, 0.45) 0%, rgba(59, 130, 246, 0.20) 22%, rgba(10, 18, 30, 0.95) 55%, #000000 70%) !important;
+      background: radial-gradient(circle at 35% 50%, rgba(176, 38, 255, 0.60) 0%, rgba(126, 34, 206, 0.25) 24%, rgba(35, 8, 55, 0.10) 48%, #000000 70%) !important;
       box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
     }
 
@@ -4280,7 +4280,7 @@
     .mode-select-wrapper.hover-media-green,
     .mode-select-wrapper.hover-media-lemongreen {
       background-color: #000000 !important;
-      background: radial-gradient(circle at 65% 50%, rgba(56, 189, 248, 0.45) 0%, rgba(37, 99, 235, 0.20) 22%, rgba(10, 18, 30, 0.95) 55%, #000000 70%) !important;
+      background: radial-gradient(circle at 65% 50%, rgba(0, 255, 157, 0.60) 0%, rgba(16, 229, 153, 0.25) 24%, rgba(3, 50, 30, 0.10) 48%, #000000 70%) !important;
       box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
     }
 
@@ -4344,7 +4344,7 @@
       overflow: hidden;
     }
 
-    /* 💠 Unified Cyber Blue System: Live Cam & Media Uploads Cards */
+    /* 💠 Unified Resting Architecture: Live Cam & Media Uploads Cards */
     .mode-card.visual-mode,
     .mode-card.vocal-mode,
     #btnSelectLiveMode,
@@ -4357,35 +4357,55 @@
       transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Option 1 & Option 2: Unified Vibrant Cyber Cyan/Blue Hover Illumination */
+    /* 🟣 Mode Option 1: Live Cam — Proper Neon Violet Hover Illumination */
     .mode-card.visual-mode:hover,
-    #btnSelectLiveMode:hover,
-    .mode-card.vocal-mode:hover,
-    #btnSelectMediaMode:hover {
+    #btnSelectLiveMode:hover {
       transform: translateY(-10px) scale(1.025);
-      background: linear-gradient(145deg, rgba(34, 211, 238, 0.24) 0%, rgba(59, 130, 246, 0.16) 50%, rgba(10, 16, 28, 0.98) 100%) !important;
-      border-color: var(--cyan) !important;
-      box-shadow: 0 25px 65px -10px rgba(34, 211, 238, 0.65), 0 0 55px rgba(34, 211, 238, 0.45), inset 0 1px 3px rgba(186, 230, 253, 0.85) !important;
+      background: linear-gradient(145deg, rgba(176, 38, 255, 0.38) 0%, rgba(126, 34, 206, 0.22) 50%, rgba(12, 4, 24, 0.98) 100%) !important;
+      border-color: #B026FF !important;
+      box-shadow: 0 25px 65px -10px rgba(176, 38, 255, 0.85), 0 0 60px rgba(168, 85, 247, 0.65), inset 0 1px 3px rgba(233, 213, 255, 0.95) !important;
     }
 
     .mode-card.visual-mode:hover .mode-card-badge,
-    #btnSelectLiveMode:hover .mode-card-badge,
-    .mode-card.vocal-mode:hover .mode-card-badge,
-    #btnSelectMediaMode:hover .mode-card-badge {
-      background: rgba(34, 211, 238, 0.22) !important;
-      border-color: var(--cyan) !important;
+    #btnSelectLiveMode:hover .mode-card-badge {
+      background: rgba(176, 38, 255, 0.32) !important;
+      border-color: #B026FF !important;
       color: #FFFFFF !important;
-      box-shadow: 0 0 20px rgba(34, 211, 238, 0.75);
+      box-shadow: 0 0 24px rgba(176, 38, 255, 0.85);
     }
 
     .mode-card.visual-mode:hover .btn-mode-cta,
-    #btnSelectLiveMode:hover .btn-mode-cta,
+    #btnSelectLiveMode:hover .btn-mode-cta {
+      background: linear-gradient(135deg, #B026FF 0%, #7E22CE 100%) !important;
+      border-color: #D946EF !important;
+      box-shadow: 0 0 38px rgba(176, 38, 255, 0.90) !important;
+      color: #FFFFFF !important;
+      font-weight: 800 !important;
+    }
+
+    /* 🌿 Mode Option 2: Media Upload — Proper Neon Glow Green Hover Illumination */
+    .mode-card.vocal-mode:hover,
+    #btnSelectMediaMode:hover {
+      transform: translateY(-10px) scale(1.025);
+      background: linear-gradient(145deg, rgba(0, 255, 157, 0.38) 0%, rgba(16, 229, 153, 0.24) 50%, rgba(2, 24, 15, 0.98) 100%) !important;
+      border-color: #00FF9D !important;
+      box-shadow: 0 25px 65px -10px rgba(0, 255, 157, 0.88), 0 0 60px rgba(0, 255, 157, 0.68), inset 0 1px 3px rgba(180, 255, 220, 0.95) !important;
+    }
+
+    .mode-card.vocal-mode:hover .mode-card-badge,
+    #btnSelectMediaMode:hover .mode-card-badge {
+      background: rgba(0, 255, 157, 0.32) !important;
+      border-color: #00FF9D !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 25px rgba(0, 255, 157, 0.90);
+    }
+
     .mode-card.vocal-mode:hover .btn-mode-cta,
     #btnSelectMediaMode:hover .btn-mode-cta {
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.32) 0%, rgba(59, 130, 246, 0.32) 100%) !important;
-      border-color: var(--cyan) !important;
-      box-shadow: 0 0 30px rgba(34, 211, 238, 0.70) !important;
-      color: #FFFFFF !important;
+      background: linear-gradient(135deg, #00FF9D 0%, #05DF72 100%) !important;
+      border-color: #00FF9D !important;
+      box-shadow: 0 0 40px rgba(0, 255, 157, 0.95) !important;
+      color: #022013 !important;
       font-weight: 800 !important;
     }
 
