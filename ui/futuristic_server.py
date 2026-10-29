@@ -191,6 +191,11 @@ async def predict_face(
         "probabilities": pred["probabilities"],
         "bboxes": pred.get("bboxes", []),
         "landmarks": pred.get("landmarks", []),
+        "facial_style": pred.get("facial_style", {}),
+        "style_description": pred.get("style_description", ""),
+        "valence": pred.get("valence", 0.0),
+        "arousal": pred.get("arousal", 0.0),
+        "circumplex": pred.get("circumplex", {}),
         "latency_ms": round(latency_ms, 2)
     }
 

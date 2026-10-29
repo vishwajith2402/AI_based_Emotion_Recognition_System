@@ -135,12 +135,12 @@ class FacialStyleAnalyzer:
 
         if aspect >= 0.68:
             mouth_style = "Full Open"
-        elif (has_smile and curve >= 3.5) or curve > 4.5:
+        elif (has_smile and curve >= 3.0) or curve > 3.8:
             mouth_style = "Curved Up (Smiley)"
-        elif aspect < 0.25 and glab_furrow >= 26.0:
-            mouth_style = "Tense / Compressed"
         elif is_depressed_from_baseline or curve <= -0.2:
             mouth_style = "Curved Down (Frown)"
+        elif aspect < 0.25 and glab_furrow >= 26.0:
+            mouth_style = "Tense / Compressed"
         elif abs(curve) <= 3.2 and aspect < 0.55:
             mouth_style = "Neutral Horizontal"
         elif curve < 0.0 or (mouth_y_pos >= int(mh * 0.40) and not has_smile and glab_furrow > 28.0):
