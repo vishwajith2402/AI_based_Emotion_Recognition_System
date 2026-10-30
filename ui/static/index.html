@@ -12842,17 +12842,44 @@
         // Render Waveform Canvas
         drawAudioBufferWaveform(data);
 
-        // Vocal Emotion Classification
+        // Vocal Emotion Classification via Local DSP Rules first
         classifyVocalProsody(meanPitch, loudness, pitchVariance);
-
         updateVocalResultsUI('● AUDIO DECODED & LOCKED');
+
+        // Asynchronous High-Accuracy Deep BiLSTM Query to PyTorch Backend
+        try {
+          // Convert arrayBuffer to base64
+          let binary = '';
+          const bytes = new Uint8Array(arrayBuffer);
+          const len = bytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          const b64 = window.btoa(binary);
+          const fd = new FormData();
+          fd.append('audio_base64', b64);
+
+          fetch('/api/predict/speech', { method: 'POST', body: fd })
+            .then(res => res.ok ? res.json() : null)
+            .then(deepAudio => {
+              if (deepAudio && deepAudio.speech_detected && deepAudio.probabilities) {
+                window.labState.audioProbs = { ...deepAudio.probabilities };
+                window.labState.audioEmotion = deepAudio.top_emotion;
+                window.labState.audioConfidence = Math.round(deepAudio.confidence * 100);
+                const tag = ● DEEP BiLSTM ACOUSTIC LOCKED (ms);
+                updateVocalResultsUI(tag);
+              }
+            })
+            .catch(() => {});
+        } catch (e) {}
+
       } catch (err) {
         console.warn('[MediaLab] Decode error, synthesizing:', err);
         synthesizeAudioAnalysisFallback();
       }
     }
 
-    function detectAutocorrelationPitch(buffer, sampleRate) {
+        function detectAutocorrelationPitch(buffer, sampleRate) {
       const SIZE = buffer.length;
       let maxCorr = 0;
       let bestOffset = -1;
