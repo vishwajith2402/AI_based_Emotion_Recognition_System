@@ -6428,193 +6428,6 @@
   </div>
 
   <!-- ========================================================
-       MODAL: MULTIMODAL MEDIA & VOICE LAB MODEL RESULT DOSSIER
-       ======================================================== -->
-  <div class="modal-backdrop" id="mediaModelResultModal" style="display: none;">
-    <div class="modal-window media-result-modal-window" style="max-width: 760px; max-height: 90vh; overflow-y: auto;">
-      
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <span style="font-size: 1.45rem;">⚡</span>
-          <div>
-            <h2 style="font-size: 1.12rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">
-              Multimodal Model Analysis Result
-            </h2>
-            <p style="font-size: 0.72rem; color: var(--cyan); margin: 0; font-family: var(--font-mono); letter-spacing: 0.5px;">
-              OFFLINE DUAL-CHANNEL DECISION FUSION &bull; LEVEL 4 FORENSIC INTELLIGENCE
-            </p>
-          </div>
-        </div>
-        <button class="modal-close-btn" id="btnCloseMediaModelModal" title="Close Result Window">✕</button>
-      </div>
-
-      <!-- Verdict Banner (Final Result) -->
-      <div class="report-hero-box" id="mediaModalHeroBox" style="position: relative; overflow: hidden; border: 1px solid var(--border-subtle); transition: all 0.3s ease; padding: 1.25rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-          <div class="report-hero-title" style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 1.2px; color: var(--text-muted);">
-            FINAL FUSED AFFECTIVE STATE
-          </div>
-          <span id="mediaModalTypeBadge" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan); background: rgba(6, 182, 212, 0.15); padding: 0.2rem 0.55rem; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.3);">
-            ⚡ MODEL INFERENCE COMPLETE
-          </span>
-        </div>
-
-        <div style="display: flex; align-items: center; justify-content: center; gap: 0.85rem; margin: 0.6rem 0;">
-          <span id="mediaModalHeroGlyph" style="font-size: 3.2rem; filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.35));">😊</span>
-          <div class="report-hero-val" id="mediaModalHeroEmotion" style="font-size: 2.4rem; font-weight: 900; letter-spacing: 1px; color: #FFFFFF; margin: 0;">HAPPY</div>
-        </div>
-
-        <div class="report-hero-conf" id="mediaModalHeroConfidence" style="text-align: center; font-size: 0.85rem; color: var(--vanilla-cream); font-family: var(--font-mono); margin-bottom: 0.5rem;">
-          Unified Confidence: 94.0% &bull; Calibrated Decision Fusion
-        </div>
-
-        <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
-          <span id="mediaModalCircumplexBadge" style="background: rgba(255,255,255,0.06); font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid var(--border-subtle); color: var(--vanilla-cream);">
-            Circumplex: Valence +0.82 | Arousal +0.54
-          </span>
-          <span id="mediaModalWeightBadge" style="background: rgba(37,99,235,0.18); font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid rgba(59,130,246,0.35); color: var(--cyan);">
-            70% Visual + 30% Vocal Decision Matrix
-          </span>
-        </div>
-      </div>
-
-      <!-- Concordance / Discordance Banner -->
-      <div class="harmony-banner" id="mediaModalHarmonyBanner" style="margin-top: 0;">
-        <span class="status-symbol">●</span>
-        <span id="mediaModalHarmonyText"><b>HARMONY CONFIRMED</b> &mdash; Visual and vocal channels align synchronously.</span>
-      </div>
-
-      <!-- Analysis Channels Breakdown (Visual + Vocal + Verbal) -->
-      <div class="report-phase-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;" id="mediaModalChannelsGrid">
-        
-        <!-- Channel 1: Visual Modality Analysis -->
-        <div class="report-phase-card" style="background: rgba(15, 23, 42, 0.65); border: 1px solid var(--border-subtle); border-left: 3px solid var(--cyan); border-radius: var(--radius-sm); padding: 0.85rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-            <div style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--cyan);">
-              Channel 1: Visual Kinematics (<span id="mediaModalFaceWeightTag">70%</span>)
-            </div>
-            <span style="font-size: 0.64rem; font-family: var(--font-mono); color: var(--cyan); background: rgba(6,182,212,0.14); padding: 0.15rem 0.4rem; border-radius: 3px;">VISUAL</span>
-          </div>
-          <div id="mediaModalFaceEmotion" style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF; margin: 0.25rem 0;">
-            😊 Happy (92%)
-          </div>
-          <div id="mediaModalFaceSub" style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.45rem;">
-            AU12 Zygomatic Smile: 84% &bull; EAR Aperture: 0.28
-          </div>
-          <div id="mediaModalFaceAU" style="padding-top: 0.45rem; border-top: 1px dashed var(--border-subtle); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 0.4rem 0.7rem;">
-            <span>AU12 Smile: <b id="mmAuSmile">84%</b></span>
-            <span>AU4 Furrow: <b id="mmAuFurrow">4%</b></span>
-            <span>EAR: <b id="mmAuEar">0.28</b></span>
-            <span>AU26 Jaw: <b id="mmAuJaw">12%</b></span>
-          </div>
-        </div>
-
-        <!-- Channel 2: Vocal Prosody Analysis -->
-        <div class="report-phase-card" style="background: rgba(15, 23, 42, 0.65); border: 1px solid var(--border-subtle); border-left: 3px solid var(--violet); border-radius: var(--radius-sm); padding: 0.85rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-            <div style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: #A78BFA;">
-              Channel 2: Vocal Prosody (<span id="mediaModalVoiceWeightTag">30%</span>)
-            </div>
-            <span style="font-size: 0.64rem; font-family: var(--font-mono); color: #A78BFA; background: rgba(139,92,246,0.14); padding: 0.15rem 0.4rem; border-radius: 3px;">ACOUSTIC</span>
-          </div>
-          <div id="mediaModalVoiceEmotion" style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF; margin: 0.25rem 0;">
-            🎵 Happy (94%)
-          </div>
-          <div id="mediaModalVoiceSub" style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.45rem;">
-            Mean Pitch F₀: 228 Hz &bull; Energy: -16 dB
-          </div>
-          <div id="mediaModalVoiceMetrics" style="padding-top: 0.45rem; border-top: 1px dashed var(--border-subtle); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 0.4rem 0.7rem;">
-            <span>F₀ Pitch: <b id="mmPitch">228 Hz</b></span>
-            <span>Loudness: <b id="mmLoudness">-16 dB</b></span>
-            <span>Variance: <b id="mmVariance">28.4 Hz</b></span>
-            <span>RMS: <b id="mmRms">0.17</b></span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Channel 3: Optional Verbal Linguistic Modality -->
-      <div id="mediaModalVerbalCard" style="display: none; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(167, 139, 250, 0.3); border-left: 3px solid #C4B5FD; border-radius: var(--radius-sm); padding: 0.85rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-          <div style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: #C4B5FD;">
-            Channel 3: Linguistic Sentiment & Tone (20%)
-          </div>
-          <span style="font-size: 0.64rem; font-family: var(--font-mono); color: #C4B5FD; background: rgba(167,139,250,0.18); padding: 0.15rem 0.4rem; border-radius: 3px;">VERBAL</span>
-        </div>
-        <div id="mediaModalVerbalEmotion" style="font-size: 1.05rem; font-weight: 800; color: #FFFFFF; margin: 0.25rem 0;">
-          Neutral Tone (75%)
-        </div>
-        <div id="mediaModalVerbalText" style="font-size: 0.74rem; color: var(--text-muted); font-style: italic; background: rgba(3,7,18,0.6); padding: 0.4rem 0.6rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
-          "..."
-        </div>
-      </div>
-
-      <!-- Other Details: Multimodal Decision Probability Spectrum -->
-      <div style="background: rgba(10, 14, 26, 0.75); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.9rem;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem; align-items: center;">
-          <span style="font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.8px; font-weight: 700;">
-            MULTIMODAL DECISION PROBABILITY SPECTRUM
-          </span>
-          <span style="font-family: var(--font-mono); font-size: 0.66rem; color: var(--cyan); background: rgba(6,182,212,0.1); padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid rgba(6,182,212,0.25);">
-            CALIBRATED 5-CLASS FUSION
-          </span>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 0.4rem;" id="mediaModalBarsContainer">
-          <!-- Populated dynamically with color-coded bars -->
-        </div>
-      </div>
-
-      <!-- Other Details: AI Clinical Diagnostic Analysis Explanation -->
-      <div style="background: #020204; border-radius: var(--radius-sm); padding: 0.9rem; border: 1px solid var(--border-subtle); line-height: 1.5;">
-        <div style="display: flex; align-items: center; gap: 0.45rem; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: var(--cyan); margin-bottom: 0.4rem; letter-spacing: 0.6px;">
-          <span>🧠</span> AI CLINICAL & FORENSIC DIAGNOSTIC ANALYSIS:
-        </div>
-        <div id="mediaModalDiagnosticText" style="font-family: var(--font-sans); font-size: 0.76rem; color: var(--text-secondary); line-height: 1.55;">
-          Diagnostic details will be rendered upon model execution.
-        </div>
-      </div>
-
-      <!-- Other Details: Forensic Metric Quick-Table -->
-      <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem;">
-        <div style="font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.6px;">
-          BIOMETRIC & ACOUSTIC TELEMETRY MATRIX:
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; font-family: var(--font-mono); font-size: 0.68rem;">
-          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
-            <span style="color: var(--text-muted);">Pitch F₀:</span> <b id="tblPitch" style="color: var(--cyan);">228 Hz</b>
-          </div>
-          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
-            <span style="color: var(--text-muted);">Loudness:</span> <b id="tblLoudness" style="color: var(--cyan);">-16 dB</b>
-          </div>
-          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
-            <span style="color: var(--text-muted);">AU12 Smile:</span> <b id="tblSmile" style="color: #4ADE80;">84%</b>
-          </div>
-          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
-            <span style="color: var(--text-muted);">EAR Aperture:</span> <b id="tblEar" style="color: #4ADE80;">0.28</b>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal Footer Action Buttons -->
-      <div class="modal-actions" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.95rem; margin-top: 0.25rem;">
-        <div style="display: flex; gap: 0.6rem;">
-          <button class="btn-pdf-export" id="btnMediaModalPdf" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; font-size: 0.72rem; font-family: var(--font-mono); background: linear-gradient(135deg, #0284c7, #2563eb); border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 700;">
-            <span>📄</span> Export PDF Dossier
-          </button>
-          <button class="btn-ghost-sm" id="btnMediaModalCopy" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; font-size: 0.72rem; font-family: var(--font-mono); background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 6px; color: var(--text-secondary); cursor: pointer;">
-            <span>📋</span> <span id="copySummaryBtnText">Copy Summary</span>
-          </button>
-        </div>
-        <button class="btn-ghost-sm" id="btnDismissMediaModelModal" style="padding: 0.45rem 1.1rem; font-size: 0.75rem; font-family: var(--font-mono); background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle); border-radius: 6px; color: #fff; cursor: pointer;">
-          Close Window
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ========================================================
        MODAL 3: 3D FACE GUIDED PERSONALIZATION WIZARD (Tier 1 SOTA)
        ======================================================== -->
   <div class="modal-backdrop" id="personalizeFaceModal" style="display: none;">
@@ -7179,6 +6992,180 @@
       <div>468-pt Mesh Kinematics &bull; Acoustic Prosody Fusion &bull; 70/30 Matrix</div>
     </footer>
   </section>
+
+  <!-- ========================================================
+       MODAL: OVERALL RESULT BY ANALYSING BOTH VOICE AND FACIAL EXPRESSION
+       ======================================================== -->
+  <div class="modal-backdrop" id="mediaModelResultModal" style="display: none;">
+    <div class="modal-window media-result-modal-window" style="max-width: 780px; max-height: 90vh; overflow-y: auto;">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 1.5rem;">⚡</span>
+          <div>
+            <h2 style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">
+              Overall Multimodal Model Result
+            </h2>
+            <p style="font-size: 0.72rem; color: var(--cyan); margin: 0; font-family: var(--font-mono); letter-spacing: 0.5px;">
+              SYNTHESIZING BOTH VOICE PROSODY (30%) AND FACIAL EXPRESSION (70%)
+            </p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseMediaModelModal" title="Close Result Window">✕</button>
+      </div>
+
+      <!-- Overall Result Banner (The Overall Result) -->
+      <div class="report-hero-box" id="mediaModalHeroBox" style="position: relative; overflow: hidden; border: 1px solid var(--border-subtle); transition: all 0.3s ease; padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <div class="report-hero-title" style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 1.2px; color: var(--text-muted); font-weight: 700;">
+            OVERALL FUSED EMOTION RESULT
+          </div>
+          <span id="mediaModalTypeBadge" style="font-family: var(--font-mono); font-size: 0.66rem; color: var(--cyan); background: rgba(6, 182, 212, 0.15); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.3); font-weight: 700;">
+            ⚡ FACE + VOICE SYNTHESIS
+          </span>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 0.6rem 0;">
+          <span id="mediaModalHeroGlyph" style="font-size: 3.4rem; filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.4));">😊</span>
+          <div class="report-hero-val" id="mediaModalHeroEmotion" style="font-size: 2.5rem; font-weight: 900; letter-spacing: 1px; color: #FFFFFF; margin: 0;">HAPPY</div>
+        </div>
+
+        <div class="report-hero-conf" id="mediaModalHeroConfidence" style="text-align: center; font-size: 0.88rem; color: var(--vanilla-cream); font-family: var(--font-mono); margin-bottom: 0.5rem; font-weight: 600;">
+          Overall Confidence: 94.0% &bull; Calibrated 70/30 Fusion
+        </div>
+
+        <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+          <span id="mediaModalCircumplexBadge" style="background: rgba(255,255,255,0.06); font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid var(--border-subtle); color: var(--vanilla-cream);">
+            Circumplex: Valence +0.82 | Arousal +0.54
+          </span>
+          <span id="mediaModalWeightBadge" style="background: rgba(37,99,235,0.18); font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid rgba(59,130,246,0.35); color: var(--cyan);">
+            70% Facial Expression + 30% Voice Prosody
+          </span>
+        </div>
+      </div>
+
+      <!-- Concordance / Cross-Modal Nuance Banner -->
+      <div class="harmony-banner" id="mediaModalHarmonyBanner" style="margin-top: 0;">
+        <span class="status-symbol">●</span>
+        <span id="mediaModalHarmonyText"><b>HARMONY CONFIRMED</b> &mdash; Facial expression and voice prosody signals align synchronously.</span>
+      </div>
+
+      <!-- Side-by-Side Dual Analysis Breakdown: Voice & Facial Expression -->
+      <div style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 0.2rem;">
+        MODALITY-BY-MODALITY ANALYSIS:
+      </div>
+      <div class="report-phase-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;" id="mediaModalChannelsGrid">
+        
+        <!-- Left: Facial Expression Analysis (70% Weight) -->
+        <div class="report-phase-card" style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); border-left: 3px solid var(--cyan); border-radius: var(--radius-sm); padding: 0.9rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <div style="font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; color: var(--cyan);">
+              👁️ Facial Expression (70% Weight)
+            </div>
+            <span style="font-size: 0.64rem; font-family: var(--font-mono); color: var(--cyan); background: rgba(6,182,212,0.14); padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 700;">VISUAL</span>
+          </div>
+          <div id="mediaModalFaceEmotion" style="font-size: 1.2rem; font-weight: 800; color: #FFFFFF; margin: 0.3rem 0;">
+            😊 Happy (99%)
+          </div>
+          <div id="mediaModalFaceSub" style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.45rem;">
+            AU12 Zygomatic Smile: 100% &bull; EAR Aperture: 0.27
+          </div>
+          <div id="mediaModalFaceAU" style="padding-top: 0.5rem; border-top: 1px dashed var(--border-subtle); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem;">
+            <span>AU12 Smile: <b id="mmAuSmile" style="color: #4ADE80;">100%</b></span>
+            <span>AU4 Furrow: <b id="mmAuFurrow">0%</b></span>
+            <span>EAR: <b id="mmAuEar">0.27</b></span>
+            <span>AU26 Jaw: <b id="mmAuJaw">28%</b></span>
+          </div>
+        </div>
+
+        <!-- Right: Voice Prosody Analysis (30% Weight) -->
+        <div class="report-phase-card" style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); border-left: 3px solid var(--violet); border-radius: var(--radius-sm); padding: 0.9rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <div style="font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; color: #A78BFA;">
+              🎙️ Voice Prosody (30% Weight)
+            </div>
+            <span style="font-size: 0.64rem; font-family: var(--font-mono); color: #A78BFA; background: rgba(139,92,246,0.14); padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 700;">ACOUSTIC</span>
+          </div>
+          <div id="mediaModalVoiceEmotion" style="font-size: 1.2rem; font-weight: 800; color: #FFFFFF; margin: 0.3rem 0;">
+            ✨ Surprise (91%)
+          </div>
+          <div id="mediaModalVoiceSub" style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.45rem;">
+            Mean Pitch F₀: 268 Hz &bull; Loudness: -14 dB
+          </div>
+          <div id="mediaModalVoiceMetrics" style="padding-top: 0.5rem; border-top: 1px dashed var(--border-subtle); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem;">
+            <span>F₀ Pitch: <b id="mmPitch" style="color: var(--cyan);">268 Hz</b></span>
+            <span>Loudness: <b id="mmLoudness">-14 dB</b></span>
+            <span>Variance: <b id="mmVariance">36.8 Hz</b></span>
+            <span>RMS: <b id="mmRms">0.21</b></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Other Details: Multimodal Decision Probability Spectrum -->
+      <div style="background: rgba(10, 14, 26, 0.75); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.9rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem; align-items: center;">
+          <span style="font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.8px; font-weight: 700;">
+            MULTIMODAL DECISION PROBABILITY SPECTRUM (ALL 5 EMOTIONS)
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.66rem; color: var(--cyan); background: rgba(6,182,212,0.1); padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid rgba(6,182,212,0.25);">
+            CALIBRATED 5-CLASS MATRIX
+          </span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;" id="mediaModalBarsContainer">
+          <!-- Populated dynamically with color-coded bars -->
+        </div>
+      </div>
+
+      <!-- Other Details: AI Clinical Diagnostic Analysis Explanation -->
+      <div style="background: #020204; border-radius: var(--radius-sm); padding: 0.9rem; border: 1px solid var(--border-subtle); line-height: 1.5;">
+        <div style="display: flex; align-items: center; gap: 0.45rem; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: var(--cyan); margin-bottom: 0.4rem; letter-spacing: 0.6px;">
+          <span>🧠</span> AI CLINICAL & FORENSIC DIAGNOSTIC ANALYSIS:
+        </div>
+        <div id="mediaModalDiagnosticText" style="font-family: var(--font-sans); font-size: 0.76rem; color: var(--text-secondary); line-height: 1.55;">
+          Diagnostic details will be rendered upon model execution.
+        </div>
+      </div>
+
+      <!-- Other Details: Forensic Metric Quick-Table -->
+      <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem;">
+        <div style="font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.6px;">
+          BIOMETRIC & ACOUSTIC TELEMETRY MATRIX:
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; font-family: var(--font-mono); font-size: 0.68rem;">
+          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
+            <span style="color: var(--text-muted);">Pitch F₀:</span> <b id="tblPitch" style="color: var(--cyan);">268 Hz</b>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
+            <span style="color: var(--text-muted);">Loudness:</span> <b id="tblLoudness" style="color: var(--cyan);">-14 dB</b>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
+            <span style="color: var(--text-muted);">AU12 Smile:</span> <b id="tblSmile" style="color: #4ADE80;">100%</b>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
+            <span style="color: var(--text-muted);">EAR Aperture:</span> <b id="tblEar" style="color: #4ADE80;">0.27</b>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Action Buttons -->
+      <div class="modal-actions" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.95rem; margin-top: 0.25rem;">
+        <div style="display: flex; gap: 0.6rem;">
+          <button class="btn-pdf-export" id="btnMediaModalPdf" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.85rem; font-size: 0.72rem; font-family: var(--font-mono); background: linear-gradient(135deg, #0284c7, #2563eb); border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 700;">
+            <span>📄</span> Export PDF Dossier
+          </button>
+          <button class="btn-ghost-sm" id="btnMediaModalCopy" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; font-size: 0.72rem; font-family: var(--font-mono); background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 6px; color: var(--text-secondary); cursor: pointer;">
+            <span>📋</span> <span id="copySummaryBtnText">Copy Summary</span>
+          </button>
+        </div>
+        <button class="btn-ghost-sm" id="btnDismissMediaModelModal" style="padding: 0.45rem 1.1rem; font-size: 0.75rem; font-family: var(--font-mono); background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle); border-radius: 6px; color: #fff; cursor: pointer;">
+          Close Window
+        </button>
+      </div>
+
+    </div>
+  </div>
 
 
   <!-- High-Performance Acoustic & Voice Visualizer Module -->
@@ -13720,56 +13707,57 @@
         return;
       }
 
-      // Check Verbal Modality
+      // Check Verbal Modality (auxiliary if entered)
       const verbalInputText = (elLabVerbalInput ? elLabVerbalInput.value : '').trim();
       if (verbalInputText.length > 1) {
         updateLabVerbalSentiment(verbalInputText);
       }
       const hasVerbal = window.labState.hasVerbal && window.labState.verbalText.length > 1;
 
+      // Visual button feedback
+      if (elBtnRunMediaFusion) {
+        elBtnRunMediaFusion.classList.add('loading');
+        elBtnRunMediaFusion.innerHTML = '<span>⚡</span> ANALYSING FACE & VOICE...';
+      }
+
       // Show Progress animation
       elMediaProgress.style.display = 'flex';
       elMediaFusionDashboard.style.display = 'none';
-      elMediaProgressFill.style.width = '20%';
-      elMediaProgressStatus.innerText = hasVerbal
-        ? 'Step 1/3: Extracting 468-Point Facial Geometry (50% Weight)...'
-        : 'Step 1/3: Extracting 468-Point Facial Geometry (70% Weight)...';
+      elMediaProgressFill.style.width = '25%';
+      elMediaProgressStatus.innerText = 'Step 1/2: Analysing 468-Pt Facial Expression Kinematics (70% Weight)...';
 
       await sleep(350);
-      elMediaProgressFill.style.width = '60%';
-      elMediaProgressStatus.innerText = 'Step 2/3: Decomposing Vocal Acoustics & Prosodic Pitch (30% Weight)...';
+      elMediaProgressFill.style.width = '70%';
+      elMediaProgressStatus.innerText = 'Step 2/2: Decomposing Acoustic Voice Modulation & Prosody (30% Weight)...';
 
       await sleep(350);
       elMediaProgressFill.style.width = '100%';
-      elMediaProgressStatus.innerText = hasVerbal
-        ? 'Step 3/3: Evaluating Linguistic Sentiment & Executing Tri-Modal Fusion (50/30/20)...'
-        : 'Step 3/3: Executing Cross-Modal Multimodal Decision Fusion (70/30)...';
+      elMediaProgressStatus.innerText = 'Executing Cross-Modal Decision Fusion (Facial Expression + Voice)...';
 
       await sleep(300);
       elMediaProgress.style.display = 'none';
 
-      // Tri-Modal (50% Face + 30% Voice + 20% Verbal) or Bi-modal (70% Face + 30% Voice)
+      if (elBtnRunMediaFusion) {
+        elBtnRunMediaFusion.classList.remove('loading');
+        elBtnRunMediaFusion.innerHTML = '<span>⚡</span> RUN MODEL (MULTIMODAL ANALYSIS)';
+      }
+
+      // Dual-channel Decision Fusion (70% Facial Expression + 30% Voice Prosody)
       const emotions = ['Happy', 'Sad', 'Angry', 'Surprise', 'Neutral'];
       const fused = {};
-      const faceP = window.labState.visualProbs;
-      const voiceP = window.labState.audioProbs;
-      const verbalP = window.labState.verbalProbs || { Happy: 0.1, Sad: 0.1, Angry: 0.1, Surprise: 0.1, Neutral: 0.6 };
+      const faceP = window.labState.visualProbs || { Happy: 0.2, Sad: 0.2, Angry: 0.2, Surprise: 0.2, Neutral: 0.2 };
+      const voiceP = window.labState.audioProbs || { Happy: 0.2, Sad: 0.2, Angry: 0.2, Surprise: 0.2, Neutral: 0.2 };
 
-      // Weighting
+      // Primary Multimodal Fusion: 70% Facial Expression + 30% Voice Modulation
       emotions.forEach(e => {
-        const vF = faceP[e] || 0.1;
-        const vA = voiceP[e] || 0.1;
-        if (hasVerbal) {
-          const vV = verbalP[e] || 0.1;
-          fused[e] = (0.50 * vF) + (0.30 * vA) + (0.20 * vV);
-        } else {
-          fused[e] = (0.70 * vF) + (0.30 * vA);
-        }
+        const vF = faceP[e] !== undefined ? faceP[e] : 0.1;
+        const vA = voiceP[e] !== undefined ? voiceP[e] : 0.1;
+        fused[e] = (0.70 * vF) + (0.30 * vA);
       });
       normalizeLabProbs(fused);
       window.labState.fusedProbs = fused;
 
-      // Dominant Emotion
+      // Dominant Fused Emotion & Confidence
       let topFinal = 'Neutral';
       let maxConf = 0;
       for (const [k, v] of Object.entries(fused)) {
@@ -13778,51 +13766,45 @@
       window.labState.fusedEmotion = topFinal;
       window.labState.fusedConfidence = Math.round(maxConf * 100);
 
-      // Concordance Analysis
-      const faceEmo = window.labState.visualEmotion;
-      const voiceEmo = window.labState.audioEmotion;
-      const verbalEmo = window.labState.verbalEmotion;
-      const isConcordant = hasVerbal
-        ? ((faceEmo === voiceEmo && faceEmo === verbalEmo) || (faceEmo === voiceEmo))
-        : ((faceEmo === voiceEmo) || (maxConf > 0.85));
+      // Concordance Analysis between Facial Expression & Voice
+      const faceEmo = window.labState.visualEmotion || 'Neutral';
+      const voiceEmo = window.labState.audioEmotion || 'Neutral';
+      const isConcordant = (faceEmo === voiceEmo) || (maxConf > 0.85);
       window.labState.isConcordant = isConcordant;
 
-      // Render Verdict
+      // Extract Facial Kinematics safely (handling both AU and standard key formats)
+      const rawF = window.labState.visualMetrics || {};
+      const fSmile = rawF.au12 !== undefined ? rawF.au12 : (rawF.smile !== undefined ? rawF.smile : 0);
+      const fFurrow = rawF.au4 !== undefined ? rawF.au4 : (rawF.furrow !== undefined ? rawF.furrow : 0);
+      const fEar = rawF.ear !== undefined ? rawF.ear : '0.28';
+      const fJaw = rawF.au26 !== undefined ? rawF.au26 : (rawF.jaw !== undefined ? rawF.jaw : 0);
+
+      // Extract Voice Metrics safely
+      const metricsA = window.labState.audioMetrics || { pitch: 150, loudness: -20, variance: 15, rms: '0.10' };
+
+      // Render Verdict on Inline Dashboard
       const glyphs = { Happy: '😊', Sad: '😢', Angry: '😠', Surprise: '😲', Neutral: '😐' };
       document.getElementById('labHeroGlyph').innerText = glyphs[topFinal] || '😊';
       document.getElementById('labHeroEmotion').innerText = topFinal.toUpperCase();
-      document.getElementById('labHeroConfidence').innerText = hasVerbal
-        ? `Unified Confidence: ${window.labState.fusedConfidence}% (50/30/20 Tri-Modal Fusion)`
-        : `Unified Confidence: ${window.labState.fusedConfidence}% (70/30 Decision Fusion)`;
+      document.getElementById('labHeroConfidence').innerText = 'Unified Confidence: ' + window.labState.fusedConfidence + '% (70% Face + 30% Voice Fusion)';
 
-      // Concordance Banner
+      // Inline Concordance Banner
       const harmonyBanner = document.getElementById('labHarmonyBanner');
       const harmonyText = document.getElementById('labHarmonyText');
       if (isConcordant) {
         harmonyBanner.className = 'harmony-banner';
-        harmonyText.innerHTML = hasVerbal
-          ? `<b>TRI-HARMONIC CONCORDANCE CONFIRMED</b> &mdash; Visual (${faceEmo}), vocal (${voiceEmo}), and verbal (${verbalEmo}) align synchronously.`
-          : `<b>HARMONIC CONCORDANCE CONFIRMED</b> &mdash; Visual (${faceEmo}) and vocal (${voiceEmo}) align seamlessly.`;
+        harmonyText.innerHTML = '<b>HARMONIC CONCORDANCE CONFIRMED</b> &mdash; Facial expression (' + faceEmo + ') and voice (' + voiceEmo + ') align synchronously.';
       } else {
         harmonyBanner.className = 'harmony-banner conflict';
-        harmonyText.innerHTML = hasVerbal
-          ? `<b>CROSS-MODAL DISCORDANCE DETECTED</b> &mdash; Face (${faceEmo}), voice (${voiceEmo}), and verbal (${verbalEmo}) express conflicting affect.`
-          : `<b>AFFECTIVE DISCORDANCE / CONFLICT</b> &mdash; Face registered <b>${faceEmo}</b> while voice indicated <b>${voiceEmo}</b>.`;
+        harmonyText.innerHTML = '<b>AFFECTIVE DISCORDANCE / CROSS-MODAL NUANCE</b> &mdash; Face registered <b>' + faceEmo + '</b> while voice indicated <b>' + voiceEmo + '</b>.';
       }
 
       // Modality Contribution Chips
-      if (hasVerbal) {
-        document.getElementById('labFaceContribution').innerText = `${faceEmo} (50% &rarr; ${(fused[faceEmo] * 50).toFixed(1)}%)`;
-        document.getElementById('labVoiceContribution').innerText = `${voiceEmo} (30% &rarr; ${(fused[voiceEmo] * 30).toFixed(1)}%)`;
-        if (elLabVerbalChip) elLabVerbalChip.style.display = 'flex';
-        if (elLabVerbalContribution) elLabVerbalContribution.innerText = `${verbalEmo} (20% &rarr; ${(fused[verbalEmo] * 20).toFixed(1)}%)`;
-      } else {
-        document.getElementById('labFaceContribution').innerText = `${faceEmo} (70% &rarr; ${(fused[faceEmo] * 70).toFixed(1)}%)`;
-        document.getElementById('labVoiceContribution').innerText = `${voiceEmo} (30% &rarr; ${(fused[voiceEmo] * 30).toFixed(1)}%)`;
-        if (elLabVerbalChip) elLabVerbalChip.style.display = 'none';
-      }
+      document.getElementById('labFaceContribution').innerText = faceEmo + ' (70% \u2192 ' + ((fused[faceEmo] || 0) * 70).toFixed(1) + '%)';
+      document.getElementById('labVoiceContribution').innerText = voiceEmo + ' (30% \u2192 ' + ((fused[voiceEmo] || 0) * 30).toFixed(1) + '%)';
+      if (elLabVerbalChip) elLabVerbalChip.style.display = 'none';
 
-      // Distribution Grid
+      // Inline Distribution Grid
       const distGrid = document.getElementById('mediaDistGrid');
       distGrid.innerHTML = '';
       emotions.forEach(e => {
@@ -13843,17 +13825,13 @@
 
       // Clinical Diagnostic Summary
       const diag = document.getElementById('labDiagnosticText');
-      const metricsF = window.labState.visualMetrics;
-      const metricsA = window.labState.audioMetrics;
-
       if (isConcordant) {
-        diag.innerHTML = `<b>Evaluation Summary:</b> Cross-modal evaluation demonstrates authentic affective congruence on <b>${topFinal}</b> (${window.labState.fusedConfidence}% confidence). Visual kinematics exhibit AU12 zygomatic smile level of ${metricsF.smile}%, eye aperture of ${metricsF.ear}, and jaw drop of ${metricsF.jaw}. Simultaneously, acoustic vocal prosody reinforces the state with mean pitch F₀ of ${metricsA.pitch} Hz, energy loudness of ${metricsA.loudness} dB, and dynamic inflection variance of ${metricsA.variance} Hz. Both channels synchronously support genuine affect.`;
+        diag.innerHTML = '<b>Evaluation Summary:</b> Cross-modal evaluation demonstrates authentic affective congruence on <b>' + topFinal + '</b> (' + window.labState.fusedConfidence + '% confidence). Visual kinematics exhibit AU12 zygomatic smile level of ' + fSmile + '%, eye aperture of ' + fEar + ', and jaw drop of ' + fJaw + '%. Simultaneously, acoustic vocal prosody reinforces the state with mean pitch F₀ of ' + metricsA.pitch + ' Hz, energy loudness of ' + metricsA.loudness + ' dB, and dynamic inflection variance of ' + metricsA.variance + ' Hz. Both channels synchronously support genuine affect.';
       } else {
-        diag.innerHTML = `<b>Affective Discordance Detected:</b> Micro-expression and prosody divergence identified. Visual channel registered predominantly as <b>${faceEmo}</b> (${metricsF.smile}% smile, ${metricsF.furrow}% furrow), whereas the vocal channel registered as <b>${voiceEmo}</b> (${metricsA.pitch} Hz pitch, ${metricsA.loudness} dB loudness). Cross-modal Bayesian decision fusion weighted to <b>${topFinal}</b> at ${window.labState.fusedConfidence}%. Such divergence frequently indicates emotional masking, suppression, sarcasm, or high psychological vigilance.`;
+        diag.innerHTML = '<b>Affective Discordance Detected:</b> Micro-expression and prosody divergence identified. Facial expression registered as <b>' + faceEmo + '</b> (' + fSmile + '% smile, ' + fFurrow + '% furrow), whereas vocal modulation registered as <b>' + voiceEmo + '</b> (' + metricsA.pitch + ' Hz pitch, ' + metricsA.loudness + ' dB loudness). Cross-modal Bayesian decision fusion weighted to <b>' + topFinal + '</b> at ' + window.labState.fusedConfidence + '%. Such divergence frequently indicates emotional masking, suppression, sarcasm, or high psychological vigilance.';
       }
 
       elMediaFusionDashboard.style.display = 'flex';
-      elMediaFusionDashboard.scrollIntoView({ behavior: 'smooth' });
 
       // ========================================================
       // POPULATE & POP UP DETAILED MODEL ANALYSIS RESULT WINDOW
@@ -13870,9 +13848,7 @@
         if (modalHeroGlyph) modalHeroGlyph.innerText = glyphs[topFinal] || '😊';
         if (modalHeroEmotion) modalHeroEmotion.innerText = topFinal.toUpperCase();
         if (modalHeroConfidence) {
-          modalHeroConfidence.innerText = hasVerbal
-            ? 'Unified Confidence: ' + window.labState.fusedConfidence + '% (50/30/20 Tri-Modal Decision Fusion)'
-            : 'Unified Confidence: ' + window.labState.fusedConfidence + '% (70/30 Decision Fusion Matrix)';
+          modalHeroConfidence.innerText = 'Overall Confidence: ' + window.labState.fusedConfidence + '% (70% Facial Expression + 30% Voice Prosody)';
         }
 
         const circumplexMap = {
@@ -13887,49 +13863,39 @@
           modalCircumplexBadge.innerText = 'Circumplex: Valence ' + curCoord.v + ' | Arousal ' + curCoord.a;
         }
         if (modalWeightBadge) {
-          modalWeightBadge.innerText = hasVerbal
-            ? '50% Facial + 30% Vocal + 20% Verbal Tri-Modal'
-            : '70% Facial + 30% Vocal Decision Matrix';
+          modalWeightBadge.innerText = '70% Facial Expression + 30% Voice Prosody Decision Matrix';
         }
 
         // Concordance Banner
         if (modalHarmonyBanner && modalHarmonyText) {
           if (isConcordant) {
             modalHarmonyBanner.className = 'harmony-banner';
-            modalHarmonyText.innerHTML = hasVerbal
-              ? '<b>TRI-HARMONIC CONCORDANCE CONFIRMED</b> &mdash; Visual (' + faceEmo + '), vocal (' + voiceEmo + '), and verbal (' + verbalEmo + ') align synchronously.'
-              : '<b>HARMONIC CONCORDANCE CONFIRMED</b> &mdash; Visual (' + faceEmo + ') and vocal (' + voiceEmo + ') align seamlessly.';
+            modalHarmonyText.innerHTML = '<b>HARMONY CONFIRMED</b> &mdash; Facial expression (' + faceEmo + ') and voice prosody (' + voiceEmo + ') align synchronously.';
           } else {
             modalHarmonyBanner.className = 'harmony-banner conflict';
-            modalHarmonyText.innerHTML = hasVerbal
-              ? '<b>CROSS-MODAL DISCORDANCE DETECTED</b> &mdash; Face (' + faceEmo + '), voice (' + voiceEmo + '), and verbal (' + verbalEmo + ') express conflicting affect.'
-              : '<b>AFFECTIVE DISCORDANCE / CONFLICT</b> &mdash; Face registered <b>' + faceEmo + '</b> while voice indicated <b>' + voiceEmo + '</b>.';
+            modalHarmonyText.innerHTML = '<b>CROSS-MODAL NUANCE / DISCORDANCE DETECTED</b> &mdash; Facial expression registered <b>' + faceEmo + '</b> while voice prosody registered <b>' + voiceEmo + '</b>. Fused to <b>' + topFinal + '</b>.';
           }
         }
 
-        // Channel 1: Visual Modality Card
-        const elFaceWeightTag = document.getElementById('mediaModalFaceWeightTag');
-        if (elFaceWeightTag) elFaceWeightTag.innerText = hasVerbal ? '50%' : '70%';
+        // Left Card: Facial Expression
         const elFaceEmotion = document.getElementById('mediaModalFaceEmotion');
-        if (elFaceEmotion) elFaceEmotion.innerText = (glyphs[faceEmo] || '') + ' ' + faceEmo + ' (' + (window.labState.visualConfidence || 92) + '%)';
+        if (elFaceEmotion) elFaceEmotion.innerText = (glyphs[faceEmo] || '') + ' ' + faceEmo + ' (' + (window.labState.visualConfidence || 99) + '%)';
         const elFaceSub = document.getElementById('mediaModalFaceSub');
-        if (elFaceSub) elFaceSub.innerText = 'AU12 Zygomatic Smile: ' + metricsF.smile + '% • EAR Aperture: ' + metricsF.ear;
+        if (elFaceSub) elFaceSub.innerText = 'AU12 Zygomatic Smile: ' + fSmile + '% • EAR Aperture: ' + fEar;
         const elMmAuSmile = document.getElementById('mmAuSmile');
-        if (elMmAuSmile) elMmAuSmile.innerText = metricsF.smile + '%';
+        if (elMmAuSmile) elMmAuSmile.innerText = fSmile + '%';
         const elMmAuFurrow = document.getElementById('mmAuFurrow');
-        if (elMmAuFurrow) elMmAuFurrow.innerText = metricsF.furrow + '%';
+        if (elMmAuFurrow) elMmAuFurrow.innerText = fFurrow + '%';
         const elMmAuEar = document.getElementById('mmAuEar');
-        if (elMmAuEar) elMmAuEar.innerText = metricsF.ear;
+        if (elMmAuEar) elMmAuEar.innerText = fEar;
         const elMmAuJaw = document.getElementById('mmAuJaw');
-        if (elMmAuJaw) elMmAuJaw.innerText = metricsF.jaw + '%';
+        if (elMmAuJaw) elMmAuJaw.innerText = fJaw + '%';
 
-        // Channel 2: Vocal Prosody Card
-        const elVoiceWeightTag = document.getElementById('mediaModalVoiceWeightTag');
-        if (elVoiceWeightTag) elVoiceWeightTag.innerText = '30%';
+        // Right Card: Voice Prosody
         const elVoiceEmotion = document.getElementById('mediaModalVoiceEmotion');
-        if (elVoiceEmotion) elVoiceEmotion.innerText = '🎵 ' + voiceEmo + ' (' + (window.labState.audioConfidence || 90) + '%)';
+        if (elVoiceEmotion) elVoiceEmotion.innerText = '🎙️ ' + voiceEmo + ' (' + (window.labState.audioConfidence || 91) + '%)';
         const elVoiceSub = document.getElementById('mediaModalVoiceSub');
-        if (elVoiceSub) elVoiceSub.innerText = 'Mean Pitch F₀: ' + metricsA.pitch + ' Hz • Energy: ' + metricsA.loudness + ' dB';
+        if (elVoiceSub) elVoiceSub.innerText = 'Mean Pitch F₀: ' + metricsA.pitch + ' Hz • Loudness: ' + metricsA.loudness + ' dB';
         const elMmPitch = document.getElementById('mmPitch');
         if (elMmPitch) elMmPitch.innerText = metricsA.pitch + ' Hz';
         const elMmLoudness = document.getElementById('mmLoudness');
@@ -13938,20 +13904,6 @@
         if (elMmVariance) elMmVariance.innerText = metricsA.variance + ' Hz';
         const elMmRms = document.getElementById('mmRms');
         if (elMmRms) elMmRms.innerText = metricsA.rms;
-
-        // Channel 3: Verbal Modality Card
-        const elVerbalCard = document.getElementById('mediaModalVerbalCard');
-        if (elVerbalCard) {
-          if (hasVerbal) {
-            elVerbalCard.style.display = 'block';
-            const elVerbalEmotion = document.getElementById('mediaModalVerbalEmotion');
-            if (elVerbalEmotion) elVerbalEmotion.innerText = '💬 ' + verbalEmo + ' Sentiment (' + Math.round(window.labState.verbalConfidence || 75) + '%)';
-            const elVerbalText = document.getElementById('mediaModalVerbalText');
-            if (elVerbalText) elVerbalText.innerText = '"' + window.labState.verbalText + '"';
-          } else {
-            elVerbalCard.style.display = 'none';
-          }
-        }
 
         // Decision Probability Spectrum Bars
         const modalBars = document.getElementById('mediaModalBarsContainer');
@@ -13984,9 +13936,9 @@
         const tblLoudness = document.getElementById('tblLoudness');
         if (tblLoudness) tblLoudness.innerText = metricsA.loudness + ' dB';
         const tblSmile = document.getElementById('tblSmile');
-        if (tblSmile) tblSmile.innerText = metricsF.smile + '%';
+        if (tblSmile) tblSmile.innerText = fSmile + '%';
         const tblEar = document.getElementById('tblEar');
-        if (tblEar) tblEar.innerText = metricsF.ear;
+        if (tblEar) tblEar.innerText = fEar;
 
         // Adaptive Color Glow on Modal Window
         const modalWindow = document.querySelector('#mediaModelResultModal .modal-window');
@@ -14007,7 +13959,7 @@
         const btnReopen = document.getElementById('btnReopenMediaResultModal');
         if (btnReopen) btnReopen.style.display = 'inline-flex';
 
-        // POP UP THE WINDOW!
+        // POP UP THE WINDOW IMMEDIATELY!
         openMediaModelResultModal();
       } catch (err) {
         console.error('[MediaLab] Error presenting result modal:', err);
