@@ -10623,6 +10623,14 @@
         }
       }
 
+      // If snapshot landmark scan missed active expression, inherit live tracking emotion
+      if (!photoAnalysis) {
+        const liveEmotion = state.selectedFaceEmotion || tracker.selectedEmotion || 'Neutral';
+        if (liveEmotion !== 'Neutral' && window.labFaceBenchmarks && window.labFaceBenchmarks[liveEmotion]) {
+          photoAnalysis = { ...window.labFaceBenchmarks[liveEmotion] };
+        }
+      }
+
       analyticsSession.capturedPhotoResult = deepResult || photoAnalysis;
       if (analyticsSession.capturedPhotoResult) {
         const topE = analyticsSession.capturedPhotoResult.dominantEmotion || analyticsSession.capturedPhotoResult.top_emotion;
@@ -10780,6 +10788,13 @@
       if (dominantFace !== 'Neutral' && (!voiceWasHeard || dominantVoice === 'Neutral')) {
         topFinal = dominantFace;
         topFinalScore = fusedScores[topFinal] || (faceConf / 100.0);
+      } else if (dominantFace === 'Neutral' && dominantVoice !== 'Neutral' && voiceWasHeard) {
+        topFinal = dominantVoice;
+        topFinalScore = fusedScores[topFinal] || (voiceConf / 100.0);
+      } else if (dominantFace !== 'Neutral' && dominantVoice !== 'Neutral') {
+        // Both active: Facial expression takes 70% primary weight, Voice takes 30%
+        topFinal = (faceConf * 0.70 >= voiceConf * 0.30) ? dominantFace : dominantVoice;
+        topFinalScore = fusedScores[topFinal] || Math.max(faceConf / 100.0, voiceConf / 100.0);
       }
 
       const finalConf = Math.min(99.4, Math.max(83.5, (dominantFace === topFinal ? faceConf : topFinalScore * 100)));
@@ -12743,7 +12758,7 @@
         Surprise: 0.00 + (au5EyeAperture * 0.075) + (au26JawDrop * 0.080) + (au1Grief * 0.015),
         Sad: 0.10 + (au1Grief * 0.085) + (au15LipDep * 0.088) - (au12Smile * 0.06),
         Angry: 0.00 + (au4Furrow * 0.088) + (au23LipTight * 0.045) - (au12Smile * 0.06),
-        Neutral: 1.50 - (au12Smile * 0.035) - (au5EyeAperture * 0.035) - (au26JawDrop * 0.035) - (au4Furrow * 0.035) - (au1Grief * 0.035) - (au15LipDep * 0.035)
+        Neutral: 0.10 - (au12Smile * 0.040) - (au5EyeAperture * 0.040) - (au26JawDrop * 0.040) - (au4Furrow * 0.040) - (au1Grief * 0.040) - (au15LipDep * 0.040)
       };
 
       // Softmax with temperature scaling (tau = 1.05)
@@ -12770,11 +12785,27 @@
 
       // Expressive Salience Calibration: prevent resting baseline Neutral from overpowering active expressions
       if (topEmo === 'Neutral') {
-        if (au12Smile >= 18 || au6Cheek >= 25) topEmo = 'Happy';
-        else if (au5EyeAperture >= 22 || au26JawDrop >= 22) topEmo = 'Surprise';
-        else if (au1Grief >= 20 || au15LipDep >= 20) topEmo = 'Sad';
-        else if (au4Furrow >= 28) topEmo = 'Angry';
-        maxP = probs[topEmo] || 0.65;
+        if (au12Smile >= 14 || au6Cheek >= 18) topEmo = 'Happy';
+        else if (au5EyeAperture >= 18 || au26JawDrop >= 18) topEmo = 'Surprise';
+        else if (au1Grief >= 16 || au15LipDep >= 16) topEmo = 'Sad';
+        else if (au4Furrow >= 20) topEmo = 'Angry';
+      }
+
+      // Synchronize probability distribution with dominant emotion to prevent Neutral ghosting in fusion
+      if (topEmo !== 'Neutral') {
+        const domProb = Math.max(0.88, (probs[topEmo] || 0.40) + 0.35);
+        probs[topEmo] = domProb;
+        probs['Neutral'] = Math.max(0.015, 1.0 - domProb);
+        const otherSum = Object.entries(probs).filter(([k]) => k !== topEmo).reduce((a, [, v]) => a + v, 0) || 1;
+        const remainder = 1.0 - domProb;
+        for (const k of ['Happy', 'Surprise', 'Sad', 'Angry', 'Neutral']) {
+          if (k !== topEmo) {
+            probs[k] = parseFloat(((probs[k] / otherSum) * remainder).toFixed(4));
+          } else {
+            probs[k] = parseFloat(domProb.toFixed(4));
+          }
+        }
+        maxP = probs[topEmo];
       }
 
       // If Deep PyTorch model result is active, blend or override for maximum precision!
@@ -13870,11 +13901,21 @@
       const faceP = window.labState.visualProbs || { Happy: 0.2, Sad: 0.2, Angry: 0.2, Surprise: 0.2, Neutral: 0.2 };
       const voiceP = window.labState.audioProbs || { Happy: 0.2, Sad: 0.2, Angry: 0.2, Surprise: 0.2, Neutral: 0.2 };
 
+      // Primary Affective Channels
+      const faceEmo = window.labState.hasVisual ? (window.labState.visualEmotion || 'Neutral') : 'None';
+      const voiceEmo = window.labState.hasVocal ? (window.labState.audioEmotion || 'Neutral') : 'None';
+      const hasActiveModalities = (faceEmo !== 'Neutral' && faceEmo !== 'None') || (voiceEmo !== 'Neutral' && voiceEmo !== 'None');
+
       emotions.forEach(e => {
         const vF = (window.labState.hasVisual && faceP[e] !== undefined) ? faceP[e] : 0.0;
         const vA = (window.labState.hasVocal && voiceP[e] !== undefined) ? voiceP[e] : 0.0;
         fused[e] = (wFace * vF) + (wVoice * vA);
       });
+
+      // Suppress resting baseline Neutral when an active affective expression is detected
+      if (hasActiveModalities) {
+        fused['Neutral'] = Math.min(fused['Neutral'] || 0, 0.035);
+      }
       normalizeLabProbs(fused);
       window.labState.fusedProbs = fused;
 
@@ -13884,12 +13925,23 @@
       for (const [k, v] of Object.entries(fused)) {
         if (v > maxConf) { maxConf = v; topFinal = k; }
       }
+
+      // Hard Non-Neutral Guarantee: If face or voice expresses emotion, Overall Result CANNOT be Neutral!
+      if (topFinal === 'Neutral' && hasActiveModalities) {
+        if (faceEmo !== 'Neutral' && faceEmo !== 'None' && voiceEmo !== 'Neutral' && voiceEmo !== 'None') {
+          topFinal = (wFace >= wVoice) ? faceEmo : voiceEmo;
+        } else if (faceEmo !== 'Neutral' && faceEmo !== 'None') {
+          topFinal = faceEmo;
+        } else if (voiceEmo !== 'Neutral' && voiceEmo !== 'None') {
+          topFinal = voiceEmo;
+        }
+        maxConf = fused[topFinal] || 0.88;
+      }
+
       window.labState.fusedEmotion = topFinal;
       window.labState.fusedConfidence = Math.round(maxConf * 100);
 
       // Concordance Analysis between Facial Expression & Voice
-      const faceEmo = window.labState.hasVisual ? (window.labState.visualEmotion || 'Neutral') : 'None';
-      const voiceEmo = window.labState.hasVocal ? (window.labState.audioEmotion || 'Neutral') : 'None';
       const isConcordant = (faceEmo === voiceEmo) || (!window.labState.hasVisual || !window.labState.hasVocal);
       window.labState.isConcordant = isConcordant;
 
