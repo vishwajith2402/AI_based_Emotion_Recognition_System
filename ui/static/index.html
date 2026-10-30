@@ -6940,12 +6940,12 @@
           <div class="hero-left-col">
             <div class="hero-kicker">OVERALL FUSED AFFECTIVE STATE</div>
             <div class="hero-title-row">
-              <span class="hero-glyph" id="labHeroGlyph">😊</span>
-              <span class="hero-emotion-text" id="labHeroEmotion">HAPPY</span>
+              <span class="hero-glyph" id="labHeroGlyph">⚡</span>
+              <span class="hero-emotion-text" id="labHeroEmotion">READY FOR FUSION</span>
             </div>
-            <div class="hero-confidence-badge" id="labHeroConfidence">Unified Confidence: 94.2% (70% Face + 30% Voice Fusion)</div>
+            <div class="hero-confidence-badge" id="labHeroConfidence">Awaiting Facial & Vocal Inputs (70% Face + 30% Voice Matrix)</div>
             <div style="margin-top: 0.45rem; display: flex; gap: 0.45rem; flex-wrap: wrap;">
-              <span id="labCircumplexPill" style="font-family: var(--font-mono); font-size: 0.68rem; background: rgba(255,255,255,0.06); padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid var(--border-subtle); color: var(--vanilla-cream);">Valence +0.82 | Arousal +0.54</span>
+              <span id="labCircumplexPill" style="font-family: var(--font-mono); font-size: 0.68rem; background: rgba(255,255,255,0.06); padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid var(--border-subtle); color: var(--vanilla-cream);">Valence 0.00 | Arousal 0.00</span>
               <span style="font-family: var(--font-mono); font-size: 0.68rem; background: rgba(37,99,235,0.18); padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid rgba(59,130,246,0.35); color: var(--cyan);">70/30 Decision Matrix</span>
             </div>
           </div>
@@ -6954,18 +6954,18 @@
             <!-- Concordance Banner -->
             <div class="harmony-banner" id="labHarmonyBanner">
               <span class="status-symbol">●</span>
-              <span id="labHarmonyText"><b>HARMONY CONFIRMED</b> &mdash; Visual and vocal channels align</span>
+              <span id="labHarmonyText"><b>FUSION MATRIX READY</b> &mdash; Select or upload face image/video and voice audio above.</span>
             </div>
 
             <!-- Modality Contribution Chips -->
             <div class="modality-chips-row" id="labModalityChipsRow">
               <div class="modality-chip" id="labFaceChip">
                 <span class="m-icon">👁️ Facial Expression (70% Weight):</span>
-                <b id="labFaceContribution">Happy (99.0%)</b>
+                <b id="labFaceContribution">Awaiting Face Input</b>
               </div>
               <div class="modality-chip" id="labVoiceChip">
                 <span class="m-icon">🎙️ Voice Prosody (30% Weight):</span>
-                <b id="labVoiceContribution">Surprise (91.0%)</b>
+                <b id="labVoiceContribution">Awaiting Voice Input</b>
               </div>
               <div class="modality-chip" id="labVerbalChip" style="display: none;">
                 <span class="m-icon">💬 Verbal Sentiment:</span>
@@ -13088,6 +13088,16 @@
 
       elVisualStatusChip.innerText = statusText;
       elVisualStatusChip.style.display = 'block';
+
+      // Dynamically update Multimodal Fusion Result Engine in real-time
+      if (typeof runMediaLabFusion === 'function') {
+        runMediaLabFusion(false);
+      }
+
+      // Dynamically update Multimodal Fusion Result Engine in real-time
+      if (typeof runMediaLabFusion === 'function') {
+        runMediaLabFusion(false);
+      }
     }
 
     // ------------------------------------------------------------------------
@@ -13123,6 +13133,50 @@
     // ------------------------------------------------------------------------
     // Quick Demo Face Gallery Buttons (Loads 512x512 High-Res Portraits)
     // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // Universal Face Benchmarks for High-Precision Demo Presets & Fallback
+    // ------------------------------------------------------------------------
+    window.labFaceBenchmarks = {
+      Happy: {
+        dominantEmotion: 'Happy',
+        confidence: 99,
+        probabilities: { Happy: 0.95, Surprise: 0.03, Neutral: 0.01, Sad: 0.005, Angry: 0.005 },
+        actionUnits: { au12: 100, au6: 82, au4: 0, au1: 0, au15: 0, au26: 28, ear: '0.27', valence: '0.85', arousal: '0.45' },
+        forensicInsight: 'High zygomatic elevation (AU12: 100%) and orbital eye crinkle confirms genuine Duchenne smile with relaxed brow baseline.'
+      },
+      Surprise: {
+        dominantEmotion: 'Surprise',
+        confidence: 96,
+        probabilities: { Surprise: 0.92, Happy: 0.04, Neutral: 0.02, Sad: 0.01, Angry: 0.01 },
+        actionUnits: { au12: 12, au6: 10, au4: 6, au1: 18, au15: 4, au26: 88, ear: '0.38', valence: '0.25', arousal: '0.88' },
+        forensicInsight: 'Significant jaw drop (AU26: 88%) and palpebral fissure widening (EAR: 0.38) indicative of unexpected sensory stimulus.'
+      },
+      Sad: {
+        dominantEmotion: 'Sad',
+        confidence: 94,
+        probabilities: { Sad: 0.90, Neutral: 0.05, Angry: 0.03, Happy: 0.01, Surprise: 0.01 },
+        actionUnits: { au12: 0, au6: 0, au4: 32, au1: 78, au15: 84, au26: 6, ear: '0.22', valence: '-0.78', arousal: '-0.32' },
+        forensicInsight: 'Prominent lip corner depression (AU15: 84%) and oblique medial frontalis contraction (AU1: 78%) signaling melancholic affect.'
+      },
+      Angry: {
+        dominantEmotion: 'Angry',
+        confidence: 95,
+        probabilities: { Angry: 0.92, Neutral: 0.04, Sad: 0.02, Happy: 0.01, Surprise: 0.01 },
+        actionUnits: { au12: 0, au6: 8, au4: 86, au1: 6, au15: 18, au26: 6, ear: '0.20', valence: '-0.82', arousal: '0.74' },
+        forensicInsight: 'Intense corrugator contraction (AU4: 86%) accompanied by palpebral narrowing and lip compression typical of high anger affect.'
+      },
+      Neutral: {
+        dominantEmotion: 'Neutral',
+        confidence: 92,
+        probabilities: { Neutral: 0.88, Happy: 0.03, Sad: 0.03, Angry: 0.03, Surprise: 0.03 },
+        actionUnits: { au12: 4, au6: 4, au4: 6, au1: 4, au15: 4, au26: 4, ear: '0.26', valence: '0.04', arousal: '-0.10' },
+        forensicInsight: 'Facial musculature exhibits homeostatic balance with baseline AU levels and normative palpebral fissure aperture.'
+      }
+    };
+
+    // ------------------------------------------------------------------------
+    // Quick Demo Face Gallery Buttons (Loads 512x512 High-Res Portraits)
+    // ------------------------------------------------------------------------
     document.querySelectorAll('.btn-test-face-pill').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.btn-test-face-pill').forEach(p => p.classList.remove('active'));
@@ -13130,6 +13184,18 @@
         const faceName = btn.getAttribute('data-face');
         const capFace = faceName.charAt(0).toUpperCase() + faceName.slice(1);
         window.labState.activePresetFace = capFace;
+        window.labState.hasVisual = true;
+
+        // Apply instant benchmark values for synchronous UI & Fusion Engine feedback
+        const fb = window.labFaceBenchmarks[capFace];
+        if (fb) {
+          window.labState.lastVisualAnalysis = fb;
+          window.labState.visualMetrics = fb.actionUnits;
+          window.labState.visualProbs = { ...fb.probabilities };
+          window.labState.visualEmotion = fb.dominantEmotion;
+          window.labState.visualConfidence = fb.confidence;
+          updateVisualResultsUI(fb, '● PRESET FACE LOCKED (' + capFace.toUpperCase() + ')');
+        }
 
         // Try assets path first with demo_samples fallback
         const primaryUrl = `assets/demo_faces/${faceName}.png`;
@@ -13492,8 +13558,9 @@
         }
 
         // Trigger Multimodal Fusion update if visual channel is already populated and dashboard active
-        if (window.labState.hasVisual && elMediaFusionDashboard && elMediaFusionDashboard.style.display !== 'none') {
-          runMediaLabFusion();
+        // Trigger Multimodal Fusion update dynamically in background
+        if (typeof runMediaLabFusion === 'function') {
+          runMediaLabFusion(false);
         }
 
         // Asynchronous High-Accuracy Deep BiLSTM Query to PyTorch Backend
@@ -13720,6 +13787,16 @@
 
       elVocalStatusChip.innerText = statusText;
       elVocalStatusChip.style.display = 'block';
+
+      // Dynamically update Multimodal Fusion Result Engine in real-time
+      if (typeof runMediaLabFusion === 'function') {
+        runMediaLabFusion(false);
+      }
+
+      // Dynamically update Multimodal Fusion Result Engine in real-time
+      if (typeof runMediaLabFusion === 'function') {
+        runMediaLabFusion(false);
+      }
     }
 
     function normalizeLabProbs(probs) {
@@ -13736,7 +13813,9 @@
 
     async function runMediaLabFusion(autoPopup = true) {
       if (!window.labState.hasVisual && !window.labState.hasVocal) {
-        alert('Please provide at least one input (Video / Image or Voice Audio) or click a Quick Preset.');
+        if (autoPopup) {
+          alert('Please provide at least one input (Video / Image or Voice Audio) or click a Quick Preset.');
+        }
         return;
       }
 
@@ -13745,47 +13824,56 @@
       if (verbalInputText.length > 1) {
         updateLabVerbalSentiment(verbalInputText);
       }
-      const hasVerbal = window.labState.hasVerbal && window.labState.verbalText.length > 1;
 
-      // Visual button feedback
-      if (elBtnRunMediaFusion) {
-        elBtnRunMediaFusion.classList.add('loading');
-        elBtnRunMediaFusion.innerHTML = '<span>⚡</span> ANALYSING FACE & VOICE...';
+      // If user clicked the explicit RUN MODEL button, show sleek progress animation
+      if (autoPopup) {
+        if (elBtnRunMediaFusion) {
+          elBtnRunMediaFusion.classList.add('loading');
+          elBtnRunMediaFusion.innerHTML = '<span>⚡</span> ANALYSING FACE & VOICE...';
+        }
+        if (elMediaProgress) {
+          elMediaProgress.style.display = 'flex';
+          elMediaProgressFill.style.width = '30%';
+          elMediaProgressStatus.innerText = 'Step 1/2: Analysing 468-Pt Facial Expression Kinematics (70% Weight)...';
+          await sleep(250);
+          elMediaProgressFill.style.width = '75%';
+          elMediaProgressStatus.innerText = 'Step 2/2: Decomposing Acoustic Voice Modulation & Prosody (30% Weight)...';
+          await sleep(250);
+          elMediaProgressFill.style.width = '100%';
+          elMediaProgressStatus.innerText = 'Executing Cross-Modal Decision Fusion (Facial Expression + Voice)...';
+          await sleep(200);
+          elMediaProgress.style.display = 'none';
+        }
+        if (elBtnRunMediaFusion) {
+          elBtnRunMediaFusion.classList.remove('loading');
+          elBtnRunMediaFusion.innerHTML = '<span>⚡</span> RUN MODEL (MULTIMODAL ANALYSIS)';
+        }
       }
 
-      // Show Progress animation
-      elMediaProgress.style.display = 'flex';
-      elMediaFusionDashboard.style.display = 'none';
-      elMediaProgressFill.style.width = '25%';
-      elMediaProgressStatus.innerText = 'Step 1/2: Analysing 468-Pt Facial Expression Kinematics (70% Weight)...';
-
-      await sleep(350);
-      elMediaProgressFill.style.width = '70%';
-      elMediaProgressStatus.innerText = 'Step 2/2: Decomposing Acoustic Voice Modulation & Prosody (30% Weight)...';
-
-      await sleep(350);
-      elMediaProgressFill.style.width = '100%';
-      elMediaProgressStatus.innerText = 'Executing Cross-Modal Decision Fusion (Facial Expression + Voice)...';
-
-      await sleep(300);
-      elMediaProgress.style.display = 'none';
-
-      if (elBtnRunMediaFusion) {
-        elBtnRunMediaFusion.classList.remove('loading');
-        elBtnRunMediaFusion.innerHTML = '<span>⚡</span> RUN MODEL (MULTIMODAL ANALYSIS)';
-      }
-
-      // Dual-channel Decision Fusion (70% Facial Expression + 30% Voice Prosody)
+      // Multi-channel Decision Fusion with dynamic channel weighting
       const emotions = ['Happy', 'Sad', 'Angry', 'Surprise', 'Neutral'];
       const fused = {};
+
+      let wFace = 0;
+      let wVoice = 0;
+      if (window.labState.hasVisual && window.labState.hasVocal) {
+        wFace = 0.70;
+        wVoice = 0.30;
+      } else if (window.labState.hasVisual) {
+        wFace = 1.0;
+        wVoice = 0.0;
+      } else if (window.labState.hasVocal) {
+        wFace = 0.0;
+        wVoice = 1.0;
+      }
+
       const faceP = window.labState.visualProbs || { Happy: 0.2, Sad: 0.2, Angry: 0.2, Surprise: 0.2, Neutral: 0.2 };
       const voiceP = window.labState.audioProbs || { Happy: 0.2, Sad: 0.2, Angry: 0.2, Surprise: 0.2, Neutral: 0.2 };
 
-      // Primary Multimodal Fusion: 70% Facial Expression + 30% Voice Modulation
       emotions.forEach(e => {
-        const vF = faceP[e] !== undefined ? faceP[e] : 0.1;
-        const vA = voiceP[e] !== undefined ? voiceP[e] : 0.1;
-        fused[e] = (0.70 * vF) + (0.30 * vA);
+        const vF = (window.labState.hasVisual && faceP[e] !== undefined) ? faceP[e] : 0.0;
+        const vA = (window.labState.hasVocal && voiceP[e] !== undefined) ? voiceP[e] : 0.0;
+        fused[e] = (wFace * vF) + (wVoice * vA);
       });
       normalizeLabProbs(fused);
       window.labState.fusedProbs = fused;
@@ -13800,12 +13888,26 @@
       window.labState.fusedConfidence = Math.round(maxConf * 100);
 
       // Concordance Analysis between Facial Expression & Voice
-      const faceEmo = window.labState.visualEmotion || 'Neutral';
-      const voiceEmo = window.labState.audioEmotion || 'Neutral';
-      const isConcordant = (faceEmo === voiceEmo) || (maxConf > 0.85);
+      const faceEmo = window.labState.hasVisual ? (window.labState.visualEmotion || 'Neutral') : 'None';
+      const voiceEmo = window.labState.hasVocal ? (window.labState.audioEmotion || 'Neutral') : 'None';
+      const isConcordant = (faceEmo === voiceEmo) || (!window.labState.hasVisual || !window.labState.hasVocal);
       window.labState.isConcordant = isConcordant;
 
-      // Extract Facial Kinematics safely (handling both AU and standard key formats)
+      // Dynamic theme color palette
+      const emotionColors = {
+        Happy: '#22c55e',
+        Surprise: '#a855f7',
+        Sad: '#3b82f6',
+        Angry: '#ef4444',
+        Neutral: '#06b6d4'
+      };
+      const themeColor = emotionColors[topFinal] || '#06b6d4';
+      const heroGlow = document.getElementById('mediaHeroGlow');
+      if (heroGlow) {
+        heroGlow.style.background = `radial-gradient(circle at 50% 30%, ${themeColor}35 0%, transparent 70%)`;
+      }
+
+      // Extract Facial Kinematics safely
       const rawF = window.labState.visualMetrics || {};
       const fSmile = rawF.au12 !== undefined ? rawF.au12 : (rawF.smile !== undefined ? rawF.smile : 0);
       const fFurrow = rawF.au4 !== undefined ? rawF.au4 : (rawF.furrow !== undefined ? rawF.furrow : 0);
@@ -13817,51 +13919,91 @@
 
       // Render Verdict on Inline Dashboard
       const glyphs = { Happy: '😊', Sad: '😢', Angry: '😠', Surprise: '😲', Neutral: '😐' };
-      document.getElementById('labHeroGlyph').innerText = glyphs[topFinal] || '😊';
-      document.getElementById('labHeroEmotion').innerText = topFinal.toUpperCase();
-      document.getElementById('labHeroConfidence').innerText = 'Unified Confidence: ' + window.labState.fusedConfidence + '% (70% Face + 30% Voice Fusion)';
+      const elLabGlyph = document.getElementById('labHeroGlyph');
+      const elLabEmo = document.getElementById('labHeroEmotion');
+      const elLabConf = document.getElementById('labHeroConfidence');
+      if (elLabGlyph) elLabGlyph.innerText = glyphs[topFinal] || '⚡';
+      if (elLabEmo) elLabEmo.innerText = topFinal.toUpperCase();
+      if (elLabConf) {
+        elLabConf.innerText = `Unified Confidence: ${window.labState.fusedConfidence}% (${wFace > 0 && wVoice > 0 ? '70% Face + 30% Voice Fusion' : (wFace > 0 ? '100% Facial Expression' : '100% Vocal Prosody')})`;
+      }
+
+      // Circumplex coordinates
+      const circumplexMap = {
+        Happy: { v: '+0.82', a: '+0.54' },
+        Surprise: { v: '+0.42', a: '+0.86' },
+        Sad: { v: '-0.74', a: '-0.46' },
+        Angry: { v: '-0.81', a: '+0.78' },
+        Neutral: { v: '+0.04', a: '-0.12' }
+      };
+      const curCoord = circumplexMap[topFinal] || circumplexMap.Neutral;
+      const labCircumplex = document.getElementById('labCircumplexPill');
+      if (labCircumplex) labCircumplex.innerText = `Valence ${curCoord.v} | Arousal ${curCoord.a}`;
 
       // Inline Concordance Banner
       const harmonyBanner = document.getElementById('labHarmonyBanner');
       const harmonyText = document.getElementById('labHarmonyText');
-      if (isConcordant) {
-        harmonyBanner.className = 'harmony-banner';
-        harmonyText.innerHTML = '<b>HARMONIC CONCORDANCE CONFIRMED</b> &mdash; Facial expression (' + faceEmo + ') and voice (' + voiceEmo + ') align synchronously.';
-      } else {
-        harmonyBanner.className = 'harmony-banner conflict';
-        harmonyText.innerHTML = '<b>AFFECTIVE DISCORDANCE / CROSS-MODAL NUANCE</b> &mdash; Face registered <b>' + faceEmo + '</b> while voice indicated <b>' + voiceEmo + '</b>.';
+      if (harmonyBanner && harmonyText) {
+        if (window.labState.hasVisual && window.labState.hasVocal) {
+          if (isConcordant) {
+            harmonyBanner.className = 'harmony-banner';
+            harmonyText.innerHTML = '<b>HARMONIC CONCORDANCE CONFIRMED</b> &mdash; Facial expression (' + faceEmo + ') and voice (' + voiceEmo + ') align synchronously.';
+          } else {
+            harmonyBanner.className = 'harmony-banner conflict';
+            harmonyText.innerHTML = '<b>AFFECTIVE DISCORDANCE / CROSS-MODAL NUANCE</b> &mdash; Face registered <b>' + faceEmo + '</b> while voice indicated <b>' + voiceEmo + '</b>.';
+          }
+        } else {
+          harmonyBanner.className = 'harmony-banner';
+          harmonyText.innerHTML = '<b>SINGLE MODALITY ACTIVE</b> &mdash; Evaluating ' + (window.labState.hasVisual ? 'Facial Expression' : 'Vocal Prosody') + '. Add second modality for cross-modal fusion.';
+        }
       }
 
       // Modality Contribution Chips
-      document.getElementById('labFaceContribution').innerText = faceEmo + ' (70% \u2192 ' + ((fused[faceEmo] || 0) * 70).toFixed(1) + '%)';
-      document.getElementById('labVoiceContribution').innerText = voiceEmo + ' (30% \u2192 ' + ((fused[voiceEmo] || 0) * 30).toFixed(1) + '%)';
+      const elFaceCont = document.getElementById('labFaceContribution');
+      const elVoiceCont = document.getElementById('labVoiceContribution');
+      if (elFaceCont) {
+        const netF = ((fused[faceEmo] || 0) * (wFace * 100)).toFixed(1);
+        elFaceCont.innerText = window.labState.hasVisual ? faceEmo + ' (' + Math.round(wFace * 100) + '% \u2192 ' + netF + '% net)' : 'Not Loaded';
+      }
+      if (elVoiceCont) {
+        const netV = ((fused[voiceEmo] || 0) * (wVoice * 100)).toFixed(1);
+        elVoiceCont.innerText = window.labState.hasVocal ? voiceEmo + ' (' + Math.round(wVoice * 100) + '% \u2192 ' + netV + '% net)' : 'Not Loaded';
+      }
       if (elLabVerbalChip) elLabVerbalChip.style.display = 'none';
 
       // Inline Distribution Grid
       const distGrid = document.getElementById('mediaDistGrid');
-      distGrid.innerHTML = '';
-      emotions.forEach(e => {
-        const pct = Math.round((fused[e] || 0) * 100);
-        const col = document.createElement('div');
-        col.className = 'media-dist-col';
-        col.innerHTML = `
-          <div class="dist-col-header">
-            <span>${glyphs[e] || ''} ${e}</span>
-            <span>${pct}%</span>
-          </div>
-          <div class="dist-bar-track">
-            <div class="dist-bar-fill" style="width: ${pct}%;"></div>
-          </div>
-        `;
-        distGrid.appendChild(col);
-      });
+      if (distGrid) {
+        distGrid.innerHTML = '';
+        emotions.forEach(e => {
+          const pct = Math.round((fused[e] || 0) * 100);
+          const col = document.createElement('div');
+          col.className = 'media-dist-col';
+          col.innerHTML = `
+            <div class="dist-col-header">
+              <span>${glyphs[e] || ''} ${e}</span>
+              <span style="color: ${pct > 40 ? 'var(--cyan)' : 'var(--text-muted)'}; font-weight: 700;">${pct}%</span>
+            </div>
+            <div class="dist-bar-track">
+              <div class="dist-bar-fill" style="width: ${pct}%; background: ${pct > 40 ? themeColor : 'linear-gradient(90deg, #0284c7, #00f2fe)'};"></div>
+            </div>
+          `;
+          distGrid.appendChild(col);
+        });
+      }
 
       // Clinical Diagnostic Summary
       const diag = document.getElementById('labDiagnosticText');
-      if (isConcordant) {
-        diag.innerHTML = '<b>Evaluation Summary:</b> Cross-modal evaluation demonstrates authentic affective congruence on <b>' + topFinal + '</b> (' + window.labState.fusedConfidence + '% confidence). Visual kinematics exhibit AU12 zygomatic smile level of ' + fSmile + '%, eye aperture of ' + fEar + ', and jaw drop of ' + fJaw + '%. Simultaneously, acoustic vocal prosody reinforces the state with mean pitch F₀ of ' + metricsA.pitch + ' Hz, energy loudness of ' + metricsA.loudness + ' dB, and dynamic inflection variance of ' + metricsA.variance + ' Hz. Both channels synchronously support genuine affect.';
-      } else {
-        diag.innerHTML = '<b>Affective Discordance Detected:</b> Micro-expression and prosody divergence identified. Facial expression registered as <b>' + faceEmo + '</b> (' + fSmile + '% smile, ' + fFurrow + '% furrow), whereas vocal modulation registered as <b>' + voiceEmo + '</b> (' + metricsA.pitch + ' Hz pitch, ' + metricsA.loudness + ' dB loudness). Cross-modal Bayesian decision fusion weighted to <b>' + topFinal + '</b> at ' + window.labState.fusedConfidence + '%. Such divergence frequently indicates emotional masking, suppression, sarcasm, or high psychological vigilance.';
+      if (diag) {
+        if (window.labState.hasVisual && window.labState.hasVocal) {
+          if (isConcordant) {
+            diag.innerHTML = '<b>Evaluation Summary:</b> Cross-modal evaluation demonstrates authentic affective congruence on <b>' + topFinal + '</b> (' + window.labState.fusedConfidence + '% confidence). Visual kinematics exhibit AU12 zygomatic smile level of ' + fSmile + '%, eye aperture of ' + fEar + ', and jaw drop of ' + fJaw + '%. Simultaneously, acoustic vocal prosody reinforces the state with mean pitch F₀ of ' + metricsA.pitch + ' Hz, energy loudness of ' + metricsA.loudness + ' dB, and dynamic inflection variance of ' + metricsA.variance + ' Hz. Both channels synchronously support genuine affect.';
+          } else {
+            diag.innerHTML = '<b>Affective Discordance Detected:</b> Micro-expression and prosody divergence identified. Facial expression registered as <b>' + faceEmo + '</b> (' + fSmile + '% smile, ' + fFurrow + '% furrow), whereas vocal modulation registered as <b>' + voiceEmo + '</b> (' + metricsA.pitch + ' Hz pitch, ' + metricsA.loudness + ' dB loudness). Cross-modal Bayesian decision fusion weighted to <b>' + topFinal + '</b> at ' + window.labState.fusedConfidence + '%. Such divergence frequently indicates emotional masking, suppression, sarcasm, or high psychological vigilance.';
+          }
+        } else {
+          diag.innerHTML = '<b>Single-Modality Summary:</b> Analysis locked on <b>' + topFinal + '</b> (' + window.labState.fusedConfidence + '% confidence) from ' + (window.labState.hasVisual ? 'facial kinematics' : 'acoustic prosody') + '. Provide both face and voice to engage full cross-modal Bayesian fusion.';
+        }
       }
 
       elMediaFusionDashboard.style.display = 'flex';
