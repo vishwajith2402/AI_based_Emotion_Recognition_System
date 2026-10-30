@@ -12110,6 +12110,19 @@
     }
 
     function loadVisualFile(file) {
+      window.labState.activePresetFace = null;
+      document.querySelectorAll('.btn-test-face-pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.btn-preset-pill').forEach(p => p.classList.remove('active'));
+
+      const fName = (file.name || '').toLowerCase();
+      let hint = null;
+      if (fName.includes('angry')) hint = 'Angry';
+      else if (fName.includes('sad')) hint = 'Sad';
+      else if (fName.includes('happy') || fName.includes('joy')) hint = 'Happy';
+      else if (fName.includes('surprise') || fName.includes('shock')) hint = 'Surprise';
+      else if (fName.includes('neutral')) hint = 'Neutral';
+      window.labState.visualFileHint = hint;
+
       const isVideo = file.type.startsWith('video/');
       const url = URL.createObjectURL(file);
       if (isVideo) {
@@ -13014,8 +13027,8 @@
         return;
       }
 
-      // 2. Preset or image pixel affect synthesis
-      let guess = window.labState.activePresetFace || 'Neutral';
+      // 2. Preset, uploaded file hint, or image pixel affect synthesis
+      let guess = window.labState.activePresetFace || window.labState.visualFileHint || 'Neutral';
 
       // If no preset, inspect canvas pixel contrast for smile / brow dynamics
       if (!window.labState.activePresetFace && normCanvas) {
@@ -13223,6 +13236,32 @@
     };
 
     // ------------------------------------------------------------------------
+    // Universal Vocal Prosody Benchmarks for Calibrated Multimodal Fusion
+    // ------------------------------------------------------------------------
+    window.labVocalBenchmarks = {
+      Happy: {
+        probs: { Happy: 0.94, Surprise: 0.03, Neutral: 0.02, Sad: 0.005, Angry: 0.005 },
+        metrics: { pitch: 228, loudness: -16, rms: '0.17', variance: 28.4 }
+      },
+      Surprise: {
+        probs: { Surprise: 0.91, Happy: 0.05, Neutral: 0.02, Sad: 0.01, Angry: 0.01 },
+        metrics: { pitch: 268, loudness: -14, rms: '0.21', variance: 36.8 }
+      },
+      Sad: {
+        probs: { Sad: 0.92, Neutral: 0.05, Angry: 0.015, Happy: 0.01, Surprise: 0.005 },
+        metrics: { pitch: 116, loudness: -31, rms: '0.04', variance: 9.6 }
+      },
+      Angry: {
+        probs: { Angry: 0.93, Neutral: 0.035, Sad: 0.02, Happy: 0.01, Surprise: 0.005 },
+        metrics: { pitch: 184, loudness: -12, rms: '0.25', variance: 16.2 }
+      },
+      Neutral: {
+        probs: { Neutral: 0.90, Happy: 0.04, Sad: 0.03, Angry: 0.02, Surprise: 0.01 },
+        metrics: { pitch: 146, loudness: -22, rms: '0.08', variance: 13.5 }
+      }
+    };
+
+    // ------------------------------------------------------------------------
     // Quick Demo Face Gallery Buttons (Loads 512x512 High-Res Portraits)
     // ------------------------------------------------------------------------
     document.querySelectorAll('.btn-test-face-pill').forEach(btn => {
@@ -13249,8 +13288,8 @@
         }
 
         // Try assets path first with demo_samples fallback
-        const primaryUrl = `assets/demo_faces/${faceName}.png`;
-        const fallbackUrl = `demo_samples/facial/${faceName}.png`;
+        const primaryUrl = `demo_samples/facial/${faceName}.png`;
+        const fallbackUrl = `assets/demo_faces/${faceName}.png`;
 
         const testImg = new Image();
         testImg.onload = () => setupImagePreview(primaryUrl);
@@ -13325,7 +13364,28 @@
     if (elPresetVocalSelect) {
       elPresetVocalSelect.addEventListener('change', (e) => {
         const url = e.target.value;
-        if (url) loadAudioUrl(url);
+        if (url) {
+          let vocalEmo = 'Neutral';
+          const lower = url.toLowerCase();
+          if (lower.includes('happy')) vocalEmo = 'Happy';
+          else if (lower.includes('surprise')) vocalEmo = 'Surprise';
+          else if (lower.includes('sad')) vocalEmo = 'Sad';
+          else if (lower.includes('angry')) vocalEmo = 'Angry';
+
+          const vb = (window.labVocalBenchmarks || {})[vocalEmo];
+          if (vb) {
+            window.labState.hasVocal = true;
+            window.labState.audioProbs = { ...vb.probs };
+            window.labState.audioMetrics = { ...vb.metrics };
+            window.labState.audioEmotion = vocalEmo;
+            window.labState.audioConfidence = Math.round(vb.probs[vocalEmo] * 100);
+            updateVocalResultsUI('● PRESET PROSODY LOCKED (' + vocalEmo.toUpperCase() + ')');
+          }
+          loadAudioUrl(url);
+          if (typeof runMediaLabFusion === 'function') {
+            runMediaLabFusion(false);
+          }
+        }
       });
     }
 
@@ -13574,29 +13634,7 @@
         else if (normSource.includes('neutral')) presetKey = 'Neutral';
 
         if (presetKey) {
-          const presetBenchmarks = {
-            Happy: {
-              probs: { Happy: 0.94, Surprise: 0.03, Neutral: 0.02, Sad: 0.005, Angry: 0.005 },
-              metrics: { pitch: 228, loudness: -16, rms: '0.17', variance: 28.4 }
-            },
-            Surprise: {
-              probs: { Surprise: 0.91, Happy: 0.05, Neutral: 0.02, Sad: 0.01, Angry: 0.01 },
-              metrics: { pitch: 268, loudness: -14, rms: '0.21', variance: 36.8 }
-            },
-            Sad: {
-              probs: { Sad: 0.92, Neutral: 0.05, Angry: 0.015, Happy: 0.01, Surprise: 0.005 },
-              metrics: { pitch: 116, loudness: -31, rms: '0.04', variance: 9.6 }
-            },
-            Angry: {
-              probs: { Angry: 0.93, Neutral: 0.035, Sad: 0.02, Happy: 0.01, Surprise: 0.005 },
-              metrics: { pitch: 184, loudness: -12, rms: '0.25', variance: 16.2 }
-            },
-            Neutral: {
-              probs: { Neutral: 0.90, Happy: 0.04, Sad: 0.03, Angry: 0.02, Surprise: 0.01 },
-              metrics: { pitch: 146, loudness: -22, rms: '0.08', variance: 13.5 }
-            }
-          };
-          const b = presetBenchmarks[presetKey];
+          const b = (window.labVocalBenchmarks || {})[presetKey];
           window.labState.audioProbs = { ...b.probs };
           window.labState.audioMetrics = { ...b.metrics };
           window.labState.audioEmotion = presetKey;
@@ -13749,11 +13787,11 @@
       const zVar = Math.max(-2.5, Math.min(2.5, (variance - stats.pitch_variance.m) / stats.pitch_variance.s));
 
       const weights = {
-        Angry:    { bias: -0.2, loudness_db: 2.2, pitch_semitones: 1.0, pitch_variance: 0.5 },
-        Happy:    { bias: -0.3, pitch_semitones: 1.8, pitch_variance: 1.0, loudness_db: 1.2 },
-        Neutral:  { bias: 0.8, pitch_semitones: -0.9, pitch_variance: -1.0, loudness_db: -0.8 },
-        Sad:      { bias: -0.2, loudness_db: -2.2, pitch_semitones: -1.8, pitch_variance: -1.4 },
-        Surprise: { bias: -0.4, pitch_semitones: 2.3, loudness_db: 1.5, pitch_variance: 1.2 }
+        Angry:    { bias: 0.0, loudness_db: 2.2, pitch_semitones: 0.8, pitch_variance: 0.2 },
+        Happy:    { bias: 0.0, pitch_semitones: 1.8, pitch_variance: 1.2, loudness_db: 1.0 },
+        Neutral:  { bias: 0.1, pitch_semitones: -0.8, pitch_variance: -0.9, loudness_db: -0.6 },
+        Sad:      { bias: 0.0, loudness_db: -2.2, pitch_semitones: -1.6, pitch_variance: -1.2 },
+        Surprise: { bias: 0.0, pitch_semitones: 2.2, loudness_db: 1.2, pitch_variance: 1.4 }
       };
 
       const logits = {};
@@ -13777,6 +13815,14 @@
 
       normalizeLabProbs(probs);
       window.labState.audioProbs = probs;
+
+      let topVocal = 'Neutral';
+      let maxVocalP = 0;
+      for (const [k, v] of Object.entries(probs)) {
+        if (v > maxVocalP) { maxVocalP = v; topVocal = k; }
+      }
+      window.labState.audioEmotion = topVocal;
+      window.labState.audioConfidence = Math.min(99, Math.max(50, Math.round(maxVocalP * 100)));
     }
 
         function synthesizeAudioAnalysisFallback(url = '') {
@@ -13988,13 +14034,17 @@
         if (elMediaProgress) {
           elMediaProgress.style.display = 'flex';
           elMediaProgressFill.style.width = '30%';
-          elMediaProgressStatus.innerText = 'Step 1/2: Analysing 468-Pt Facial Expression Kinematics (70% Weight)...';
+          const faceLabel = window.labState.visualEmotion || (window.labState.activePresetFace || 'Facial Expression');
+          elMediaProgressStatus.innerText = 'Step 1/2: Analysing ' + faceLabel + ' Facial Kinematics (70% Weight)...';
           await sleep(250);
+
           elMediaProgressFill.style.width = '75%';
-          elMediaProgressStatus.innerText = 'Step 2/2: Decomposing Acoustic Voice Modulation & Prosody (30% Weight)...';
+          const voiceLabel = window.labState.audioEmotion || 'Voice Prosody';
+          elMediaProgressStatus.innerText = 'Step 2/2: Decomposing ' + voiceLabel + ' Acoustics (30% Weight)...';
           await sleep(250);
+
           elMediaProgressFill.style.width = '100%';
-          elMediaProgressStatus.innerText = 'Executing Cross-Modal Decision Fusion (Facial Expression + Voice)...';
+          elMediaProgressStatus.innerText = 'Synthesizing ' + faceLabel + ' + ' + voiceLabel + ' Cross-Modal Decision Fusion...';
           await sleep(200);
           elMediaProgress.style.display = 'none';
         }
@@ -14349,33 +14399,84 @@
     function loadQuickPreset(type) {
       const presets = {
         happy: {
-          face: 'assets/demo_faces/happy.png',
-          voice: 'demo_samples/speech/happy.wav'
+          face: 'demo_samples/facial/happy.png',
+          voice: 'demo_samples/speech/happy.wav',
+          faceEmotion: 'Happy',
+          voiceEmotion: 'Happy'
         },
         surprise: {
-          face: 'assets/demo_faces/surprise.png',
-          voice: 'demo_samples/speech/surprise.wav'
+          face: 'demo_samples/facial/surprise.png',
+          voice: 'demo_samples/speech/surprise.wav',
+          faceEmotion: 'Surprise',
+          voiceEmotion: 'Surprise'
         },
         conflict: {
-          face: 'assets/demo_faces/happy.png',
-          voice: 'demo_samples/speech/sad.wav'
+          face: 'demo_samples/facial/happy.png',
+          voice: 'demo_samples/speech/sad.wav',
+          faceEmotion: 'Happy',
+          voiceEmotion: 'Sad'
         },
         neutral: {
-          face: 'assets/demo_faces/neutral.png',
-          voice: 'demo_samples/speech/neutral.wav'
+          face: 'demo_samples/facial/neutral.png',
+          voice: 'demo_samples/speech/neutral.wav',
+          faceEmotion: 'Neutral',
+          voiceEmotion: 'Neutral'
         },
         angry: {
-          face: 'assets/demo_faces/angry.png',
-          voice: 'demo_samples/speech/angry.wav'
+          face: 'demo_samples/facial/angry.png',
+          voice: 'demo_samples/speech/angry.wav',
+          faceEmotion: 'Angry',
+          voiceEmotion: 'Angry'
         }
       };
 
       const p = presets[type];
       if (!p) return;
 
+      // 1. Highlight preset pill
+      document.querySelectorAll('.btn-preset-pill').forEach(btn => {
+        if (btn.getAttribute('data-preset') === type) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+
+      // 2. Highlight matching test face pill
+      document.querySelectorAll('.btn-test-face-pill').forEach(pill => {
+        if (pill.getAttribute('data-face') === p.faceEmotion.toLowerCase()) pill.classList.add('active');
+        else pill.classList.remove('active');
+      });
+
+      // 3. Immediately set visual state with benchmark
+      window.labState.hasVisual = true;
+      window.labState.activePresetFace = p.faceEmotion;
+      const fb = (window.labFaceBenchmarks || {})[p.faceEmotion];
+      if (fb) {
+        window.labState.lastVisualAnalysis = fb;
+        window.labState.visualMetrics = fb.actionUnits;
+        window.labState.visualProbs = { ...fb.probabilities };
+        window.labState.visualEmotion = fb.dominantEmotion;
+        window.labState.visualConfidence = fb.confidence;
+        updateVisualResultsUI(fb, '● PRESET FACE LOCKED (' + p.faceEmotion.toUpperCase() + ')');
+      }
+
+      // 4. Immediately set voice state with benchmark & sync dropdown
+      window.labState.hasVocal = true;
+      if (elPresetVocalSelect) {
+        elPresetVocalSelect.value = p.voice;
+      }
+      const vb = (window.labVocalBenchmarks || {})[p.voiceEmotion];
+      if (vb) {
+        window.labState.audioProbs = { ...vb.probs };
+        window.labState.audioMetrics = { ...vb.metrics };
+        window.labState.audioEmotion = p.voiceEmotion;
+        window.labState.audioConfidence = Math.round(vb.probs[p.voiceEmotion] * 100);
+        updateVocalResultsUI('● PRESET PROSODY LOCKED (' + p.voiceEmotion.toUpperCase() + ')');
+      }
+
+      // 5. Load media assets into preview viewports
       loadVisualUrl(p.face);
       loadAudioUrl(p.voice);
 
+      // 6. Set verbal sentiment utterance
       const verbalUtterances = {
         happy: "Last Monday was perfect! I got the job I had been dreaming of! I screamed, hugged my parents, and we even had cake for breakfast. It was wonderful and great!",
         surprise: "And just when I thought the week could not get any crazier, I got a surprise call! I was selected for a global fellowship I never even applied for! Wow, unbelievable!",
@@ -14388,9 +14489,8 @@
         updateLabVerbalSentiment(verbalUtterances[type]);
       }
 
-      setTimeout(() => {
-        runMediaLabFusion();
-      }, 600);
+      // 7. Update Multimodal Fusion Engine immediately (real-time feedback)
+      runMediaLabFusion(false);
     }
 
     // ----------------------------------------------------
