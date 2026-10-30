@@ -13266,6 +13266,7 @@
     // ------------------------------------------------------------------------
     document.querySelectorAll('.btn-test-face-pill').forEach(btn => {
       btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-preset-pill').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.btn-test-face-pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         const faceName = btn.getAttribute('data-face');
@@ -13363,6 +13364,7 @@
 
     if (elPresetVocalSelect) {
       elPresetVocalSelect.addEventListener('change', (e) => {
+        document.querySelectorAll('.btn-preset-pill').forEach(p => p.classList.remove('active'));
         const url = e.target.value;
         if (url) {
           let vocalEmo = 'Neutral';
@@ -13928,49 +13930,126 @@
           btnAutoDash.innerText = '⚡ AUTO-DETECTING DATA...';
         }
 
-        // 1. Auto-Detect Facial Data (Load Joy / Happy high-res portrait if not present)
-        const hasActiveFace = window.labState.hasVisual && (window.labState.visualEmotion && window.labState.visualEmotion !== 'None');
-        if (!hasActiveFace || forceReload) {
-          const defaultFace = 'happy';
-          const capFace = 'Happy';
-          window.labState.activePresetFace = capFace;
-          window.labState.hasVisual = true;
+        // 1. Detect active Quick Preset pill (happy, surprise, conflict, neutral, angry)
+        const activePresetBtn = document.querySelector('.btn-preset-pill.active');
+        const activePresetType = activePresetBtn ? activePresetBtn.getAttribute('data-preset') : null;
 
-          document.querySelectorAll('.btn-test-face-pill').forEach(p => {
-            if (p.getAttribute('data-face') === defaultFace) p.classList.add('active');
-            else p.classList.remove('active');
-          });
+        // 2. Detect active Test Face pill from gallery
+        const activeFaceBtn = document.querySelector('.btn-test-face-pill.active');
+        const activeFaceName = activeFaceBtn ? activeFaceBtn.getAttribute('data-face') : null;
 
-          if (window.labFaceBenchmarks && window.labFaceBenchmarks[capFace]) {
-            const fb = window.labFaceBenchmarks[capFace];
-            window.labState.lastVisualAnalysis = fb;
-            window.labState.visualMetrics = fb.actionUnits;
-            window.labState.visualProbs = { ...fb.probabilities };
-            window.labState.visualEmotion = fb.dominantEmotion;
-            window.labState.visualConfidence = fb.confidence;
-            updateVisualResultsUI(fb, '● AUTO-DETECTED FACE: ' + capFace.toUpperCase());
+        // 3. Detect current Vocal Dropdown selection
+        const currentVocalVal = elPresetVocalSelect ? elPresetVocalSelect.value : '';
+
+        // 4. Check if custom user-uploaded media is active
+        const hasCustomImage = elLabImagePreview && elLabImagePreview.src &&
+          elLabImagePreview.style.display !== 'none' &&
+          !elLabImagePreview.src.includes('demo_samples') &&
+          !elLabImagePreview.src.includes('demo_faces');
+        const hasCustomAudio = window.labState.audioBuffer &&
+          (!currentVocalVal || !currentVocalVal.includes('demo_samples'));
+
+        let resolvedFace = 'Happy';
+        let resolvedVoice = 'Happy';
+
+        if (activePresetType) {
+          // If a preset was selected (e.g. angry, surprise, conflict, neutral, happy),
+          // resolve and auto-detect that specific selected preset!
+          loadQuickPreset(activePresetType);
+          const presetMap = {
+            happy: { face: 'Happy', voice: 'Happy' },
+            surprise: { face: 'Surprise', voice: 'Surprise' },
+            conflict: { face: 'Happy', voice: 'Sad' },
+            neutral: { face: 'Neutral', voice: 'Neutral' },
+            angry: { face: 'Angry', voice: 'Angry' }
+          };
+          if (presetMap[activePresetType]) {
+            resolvedFace = presetMap[activePresetType].face;
+            resolvedVoice = presetMap[activePresetType].voice;
+          }
+        } else {
+          // Resolve Facial Modality
+          if (hasCustomImage) {
+            await analyzeVisualElement(elLabImagePreview);
+            resolvedFace = window.labState.visualEmotion || 'Happy';
+          } else {
+            let targetFace = 'happy';
+            if (activeFaceName) {
+              targetFace = activeFaceName.toLowerCase();
+            } else if (window.labState.activePresetFace) {
+              targetFace = window.labState.activePresetFace.toLowerCase();
+            } else if (window.labState.visualEmotion && window.labState.visualEmotion !== 'None') {
+              targetFace = window.labState.visualEmotion.toLowerCase();
+            }
+
+            const capFace = targetFace.charAt(0).toUpperCase() + targetFace.slice(1);
+            resolvedFace = capFace;
+            window.labState.activePresetFace = capFace;
+            window.labState.hasVisual = true;
+
+            // Highlight matching face pill
+            document.querySelectorAll('.btn-test-face-pill').forEach(p => {
+              if (p.getAttribute('data-face') === targetFace) p.classList.add('active');
+              else p.classList.remove('active');
+            });
+
+            // Lock Action Units & benchmark probabilities
+            if (window.labFaceBenchmarks && window.labFaceBenchmarks[capFace]) {
+              const fb = window.labFaceBenchmarks[capFace];
+              window.labState.lastVisualAnalysis = fb;
+              window.labState.visualMetrics = fb.actionUnits;
+              window.labState.visualProbs = { ...fb.probabilities };
+              window.labState.visualEmotion = fb.dominantEmotion;
+              window.labState.visualConfidence = fb.confidence;
+              updateVisualResultsUI(fb, '● AUTO-DETECTED FACE: ' + capFace.toUpperCase());
+            }
+
+            // Load high-resolution facial preview
+            const primaryUrl = `demo_samples/facial/${targetFace}.png`;
+            const fallbackUrl = `assets/demo_faces/${targetFace}.png`;
+            const testImg = new Image();
+            testImg.onload = () => setupImagePreview(primaryUrl);
+            testImg.onerror = () => setupImagePreview(fallbackUrl);
+            testImg.src = primaryUrl;
           }
 
-          const primaryUrl = `assets/demo_faces/${defaultFace}.png`;
-          const fallbackUrl = `demo_samples/facial/${defaultFace}.png`;
-          const testImg = new Image();
-          testImg.onload = () => setupImagePreview(primaryUrl);
-          testImg.onerror = () => setupImagePreview(fallbackUrl);
-          testImg.src = primaryUrl;
-        } else if (elLabImagePreview && elLabImagePreview.src && elLabImagePreview.style.display !== 'none') {
-          analyzeVisualElement(elLabImagePreview);
-        }
+          // Resolve Vocal Modality
+          if (hasCustomAudio) {
+            processAudioBuffer(window.labState.audioBuffer, 'auto_detected_audio');
+            resolvedVoice = window.labState.audioEmotion || 'Neutral';
+          } else {
+            let targetVoice = 'happy';
+            const vLower = (currentVocalVal || '').toLowerCase();
+            if (vLower.includes('angry')) targetVoice = 'angry';
+            else if (vLower.includes('surprise')) targetVoice = 'surprise';
+            else if (vLower.includes('sad')) targetVoice = 'sad';
+            else if (vLower.includes('neutral')) targetVoice = 'neutral';
+            else if (vLower.includes('happy')) targetVoice = 'happy';
+            else if (window.labState.audioEmotion && window.labState.audioEmotion !== 'None') {
+              targetVoice = window.labState.audioEmotion.toLowerCase();
+            } else if (resolvedFace) {
+              targetVoice = resolvedFace.toLowerCase();
+            }
 
-        // 2. Auto-Detect Vocal Data (Load Surprise vocal prosody benchmark if not present)
-        const hasActiveVoice = window.labState.hasVocal && (window.labState.audioEmotion && window.labState.audioEmotion !== 'None');
-        if (!hasActiveVoice || forceReload) {
-          const defaultVoiceUrl = 'demo_samples/speech/surprise.wav';
-          if (elPresetVocalSelect) {
-            elPresetVocalSelect.value = defaultVoiceUrl;
+            const capVoice = targetVoice.charAt(0).toUpperCase() + targetVoice.slice(1);
+            resolvedVoice = capVoice;
+            const targetVoiceUrl = `demo_samples/speech/${targetVoice}.wav`;
+
+            if (elPresetVocalSelect) {
+              elPresetVocalSelect.value = targetVoiceUrl;
+            }
+
+            window.labState.hasVocal = true;
+            const vb = (window.labVocalBenchmarks || {})[capVoice];
+            if (vb) {
+              window.labState.audioProbs = { ...vb.probs };
+              window.labState.audioMetrics = { ...vb.metrics };
+              window.labState.audioEmotion = capVoice;
+              window.labState.audioConfidence = Math.round(vb.probs[capVoice] * 100);
+              updateVocalResultsUI('● AUTO-DETECTED PROSODY: ' + capVoice.toUpperCase());
+            }
+            await loadAudioUrl(targetVoiceUrl);
           }
-          await loadAudioUrl(defaultVoiceUrl);
-        } else if (window.labState.audioBuffer) {
-          processAudioBuffer(window.labState.audioBuffer, 'auto_detected_audio');
         }
 
         // 3. Auto-Detect verbal text if present
@@ -13979,29 +14058,30 @@
           updateLabVerbalSentiment(verbalText);
         }
 
-        // 4. Compute Multimodal Fusion immediately
-        await sleep(180);
+        // 4. Compute Multimodal Fusion immediately & update on-page engine
+        await sleep(150);
         await runMediaLabFusion(false);
 
+        // 5. Dynamic feedback showing detected emotions
         if (btnAuto) {
           btnAuto.classList.remove('loading');
-          btnAuto.innerHTML = '<span>✓</span> Data Auto-Detected';
+          btnAuto.innerHTML = `<span>✓</span> Detected ${resolvedFace} & ${resolvedVoice}`;
           setTimeout(() => {
             btnAuto.innerHTML = '<span>🎯</span> Auto-Detect Facial & Voice Data';
-          }, 2400);
+          }, 2600);
         }
         if (btnAutoDash) {
-          btnAutoDash.innerText = '✓ Data Auto-Detected';
+          btnAutoDash.innerText = `✓ Detected ${resolvedFace} & ${resolvedVoice}`;
           setTimeout(() => {
             btnAutoDash.innerText = '⚡ Auto-Detect Face & Voice Data';
-          }, 2400);
+          }, 2600);
         }
       } catch (err) {
         console.warn('[MediaLab] autoDetectMediaData error:', err);
       }
     }
 
-    const elBtnAutoDetectMedia = document.getElementById('btnAutoDetectMedia');
+        const elBtnAutoDetectMedia = document.getElementById('btnAutoDetectMedia');
     if (elBtnAutoDetectMedia) {
       elBtnAutoDetectMedia.addEventListener('click', () => autoDetectMediaData(true));
     }
