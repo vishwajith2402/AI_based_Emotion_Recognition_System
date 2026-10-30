@@ -3253,15 +3253,19 @@
     }
 
     /* Fusion Results Dashboard */
-    .media-fusion-dashboard {
-      background: rgba(11, 17, 32, 0.75);
+    .media-fusion-dashboard,
+    .media-fusion-engine-card {
+      background: rgba(11, 17, 32, 0.85);
       border: 1px solid var(--border-glass);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.1rem;
-      box-shadow: inset 0 2px 14px rgba(0, 0, 0, 0.5);
+      gap: 1.25rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.6);
+      margin-top: 1.25rem;
+      position: relative;
+      overflow: hidden;
     }
 
     .fusion-hero-verdict {
@@ -6910,18 +6914,40 @@
         <div class="progress-status-text" id="mediaLabProgressStatus">Initializing Multimodal Feature Extractors...</div>
       </div>
 
-      <!-- Fusion Results Dashboard -->
-      <div class="media-fusion-dashboard" id="mediaFusionDashboard" style="display: none;">
-        
+      <!-- ========================================================
+           MULTIMODAL FUSION RESULT ENGINE (MEDIA UPLOAD STUDIO)
+           ======================================================== -->
+      <section class="glass-card media-fusion-engine-card" id="mediaFusionDashboard">
+        <div class="fusion-glow-backdrop" id="mediaHeroGlow"></div>
+
+        <div class="card-meta-header" style="position: relative; z-index: 1;">
+          <div class="card-title-group">
+            <div style="display: flex; align-items: center; gap: 0.55rem;">
+              <span style="font-size: 1.3rem; color: var(--cyan);">⚡</span>
+              <h2 style="font-size: 1.12rem; font-weight: 800; letter-spacing: 0.8px; margin: 0; color: #FFFFFF;">
+                MULTIMODAL FUSION RESULT ENGINE
+              </h2>
+            </div>
+            <p style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin: 0.2rem 0 0 0;">
+              70% Facial Expression + 30% Voice Prosody Cross-Modal Decision Matrix
+            </p>
+          </div>
+          <span class="weight-tag cyan" id="mediaFusionStatusTag">● FUSION MATRIX ACTIVE</span>
+        </div>
+
         <!-- Centerpiece Verdict -->
-        <div class="fusion-hero-verdict">
+        <div class="fusion-hero-verdict" id="mediaFusionHeroVerdict" style="position: relative; z-index: 1;">
           <div class="hero-left-col">
-            <div class="hero-kicker">FUSED HUMAN AFFECTIVE STATE</div>
+            <div class="hero-kicker">OVERALL FUSED AFFECTIVE STATE</div>
             <div class="hero-title-row">
               <span class="hero-glyph" id="labHeroGlyph">😊</span>
               <span class="hero-emotion-text" id="labHeroEmotion">HAPPY</span>
             </div>
-            <div class="hero-confidence-badge" id="labHeroConfidence">Unified Confidence: 91.2% (70/30 Fusion)</div>
+            <div class="hero-confidence-badge" id="labHeroConfidence">Unified Confidence: 94.2% (70% Face + 30% Voice Fusion)</div>
+            <div style="margin-top: 0.45rem; display: flex; gap: 0.45rem; flex-wrap: wrap;">
+              <span id="labCircumplexPill" style="font-family: var(--font-mono); font-size: 0.68rem; background: rgba(255,255,255,0.06); padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid var(--border-subtle); color: var(--vanilla-cream);">Valence +0.82 | Arousal +0.54</span>
+              <span style="font-family: var(--font-mono); font-size: 0.68rem; background: rgba(37,99,235,0.18); padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid rgba(59,130,246,0.35); color: var(--cyan);">70/30 Decision Matrix</span>
+            </div>
           </div>
 
           <div class="hero-right-col">
@@ -6934,53 +6960,60 @@
             <!-- Modality Contribution Chips -->
             <div class="modality-chips-row" id="labModalityChipsRow">
               <div class="modality-chip" id="labFaceChip">
-                <span class="m-icon">👁️ Visual Kinematics (50%):</span>
-                <b id="labFaceContribution">Happy (45.2%)</b>
+                <span class="m-icon">👁️ Facial Expression (70% Weight):</span>
+                <b id="labFaceContribution">Happy (99.0%)</b>
               </div>
               <div class="modality-chip" id="labVoiceChip">
-                <span class="m-icon">🎙️ Vocal Prosody (30%):</span>
-                <b id="labVoiceContribution">Happy (26.1%)</b>
+                <span class="m-icon">🎙️ Voice Prosody (30% Weight):</span>
+                <b id="labVoiceContribution">Surprise (91.0%)</b>
               </div>
-              <div class="modality-chip" id="labVerbalChip">
-                <span class="m-icon">💬 Verbal Sentiment (20%):</span>
-                <b id="labVerbalContribution">Neutral (10.0%)</b>
+              <div class="modality-chip" id="labVerbalChip" style="display: none;">
+                <span class="m-icon">💬 Verbal Sentiment:</span>
+                <b id="labVerbalContribution">Neutral (50.0%)</b>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Emotion Probability Breakdown Bars -->
-        <div class="media-distribution-section">
-          <div class="section-title" style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.8px;">
-            MULTIMODAL DECISION PROBABILITIES:
+        <div class="media-distribution-section" style="position: relative; z-index: 1;">
+          <div class="section-title" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.8px;">
+            MULTIMODAL DECISION PROBABILITIES (5-CLASS SPECTRUM):
           </div>
           <div class="media-dist-grid" id="mediaDistGrid">
-            <!-- Populated dynamically: Happy, Sad, Angry, Surprise, Neutral -->
+            <!-- Populated dynamically: Happy, Surprise, Sad, Angry, Neutral -->
           </div>
         </div>
 
         <!-- AI Clinical Diagnostic Explanation -->
-        <div class="media-diagnostic-box">
+        <div class="media-diagnostic-box" style="position: relative; z-index: 1;">
           <div class="diagnostic-title">
-            <span>🧠</span> AI CLINICAL DIAGNOSTIC EXPLANATION:
+            <span>🧠</span> AI CLINICAL & FORENSIC DIAGNOSTIC EXPLANATION:
           </div>
           <div class="diagnostic-content" id="labDiagnosticText">
             Diagnostic explanation will be generated upon analysis.
           </div>
         </div>
 
-        <!-- Export Actions Bar -->
-        <div class="media-export-bar">
-          <button class="btn-pdf-export" id="btnExportLabPdf">
-            <span>📄</span> Export PDF Intelligence Report
-          </button>
-          <button class="btn-ghost-sm" id="btnExportLabJson">
-            <span>💾</span> Download JSON Data
-          </button>
-          <button class="btn-ghost-sm" id="btnSpeakLabReport">
-            <span>🔊</span> Speak Verdict
-          </button>
+        <!-- Action Controls -->
+        <div class="media-export-bar" style="position: relative; z-index: 1; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 0.85rem;">
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button class="btn-pdf-export" id="btnExportLabPdf">
+              <span>📄</span> Export PDF Intelligence Report
+            </button>
+            <button class="btn-ghost-sm" id="btnReopenMediaResultModal" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem; font-size: 0.72rem; font-family: var(--font-mono); border: 1px solid var(--cyan); color: var(--cyan); border-radius: 6px; cursor: pointer; background: rgba(6, 182, 212, 0.12);">
+              <span>🔍</span> Pop Up Full Result Window
+            </button>
+            <button class="btn-ghost-sm" id="btnSpeakLabReport">
+              <span>🔊</span> Speak Verdict
+            </button>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);">
+            70% FACE + 30% VOICE CROSS-MODAL FUSION MATRIX
+          </div>
         </div>
+
+      </section>
 
       </div>
 
@@ -13698,10 +13731,10 @@
     // Multimodal 70/30 Fusion Engine
     // ----------------------------------------------------
     if (elBtnRunMediaFusion) {
-      elBtnRunMediaFusion.addEventListener('click', runMediaLabFusion);
+      elBtnRunMediaFusion.addEventListener('click', () => runMediaLabFusion(true));
     }
 
-    async function runMediaLabFusion() {
+    async function runMediaLabFusion(autoPopup = true) {
       if (!window.labState.hasVisual && !window.labState.hasVocal) {
         alert('Please provide at least one input (Video / Image or Voice Audio) or click a Quick Preset.');
         return;
@@ -13959,8 +13992,14 @@
         const btnReopen = document.getElementById('btnReopenMediaResultModal');
         if (btnReopen) btnReopen.style.display = 'inline-flex';
 
-        // POP UP THE WINDOW IMMEDIATELY!
-        openMediaModelResultModal();
+        // Update on-page circumplex pill
+        const labCircumplex = document.getElementById('labCircumplexPill');
+        if (labCircumplex) labCircumplex.innerText = 'Valence ' + curCoord.v + ' | Arousal ' + curCoord.a;
+
+        // POP UP THE WINDOW IMMEDIATELY IF REQUESTED!
+        if (autoPopup) {
+          openMediaModelResultModal();
+        }
       } catch (err) {
         console.error('[MediaLab] Error presenting result modal:', err);
       }
@@ -14133,9 +14172,19 @@
         if (elVideoScanProgressBox) elVideoScanProgressBox.style.display = 'none';
         elVisualStatusChip.style.display = 'none';
         elVocalStatusChip.style.display = 'none';
-        elMediaFusionDashboard.style.display = 'none';
-        const btnReopenAfterClear = document.getElementById('btnReopenMediaResultModal');
-        if (btnReopenAfterClear) btnReopenAfterClear.style.display = 'none';
+        // Reset Fusion Engine card to clean resting state
+        const labGlyph = document.getElementById('labHeroGlyph');
+        const labEmotion = document.getElementById('labHeroEmotion');
+        const labConf = document.getElementById('labHeroConfidence');
+        const labBanner = document.getElementById('labHarmonyText');
+        if (labGlyph) labGlyph.innerText = '⚡';
+        if (labEmotion) labEmotion.innerText = 'READY FOR FUSION';
+        if (labConf) labConf.innerText = 'Awaiting Face & Voice Input (70/30 Fusion)';
+        if (labBanner) labBanner.innerHTML = '<b>AWAITING CHANNELS</b> &mdash; Load face photo/video and voice audio above.';
+        document.getElementById('labFaceContribution').innerText = 'None (0%)';
+        document.getElementById('labVoiceContribution').innerText = 'None (0%)';
+        const distGrid = document.getElementById('mediaDistGrid');
+        if (distGrid) distGrid.innerHTML = '';
         closeMediaModelResultModal();
 
         if (elLabVerbalInput) elLabVerbalInput.value = '';
