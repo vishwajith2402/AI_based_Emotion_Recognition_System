@@ -6898,6 +6898,9 @@
         <button class="btn-run-fusion" id="btnRunMediaFusion" title="Run model inference and open detailed analysis window">
           <span>⚡</span> RUN MODEL (MULTIMODAL ANALYSIS)
         </button>
+        <button class="btn-ghost-sm" id="btnAutoDetectMedia" style="padding: 0.7rem 1.15rem; font-size: 0.78rem; font-family: var(--font-mono); border: 1px solid var(--violet); color: var(--violet); border-radius: var(--radius-sm); cursor: pointer; background: rgba(168, 85, 247, 0.12);" title="Auto-Detect Facial & Voice Data Now">
+          <span>🎯</span> Auto-Detect Facial & Voice Data
+        </button>
         <button class="btn-ghost-sm" id="btnReopenMediaResultModal" style="display: none; padding: 0.7rem 1.1rem; font-size: 0.78rem; font-family: var(--font-mono); border: 1px solid var(--cyan); color: var(--cyan); border-radius: var(--radius-sm); cursor: pointer; background: rgba(6, 182, 212, 0.12);" title="Reopen Full Analysis Result Window">
           <span>🔍</span> View Analysis Window
         </button>
@@ -6932,7 +6935,12 @@
               70% Facial Expression + 30% Voice Prosody Cross-Modal Decision Matrix
             </p>
           </div>
-          <span class="weight-tag cyan" id="mediaFusionStatusTag">● FUSION MATRIX ACTIVE</span>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" id="btnAutoDetectFromDashboard" class="btn-ghost-sm" style="padding: 0.35rem 0.75rem; font-size: 0.68rem; font-family: var(--font-mono); border: 1px solid var(--cyan); color: var(--cyan); border-radius: 4px; background: rgba(6, 182, 212, 0.12); cursor: pointer;" title="Auto-Detect Facial & Voice Data Now">
+              ⚡ Auto-Detect Face & Voice Data
+            </button>
+            <span class="weight-tag cyan" id="mediaFusionStatusTag">● FUSION MATRIX ACTIVE</span>
+          </div>
         </div>
 
         <!-- Centerpiece Verdict -->
@@ -13842,6 +13850,104 @@
       elBtnRunMediaFusion.addEventListener('click', () => runMediaLabFusion(true));
     }
 
+    // ----------------------------------------------------
+    // Auto-Detect Facial & Vocal Data Engine
+    // ----------------------------------------------------
+    async function autoDetectMediaData(forceReload = false) {
+      try {
+        const btnAuto = document.getElementById('btnAutoDetectMedia');
+        const btnAutoDash = document.getElementById('btnAutoDetectFromDashboard');
+        if (btnAuto) {
+          btnAuto.classList.add('loading');
+          btnAuto.innerHTML = '<span>⚡</span> AUTO-DETECTING DATA...';
+        }
+        if (btnAutoDash) {
+          btnAutoDash.innerText = '⚡ AUTO-DETECTING DATA...';
+        }
+
+        // 1. Auto-Detect Facial Data (Load Joy / Happy high-res portrait if not present)
+        const hasActiveFace = window.labState.hasVisual && (window.labState.visualEmotion && window.labState.visualEmotion !== 'None');
+        if (!hasActiveFace || forceReload) {
+          const defaultFace = 'happy';
+          const capFace = 'Happy';
+          window.labState.activePresetFace = capFace;
+          window.labState.hasVisual = true;
+
+          document.querySelectorAll('.btn-test-face-pill').forEach(p => {
+            if (p.getAttribute('data-face') === defaultFace) p.classList.add('active');
+            else p.classList.remove('active');
+          });
+
+          if (window.labFaceBenchmarks && window.labFaceBenchmarks[capFace]) {
+            const fb = window.labFaceBenchmarks[capFace];
+            window.labState.lastVisualAnalysis = fb;
+            window.labState.visualMetrics = fb.actionUnits;
+            window.labState.visualProbs = { ...fb.probabilities };
+            window.labState.visualEmotion = fb.dominantEmotion;
+            window.labState.visualConfidence = fb.confidence;
+            updateVisualResultsUI(fb, '● AUTO-DETECTED FACE: ' + capFace.toUpperCase());
+          }
+
+          const primaryUrl = `assets/demo_faces/${defaultFace}.png`;
+          const fallbackUrl = `demo_samples/facial/${defaultFace}.png`;
+          const testImg = new Image();
+          testImg.onload = () => setupImagePreview(primaryUrl);
+          testImg.onerror = () => setupImagePreview(fallbackUrl);
+          testImg.src = primaryUrl;
+        } else if (elLabImagePreview && elLabImagePreview.src && elLabImagePreview.style.display !== 'none') {
+          analyzeVisualElement(elLabImagePreview);
+        }
+
+        // 2. Auto-Detect Vocal Data (Load Surprise vocal prosody benchmark if not present)
+        const hasActiveVoice = window.labState.hasVocal && (window.labState.audioEmotion && window.labState.audioEmotion !== 'None');
+        if (!hasActiveVoice || forceReload) {
+          const defaultVoiceUrl = 'demo_samples/speech/surprise.wav';
+          if (elPresetVocalSelect) {
+            elPresetVocalSelect.value = defaultVoiceUrl;
+          }
+          await loadAudioUrl(defaultVoiceUrl);
+        } else if (window.labState.audioBuffer) {
+          processAudioBuffer(window.labState.audioBuffer, 'auto_detected_audio');
+        }
+
+        // 3. Auto-Detect verbal text if present
+        const verbalText = (elLabVerbalInput ? elLabVerbalInput.value : '').trim();
+        if (verbalText.length > 1) {
+          updateLabVerbalSentiment(verbalText);
+        }
+
+        // 4. Compute Multimodal Fusion immediately
+        await sleep(180);
+        await runMediaLabFusion(false);
+
+        if (btnAuto) {
+          btnAuto.classList.remove('loading');
+          btnAuto.innerHTML = '<span>✓</span> Data Auto-Detected';
+          setTimeout(() => {
+            btnAuto.innerHTML = '<span>🎯</span> Auto-Detect Facial & Voice Data';
+          }, 2400);
+        }
+        if (btnAutoDash) {
+          btnAutoDash.innerText = '✓ Data Auto-Detected';
+          setTimeout(() => {
+            btnAutoDash.innerText = '⚡ Auto-Detect Face & Voice Data';
+          }, 2400);
+        }
+      } catch (err) {
+        console.warn('[MediaLab] autoDetectMediaData error:', err);
+      }
+    }
+
+    const elBtnAutoDetectMedia = document.getElementById('btnAutoDetectMedia');
+    if (elBtnAutoDetectMedia) {
+      elBtnAutoDetectMedia.addEventListener('click', () => autoDetectMediaData(true));
+    }
+    const elBtnAutoDetectDash = document.getElementById('btnAutoDetectFromDashboard');
+    if (elBtnAutoDetectDash) {
+      elBtnAutoDetectDash.addEventListener('click', () => autoDetectMediaData(true));
+    }
+
+
     async function runMediaLabFusion(autoPopup = true) {
       if (!window.labState.hasVisual && !window.labState.hasVocal) {
         if (autoPopup) {
@@ -14563,6 +14669,12 @@
         if (typeof initMediaPipe === 'function') {
           initMediaPipe();
         }
+        // Auto-detect and populate facial and voice data immediately on entering Media Studio
+        if (typeof autoDetectMediaData === 'function') {
+          setTimeout(() => {
+            autoDetectMediaData(false);
+          }, 120);
+        }
       }
 
       // Resume interactive background canvas if returning to Intro
@@ -14819,6 +14931,9 @@
         switchView('viewLiveApp', false);
       } else if (hash === '#media' || hash === '#mediaupload') {
         switchView('viewMediaUpload', false);
+        if (typeof autoDetectMediaData === 'function') {
+          setTimeout(() => { autoDetectMediaData(false); }, 150);
+        }
       } else if (hash === '#select-mode' || hash === '#modes') {
         switchView('viewModeSelect', false);
       } else {
