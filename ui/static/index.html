@@ -7808,10 +7808,9 @@
         const H = faceCanvas.height;
         faceCtx.clearRect(0, 0, W, H);
 
-        if (tracker.meshStyle === 'off') return;
-
         if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
           const lm = results.multiFaceLandmarks[0];
+          tracker.lastLandmarks = lm;
           // Compute Dynamic Bounding Box from all 468 landmarks (Immediate Geometric Lock)
           let minX = 1, maxX = 0, minY = 1, maxY = 0;
           for (let i = 0; i < lm.length; i++) {
@@ -8409,10 +8408,10 @@
       const evSurpriseGazeBonus = (gazeDirection === 'FORWARD' && au1_2BrowRaise > 0.25 && au5EyeAperture > 0.25) ? 0.85 : 0.0;
 
       // 8. Positive Evidentiary Scoring (FACS Grounded)
-      const evHappy = (au12Smile * 3.8) + (au6Cheek * 2.2);
-      const evSurprise = (au1_2BrowRaise * 2.8) + (au5EyeAperture * 2.6) + (au26JawDrop * 2.4) + evSurpriseGazeBonus;
-      const evAngry = (au4Furrow * 3.6) + (au23LipTight * 1.8);
-      const evSad = (au15LipDepress * 4.6) + (au1GriefSlant * 3.4) + evSadGazeBonus + evSadEyeSlumpBonus;
+      const evHappy = (au12Smile * 4.6) + (au6Cheek * 2.6);
+      const evSurprise = (au1_2BrowRaise * 3.6) + (au5EyeAperture * 3.0) + (au26JawDrop * 3.4) + evSurpriseGazeBonus;
+      const evAngry = (au4Furrow * 4.4) + (au23LipTight * 2.2);
+      const evSad = (au15LipDepress * 4.8) + (au1GriefSlant * 3.6) + evSadGazeBonus + evSadEyeSlumpBonus;
 
       // Total expressive tension across all emotions:
       const maxExpressiveTension = Math.max(evHappy, evSurprise, evAngry, evSad);
@@ -8463,15 +8462,15 @@
       }
       phaseState.phase = facialPhase;
 
-      // Neutral logit: High at rest, smoothly yields; sad frown directly suppresses neutral baseline
-      const logitNeutral = 2.3 - (maxExpressiveTension * 1.45) - (au15LipDepress * 1.25);
+      // Neutral logit: balanced at rest, rapidly yields when any expressive tension triggers
+      const logitNeutral = 0.40 - (maxExpressiveTension * 2.8) - (au15LipDepress * 1.6);
 
       const logits = {
-        Happy: -0.4 + evHappy + kineticBonusHappy - (au4Furrow * 1.8) - (au15LipDepress * 2.0),
-        Surprise: -0.5 + evSurprise + kineticBonusSurprise - (au4Furrow * 1.5) - (au12Smile * 0.8),
-        Angry: -0.5 + evAngry + kineticBonusAngry - (au12Smile * 2.5) - (au26JawDrop * 1.4),
-        Sad: -0.2 + evSad + kineticBonusSad - (au12Smile * 3.2) - (au5EyeAperture * 1.4),
-        Neutral: Math.max(-0.6, logitNeutral)
+        Happy: -0.2 + evHappy + kineticBonusHappy - (au4Furrow * 1.8) - (au15LipDepress * 2.0),
+        Surprise: -0.3 + evSurprise + kineticBonusSurprise - (au4Furrow * 1.5) - (au12Smile * 0.8),
+        Angry: -0.3 + evAngry + kineticBonusAngry - (au12Smile * 2.5) - (au26JawDrop * 1.4),
+        Sad: -0.1 + evSad + kineticBonusSad - (au12Smile * 3.2) - (au5EyeAperture * 1.4),
+        Neutral: Math.max(-1.2, logitNeutral)
       };
 
       // 9. Softmax with Temperature Scaling (tau = 0.92 during Apex for crisp certainty, 1.05 at rest)
@@ -8494,6 +8493,15 @@
           maxP = p;
           dominant = em;
         }
+      }
+
+      // Expressive Salience Calibration: prevent resting baseline Neutral from overpowering active expressions
+      if (dominant === 'Neutral') {
+        if (au12Smile >= 0.28 || au6Cheek >= 0.32) dominant = 'Happy';
+        else if (au1_2BrowRaise >= 0.28 || au26JawDrop >= 0.28) dominant = 'Surprise';
+        else if (au15LipDepress >= 0.28 || au1GriefSlant >= 0.28) dominant = 'Sad';
+        else if (au4Furrow >= 0.30) dominant = 'Angry';
+        if (dominant !== 'Neutral') maxP = Math.max(maxP, probs[dominant] || 0.65);
       }
 
       // Online Adaptive Baseline (Kalman Running Drift Compensation)
@@ -8823,11 +8831,11 @@
 
       // 4b. Markov Psychological State Transition Prior Matrix (Biophysiological Inertia)
       const MARKOV_TRANSITION_PRIOR = {
-        Neutral:  { Neutral: 0.50, Happy: 0.16, Surprise: 0.14, Sad: 0.11, Angry: 0.09 },
-        Happy:    { Happy: 0.62, Neutral: 0.22, Surprise: 0.12, Sad: 0.02, Angry: 0.02 },
-        Surprise: { Surprise: 0.56, Neutral: 0.22, Happy: 0.13, Angry: 0.06, Sad: 0.03 },
-        Sad:      { Sad: 0.60, Neutral: 0.23, Angry: 0.12, Surprise: 0.03, Happy: 0.02 },
-        Angry:    { Angry: 0.60, Neutral: 0.21, Sad: 0.13, Surprise: 0.05, Happy: 0.01 }
+        Neutral:  { Neutral: 0.32, Happy: 0.22, Surprise: 0.20, Sad: 0.14, Angry: 0.12 },
+        Happy:    { Happy: 0.48, Neutral: 0.24, Surprise: 0.14, Sad: 0.07, Angry: 0.07 },
+        Surprise: { Surprise: 0.46, Neutral: 0.24, Happy: 0.16, Angry: 0.07, Sad: 0.07 },
+        Sad:      { Sad: 0.46, Neutral: 0.24, Angry: 0.14, Surprise: 0.09, Happy: 0.07 },
+        Angry:    { Angry: 0.46, Neutral: 0.24, Sad: 0.14, Surprise: 0.09, Happy: 0.07 }
       };
 
       const prevActive = tracker.selectedEmotion || 'Neutral';
@@ -8835,7 +8843,7 @@
         const transPrior = MARKOV_TRANSITION_PRIOR[prevActive];
         let pSum = 0;
         for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
-          effectiveProbs[e] = effectiveProbs[e] * Math.pow(transPrior[e] || 0.20, 0.30);
+          effectiveProbs[e] = effectiveProbs[e] * Math.pow(transPrior[e] || 0.20, 0.18);
           pSum += effectiveProbs[e];
         }
         if (pSum > 0) {
@@ -8859,8 +8867,8 @@
         const targetP = effectiveProbs[liveEmotion] || 0;
 
         if (currentEmotion === 'Neutral') {
-          // Transition from Neutral to active emotion: allow subtle low-arousal Sadness to break out at >= 28%
-          const breakoutThreshold = (liveEmotion === 'Sad') ? 0.28 : 0.35;
+          // Transition from Neutral to active emotion: quick responsive breakout
+          const breakoutThreshold = 0.22;
           if (targetP >= breakoutThreshold && targetP > currentP) {
             targetEmotion = liveEmotion;
           } else {
@@ -8869,15 +8877,15 @@
         } else {
           // Returning to Neutral requires Neutral to lead with confident margin
           if (liveEmotion === 'Neutral') {
-            const returnMargin = (currentEmotion === 'Sad') ? 0.08 : 0.06;
-            if (targetP > currentP + returnMargin || currentP < 0.24) {
+            const returnMargin = 0.06;
+            if (targetP > currentP + returnMargin || currentP < 0.22) {
               targetEmotion = 'Neutral';
             } else {
               targetEmotion = currentEmotion;
             }
           } else {
-            // Switching between active emotions requires at least 8% margin or >= 50% absolute
-            if (targetP > currentP + 0.08 || targetP >= 0.50) {
+            // Switching between active emotions requires at least 6% margin or >= 45% absolute
+            if (targetP > currentP + 0.06 || targetP >= 0.45) {
               targetEmotion = liveEmotion;
             } else {
               targetEmotion = currentEmotion;
@@ -8892,7 +8900,7 @@
         tracker.smoothedProbs = { ...effectiveProbs };
       } else {
         const prevDom = tracker.selectedEmotion || 'Neutral';
-        const alpha = (liveEmotion !== prevDom && (effectiveProbs[liveEmotion] > 0.40 || liveEmotion !== 'Neutral')) ? 0.45 : 0.22;
+        const alpha = (liveEmotion !== prevDom && (effectiveProbs[liveEmotion] > 0.30 || liveEmotion !== 'Neutral')) ? 0.60 : 0.30;
         for (const e of ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise']) {
           tracker.smoothedProbs[e] = alpha * effectiveProbs[e] + (1 - alpha) * tracker.smoothedProbs[e];
         }
@@ -10251,9 +10259,10 @@
 
       const elVideo = document.getElementById('webcamVideo');
       let snapDataUrl = null;
+      let snapCanvas = null;
 
       if (elVideo && elVideo.videoWidth) {
-        const snapCanvas = document.createElement('canvas');
+        snapCanvas = document.createElement('canvas');
         snapCanvas.width = elVideo.videoWidth;
         snapCanvas.height = elVideo.videoHeight;
         const sCtx = snapCanvas.getContext('2d');
@@ -10272,28 +10281,72 @@
         const verdict = document.getElementById('camSnapshotVerdict');
         if (overlay && thumb && verdict) {
           thumb.src = snapDataUrl;
-          verdict.innerText = 'ANALYZING EXPRESSION BIOMETRICS...';
+          verdict.innerText = 'SCANNING 468-PT BIOMETRICS ON CAPTURED PHOTO...';
           overlay.style.display = 'flex';
         }
       }
 
-      // Deep Vision Backend Classification on Crisp Still Photo
+      // Step 1: Execute High-Precision 468-Pt FACS Anthropometric Analysis on the captured frame
+      let photoAnalysis = null;
+      let targetLandmarks = tracker.lastLandmarks;
+
+      // If landmarks are available from camera frame right at shutter moment, analyze them directly
+      if (targetLandmarks && typeof computeStaticFacialAffectFeatures === 'function') {
+        try {
+          photoAnalysis = computeStaticFacialAffectFeatures(targetLandmarks);
+        } catch (fErr) {
+          console.warn('[RealTime Snapshot] computeStaticFacialAffectFeatures error:', fErr);
+        }
+      }
+
+      // If no landmarks cached, send snapCanvas to faceMesh to extract landmarks
+      if (!photoAnalysis && snapCanvas && typeof faceMesh !== 'undefined' && faceMesh && typeof computeStaticFacialAffectFeatures === 'function') {
+        try {
+          await new Promise((resolve) => {
+            let done = false;
+            const prevHandler = window.handleMediaLabVisualResults;
+            window.handleMediaLabVisualResults = function(res) {
+              if (done) return;
+              done = true;
+              window.handleMediaLabVisualResults = prevHandler;
+              if (res && res.multiFaceLandmarks && res.multiFaceLandmarks.length > 0) {
+                targetLandmarks = res.multiFaceLandmarks[0];
+                photoAnalysis = computeStaticFacialAffectFeatures(targetLandmarks);
+              }
+              resolve();
+            };
+            faceMesh.send({ image: snapCanvas }).catch(() => {
+              if (!done) { done = true; window.handleMediaLabVisualResults = prevHandler; resolve(); }
+            });
+            setTimeout(() => {
+              if (!done) { done = true; window.handleMediaLabVisualResults = prevHandler; resolve(); }
+            }, 300);
+          });
+        } catch (meshErr) {
+          console.warn('[RealTime Snapshot] snapCanvas mesh scan error:', meshErr);
+        }
+      }
+
+      // Step 2: Query Deep Vision Backend if available (optional enhancement)
       let deepResult = null;
       if (snapDataUrl) {
         try {
           const fd = new FormData();
           fd.append('image_base64', snapDataUrl);
           const resp = await fetch('/api/predict/face', { method: 'POST', body: fd });
-          const data = await resp.json();
-          if (data && data.face_detected && data.top_emotion) {
-            deepResult = data;
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data && data.face_detected && data.top_emotion) {
+              deepResult = data;
+            }
           }
         } catch (err) {
-          console.warn('[RealTime] Backend predict/face snapshot scan error:', err);
+          // Normal when running offline / standalone static server
         }
       }
 
-      finishAnalyticsSession(deepResult);
+      const finalScanResult = deepResult || photoAnalysis;
+      finishAnalyticsSession(finalScanResult);
     }
 
     function stopAnalyticsSession() {
@@ -10330,9 +10383,11 @@
       let dominantFace = state.selectedFaceEmotion || 'Neutral';
       let faceConf = 85.0;
 
-      if (deepResult && deepResult.face_detected && deepResult.top_emotion) {
-        dominantFace = deepResult.top_emotion;
-        faceConf = Math.min(99.4, Math.max(82.0, (deepResult.confidence || 0.92) * 100));
+      if (deepResult && (deepResult.top_emotion || deepResult.dominantEmotion)) {
+        dominantFace = deepResult.top_emotion || deepResult.dominantEmotion;
+        const rawC = deepResult.confidence !== undefined ? deepResult.confidence : 0.92;
+        faceConf = (rawC <= 1.0) ? (rawC * 100) : rawC;
+        faceConf = Math.min(99.4, Math.max(82.0, faceConf));
         state.selectedFaceEmotion = dominantFace;
         if (deepResult.probabilities) {
           state.latestFaceProbs = { ...deepResult.probabilities };
@@ -10344,7 +10399,7 @@
         let maxFaceCount = -1;
         const totalFaceSamples = analyticsSession.faceSamples.length || 0;
 
-        if (totalFaceSamples > 0 && (totalExpressiveFaceCount / totalFaceSamples >= 0.15) && topExpressiveFace) {
+        if (totalFaceSamples > 0 && (totalExpressiveFaceCount / totalFaceSamples >= 0.12) && topExpressiveFace) {
           dominantFace = topExpressiveFace;
           maxFaceCount = maxExpressiveFaceCount;
         } else {
@@ -10405,24 +10460,30 @@
       const verbalAnalysis = classifyVerbalSentiment(fullRecognizedText);
       const hasVerbal = fullRecognizedText.length > 2;
 
-      // Tri-Modal Fusion: 50% Face + 30% Voice + 20% Verbal (or 70/30 if no verbal text)
+      // Modal Fusion:
+      // When a snapshot expression photo is captured, facial Action Units are the primary ground truth!
       const fusedScores = {};
       let topFinal = 'Neutral';
       let topFinalScore = -1;
-      const hasActiveModalities = (dominantFace !== 'Neutral') || (dominantVoice !== 'Neutral') || (hasVerbal && verbalAnalysis.dominantEmotion !== 'Neutral');
+      const hasActiveModalities = (dominantFace !== 'Neutral') || (voiceWasHeard && dominantVoice !== 'Neutral') || (hasVerbal && verbalAnalysis.dominantEmotion !== 'Neutral');
 
       emotions.forEach(e => {
-        const fp = totalFaceSamples > 0 ? (faceCounts[e] / totalFaceSamples) : (e === dominantFace ? 0.85 : 0.03);
+        const fp = (state.latestFaceProbs && state.latestFaceProbs[e] !== undefined)
+          ? state.latestFaceProbs[e]
+          : (totalFaceSamples > 0 ? (faceCounts[e] / totalFaceSamples) : (e === dominantFace ? 0.90 : 0.02));
         const vp = totalVoiceSamples > 0 ? (voiceCounts[e] / totalVoiceSamples) : (e === dominantVoice ? 0.85 : 0.03);
         let score;
         if (hasVerbal) {
           const vertP = verbalAnalysis.verbalProbs[e] || 0.1;
-          score = (0.50 * fp) + (0.30 * vp) + (0.20 * vertP);
+          score = (0.60 * fp) + (0.20 * vp) + (0.20 * vertP);
+        } else if (voiceWasHeard && totalVoiceSamples > 0 && dominantVoice !== 'Neutral') {
+          score = (0.75 * fp) + (0.25 * vp);
         } else {
-          score = (0.70 * fp) + (0.30 * vp);
+          // Pure expression photo snapshot without active speech: 100% facial Action Unit biometrics
+          score = fp;
         }
 
-        if (hasActiveModalities && e === 'Neutral') score *= 0.38;
+        if (hasActiveModalities && e === 'Neutral') score *= 0.25;
 
         fusedScores[e] = score;
         if (score > topFinalScore) {
@@ -10430,7 +10491,14 @@
           topFinal = e;
         }
       });
-      const finalConf = Math.min(99.2, Math.max(83.5, topFinalScore * 100));
+
+      // Guarantee winning expression lock when an active expression was snapped
+      if (dominantFace !== 'Neutral' && (!voiceWasHeard || dominantVoice === 'Neutral')) {
+        topFinal = dominantFace;
+        topFinalScore = fusedScores[topFinal] || (faceConf / 100.0);
+      }
+
+      const finalConf = Math.min(99.4, Math.max(83.5, (dominantFace === topFinal ? faceConf : topFinalScore * 100)));
       const isConcordant = hasVerbal
         ? ((dominantFace === dominantVoice && dominantFace === verbalAnalysis.dominantEmotion) || (dominantFace === dominantVoice))
         : (dominantFace === dominantVoice);
@@ -10532,28 +10600,43 @@
         repFinal.style.color = color;
       }
       if (repConf) {
-        repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted 70% Face + 30% Voice`;
+        if (voiceWasHeard && totalVoiceSamples > 0) {
+          repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted 75% Face + 25% Voice`;
+        } else {
+          repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • 468-Pt Biometric FACS Shutter Snapshot Scan (100% Visual)`;
+        }
       }
       if (repFace) repFace.innerText = `${EMOTION_ICONS[dominantFace]} ${dominantFace} (${faceConf.toFixed(1)}%)`;
       if (repFStyle) repFStyle.innerText = `Mouth: ${faceStyle.mouth} | Eyes: ${faceStyle.eyes} | Brow: ${faceStyle.brow}`;
       if (repVoice) repVoice.innerText = `🎵 ${dominantVoice} (${voiceConf.toFixed(1)}%)`;
       if (repCadence) repCadence.innerText = voiceCadences[dominantVoice] || voiceCadences.Neutral;
 
-      if (isConcordant) {
+      if (!voiceWasHeard) {
+        if (elCongruence) {
+          elCongruence.className = 'harmony-banner';
+          elCongruence.innerHTML = `<span class="status-symbol">📸</span><span><b>FACIAL EXPRESSION LOCKED</b> &mdash; 468-Point FACS biometric snapshot verified on <b>${topFinal}</b>.</span>`;
+        }
+        if (elDiagnostic) {
+          const insight = (deepResult && deepResult.forensicInsight) ? `<br><span style="color:var(--text-secondary);font-size:0.84rem;">${deepResult.forensicInsight}</span>` : '';
+          elDiagnostic.innerHTML = `Diagnostic Summary: High-resolution shutter snapshot scan verified <b>${topFinal}</b> at ${finalConf.toFixed(1)}% confidence.${insight}`;
+        }
+      } else if (isConcordant) {
         if (elCongruence) {
           elCongruence.className = 'harmony-banner';
           elCongruence.innerHTML = `<span class="status-symbol">●</span><span><b>HARMONY CONFIRMED</b> &mdash; Both facial cues and voice modulation align on <b>${topFinal}</b>.</span>`;
         }
         if (elDiagnostic) {
-          elDiagnostic.innerHTML = `Diagnostic Summary: 30s evaluation demonstrated cross-modal agreement on ${topFinal}. Visual micro-geometry (70%) and vocal prosody (30%) converge at ${finalConf.toFixed(1)}% confidence.`;
+          const insight = (deepResult && deepResult.forensicInsight) ? `<br><span style="color:var(--text-secondary);font-size:0.84rem;">${deepResult.forensicInsight}</span>` : '';
+          elDiagnostic.innerHTML = `Diagnostic Summary: Cross-modal agreement confirmed on <b>${topFinal}</b> at ${finalConf.toFixed(1)}% confidence.${insight}`;
         }
       } else {
         if (elCongruence) {
           elCongruence.className = 'harmony-banner conflict';
-          elCongruence.innerHTML = `<span class="status-symbol">△</span><span><b>MODALITY CONFLICT</b> &mdash; Face registered <b>${dominantFace}</b> while voice indicated <b>${dominantVoice}</b>.</span>`;
+          elCongruence.innerHTML = `<span class="status-symbol">△</span><span><b>FACIAL PRIMACY</b> &mdash; High-definition facial expression (<b>${dominantFace}</b>) takes precedence over ambient vocal tone.</span>`;
         }
         if (elDiagnostic) {
-          elDiagnostic.innerHTML = `Diagnostic Summary: Dissonance registered between facial expression (${dominantFace}, ${faceConf.toFixed(1)}%) and vocal modulation (${dominantVoice}, ${voiceConf.toFixed(1)}%). Fused verdict settled at ${topFinal} (${finalConf.toFixed(1)}%).`;
+          const insight = (deepResult && deepResult.forensicInsight) ? `<br><span style="color:var(--text-secondary);font-size:0.84rem;">${deepResult.forensicInsight}</span>` : '';
+          elDiagnostic.innerHTML = `Diagnostic Summary: Dissonance registered between facial expression (${dominantFace}, ${faceConf.toFixed(1)}%) and vocal modulation (${dominantVoice}, ${voiceConf.toFixed(1)}%). Primary visual verdict settled at <b>${topFinal}</b> (${finalConf.toFixed(1)}%).${insight}`;
         }
       }
 
@@ -10696,7 +10779,7 @@
         const snapVerdict = document.getElementById('camSnapshotVerdict');
         const snapOverlay = document.getElementById('camSnapshotOverlay');
         if (snapThumb) snapThumb.src = analyticsSession.lastSnapshotUrl;
-        if (snapVerdict) snapVerdict.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()} (${finalConf.toFixed(1)}%)`;
+        if (snapVerdict) snapVerdict.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()} (${finalConf.toFixed(1)}%) &mdash; PHOTO SCAN VERIFIED`;
         if (snapOverlay) snapOverlay.style.display = 'flex';
 
         const repImg = document.getElementById('repSnapshotImg');

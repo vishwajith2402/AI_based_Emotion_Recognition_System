@@ -74,7 +74,7 @@ class EmotionPredictor:
             smoothed = {k: v / total for k, v in smoothed.items()}
         return smoothed
 
-    def predict_image(self, image_bgr: np.ndarray, use_yolo: Optional[bool] = None) -> Dict[str, Any]:
+    def predict_image(self, image_bgr: np.ndarray, use_yolo: Optional[bool] = None, apply_smoothing: bool = False) -> Dict[str, Any]:
         """
         Analyzes a single image or video frame for facial emotion,
         combining deep CNN spatial features with morphological facial style analysis.
@@ -108,8 +108,9 @@ class EmotionPredictor:
             if total > 0:
                 blended = {k: v / total for k, v in blended.items()}
 
-            probs = self._apply_ema(blended, self.smoothed_face_probs)
-            self.smoothed_face_probs = probs
+            probs = self._apply_ema(blended, self.smoothed_face_probs) if apply_smoothing else blended
+            if apply_smoothing:
+                self.smoothed_face_probs = probs
             top_emotion = max(probs, key=probs.get)
             if top_emotion == "Neutral":
                 non_neutral = {e: p for e, p in probs.items() if e != "Neutral"}
@@ -154,8 +155,9 @@ class EmotionPredictor:
         if total > 0:
             blended = {k: v / total for k, v in blended.items()}
 
-        probs = self._apply_ema(blended, self.smoothed_face_probs)
-        self.smoothed_face_probs = probs
+        probs = self._apply_ema(blended, self.smoothed_face_probs) if apply_smoothing else blended
+        if apply_smoothing:
+            self.smoothed_face_probs = probs
         top_emotion = max(probs, key=probs.get)
         if top_emotion == "Neutral":
             non_neutral = {e: p for e, p in probs.items() if e != "Neutral"}
