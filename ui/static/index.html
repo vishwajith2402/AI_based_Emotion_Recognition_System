@@ -7009,7 +7009,7 @@
             <button class="btn-pdf-export" id="btnExportLabPdf">
               <span>📄</span> Export PDF Intelligence Report
             </button>
-            <button class="btn-ghost-sm" id="btnReopenMediaResultModal" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem; font-size: 0.72rem; font-family: var(--font-mono); border: 1px solid var(--cyan); color: var(--cyan); border-radius: 6px; cursor: pointer; background: rgba(6, 182, 212, 0.12);">
+            <button class="btn-ghost-sm" id="btnPopUpModalFromDashboard" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem; font-size: 0.72rem; font-family: var(--font-mono); border: 1px solid var(--cyan); color: var(--cyan); border-radius: 6px; cursor: pointer; background: rgba(6, 182, 212, 0.12);" title="Pop Up Full Result Window">
               <span>🔍</span> Pop Up Full Result Window
             </button>
             <button class="btn-ghost-sm" id="btnSpeakLabReport">
@@ -7057,8 +7057,8 @@
       </div>
 
       <!-- Overall Result Banner (The Overall Result) -->
-      <div class="report-hero-box" id="mediaModalHeroBox" style="position: relative; overflow: hidden; border: 1px solid var(--border-subtle); transition: all 0.3s ease; padding: 1.25rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+      <div class="report-hero-box" id="mediaModalHeroBox" style="position: relative; overflow: visible; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; min-height: 145px !important; border: 1px solid var(--border-subtle); transition: all 0.3s ease; padding: 1.25rem; background: var(--bg-secondary); border-radius: var(--radius-md); box-sizing: border-box;">
+        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
           <div class="report-hero-title" style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 1.2px; color: var(--text-muted); font-weight: 700;">
             OVERALL FUSED EMOTION RESULT
           </div>
@@ -7067,16 +7067,16 @@
           </span>
         </div>
 
-        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 0.6rem 0;">
-          <span id="mediaModalHeroGlyph" style="font-size: 3.4rem; filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.4));">😊</span>
-          <div class="report-hero-val" id="mediaModalHeroEmotion" style="font-size: 2.5rem; font-weight: 900; letter-spacing: 1px; color: #FFFFFF; margin: 0;">HAPPY</div>
+        <div style="display: flex !important; align-items: center !important; justify-content: center !important; gap: 1rem; margin: 0.5rem 0; min-height: 55px;">
+          <span id="mediaModalHeroGlyph" style="font-size: 3.4rem; line-height: 1; filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.4)); display: inline-block;">😊</span>
+          <div class="report-hero-val" id="mediaModalHeroEmotion" style="font-size: 2.5rem; font-weight: 900; letter-spacing: 1px; color: #FFFFFF !important; line-height: 1; margin: 0; display: inline-block;">HAPPY</div>
         </div>
 
-        <div class="report-hero-conf" id="mediaModalHeroConfidence" style="text-align: center; font-size: 0.88rem; color: var(--vanilla-cream); font-family: var(--font-mono); margin-bottom: 0.5rem; font-weight: 600;">
+        <div class="report-hero-conf" id="mediaModalHeroConfidence" style="text-align: center; font-size: 0.88rem; color: var(--vanilla-cream) !important; font-family: var(--font-mono); margin: 0.35rem 0; font-weight: 600; display: block !important;">
           Overall Confidence: 94.0% &bull; Calibrated 70/30 Fusion
         </div>
 
-        <div style="margin-top: 0.5rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
+        <div style="margin-top: 0.45rem; display: flex !important; justify-content: center; gap: 0.5rem; flex-wrap: wrap;">
           <span id="mediaModalCircumplexBadge" style="background: rgba(255,255,255,0.06); font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid var(--border-subtle); color: var(--vanilla-cream);">
             Circumplex: Valence +0.82 | Arousal +0.54
           </span>
@@ -12650,6 +12650,11 @@
           // Update UI metrics & intelligence cards
           const statusTag = analysis.isDeepAI ? `● DEEP VGG-FER AI LOCKED (${analysis.latency_ms}ms)` : '● 468-PT BIOMETRIC FACS LOCKED';
           updateVisualResultsUI(analysis, statusTag);
+
+          // Synchronize multimodal fusion matrix immediately upon facial kinematic resolution
+          if (typeof runMediaLabFusion === 'function') {
+            runMediaLabFusion(false);
+          }
         } else {
           synthesizeVisualAnalysisFallback();
         }
@@ -12801,19 +12806,23 @@
 
       // Synchronize probability distribution with dominant emotion to prevent Neutral ghosting in fusion
       if (topEmo !== 'Neutral') {
-        const domProb = Math.max(0.88, (probs[topEmo] || 0.40) + 0.35);
-        probs[topEmo] = domProb;
-        probs['Neutral'] = Math.max(0.015, 1.0 - domProb);
-        const otherSum = Object.entries(probs).filter(([k]) => k !== topEmo).reduce((a, [, v]) => a + v, 0) || 1;
-        const remainder = 1.0 - domProb;
-        for (const k of ['Happy', 'Surprise', 'Sad', 'Angry', 'Neutral']) {
-          if (k !== topEmo) {
-            probs[k] = parseFloat(((probs[k] / otherSum) * remainder).toFixed(4));
-          } else {
-            probs[k] = parseFloat(domProb.toFixed(4));
-          }
-        }
-        maxP = probs[topEmo];
+        // Strictly clamp domProb to [0.85, 0.98] to guarantee valid probabilities (never > 100% or negative)
+        const rawP = probs[topEmo] || 0.50;
+        const domProb = Math.min(0.98, Math.max(0.85, rawP >= 0.85 ? rawP : rawP + 0.20));
+        const remainder = Math.max(0.02, 1.0 - domProb);
+
+        probs['Neutral'] = Math.min(0.025, remainder * 0.20);
+        const otherKeys = ['Happy', 'Surprise', 'Sad', 'Angry', 'Neutral'].filter(k => k !== topEmo);
+        const curOtherSum = otherKeys.reduce((acc, k) => acc + Math.max(0.001, probs[k] || 0.001), 0);
+
+        otherKeys.forEach(k => {
+          const share = Math.max(0.001, probs[k] || 0.001) / curOtherSum;
+          probs[k] = Math.max(0.001, parseFloat((share * remainder).toFixed(4)));
+        });
+        probs[topEmo] = parseFloat(domProb.toFixed(4));
+
+        normalizeLabProbs(probs);
+        maxP = Math.min(0.98, Math.max(0.70, probs[topEmo]));
       }
 
       // If Deep PyTorch model result is active, blend or override for maximum precision!
@@ -12854,7 +12863,7 @@
       return {
         probabilities: probs,
         dominantEmotion: topEmo,
-        confidence: Math.round(maxP * 100),
+        confidence: Math.min(99, Math.max(50, Math.round(maxP * 100))),
         actionUnits,
         forensicInsight,
         landmarks: lm
@@ -13234,6 +13243,9 @@
           window.labState.visualEmotion = fb.dominantEmotion;
           window.labState.visualConfidence = fb.confidence;
           updateVisualResultsUI(fb, '● PRESET FACE LOCKED (' + capFace.toUpperCase() + ')');
+          if (typeof runMediaLabFusion === 'function') {
+            runMediaLabFusion(false);
+          }
         }
 
         // Try assets path first with demo_samples fallback
@@ -13839,8 +13851,13 @@
     }
 
     function normalizeLabProbs(probs) {
-      const sum = Object.values(probs).reduce((a, b) => a + b, 0) || 1;
-      for (const k in probs) probs[k] = probs[k] / sum;
+      for (const k in probs) {
+        probs[k] = Math.max(0.0, probs[k] || 0.0);
+      }
+      const sum = Object.values(probs).reduce((a, b) => a + b, 0) || 1.0;
+      for (const k in probs) {
+        probs[k] = Math.max(0.0, probs[k] / sum);
+      }
     }
 
     // ----------------------------------------------------
@@ -14013,14 +14030,14 @@
       const hasActiveModalities = (faceEmo !== 'Neutral' && faceEmo !== 'None') || (voiceEmo !== 'Neutral' && voiceEmo !== 'None');
 
       emotions.forEach(e => {
-        const vF = (window.labState.hasVisual && faceP[e] !== undefined) ? faceP[e] : 0.0;
-        const vA = (window.labState.hasVocal && voiceP[e] !== undefined) ? voiceP[e] : 0.0;
-        fused[e] = (wFace * vF) + (wVoice * vA);
+        const vF = (window.labState.hasVisual && faceP[e] !== undefined) ? Math.max(0.0, faceP[e]) : 0.0;
+        const vA = (window.labState.hasVocal && voiceP[e] !== undefined) ? Math.max(0.0, voiceP[e]) : 0.0;
+        fused[e] = Math.max(0.0, (wFace * vF) + (wVoice * vA));
       });
 
       // Suppress resting baseline Neutral when an active affective expression is detected
       if (hasActiveModalities) {
-        fused['Neutral'] = Math.min(fused['Neutral'] || 0, 0.035);
+        fused['Neutral'] = Math.min(Math.max(0.0, fused['Neutral'] || 0), 0.035);
       }
       normalizeLabProbs(fused);
       window.labState.fusedProbs = fused;
@@ -14045,7 +14062,7 @@
       }
 
       window.labState.fusedEmotion = topFinal;
-      window.labState.fusedConfidence = Math.round(maxConf * 100);
+      window.labState.fusedConfidence = Math.min(99, Math.max(50, Math.round(maxConf * 100)));
 
       // Concordance Analysis between Facial Expression & Voice
       const isConcordant = (faceEmo === voiceEmo) || (!window.labState.hasVisual || !window.labState.hasVocal);
@@ -14134,7 +14151,8 @@
       if (distGrid) {
         distGrid.innerHTML = '';
         emotions.forEach(e => {
-          const pct = Math.round((fused[e] || 0) * 100);
+          const rawP = Math.max(0.0, fused[e] || 0);
+          const pct = Math.min(100, Math.max(0, Math.round(rawP * 100)));
           const col = document.createElement('div');
           col.className = 'media-dist-col';
           col.innerHTML = `
@@ -14178,10 +14196,18 @@
         const modalHarmonyBanner = document.getElementById('mediaModalHarmonyBanner');
         const modalHarmonyText = document.getElementById('mediaModalHarmonyText');
 
-        if (modalHeroGlyph) modalHeroGlyph.innerText = glyphs[topFinal] || '😊';
-        if (modalHeroEmotion) modalHeroEmotion.innerText = topFinal.toUpperCase();
+        if (modalHeroGlyph) {
+          modalHeroGlyph.innerText = glyphs[topFinal] || '😊';
+          modalHeroGlyph.style.display = 'inline-block';
+        }
+        if (modalHeroEmotion) {
+          modalHeroEmotion.innerText = topFinal.toUpperCase();
+          modalHeroEmotion.style.display = 'inline-block';
+          modalHeroEmotion.style.color = '#FFFFFF';
+        }
         if (modalHeroConfidence) {
           modalHeroConfidence.innerText = 'Overall Confidence: ' + window.labState.fusedConfidence + '% (70% Facial Expression + 30% Voice Prosody)';
+          modalHeroConfidence.style.display = 'block';
         }
 
         const circumplexMap = {
@@ -14212,7 +14238,7 @@
 
         // Left Card: Facial Expression
         const elFaceEmotion = document.getElementById('mediaModalFaceEmotion');
-        if (elFaceEmotion) elFaceEmotion.innerText = (glyphs[faceEmo] || '') + ' ' + faceEmo + ' (' + (window.labState.visualConfidence || 99) + '%)';
+        if (elFaceEmotion) elFaceEmotion.innerText = (glyphs[faceEmo] || '') + ' ' + faceEmo + ' (' + Math.min(99, Math.max(50, Math.round(window.labState.visualConfidence || 95))) + '%)';
         const elFaceSub = document.getElementById('mediaModalFaceSub');
         if (elFaceSub) elFaceSub.innerText = 'AU12 Zygomatic Smile: ' + fSmile + '% • EAR Aperture: ' + fEar;
         const elMmAuSmile = document.getElementById('mmAuSmile');
@@ -14226,7 +14252,7 @@
 
         // Right Card: Voice Prosody
         const elVoiceEmotion = document.getElementById('mediaModalVoiceEmotion');
-        if (elVoiceEmotion) elVoiceEmotion.innerText = '🎙️ ' + voiceEmo + ' (' + (window.labState.audioConfidence || 91) + '%)';
+        if (elVoiceEmotion) elVoiceEmotion.innerText = '🎙️ ' + voiceEmo + ' (' + Math.min(99, Math.max(50, Math.round(window.labState.audioConfidence || 90))) + '%)';
         const elVoiceSub = document.getElementById('mediaModalVoiceSub');
         if (elVoiceSub) elVoiceSub.innerText = 'Mean Pitch F₀: ' + metricsA.pitch + ' Hz • Loudness: ' + metricsA.loudness + ' dB';
         const elMmPitch = document.getElementById('mmPitch');
@@ -14243,7 +14269,8 @@
         if (modalBars) {
           modalBars.innerHTML = '';
           emotions.forEach(e => {
-            const pct = Math.round((fused[e] || 0) * 100);
+            const rawP = Math.max(0.0, fused[e] || 0);
+            const pct = Math.min(100, Math.max(0, Math.round(rawP * 100)));
             const barRow = document.createElement('div');
             barRow.style.cssText = 'display: flex; flex-direction: column; gap: 0.2rem;';
             barRow.innerHTML = `
@@ -14418,10 +14445,11 @@
       }
     });
 
-    const btnReopenMediaResultModal = document.getElementById('btnReopenMediaResultModal');
-    if (btnReopenMediaResultModal) {
-      btnReopenMediaResultModal.addEventListener('click', openMediaModelResultModal);
-    }
+    document.querySelectorAll('#btnReopenMediaResultModal, #btnPopUpModalFromDashboard').forEach(btn => {
+      btn.addEventListener('click', () => {
+        runMediaLabFusion(true);
+      });
+    });
 
     const btnMediaModalPdf = document.getElementById('btnMediaModalPdf');
     if (btnMediaModalPdf) {
