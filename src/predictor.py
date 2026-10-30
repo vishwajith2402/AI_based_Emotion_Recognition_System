@@ -186,12 +186,37 @@ class EmotionPredictor:
     def predict_audio(self, audio_data: np.ndarray) -> Dict[str, Any]:
         """
         Analyzes an audio clip (numpy float32 array or loaded via path) for speech emotion with optional EMA temporal smoothing.
+        Supports multi-window sliding temporal aggregation for longer utterances (> 3.5s).
         """
         if audio_data is None:
             return {"speech_detected": False, "top_emotion": None, "confidence": 0.0, "probabilities": None}
 
-        tensor, silent = self.speech_preprocessor.process_audio(audio_data)
-        raw_emotion, raw_conf, raw_probs = self.speech_model.predict(tensor)
+        win_len = self.speech_preprocessor.target_length
+        # For longer audio utterances (e.g. 7-10 seconds), compute temporal sliding windows
+        if len(audio_data) > int(win_len * 1.2):
+            hop_len = int(self.speech_preprocessor.sample_rate * 1.0)
+            window_probs = []
+            for pos in range(0, len(audio_data) - win_len + 1, hop_len):
+                chunk = audio_data[pos:pos + win_len]
+                t, silent = self.speech_preprocessor.process_audio(chunk)
+                if not silent:
+                    _, _, raw_p = self.speech_model.predict(t)
+                    window_probs.append(raw_p)
+
+            if window_probs:
+                avg_raw = {}
+                for emo in window_probs[0]:
+                    avg_raw[emo] = float(np.mean([wp[emo] for wp in window_probs]))
+                silent = False
+                raw_probs = avg_raw
+                raw_emotion = max(raw_probs, key=raw_probs.get)
+                raw_conf = raw_probs[raw_emotion]
+            else:
+                tensor, silent = self.speech_preprocessor.process_audio(audio_data)
+                raw_emotion, raw_conf, raw_probs = self.speech_model.predict(tensor)
+        else:
+            tensor, silent = self.speech_preprocessor.process_audio(audio_data)
+            raw_emotion, raw_conf, raw_probs = self.speech_model.predict(tensor)
 
         if not silent:
             probs = self._apply_ema(raw_probs, self.smoothed_speech_probs)
