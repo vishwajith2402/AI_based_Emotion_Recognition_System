@@ -12866,8 +12866,7 @@
                 window.labState.audioProbs = { ...deepAudio.probabilities };
                 window.labState.audioEmotion = deepAudio.top_emotion;
                 window.labState.audioConfidence = Math.round(deepAudio.confidence * 100);
-                const tag = ● DEEP BiLSTM ACOUSTIC LOCKED (ms);
-                updateVocalResultsUI(tag);
+                const tag = "● DEEP BiLSTM ACOUSTIC LOCKED (" + (deepAudio.latency_ms || 6) + "ms)";
               }
             })
             .catch(() => {});
