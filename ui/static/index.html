@@ -5612,8 +5612,8 @@
         </div>
 
         <!-- Quick Header Action CTA -->
-        <button class="btn-header-cta" id="btnStartAnalyticsHeader" title="Capture and analyze facial expression">
-          <span>📸</span> Snap Expression
+        <button class="btn-header-cta" id="btnStartAnalyticsHeader" title="Run 15s Multimodal Analysis (5s Photo Click + 10s Voice Recording)">
+          <span>📸</span> Start 15s Analysis
         </button>
 
         <!-- Quick Flip Camera Button in Header -->
@@ -5630,33 +5630,33 @@
        ANALYSIS TIMELINE HUD (Minimalist HUD, hidden until active)
        ======================================================== -->
   <!-- ========================================================
-       EXPRESSION SHUTTER SCAN HUD (3.5s Precision Lock & Snap)
+       15-SECOND MULTIMODAL HUD (5s Photo Click + 10s Voice Recording)
        ======================================================== -->
   <div class="hud-timeline" id="analyticsBanner" style="display: none;">
     <div class="timeline-top">
       <div class="timeline-phase">
-        <span class="phase-index" id="analyticsPhaseBadge">01 / 01</span>
+        <span class="phase-index" id="analyticsPhaseBadge">01 / 02</span>
         <div>
-          <div class="phase-label" id="timelinePhaseLabel">EXPRESSION SHUTTER SCAN</div>
-          <div class="phase-instruction" id="analyticsStatusText">Align face & hold your expression (3.5s countdown)...</div>
+          <div class="phase-label" id="timelinePhaseLabel">STAGE 1: PHOTO CLICK (5s)</div>
+          <div class="phase-instruction" id="analyticsStatusText">Strike your facial expression... camera snaps at 5.0s</div>
         </div>
       </div>
       <div class="timeline-countdown">
-        <span id="analyticsTimer">3.5s</span>
+        <span id="analyticsTimer">15.0s</span>
         <button class="btn-abort" id="btnCancelAnalytics">ABORT</button>
       </div>
     </div>
     
-    <!-- Thin Scientific Progress Track: Cyan (Face Lock) -->
+    <!-- Thin Scientific Progress Track: Cyan (Face Snap 33.3%) -> Violet (Voice Recording 66.7%) -->
     <div class="timeline-track-wrapper">
       <div class="track-face" id="analyticsProgressFace" style="width: 0%;"></div>
-      <div class="track-voice" id="analyticsProgressVoice" style="display: none;"></div>
+      <div class="track-voice" id="analyticsProgressVoice" style="width: 0%; display: block;"></div>
     </div>
     
     <div class="timeline-meta">
       <span>0s: LOCK-ON & POSE</span>
-      <span style="color: var(--cyan);">2.0s: BIOMETRIC STABILIZATION</span>
-      <span>3.5s: 📸 SHUTTER SNAP & SCAN</span>
+      <span style="color: var(--cyan);">5.0s: 📸 PHOTO SHUTTER SNAP</span>
+      <span style="color: var(--violet);">15.0s: 🎙️ VOICE RECORDING & FUSION</span>
     </div>
   </div>
 
@@ -5883,8 +5883,8 @@
             </div>
 
             <!-- Primary CTA Button (Dominant Action) -->
-            <button class="btn-primary-cta" id="btnStartAnalytics" title="Lock onto facial expression and snap high-res analysis">
-              <span>📸 Snap Expression (3.5s)</span>
+            <button class="btn-primary-cta" id="btnStartAnalytics" title="Run 15s Multimodal Analysis (5s Photo Click + 10s Voice Recording)">
+              <span>📸 Start 15s Analysis (5s Snap + 10s Voice)</span>
               <span class="arrow">→</span>
             </button>
           </div>
@@ -6320,7 +6320,7 @@
         <div style="display: flex; align-items: center; gap: 0.65rem;">
           <span style="font-size: 1.35rem;">📊</span>
           <div>
-            <h2 style="font-size: 1.1rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">30-Second Multimodal Assessment Report</h2>
+            <h2 style="font-size: 1.1rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">15-Second Multimodal Assessment Report</h2>
             <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0; font-family: var(--font-mono);">CALIBRATED BIOMETRIC & VOCAL AFFECT ENGINE</p>
           </div>
         </div>
@@ -10076,14 +10076,17 @@
       }
     }
 
-    // 3.5-Second Facial Expression Lock-On & Snapshot Controller
+    // 15-Second Multimodal Analytics Session Controller (5s Photo Click + 10s Voice Recording)
     const analyticsSession = {
       active: false,
       startTime: 0,
-      totalDuration: 3.5,
-      phase1Duration: 3.5,
+      totalDuration: 15.0,
+      phase1Duration: 5.0,  // First 5s: Photo click & expression biometrics
+      phase2Duration: 10.0, // Next 10s: Voice recording & prosody
       timerId: null,
       currentPhase: 1,
+      photoCaptured: false,
+      capturedPhotoResult: null,
       announcedPhase2: false,
       faceSamples: [],
       voiceSamples: [],
@@ -10172,6 +10175,8 @@
       analyticsSession.active = true;
       analyticsSession.startTime = Date.now();
       analyticsSession.currentPhase = 1;
+      analyticsSession.photoCaptured = false;
+      analyticsSession.capturedPhotoResult = null;
       analyticsSession.announcedPhase2 = false;
       analyticsSession.faceSamples = [];
       analyticsSession.voiceSamples = [];
@@ -10195,16 +10200,17 @@
 
       elAnalyticsBanner.style.display = 'block';
       elAnalyticsBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      setSystemStatus('TRACKING EXPRESSION', 'var(--cyan)');
+      setSystemStatus('STAGE 1: PHOTO CLICK (5s)', 'var(--cyan)');
 
-      elAnalyticsTimer.innerText = '3.5s';
-      elAnalyticsBadge.innerText = '01 / 01';
-      if (elTimelinePhase) elTimelinePhase.innerText = 'EXPRESSION SHUTTER SCAN';
-      elAnalyticsStatus.innerText = 'Strike your facial expression & hold steady...';
+      elAnalyticsTimer.innerText = '15.0s';
+      elAnalyticsBadge.innerText = '01 / 02';
+      if (elTimelinePhase) elTimelinePhase.innerText = 'STAGE 1: PHOTO CLICK (5s)';
+      elAnalyticsStatus.innerText = 'Strike your facial expression... camera snaps at 5.0s';
       elProgressFace.style.width = '0%';
-      if (elProgressVoice) elProgressVoice.style.display = 'none';
+      elProgressVoice.style.width = '0%';
+      elProgressVoice.style.display = 'block';
 
-      speakPhrase('Expression scan started. Hold your expression steady.');
+      speakPhrase('15-second session started. Hold your expression steady for the photo.');
 
       analyticsSession.timerId = setInterval(onAnalyticsTick, 50);
     }
@@ -10214,23 +10220,29 @@
 
       const elapsed = (Date.now() - analyticsSession.startTime) / 1000.0;
       const remainingTotal = Math.max(0, analyticsSession.totalDuration - elapsed);
-      elAnalyticsTimer.innerText = `${remainingTotal.toFixed(1)}s`;
 
-      if (elapsed < analyticsSession.totalDuration) {
+      if (elapsed < analyticsSession.phase1Duration) {
+        // ========================================================
+        // STAGE 1: FIRST 5 SECONDS - PHOTO CLICKING & FACE LOCK
+        // ========================================================
         analyticsSession.currentPhase = 1;
-        elAnalyticsBadge.innerText = '01 / 01';
-        if (elTimelinePhase) elTimelinePhase.innerText = 'EXPRESSION SHUTTER SCAN';
+        elAnalyticsBadge.innerText = '01 / 02';
+        if (elTimelinePhase) elTimelinePhase.innerText = 'STAGE 1: PHOTO CLICK (5s)';
 
-        if (remainingTotal <= 1.0) {
-          elAnalyticsStatus.innerText = '📸 Hold steady for shutter snap in 1s...';
-        } else if (remainingTotal <= 2.2) {
-          elAnalyticsStatus.innerText = 'Stabilizing biometric Action Units... hold expression!';
+        const remPhase1 = Math.max(0, analyticsSession.phase1Duration - elapsed);
+        elAnalyticsTimer.innerText = `${remainingTotal.toFixed(1)}s (Snap: ${remPhase1.toFixed(1)}s)`;
+
+        if (remPhase1 <= 1.2) {
+          elAnalyticsStatus.innerText = `📸 HOLD STEADY! Shutter snaps in ${remPhase1.toFixed(1)}s...`;
+        } else if (remPhase1 <= 2.8) {
+          elAnalyticsStatus.innerText = `Stabilizing 468-point biometric Action Units... hold expression!`;
         } else {
-          elAnalyticsStatus.innerText = `Align face with reticle... (${state.selectedFaceEmotion})`;
+          elAnalyticsStatus.innerText = `Strike facial expression... photo snaps in ${remPhase1.toFixed(1)}s (${state.selectedFaceEmotion})`;
         }
 
-        const facePct = (elapsed / analyticsSession.totalDuration) * 100;
+        const facePct = (elapsed / analyticsSession.phase1Duration) * 33.33;
         elProgressFace.style.width = `${facePct}%`;
+        elProgressVoice.style.width = '0%';
 
         analyticsSession.faceSamples.push({
           emotion: state.selectedFaceEmotion,
@@ -10238,22 +10250,72 @@
           timestamp: elapsed
         });
 
+      } else if (elapsed >= analyticsSession.phase1Duration && elapsed < analyticsSession.totalDuration) {
+        // ========================================================
+        // STAGE 2: NEXT 10 SECONDS - VOICE RECORDING (5s - 15s)
+        // ========================================================
+        analyticsSession.currentPhase = 2;
+
+        // Trigger shutter photo click exactly at 5.0s transition
+        if (!analyticsSession.photoCaptured) {
+          analyticsSession.photoCaptured = true;
+          captureExpressionPhotoAtFiveSeconds();
+        }
+
+        if (!analyticsSession.announcedPhase2) {
+          analyticsSession.announcedPhase2 = true;
+          analyticsSession.transcripts = [];
+          analyticsSession.latestTranscript = '';
+          const elLivePrev = document.getElementById('liveTranscriptPreview');
+          if (elLivePrev) elLivePrev.innerText = '"Speak now... recording vocal audio"';
+          setSystemStatus('STAGE 2: RECORDING VOICE (10s)', 'var(--violet)');
+          speakPhrase('Photo captured! Now speak into the microphone for 10 seconds.', () => {
+            if (speechRecognizer) {
+              try { speechRecognizer.stop(); } catch (e) {}
+              setTimeout(() => {
+                try { speechRecognizer.start(); } catch (e) {}
+              }, 120);
+            }
+          });
+        }
+
+        elAnalyticsBadge.innerText = '02 / 02';
+        if (elTimelinePhase) elTimelinePhase.innerText = 'STAGE 2: VOICE RECORDING (10s)';
+
+        const remPhase2 = Math.max(0, analyticsSession.totalDuration - elapsed);
+        elAnalyticsTimer.innerText = `${remainingTotal.toFixed(1)}s (Voice: ${remPhase2.toFixed(1)}s)`;
+        elAnalyticsStatus.innerText = `🎙️ Speak clearly into microphone... recording vocal prosody & speech (${state.selectedSpeechEmotion})`;
+
+        elProgressFace.style.width = '33.33%';
+        const voiceElapsed = elapsed - analyticsSession.phase1Duration;
+        const voicePct = (voiceElapsed / analyticsSession.phase2Duration) * 66.67;
+        elProgressVoice.style.width = `${voicePct}%`;
+
+        analyticsSession.voiceSamples.push({
+          emotion: state.selectedSpeechEmotion,
+          probs: { ...state.latestSpeechProbs },
+          timestamp: elapsed
+        });
+
       } else {
-        // 3.5s Countdown Elapsed -> Shutter Click & Scan Photo!
+        // ========================================================
+        // 15.0s COMPLETED -> FUSION & REPORT MODAL
+        // ========================================================
         clearInterval(analyticsSession.timerId);
         analyticsSession.active = false;
-        elProgressFace.style.width = '100%';
+        elProgressFace.style.width = '33.33%';
+        elProgressVoice.style.width = '66.67%';
         elAnalyticsTimer.innerText = '0.0s';
-        elAnalyticsBadge.innerText = 'SNAP 📸';
-        if (elTimelinePhase) elTimelinePhase.innerText = 'SHUTTER TRIGGERED';
-        elAnalyticsStatus.innerText = 'Analyzing captured expression photo with deep vision CNN...';
-        setSystemStatus('PHOTO CAPTURED', 'var(--cyan)');
+        elAnalyticsBadge.innerText = 'COMPLETE ✓';
+        if (elTimelinePhase) elTimelinePhase.innerText = '15s MULTIMODAL FUSION COMPLETE';
+        elAnalyticsStatus.innerText = 'Synthesizing 5s Photo Biometrics + 10s Voice Recording...';
+        setSystemStatus('15s ANALYSIS COMPLETE', 'var(--cyan)');
 
-        captureAndScanExpressionPhoto();
+        finishAnalyticsSession(analyticsSession.capturedPhotoResult);
       }
     }
 
-    async function captureAndScanExpressionPhoto() {
+    async function captureExpressionPhotoAtFiveSeconds() {
       playShutterClick();
       triggerCameraFlash();
 
@@ -10275,14 +10337,20 @@
         snapDataUrl = snapCanvas.toDataURL('image/jpeg', 0.95);
         analyticsSession.lastSnapshotUrl = snapDataUrl;
 
-        // Show in-viewport overlay
+        // Show in-viewport overlay preview briefly
         const overlay = document.getElementById('camSnapshotOverlay');
         const thumb = document.getElementById('camSnapshotImg');
         const verdict = document.getElementById('camSnapshotVerdict');
         if (overlay && thumb && verdict) {
           thumb.src = snapDataUrl;
-          verdict.innerText = 'SCANNING 468-PT BIOMETRICS ON CAPTURED PHOTO...';
+          verdict.innerText = '📸 PHOTO CAPTURED (5.0s) &mdash; STARTING VOICE RECORDING...';
           overlay.style.display = 'flex';
+          // Auto-hide the overlay after 2.4s so the camera view is clear for the voice phase
+          setTimeout(() => {
+            if (analyticsSession.active) {
+              overlay.style.display = 'none';
+            }
+          }, 2400);
         }
       }
 
@@ -10295,7 +10363,7 @@
         try {
           photoAnalysis = computeStaticFacialAffectFeatures(targetLandmarks);
         } catch (fErr) {
-          console.warn('[RealTime Snapshot] computeStaticFacialAffectFeatures error:', fErr);
+          console.warn('[Snapshot Scan] computeStaticFacialAffectFeatures error:', fErr);
         }
       }
 
@@ -10323,7 +10391,7 @@
             }, 300);
           });
         } catch (meshErr) {
-          console.warn('[RealTime Snapshot] snapCanvas mesh scan error:', meshErr);
+          console.warn('[Snapshot Scan] snapCanvas mesh scan error:', meshErr);
         }
       }
 
@@ -10345,8 +10413,14 @@
         }
       }
 
-      const finalScanResult = deepResult || photoAnalysis;
-      finishAnalyticsSession(finalScanResult);
+      analyticsSession.capturedPhotoResult = deepResult || photoAnalysis;
+      if (analyticsSession.capturedPhotoResult) {
+        const topE = analyticsSession.capturedPhotoResult.dominantEmotion || analyticsSession.capturedPhotoResult.top_emotion;
+        const verdict = document.getElementById('camSnapshotVerdict');
+        if (verdict) {
+          verdict.innerHTML = `📸 PHOTO CAPTURED: ${EMOTION_ICONS[topE] || ''} ${topE.toUpperCase()} &mdash; NOW SPEAK FOR 10 SECONDS!`;
+        }
+      }
     }
 
     function stopAnalyticsSession() {
@@ -10601,9 +10675,9 @@
       }
       if (repConf) {
         if (voiceWasHeard && totalVoiceSamples > 0) {
-          repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted 75% Face + 25% Voice`;
+          repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • Weighted 50% Photo + 30% Voice + 20% Text (15s Session)`;
         } else {
-          repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • 468-Pt Biometric FACS Shutter Snapshot Scan (100% Visual)`;
+          repConf.innerText = `Overall Confidence: ${finalConf.toFixed(1)}% • 468-Pt Biometric FACS Photo Snapshot Scan (100% Visual)`;
         }
       }
       if (repFace) repFace.innerText = `${EMOTION_ICONS[dominantFace]} ${dominantFace} (${faceConf.toFixed(1)}%)`;
@@ -10701,8 +10775,8 @@
         arousal: repAU.arousal || 0,
         sourceElement: (typeof video !== 'undefined' ? video : (document.getElementById('webcamVideo') || null)),
         diagnostic: isConcordant
-          ? `Over the 30-second assessment, Phase 1 visual facial geometry, Phase 2 vocal acoustic prosody, and Phase 3 verbal linguistic sentiment demonstrated mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`
-          : `The 30-second evaluation revealed cross-modal affective dissonance. Visual micro-features registered predominantly as ${dominantFace} (${faceConf.toFixed(1)}%), whereas vocal acoustic modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%). Fused decision settled at ${topFinal} (${finalConf.toFixed(1)}%).`
+          ? `Over the 15-second assessment (5s Photo Click + 10s Voice Recording), Phase 1 visual expression photo (${dominantFace}), Phase 2 vocal acoustic prosody (${dominantVoice}), and speech sentiment demonstrated mutual agreement (${topFinal}). Fused confidence reached ${finalConf.toFixed(1)}%.`
+          : `The 15-second evaluation (5s Photo Click + 10s Voice Recording) synthesized cross-modal cues. Visual snapshot photo registered as ${dominantFace} (${faceConf.toFixed(1)}%), while 10s vocal modulation registered as ${dominantVoice} (${voiceConf.toFixed(1)}%). Fused multimodal verdict settled at ${topFinal} (${finalConf.toFixed(1)}%).`
       };
 
       // 2b. Populate Extended Forensic Report Details
@@ -10792,11 +10866,11 @@
 
       const btnMain = document.getElementById('btnStartAnalytics');
       if (btnMain && btnMain.querySelector('span')) {
-        btnMain.querySelector('span').innerText = '📸 Retake Expression (3.5s)';
+        btnMain.querySelector('span').innerText = '📸 Retake 15s Analysis (5s Snap + 10s Voice)';
       }
       const btnHdr = document.getElementById('btnStartAnalyticsHeader');
       if (btnHdr && btnHdr.querySelector('span')) {
-        btnHdr.querySelector('span').innerText = '📸 Retake';
+        btnHdr.querySelector('span').innerText = '📸 Retake 15s';
       }
 
       // Wire up inline retake / report buttons
@@ -10821,7 +10895,7 @@
       openAnalyticsReportModal();
       playSuccessChime();
 
-      speakPhrase(`Expression captured: ${topFinal} with ${finalConf.toFixed(0)} percent confidence.`);
+      speakPhrase(`15-second assessment complete. Recognized emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence.`);
     }
 
     // ------------------------------------------------------------------------
