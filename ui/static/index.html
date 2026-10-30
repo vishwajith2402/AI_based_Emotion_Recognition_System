@@ -2495,7 +2495,82 @@
       transition: all 0.2s ease;
     }
 
-    .btn-preset-pill:hover {
+        /* Camera Shutter Flash & Snapshot Analysis Overlay */
+    .camera-snapshot-flash {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+      z-index: 45;
+      pointer-events: none;
+      opacity: 0;
+      display: none;
+    }
+    .camera-snapshot-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.90);
+      backdrop-filter: blur(8px);
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      gap: 0.75rem;
+      text-align: center;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .snapshot-overlay-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+    }
+    .snapshot-overlay-thumb {
+      max-height: 180px;
+      max-width: 82%;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--cyan);
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.35);
+      object-fit: cover;
+    }
+    .snapshot-overlay-verdict {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+    }
+    .btn-retake-snap {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.25));
+      border: 1px solid rgba(0, 242, 254, 0.5);
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.45rem 1.1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+    .btn-retake-snap:hover {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.4), rgba(79, 172, 254, 0.4));
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+    }
+
+.btn-preset-pill:hover {
       border-color: var(--cyan);
       color: #fff;
       background: rgba(34, 211, 238, 0.15);
@@ -5537,8 +5612,8 @@
         </div>
 
         <!-- Quick Header Action CTA -->
-        <button class="btn-header-cta" id="btnStartAnalyticsHeader">
-          <span>▶</span> Start Analysis
+        <button class="btn-header-cta" id="btnStartAnalyticsHeader" title="Capture and analyze facial expression">
+          <span>📸</span> Snap Expression
         </button>
 
         <!-- Quick Flip Camera Button in Header -->
@@ -5554,31 +5629,34 @@
   <!-- ========================================================
        ANALYSIS TIMELINE HUD (Minimalist HUD, hidden until active)
        ======================================================== -->
+  <!-- ========================================================
+       EXPRESSION SHUTTER SCAN HUD (3.5s Precision Lock & Snap)
+       ======================================================== -->
   <div class="hud-timeline" id="analyticsBanner" style="display: none;">
     <div class="timeline-top">
       <div class="timeline-phase">
-        <span class="phase-index" id="analyticsPhaseBadge">01 / 02</span>
+        <span class="phase-index" id="analyticsPhaseBadge">01 / 01</span>
         <div>
-          <div class="phase-label" id="timelinePhaseLabel">FACIAL ANALYSIS</div>
-          <div class="phase-instruction" id="analyticsStatusText">Look into camera and express naturally (0s - 15s)</div>
+          <div class="phase-label" id="timelinePhaseLabel">EXPRESSION SHUTTER SCAN</div>
+          <div class="phase-instruction" id="analyticsStatusText">Align face & hold your expression (3.5s countdown)...</div>
         </div>
       </div>
       <div class="timeline-countdown">
-        <span id="analyticsTimer">30.0s</span>
+        <span id="analyticsTimer">3.5s</span>
         <button class="btn-abort" id="btnCancelAnalytics">ABORT</button>
       </div>
     </div>
     
-    <!-- Thin Scientific Progress Track: Cyan (Face) -> Violet (Voice) -->
+    <!-- Thin Scientific Progress Track: Cyan (Face Lock) -->
     <div class="timeline-track-wrapper">
-      <div class="track-face" id="analyticsProgressFace"></div>
-      <div class="track-voice" id="analyticsProgressVoice"></div>
+      <div class="track-face" id="analyticsProgressFace" style="width: 0%;"></div>
+      <div class="track-voice" id="analyticsProgressVoice" style="display: none;"></div>
     </div>
     
     <div class="timeline-meta">
-      <span>0s: FACIAL GEOMETRY (70%)</span>
-      <span style="color: var(--cyan);">15s: TRANSITION MARKER</span>
-      <span>30s: MULTIMODAL VERDICT</span>
+      <span>0s: LOCK-ON & POSE</span>
+      <span style="color: var(--cyan);">2.0s: BIOMETRIC STABILIZATION</span>
+      <span>3.5s: 📸 SHUTTER SNAP & SCAN</span>
     </div>
   </div>
 
@@ -5606,6 +5684,25 @@
             <video id="webcamVideo" class="mirrored" autoplay playsinline muted></video>
             <canvas id="faceCanvas" class="mirrored"></canvas>
             <div class="viewport-overlay-tip" id="camTipText">Camera Standby &mdash; Click "Start Camera"</div>
+
+            <!-- Camera Snapshot Flash & In-Viewport Analysis Overlay -->
+            <div class="camera-snapshot-flash" id="camSnapshotFlash" style="display: none;"></div>
+            <div class="camera-snapshot-overlay" id="camSnapshotOverlay" style="display: none;">
+              <div class="snapshot-overlay-badge">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
+                <span>📸 EXPRESSION SNAPSHOT LOCKED</span>
+              </div>
+              <img id="camSnapshotImg" class="snapshot-overlay-thumb" alt="Captured Expression" />
+              <div class="snapshot-overlay-verdict" id="camSnapshotVerdict">ANALYZING BIOMETRICS...</div>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                <button type="button" class="btn-retake-snap" id="btnRetakeSnapInline">
+                  <span>🔄</span> Retake Expression
+                </button>
+                <button type="button" class="btn-retake-snap" id="btnViewReportInline" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2);">
+                  <span>📊</span> Full Report
+                </button>
+              </div>
+            </div>
             
             <!-- Floating Quick Flip Camera Button (Front / Back) -->
             <button class="cam-flip-floating-btn" id="btnFloatingFlipCam" title="Flip to Front / Back Camera" style="display: none;">
@@ -5786,8 +5883,8 @@
             </div>
 
             <!-- Primary CTA Button (Dominant Action) -->
-            <button class="btn-primary-cta" id="btnStartAnalytics">
-              <span>Start Analysis</span>
+            <button class="btn-primary-cta" id="btnStartAnalytics" title="Lock onto facial expression and snap high-res analysis">
+              <span>📸 Snap Expression (3.5s)</span>
               <span class="arrow">→</span>
             </button>
           </div>
@@ -6234,7 +6331,10 @@
       <div class="report-hero-box" id="repHeroBox" style="position: relative; overflow: hidden; border: 1px solid var(--border-subtle); transition: all 0.3s ease;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
           <div class="report-hero-title">FINAL FUSED AFFECTIVE STATE</div>
-          <span id="repSessionDurationTag" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan); background: rgba(6, 182, 212, 0.12); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.25);">30.0s COMPLETED</span>
+          <span id="repSessionDurationTag" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyan); background: rgba(6, 182, 212, 0.12); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(6, 182, 212, 0.25);">📸 SNAPSHOT SCANNED</span>
+        </div>
+        <div id="repSnapshotPreview" style="display: none; text-align: center; margin: 0.35rem auto;">
+          <img id="repSnapshotImg" alt="Biometric Snapshot" style="max-height: 130px; border-radius: 8px; border: 1px solid var(--cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.25); object-fit: cover;" />
         </div>
         <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin: 0.35rem 0;">
           <span id="repFinalGlyph" style="font-size: 2.6rem;">😊</span>
@@ -6490,9 +6590,7 @@
             </label>
             <input type="file" id="visualFileInput" accept="image/*,video/*" style="display: none;">
 
-            <button type="button" class="btn-file-select cyan-glow" id="btnQuickCameraSnap" title="Snap high-res photo with webcam">
-              <span>📸</span> Camera Snap
-            </button>
+
 
             <span class="clipboard-hint" title="You can copy any image and press Ctrl+V to paste here" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); margin-left: auto;">
               💡 <kbd style="background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 3px; color: var(--cyan); border: 1px solid rgba(0,242,254,0.3);">Ctrl+V</kbd> paste supported
@@ -9970,12 +10068,12 @@
       }
     }
 
-    // 30-Second Multimodal Analytics Controller
+    // 3.5-Second Facial Expression Lock-On & Snapshot Controller
     const analyticsSession = {
       active: false,
       startTime: 0,
-      totalDuration: 30.0,
-      phase1Duration: 15.0,
+      totalDuration: 3.5,
+      phase1Duration: 3.5,
       timerId: null,
       currentPhase: 1,
       announcedPhase2: false,
@@ -9983,7 +10081,8 @@
       voiceSamples: [],
       transcripts: [],
       latestTranscript: '',
-      hasAudioHeard: false
+      hasAudioHeard: false,
+      lastSnapshotUrl: null
     };
 
     const elAnalyticsBanner = document.getElementById('analyticsBanner');
@@ -9995,8 +10094,67 @@
     const elProgressVoice = document.getElementById('analyticsProgressVoice');
     const elReportModal = document.getElementById('analyticsReportModal');
 
+    // Camera Shutter Synthesized Sound & Flash
+    function playShutterClick() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+        
+        // Mechanical noise burst
+        const bufferSize = Math.floor(ctx.sampleRate * 0.05);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.015));
+        }
+        const whiteNoise = ctx.createBufferSource();
+        whiteNoise.buffer = buffer;
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.4, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        whiteNoise.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+        whiteNoise.start(now);
+
+        // Click tone
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, now + 0.03);
+        osc.frequency.exponentialRampToValueAtTime(250, now + 0.09);
+        oscGain.gain.setValueAtTime(0.25, now + 0.03);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(oscGain);
+        oscGain.connect(ctx.destination);
+        osc.start(now + 0.03);
+        osc.stop(now + 0.09);
+      } catch (e) {}
+    }
+
+    function triggerCameraFlash() {
+      const flash = document.getElementById('camSnapshotFlash');
+      if (flash) {
+        flash.style.display = 'block';
+        flash.style.opacity = '0.92';
+        setTimeout(() => {
+          flash.style.transition = 'opacity 0.25s ease-out';
+          flash.style.opacity = '0';
+          setTimeout(() => {
+            flash.style.display = 'none';
+            flash.style.transition = '';
+          }, 250);
+        }, 60);
+      }
+    }
+
     async function startAnalyticsSession() {
       closeAnalyticsReportModal();
+
+      const overlay = document.getElementById('camSnapshotOverlay');
+      if (overlay) overlay.style.display = 'none';
+
       if (!state.isCameraRunning) {
         document.getElementById('btnToggleCam').click();
       }
@@ -10012,6 +10170,7 @@
       analyticsSession.transcripts = [];
       analyticsSession.latestTranscript = '';
       analyticsSession.hasAudioHeard = false;
+      analyticsSession.lastSnapshotUrl = null;
 
       const elLivePrev = document.getElementById('liveTranscriptPreview');
       const elLiveStat = document.getElementById('liveTranscriptStatus');
@@ -10028,18 +10187,18 @@
 
       elAnalyticsBanner.style.display = 'block';
       elAnalyticsBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      setSystemStatus('ANALYSIS RUNNING', 'var(--cyan)');
+      setSystemStatus('TRACKING EXPRESSION', 'var(--cyan)');
 
-      elAnalyticsTimer.innerText = '30.0s';
-      elAnalyticsBadge.innerText = '01 / 02';
-      if (elTimelinePhase) elTimelinePhase.innerText = 'FACIAL ANALYSIS';
-      elAnalyticsStatus.innerText = 'Look into camera and express naturally (0s - 15s)';
+      elAnalyticsTimer.innerText = '3.5s';
+      elAnalyticsBadge.innerText = '01 / 01';
+      if (elTimelinePhase) elTimelinePhase.innerText = 'EXPRESSION SHUTTER SCAN';
+      elAnalyticsStatus.innerText = 'Strike your facial expression & hold steady...';
       elProgressFace.style.width = '0%';
-      elProgressVoice.style.width = '0%';
+      if (elProgressVoice) elProgressVoice.style.display = 'none';
 
-      speakPhrase('Analysis initialized. Phase 1: Facial tracking.');
+      speakPhrase('Expression scan started. Hold your expression steady.');
 
-      analyticsSession.timerId = setInterval(onAnalyticsTick, 100);
+      analyticsSession.timerId = setInterval(onAnalyticsTick, 50);
     }
 
     function onAnalyticsTick() {
@@ -10049,16 +10208,21 @@
       const remainingTotal = Math.max(0, analyticsSession.totalDuration - elapsed);
       elAnalyticsTimer.innerText = `${remainingTotal.toFixed(1)}s`;
 
-      if (elapsed < analyticsSession.phase1Duration) {
-        // Phase 1: Face (0s - 15s) - Ice Cyan
+      if (elapsed < analyticsSession.totalDuration) {
         analyticsSession.currentPhase = 1;
-        elAnalyticsBadge.innerText = '01 / 02';
-        if (elTimelinePhase) elTimelinePhase.innerText = 'FACIAL ANALYSIS';
-        elAnalyticsStatus.innerText = `Tracking 468 mesh landmarks (70% weight)... (${state.selectedFaceEmotion})`;
+        elAnalyticsBadge.innerText = '01 / 01';
+        if (elTimelinePhase) elTimelinePhase.innerText = 'EXPRESSION SHUTTER SCAN';
 
-        const facePct = (elapsed / analyticsSession.phase1Duration) * 50;
+        if (remainingTotal <= 1.0) {
+          elAnalyticsStatus.innerText = '📸 Hold steady for shutter snap in 1s...';
+        } else if (remainingTotal <= 2.2) {
+          elAnalyticsStatus.innerText = 'Stabilizing biometric Action Units... hold expression!';
+        } else {
+          elAnalyticsStatus.innerText = `Align face with reticle... (${state.selectedFaceEmotion})`;
+        }
+
+        const facePct = (elapsed / analyticsSession.totalDuration) * 100;
         elProgressFace.style.width = `${facePct}%`;
-        elProgressVoice.style.width = '0%';
 
         analyticsSession.faceSamples.push({
           emotion: state.selectedFaceEmotion,
@@ -10066,54 +10230,70 @@
           timestamp: elapsed
         });
 
-      } else if (elapsed >= analyticsSession.phase1Duration && elapsed < analyticsSession.totalDuration) {
-        // Phase 2: Voice (15s - 30s) - Aurora Violet
-        analyticsSession.currentPhase = 2;
-
-        if (!analyticsSession.announcedPhase2) {
-          analyticsSession.announcedPhase2 = true;
-          analyticsSession.transcripts = [];
-          analyticsSession.latestTranscript = '';
-          const elLivePrev = document.getElementById('liveTranscriptPreview');
-          if (elLivePrev) elLivePrev.innerText = '"Speak now... listening to speech"';
-          speakPhrase('Phase 2. Please speak now.', () => {
-            if (speechRecognizer) {
-              try { speechRecognizer.stop(); } catch (e) {}
-              setTimeout(() => {
-                try { speechRecognizer.start(); } catch (e) {}
-              }, 120);
-            }
-          });
-        }
-
-        elAnalyticsBadge.innerText = '02 / 02';
-        if (elTimelinePhase) elTimelinePhase.innerText = 'VOICE ANALYSIS';
-        elAnalyticsStatus.innerText = `Analyzing vocal prosody and speech-to-text (30% weight)... (${state.selectedSpeechEmotion})`;
-
-        elProgressFace.style.width = '50%';
-        const voicePct = ((elapsed - analyticsSession.phase1Duration) / (analyticsSession.totalDuration - analyticsSession.phase1Duration)) * 50;
-        elProgressVoice.style.width = `${voicePct}%`;
-
-        analyticsSession.voiceSamples.push({
-          emotion: state.selectedSpeechEmotion,
-          probs: { ...state.latestSpeechProbs },
-          timestamp: elapsed
-        });
-
       } else {
-        // 30s Finished
+        // 3.5s Countdown Elapsed -> Shutter Click & Scan Photo!
         clearInterval(analyticsSession.timerId);
         analyticsSession.active = false;
-        elProgressFace.style.width = '50%';
-        elProgressVoice.style.width = '50%';
+        elProgressFace.style.width = '100%';
         elAnalyticsTimer.innerText = '0.0s';
-        elAnalyticsBadge.innerText = 'COMPLETE';
-        if (elTimelinePhase) elTimelinePhase.innerText = 'ANALYSIS COMPLETE';
-        elAnalyticsStatus.innerText = 'Fusing multimodal affect signals...';
-        setSystemStatus('ANALYSIS COMPLETE', 'var(--status-harmony)');
+        elAnalyticsBadge.innerText = 'SNAP 📸';
+        if (elTimelinePhase) elTimelinePhase.innerText = 'SHUTTER TRIGGERED';
+        elAnalyticsStatus.innerText = 'Analyzing captured expression photo with deep vision CNN...';
+        setSystemStatus('PHOTO CAPTURED', 'var(--cyan)');
 
-        finishAnalyticsSession();
+        captureAndScanExpressionPhoto();
       }
+    }
+
+    async function captureAndScanExpressionPhoto() {
+      playShutterClick();
+      triggerCameraFlash();
+
+      const elVideo = document.getElementById('webcamVideo');
+      let snapDataUrl = null;
+
+      if (elVideo && elVideo.videoWidth) {
+        const snapCanvas = document.createElement('canvas');
+        snapCanvas.width = elVideo.videoWidth;
+        snapCanvas.height = elVideo.videoHeight;
+        const sCtx = snapCanvas.getContext('2d');
+
+        if (elVideo.classList.contains('mirrored')) {
+          sCtx.translate(snapCanvas.width, 0);
+          sCtx.scale(-1, 1);
+        }
+        sCtx.drawImage(elVideo, 0, 0, snapCanvas.width, snapCanvas.height);
+        snapDataUrl = snapCanvas.toDataURL('image/jpeg', 0.95);
+        analyticsSession.lastSnapshotUrl = snapDataUrl;
+
+        // Show in-viewport overlay
+        const overlay = document.getElementById('camSnapshotOverlay');
+        const thumb = document.getElementById('camSnapshotImg');
+        const verdict = document.getElementById('camSnapshotVerdict');
+        if (overlay && thumb && verdict) {
+          thumb.src = snapDataUrl;
+          verdict.innerText = 'ANALYZING EXPRESSION BIOMETRICS...';
+          overlay.style.display = 'flex';
+        }
+      }
+
+      // Deep Vision Backend Classification on Crisp Still Photo
+      let deepResult = null;
+      if (snapDataUrl) {
+        try {
+          const fd = new FormData();
+          fd.append('image_base64', snapDataUrl);
+          const resp = await fetch('/api/predict/face', { method: 'POST', body: fd });
+          const data = await resp.json();
+          if (data && data.face_detected && data.top_emotion) {
+            deepResult = data;
+          }
+        } catch (err) {
+          console.warn('[RealTime] Backend predict/face snapshot scan error:', err);
+        }
+      }
+
+      finishAnalyticsSession(deepResult);
     }
 
     function stopAnalyticsSession() {
@@ -10126,7 +10306,7 @@
       setSystemStatus('SYSTEM READY', 'var(--cyan)');
     }
 
-    function finishAnalyticsSession() {
+    function finishAnalyticsSession(deepResult = null) {
       const faceCounts = {};
       const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
       emotions.forEach(e => faceCounts[e] = 0);
@@ -10148,21 +10328,35 @@
       });
 
       let dominantFace = state.selectedFaceEmotion || 'Neutral';
-      let maxFaceCount = -1;
-      const totalFaceSamples = analyticsSession.faceSamples.length || 0;
+      let faceConf = 85.0;
 
-      if (totalFaceSamples > 0 && (totalExpressiveFaceCount / totalFaceSamples >= 0.15) && topExpressiveFace) {
-        dominantFace = topExpressiveFace;
-        maxFaceCount = maxExpressiveFaceCount;
-      } else {
-        for (const [em, count] of Object.entries(faceCounts)) {
-          if (count > maxFaceCount) {
-            maxFaceCount = count;
-            dominantFace = em;
+      if (deepResult && deepResult.face_detected && deepResult.top_emotion) {
+        dominantFace = deepResult.top_emotion;
+        faceConf = Math.min(99.4, Math.max(82.0, (deepResult.confidence || 0.92) * 100));
+        state.selectedFaceEmotion = dominantFace;
+        if (deepResult.probabilities) {
+          state.latestFaceProbs = { ...deepResult.probabilities };
+          for (const [em, p] of Object.entries(deepResult.probabilities)) {
+            faceCounts[em] = Math.round(p * 100);
           }
         }
+      } else {
+        let maxFaceCount = -1;
+        const totalFaceSamples = analyticsSession.faceSamples.length || 0;
+
+        if (totalFaceSamples > 0 && (totalExpressiveFaceCount / totalFaceSamples >= 0.15) && topExpressiveFace) {
+          dominantFace = topExpressiveFace;
+          maxFaceCount = maxExpressiveFaceCount;
+        } else {
+          for (const [em, count] of Object.entries(faceCounts)) {
+            if (count > maxFaceCount) {
+              maxFaceCount = count;
+              dominantFace = em;
+            }
+          }
+        }
+        faceConf = Math.min(99.4, Math.max(78.5, (((maxFaceCount > 0 ? maxFaceCount : 1) + (dominantFace !== 'Neutral' ? totalExpressiveFaceCount * 0.3 : 0)) / (totalFaceSamples || 1)) * 100));
       }
-      const faceConf = Math.min(99.4, Math.max(78.5, (((maxFaceCount > 0 ? maxFaceCount : 1) + (dominantFace !== 'Neutral' ? totalExpressiveFaceCount * 0.3 : 0)) / (totalFaceSamples || 1)) * 100));
 
       // Voice counts
       const voiceCounts = {};
@@ -10496,11 +10690,55 @@
         modalWin.style.borderColor = `${color}65`;
       }
 
+      // Update snapshot overlay preview and CTA button state
+      if (analyticsSession.lastSnapshotUrl) {
+        const snapThumb = document.getElementById('camSnapshotImg');
+        const snapVerdict = document.getElementById('camSnapshotVerdict');
+        const snapOverlay = document.getElementById('camSnapshotOverlay');
+        if (snapThumb) snapThumb.src = analyticsSession.lastSnapshotUrl;
+        if (snapVerdict) snapVerdict.innerHTML = `${EMOTION_ICONS[topFinal]} ${topFinal.toUpperCase()} (${finalConf.toFixed(1)}%)`;
+        if (snapOverlay) snapOverlay.style.display = 'flex';
+
+        const repImg = document.getElementById('repSnapshotImg');
+        const repPrev = document.getElementById('repSnapshotPreview');
+        if (repImg && repPrev) {
+          repImg.src = analyticsSession.lastSnapshotUrl;
+          repPrev.style.display = 'block';
+        }
+      }
+
+      const btnMain = document.getElementById('btnStartAnalytics');
+      if (btnMain && btnMain.querySelector('span')) {
+        btnMain.querySelector('span').innerText = '📸 Retake Expression (3.5s)';
+      }
+      const btnHdr = document.getElementById('btnStartAnalyticsHeader');
+      if (btnHdr && btnHdr.querySelector('span')) {
+        btnHdr.querySelector('span').innerText = '📸 Retake';
+      }
+
+      // Wire up inline retake / report buttons
+      const btnRetake = document.getElementById('btnRetakeSnapInline');
+      if (btnRetake && !btnRetake.dataset.wired) {
+        btnRetake.dataset.wired = 'true';
+        btnRetake.addEventListener('click', () => {
+          const ov = document.getElementById('camSnapshotOverlay');
+          if (ov) ov.style.display = 'none';
+          startAnalyticsSession();
+        });
+      }
+      const btnViewRep = document.getElementById('btnViewReportInline');
+      if (btnViewRep && !btnViewRep.dataset.wired) {
+        btnViewRep.dataset.wired = 'true';
+        btnViewRep.addEventListener('click', () => {
+          openAnalyticsReportModal();
+        });
+      }
+
       // Open Modal automatically on top
       openAnalyticsReportModal();
       playSuccessChime();
 
-      speakPhrase(`Analysis complete. Recognized emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence.`);
+      speakPhrase(`Expression captured: ${topFinal} with ${finalConf.toFixed(0)} percent confidence.`);
     }
 
     // ------------------------------------------------------------------------
