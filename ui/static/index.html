@@ -6324,8 +6324,12 @@
         <div style="display: flex; align-items: center; gap: 0.65rem;">
           <span style="font-size: 1.35rem;">📊</span>
           <div>
-            <h2 style="font-size: 1.1rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">15-Second Multimodal Assessment Report</h2>
-            <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0; font-family: var(--font-mono);">CALIBRATED BIOMETRIC & VOCAL AFFECT ENGINE</p>
+            <h2 style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">
+              Overall Multimodal Model Result
+            </h2>
+            <p style="font-size: 0.72rem; color: var(--cyan); margin: 0; font-family: var(--font-mono); letter-spacing: 0.5px;">
+              SYNTHESIZING BOTH VOICE PROSODY (30%) AND FACIAL EXPRESSION (70%) &bull; 15s REAL-TIME ASSESSMENT
+            </p>
           </div>
         </div>
         <button class="modal-close-btn" id="btnCloseReport" title="Close Report">✕</button>
@@ -10159,10 +10163,93 @@
       };
     }
 
+    // Comprehensive Verbal Linguistic Sentiment Classifier
+    function classifyVerbalSentiment(text) {
+      if (!text || typeof text !== 'string' || text.trim().length === 0) {
+        return {
+          dominantEmotion: 'Neutral',
+          confidence: 70,
+          detectedKeywords: [],
+          verbalProbs: { Happy: 0.1, Sad: 0.1, Angry: 0.1, Surprise: 0.1, Neutral: 0.6 }
+        };
+      }
+      const lower = text.toLowerCase();
+      const lexicons = {
+        Happy: [
+          'happy', 'glad', 'joy', 'smile', 'smiling', 'great', 'wonderful', 'love', 'awesome', 'fantastic',
+          'delighted', 'yay', 'haha', 'laugh', 'beautiful', 'enjoy', 'best', 'good', 'super', 'perfect',
+          'cheerful', 'fun', 'nice', 'brilliant', 'excited', 'exciting', 'khush', 'santhosham', 'semma',
+          'adipoli', 'mast', 'shandar', 'bindaas', 'macha', 'bavundi', 'anandam'
+        ],
+        Sad: [
+          'sad', 'unhappy', 'crying', 'cry', 'tears', 'sorrow', 'depressed', 'depression', 'lonely', 'grief',
+          'pain', 'hurt', 'miss', 'sorry', 'loss', 'hopeless', 'gloomy', 'miserable', 'heartbroken', 'regret',
+          'disappointed', 'tragic', 'udaas', 'dukhi', 'kavalai', 'bad', 'tension', 'dard', 'takleef', 'afsos'
+        ],
+        Angry: [
+          'angry', 'mad', 'furious', 'rage', 'hate', 'annoyed', 'irritated', 'frustrated', 'unfair', 'stupid',
+          'idiot', 'disgust', 'terrible', 'damn', 'hell', 'pissed', 'horrible', 'hostile', 'shut', 'stop',
+          'worst', 'liar', 'gussa', 'kovam', 'kopam', 'irritating', 'chup', 'pagal', 'bakwas'
+        ],
+        Surprise: [
+          'surprise', 'surprised', 'shock', 'shocked', 'wow', 'unbelievable', 'omg', 'what', 'whoa',
+          'unexpected', 'astonished', 'astounded', 'gasp', 'sudden', 'amazing', 'crazy', 'fellowship',
+          'won', 'awarded', 'speechless', 'adbhutam', 'keka', 'kidu'
+        ],
+        Neutral: [
+          'fine', 'okay', 'normal', 'think', 'calm', 'reflect', 'processing', 'nothing', 'regular',
+          'standard', 'average', 'neutral', 'process', 'week', 'day'
+        ]
+      };
+
+      const counts = { Happy: 0, Sad: 0, Angry: 0, Surprise: 0, Neutral: 0 };
+      const detected = [];
+
+      for (const [emo, words] of Object.entries(lexicons)) {
+        words.forEach(w => {
+          const regex = new RegExp('\\b' + w + '\\b', 'i');
+          if (regex.test(lower)) {
+            counts[emo] += 2;
+            detected.push(w);
+          }
+        });
+      }
+
+      let top = 'Neutral';
+      let maxC = 0;
+      for (const [emo, count] of Object.entries(counts)) {
+        if (count > maxC) {
+          maxC = count;
+          top = emo;
+        }
+      }
+
+      const probs = { Happy: 0.1, Sad: 0.1, Angry: 0.1, Surprise: 0.1, Neutral: 0.6 };
+      if (maxC > 0) {
+        probs[top] = Math.min(0.95, 0.65 + maxC * 0.08);
+        probs['Neutral'] = 0.05;
+        const remaining = (1.0 - probs[top] - probs['Neutral']) / 3.0;
+        ['Happy', 'Sad', 'Angry', 'Surprise'].forEach(e => {
+          if (e !== top) probs[e] = Math.max(0.02, parseFloat(remaining.toFixed(2)));
+        });
+      }
+
+      return {
+        dominantEmotion: top,
+        confidence: maxC > 0 ? Math.min(96, 75 + maxC * 5) : 70,
+        detectedKeywords: Array.from(new Set(detected)),
+        verbalProbs: probs
+      };
+    }
+
     function classifySpeechTranscript(text) {
       if (!text || typeof text !== 'string') return null;
-      const res = classifyVerbalSentiment(text);
-      return (res && res.dominantEmotion && res.dominantEmotion !== 'Neutral') ? res.dominantEmotion : null;
+      try {
+        const res = classifyVerbalSentiment(text);
+        return (res && res.dominantEmotion && res.dominantEmotion !== 'Neutral') ? res.dominantEmotion : null;
+      } catch (e) {
+        return null;
+      }
     }
 
     // Web Speech API Transcription
@@ -10810,7 +10897,8 @@
     }
 
     function finishAnalyticsSession(deepResult = null) {
-      const faceCounts = {};
+      try {
+        const faceCounts = {};
       const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
       emotions.forEach(e => faceCounts[e] = 0);
 
@@ -10909,7 +10997,14 @@
       // Voice Transcription & Verbal Sentiment Analysis
       const fullRecognizedText = (analyticsSession.latestTranscript || analyticsSession.transcripts.join(' ')).trim();
       const voiceWasHeard = analyticsSession.hasAudioHeard || fullRecognizedText.length > 0;
-      const verbalAnalysis = classifyVerbalSentiment(fullRecognizedText);
+      let verbalAnalysis = { dominantEmotion: 'Neutral', confidence: 70, detectedKeywords: [], verbalProbs: { Happy: 0.1, Sad: 0.1, Angry: 0.1, Surprise: 0.1, Neutral: 0.6 } };
+      try {
+        if (typeof classifyVerbalSentiment === 'function') {
+          verbalAnalysis = classifyVerbalSentiment(fullRecognizedText);
+        }
+      } catch (vErr) {
+        console.warn('[VerbalSentiment] classification notice:', vErr);
+      }
       const hasVerbal = fullRecognizedText.length > 2;
 
       // Modal Fusion:
@@ -11309,17 +11404,33 @@
         });
       }
 
-      // Automatically shut off microphone and camera hardware streams upon 15s completion
-      stopCameraStream();
-      stopMicAudioStream();
-      if (elAnalyticsBanner) elAnalyticsBanner.style.display = 'none';
-      setSystemStatus('15s ANALYSIS COMPLETE — MIC & CAMERA OFF', 'var(--cyan)');
+      } catch (sessionErr) {
+        console.error('[AnalyticsSession] Error during finishAnalyticsSession:', sessionErr);
+      } finally {
+        // Guaranteed Hardware Shutoff
+        try { stopCameraStream(); } catch (e) {}
+        try { stopMicAudioStream(); } catch (e) {}
+        if (elAnalyticsBanner) elAnalyticsBanner.style.display = 'none';
+        setSystemStatus('15s ANALYSIS COMPLETE — MIC & CAMERA OFF', 'var(--cyan)');
 
-      // Open Modal automatically on top with comprehensive multimodal report
-      openAnalyticsReportModal();
-      playSuccessChime();
+        // POP UP THE RESULT WINDOW WITH 100% RELIABILITY
+        try {
+          openAnalyticsReportModal();
+        } catch (modalErr) {
+          console.error('[AnalyticsSession] openAnalyticsReportModal error:', modalErr);
+          const modalFallback = document.getElementById('analyticsReportModal');
+          if (modalFallback) {
+            modalFallback.classList.add('active');
+            modalFallback.style.display = 'flex';
+          }
+        }
 
-      speakPhrase(`15-second assessment complete. Recognized emotion is ${topFinal} with ${finalConf.toFixed(0)} percent confidence.`);
+        try { playSuccessChime(); } catch (e) {}
+        try {
+          const finalEmotionSpoken = state.currentFinalEmotion || 'Complete';
+          speakPhrase(`15-second assessment complete. Recognized emotion is ${finalEmotionSpoken}.`);
+        } catch (e) {}
+      }
     }
 
     // ------------------------------------------------------------------------
