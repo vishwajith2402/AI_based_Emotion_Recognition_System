@@ -10649,14 +10649,64 @@
       }
     }
 
+    function stopCameraStream() {
+      const vid = document.getElementById('webcamVideo');
+      if (vid && vid.srcObject) {
+        try {
+          vid.srcObject.getTracks().forEach(t => t.stop());
+        } catch (e) {}
+        vid.srcObject = null;
+      }
+      state.isCameraRunning = false;
+      const btn = document.getElementById('btnToggleCam');
+      if (btn) {
+        btn.innerHTML = '<span>▶</span> Start Camera';
+        btn.classList.remove('active');
+      }
+      if (typeof faceCtx !== 'undefined' && faceCtx && typeof faceCanvas !== 'undefined' && faceCanvas) {
+        faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
+      }
+      const tip = document.getElementById('camTipText');
+      if (tip) tip.style.display = 'block';
+      const hud = document.getElementById('camHudOverlay');
+      if (hud) hud.style.display = 'none';
+      const hudTop = document.getElementById('camHudTopTelemetry');
+      if (hudTop) hudTop.style.display = 'none';
+      const btnFloatingMode = document.getElementById('btnFloatingHudMode');
+      if (btnFloatingMode) btnFloatingMode.style.display = 'none';
+      const minHud = document.getElementById('camMinimalHud');
+      if (minHud) minHud.style.display = 'none';
+      if (typeof tracker !== 'undefined' && tracker) {
+        tracker.smoothedProbs = null;
+        tracker.isCalibrating = false;
+        tracker.isLocked = false;
+      }
+    }
+
+    function stopMicAudioStream() {
+      if (typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer) {
+        try {
+          voiceAnalyzer.stop();
+        } catch (e) {}
+        voiceAnalyzer.isRunning = false;
+      }
+      if (typeof speechRecognizer !== 'undefined' && speechRecognizer) {
+        try {
+          speechRecognizer.stop();
+        } catch (e) {}
+      }
+      const elLivePrev = document.getElementById('liveTranscriptPreview');
+      const elLiveStat = document.getElementById('liveTranscriptStatus');
+      if (elLiveStat) elLiveStat.innerText = 'Off';
+    }
+
     function stopAnalyticsSession() {
       if (analyticsSession.timerId) clearInterval(analyticsSession.timerId);
       analyticsSession.active = false;
-      if (speechRecognizer) {
-        try { speechRecognizer.stop(); } catch (e) {}
-      }
-      elAnalyticsBanner.style.display = 'none';
-      setSystemStatus('SYSTEM READY', 'var(--cyan)');
+      stopCameraStream();
+      stopMicAudioStream();
+      if (elAnalyticsBanner) elAnalyticsBanner.style.display = 'none';
+      setSystemStatus('ANALYSIS ABORTED — MIC & CAMERA OFF', 'var(--cyan)');
     }
 
     function finishAnalyticsSession(deepResult = null) {
@@ -11032,9 +11082,12 @@
       }
       if (repFaceAU) {
         repFaceAU.innerHTML = `
-          <span>AU12 (Smile): ${repAU.au12 || 8}%</span>
-          <span>AU4 (Brow Furrow): ${repAU.au4 || 10}%</span>
-          <span>AU1 (Brow Raise): ${repAU.au1 || 8}%</span>
+          <span>AU12 (Smile): ${repAU.au12 !== undefined ? repAU.au12 : 8}%</span>
+          <span>AU6 (Cheek): ${repAU.au6 !== undefined ? repAU.au6 : 10}%</span>
+          <span>AU4 (Furrow): ${repAU.au4 !== undefined ? repAU.au4 : 10}%</span>
+          <span>AU1 (Brow Raise): ${repAU.au1 !== undefined ? repAU.au1 : 8}%</span>
+          <span>AU15 (Lip Depress): ${repAU.au15 !== undefined ? repAU.au15 : 6}%</span>
+          <span>AU26 (Jaw Drop): ${repAU.au26 !== undefined ? repAU.au26 : 12}%</span>
           <span>EAR: ${repAU.ear || '0.27'}</span>
         `;
       }
@@ -11046,14 +11099,43 @@
         Surprise: '<span>Pitch: Sharp Spike (312 Hz)</span><span>Energy: -12 dB</span><span>Cadence: Dynamic Range</span>',
         Neutral: '<span>Pitch: Balanced (142 Hz)</span><span>Energy: -18 dB</span><span>Cadence: Steady Level</span>'
       };
+
+      // Measure real acoustic telemetry from 10s voice recording phase if available
+      let meanPitch = 0, meanRms = 0, meanVar = 0, validVoiceCount = 0;
+      if (analyticsSession.voiceSamples && analyticsSession.voiceSamples.length > 0) {
+        analyticsSession.voiceSamples.forEach(vs => {
+          if (vs && vs.metrics) {
+            if (vs.metrics.pitch && vs.metrics.pitch > 40) {
+              meanPitch += vs.metrics.pitch;
+              validVoiceCount++;
+            }
+            if (vs.metrics.rms) meanRms += vs.metrics.rms;
+            if (vs.metrics.variance) meanVar += vs.metrics.variance;
+          }
+        });
+      }
+      const measuredPitch = validVoiceCount > 0 ? Math.round(meanPitch / validVoiceCount) : null;
+      const measuredRms = validVoiceCount > 0 ? (meanRms / validVoiceCount).toFixed(2) : null;
+      const measuredVar = validVoiceCount > 0 ? (meanVar / validVoiceCount).toFixed(1) : null;
+
       if (repVoiceMetrics) {
-        repVoiceMetrics.innerHTML = voiceMetricDetails[dominantVoice] || voiceMetricDetails.Neutral;
+        if (measuredPitch) {
+          const loudDb = measuredRms ? Math.round(20 * Math.log10(Math.max(0.001, parseFloat(measuredRms)))) : -18;
+          repVoiceMetrics.innerHTML = `
+            <span>F₀ Pitch: ${measuredPitch} Hz</span>
+            <span>Energy: ${loudDb} dB</span>
+            <span>RMS: ${measuredRms}</span>
+            <span>Variance: ${measuredVar} Hz</span>
+          `;
+        } else {
+          repVoiceMetrics.innerHTML = voiceMetricDetails[dominantVoice] || voiceMetricDetails.Neutral;
+        }
       }
 
       if (repModalBars) {
         repModalBars.innerHTML = emotions.map(em => {
           const prob = fusedScores[em] || 0;
-          const pct = Math.round(prob * 100);
+          const pct = Math.min(100, Math.max(0, Math.round(prob * 100)));
           const isDom = (em === topFinal);
           const emColor = EMOTION_COLORS[em] || '#F5C76B';
           return `
@@ -11124,7 +11206,13 @@
         });
       }
 
-      // Open Modal automatically on top
+      // Automatically shut off microphone and camera hardware streams upon 15s completion
+      stopCameraStream();
+      stopMicAudioStream();
+      if (elAnalyticsBanner) elAnalyticsBanner.style.display = 'none';
+      setSystemStatus('15s ANALYSIS COMPLETE — MIC & CAMERA OFF', 'var(--cyan)');
+
+      // Open Modal automatically on top with comprehensive multimodal report
       openAnalyticsReportModal();
       playSuccessChime();
 
