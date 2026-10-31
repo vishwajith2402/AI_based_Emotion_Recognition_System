@@ -2,7 +2,7 @@
 
 **Academic Course**: AGB1303 – AI Problem Solving Techniques (TCPR)  
 **Batch**: Batch 6 (Artificial Intelligence and Machine Learning)  
-**Execution Timestamp**: `2026-09-30 20:45:37`  
+**Execution Timestamp**: `2026-10-31 14:49:43`  
 **Evaluation Scope**: All 5 Emotion Classes (*Angry, Happy, Neutral, Sad, Surprise*) across **Vision**, **Acoustics**, **Voice Semantics**, **Tri-Modal Decision Fusion**, **Cross-Modality Sarcasm Detection**, **Dynamic Fallbacks**, and **Continuous 20-Second Assessment**.
 
 ---
@@ -25,11 +25,11 @@ Model Architecture: 3 Convolutional Blocks + Batch Normalization + MaxPool + Dro
 
 | Target Emotion | Predicted Label | Model Confidence | Inference Latency | Class Probability Vector [Ang, Hap, Neu, Sad, Sur] | Status |
 | :--- | :---: | :---: | :---: | :--- | :---: |
-| **😠 Angry** | Angry | 93.14% | 1431.17 ms | `[93.14%, 0.92%, 1.47%, 2.4%, 2.07%]` | `PASS` |
-| **😊 Happy** | Happy | 95.34% | 5.99 ms | `[1.04%, 95.34%, 1.45%, 1.07%, 1.1%]` | `PASS` |
-| **😐 Neutral** | Neutral | 86.54% | 5.12 ms | `[2.32%, 3.98%, 86.54%, 5.59%, 1.57%]` | `PASS` |
-| **😢 Sad** | Sad | 82.85% | 4.44 ms | `[8.01%, 1.98%, 6.2%, 82.85%, 0.96%]` | `PASS` |
-| **😲 Surprise** | Surprise | 92.34% | 5.38 ms | `[3.14%, 2.25%, 1.14%, 1.14%, 92.34%]` | `PASS` |
+| **😠 Angry** | Angry | 93.18% | 3411.59 ms | `[93.18%, 0.06%, 1.34%, 5.26%, 0.16%]` | `PASS` |
+| **😊 Happy** | Happy | 88.05% | 27.55 ms | `[0.58%, 88.05%, 9.96%, 0.64%, 0.77%]` | `PASS` |
+| **😐 Neutral** | Neutral | 83.08% | 24.25 ms | `[3.74%, 1.48%, 83.08%, 9.27%, 2.43%]` | `PASS` |
+| **😢 Sad** | Sad | 81.57% | 20.97 ms | `[5.0%, 1.32%, 11.87%, 81.57%, 0.25%]` | `PASS` |
+| **😲 Surprise** | Surprise | 65.55% | 22.69 ms | `[4.24%, 12.56%, 15.96%, 1.69%, 65.55%]` | `PASS` |
 
 ---
 
@@ -39,11 +39,11 @@ Model Architecture: 40 Mel-Frequency Cepstral Coefficients -> Linear Projection 
 
 | Target Emotion | Predicted Label | Model Confidence | Latency | RMS Energy | Zero Crossings | Probability Distribution [Ang, Hap, Neu, Sad, Sur] |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **😠 Angry** | Angry | 99.89% | 848.79 ms | 0.0482 | 4353 | `[99.89%, 0.01%, 0.02%, 0.03%, 0.05%]` |
-| **😊 Happy** | Happy | 99.57% | 7.59 ms | 0.2114 | 14721 | `[0.06%, 99.57%, 0.14%, 0.15%, 0.08%]` |
-| **😐 Neutral** | Neutral | 99.89% | 6.42 ms | 0.0039 | 16679 | `[0.01%, 0.05%, 99.89%, 0.04%, 0.01%]` |
-| **😢 Sad** | Sad | 99.92% | 6.28 ms | 0.0188 | 4571 | `[0.02%, 0.01%, 0.02%, 99.92%, 0.03%]` |
-| **😲 Surprise** | Surprise | 99.62% | 6.31 ms | 0.0099 | 19146 | `[0.15%, 0.08%, 0.11%, 0.04%, 99.62%]` |
+| **😠 Angry** | Angry | 99.91% | 1588.24 ms | 0.0482 | 4353 | `[99.91%, 0.02%, 0.04%, 0.02%, 0.01%]` |
+| **😊 Happy** | Happy | 99.81% | 11.27 ms | 0.0169 | 3573 | `[0.02%, 99.81%, 0.1%, 0.04%, 0.02%]` |
+| **😐 Neutral** | Neutral | 92.05% | 20.95 ms | 0.0039 | 16679 | `[0.11%, 0.53%, 92.05%, 0.37%, 6.93%]` |
+| **😢 Sad** | Sad | 99.54% | 10.95 ms | 0.0188 | 4571 | `[0.04%, 0.1%, 0.2%, 99.54%, 0.11%]` |
+| **😲 Surprise** | Surprise | 99.12% | 11.07 ms | 0.0099 | 19146 | `[0.2%, 0.34%, 0.21%, 0.13%, 99.12%]` |
 
 ---
 
@@ -54,10 +54,10 @@ NLP Engine: Speech-to-Text transcription parsed against NLTK VADER Valence Scori
 | Target Emotion | Spoken Utterance Sample | Predicted | Confidence | VADER Compound | Detected Keywords |
 | :--- | :--- | :---: | :---: | :---: | :--- |
 | **😊 Happy** | *"I am so delighted, happy, and thrilled with this amazing achievement!"* | Happy | 92.66% | `+0.939` | delighted (Happy), happy (Happy), amazing (Surprise) |
-| **😠 Angry** | *"This is completely unfair, unacceptable, and infuriating, I am so angry!"* | Angry | 98.72% | `-0.932` | angry (Angry), unacceptable (Angry), unfair (Angry), is (Neutral) |
-| **😐 Neutral** | *"Please check the normal data report and proceed with the standard test."* | Neutral | 100.0% | `+0.318` | normal (Neutral), report (Neutral), standard (Neutral), data (Neutral), check (Neutral), test (Neutral), please (Neutral), proceed (Neutral) |
-| **😢 Sad** | *"I feel deeply depressed, lonely, and heartbroken over this painful loss."* | Sad | 99.94% | `-0.942` | painful (Sad), heartbroken (Sad), loss (Sad), lonely (Sad), depressed (Sad) |
-| **😲 Surprise** | *"Wow, what an unbelievable and completely unexpected shocking miracle!"* | Surprise | 99.94% | `+0.789` | shocking (Surprise), unexpected (Surprise), wow (Surprise), unbelievable (Surprise), what (Surprise), miracle (Surprise) |
+| **😠 Angry** | *"This is completely unfair, unacceptable, and infuriating, I am so angry!"* | Angry | 98.72% | `-0.932` | unacceptable (Angry), angry (Angry), unfair (Angry), is (Neutral) |
+| **😐 Neutral** | *"Please check the normal data report and proceed with the standard test."* | Neutral | 100.0% | `+0.318` | data (Neutral), please (Neutral), report (Neutral), proceed (Neutral), test (Neutral), normal (Neutral), standard (Neutral), check (Neutral) |
+| **😢 Sad** | *"I feel deeply depressed, lonely, and heartbroken over this painful loss."* | Sad | 99.94% | `-0.942` | loss (Sad), painful (Sad), lonely (Sad), depressed (Sad), heartbroken (Sad) |
+| **😲 Surprise** | *"Wow, what an unbelievable and completely unexpected shocking miracle!"* | Surprise | 99.94% | `+0.789` | unexpected (Surprise), shocking (Surprise), miracle (Surprise), what (Surprise), wow (Surprise), unbelievable (Surprise) |
 
 ---
 
@@ -67,11 +67,11 @@ Decision Fusion Formula: $P_{tri}(e) = 0.40 \cdot P_{face}(e) + 0.35 \cdot P_{sp
 
 | Target Emotion | Facial Branch (40%) | Acoustic Branch (35%) | Semantic Branch (25%) | Final Fused Emotion | Combined Confidence | Concordance Status |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Angry** | Angry | Angry | Angry | **Angry** | **96.9%** | ✅ Aligned |
-| **Happy** | Happy | Happy | Happy | **Happy** | **96.15%** | ✅ Aligned |
-| **Neutral** | Neutral | Neutral | Neutral | **Neutral** | **94.58%** | ✅ Aligned |
-| **Sad** | Sad | Sad | Sad | **Sad** | **93.1%** | ✅ Aligned |
-| **Surprise** | Surprise | Surprise | Surprise | **Surprise** | **96.78%** | ✅ Aligned |
+| **Angry** | Angry | Angry | Angry | **Angry** | **98.27%** | ✅ Aligned |
+| **Happy** | Happy | Happy | Happy | **Happy** | **94.04%** | ✅ Aligned |
+| **Neutral** | Neutral | Neutral | Neutral | **Neutral** | **89.7%** | ✅ Aligned |
+| **Sad** | Sad | Sad | Sad | **Sad** | **94.65%** | ✅ Aligned |
+| **Surprise** | Surprise | Surprise | Surprise | **Surprise** | **88.23%** | ✅ Aligned |
 
 ---
 
@@ -81,10 +81,10 @@ Discrepancy Formula: $\delta_{ij} = 0.5 \sum |P_i(e) - P_j(e)|$
 
 | Test Scenario | Modality Inputs (Face / Voice / Text) | Divergence Score | Conflict Alert | Resolved Decision | Diagnostic Behavioral Rationale |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Verbal Sarcasm (Smiling Face + Hostile Yelling & Angry Words)** | Face: Happy | Voice: Angry | Text: Angry | `0.989` | **ALERT** | **Angry** (60.06%) | Divergence detected: Face (Vision) expresses 'Happy' but Speech (Acoustics) conveys 'Angry' (discrepancy: 0.99) | Face (Vision) expresses 'Happy' but Text (Semantics) conveys 'Angry' (discrepancy: 0.98) |
-| **Passive-Aggressive Sarcasm (Polite/Happy Words + Frowning Face & Furious Voice)** | Face: Angry | Voice: Angry | Text: Happy | `0.993` | **ALERT** | **Angry** (72.36%) | Divergence detected: Face (Vision) expresses 'Angry' but Text (Semantics) conveys 'Happy' (discrepancy: 0.95) | Speech (Acoustics) expresses 'Angry' but Text (Semantics) conveys 'Happy' (discrepancy: 0.99) |
-| **Suppressed Distress (Smiling Face + Weeping Vocal Cadence & Sad Words)** | Face: Happy | Voice: Sad | Text: Sad | `0.989` | **ALERT** | **Sad** (60.38%) | Divergence detected: Face (Vision) expresses 'Happy' but Speech (Acoustics) conveys 'Sad' (discrepancy: 0.99) | Face (Vision) expresses 'Happy' but Text (Semantics) conveys 'Sad' (discrepancy: 0.99) |
-| **Stoic Shock (Neutral Deadpan Face + Panicked Tone & Shocked Exclamation)** | Face: Neutral | Voice: Surprise | Text: Surprise | `0.984` | **ALERT** | **Surprise** (60.48%) | Divergence detected: Face (Vision) expresses 'Neutral' but Speech (Acoustics) conveys 'Surprise' (discrepancy: 0.98) | Face (Vision) expresses 'Neutral' but Text (Semantics) conveys 'Surprise' (discrepancy: 0.98) |
+| **Verbal Sarcasm (Smiling Face + Hostile Yelling & Angry Words)** | Face: Happy | Voice: Angry | Text: Angry | `0.993` | **ALERT** | **Angry** (60.44%) | Divergence detected: Face (Vision) expresses 'Happy' but Speech (Acoustics) conveys 'Angry' (discrepancy: 0.99) | Face (Vision) expresses 'Happy' but Text (Semantics) conveys 'Angry' (discrepancy: 0.98) |
+| **Passive-Aggressive Sarcasm (Polite/Happy Words + Frowning Face & Furious Voice)** | Face: Angry | Voice: Angry | Text: Happy | `0.993` | **ALERT** | **Angry** (82.75%) | Divergence detected: Face (Vision) expresses 'Angry' but Text (Semantics) conveys 'Happy' (discrepancy: 0.98) | Speech (Acoustics) expresses 'Angry' but Text (Semantics) conveys 'Happy' (discrepancy: 0.99) |
+| **Suppressed Distress (Smiling Face + Weeping Vocal Cadence & Sad Words)** | Face: Happy | Voice: Sad | Text: Sad | `0.993` | **ALERT** | **Sad** (61.63%) | Divergence detected: Face (Vision) expresses 'Happy' but Speech (Acoustics) conveys 'Sad' (discrepancy: 0.99) | Face (Vision) expresses 'Happy' but Text (Semantics) conveys 'Sad' (discrepancy: 0.99) |
+| **Stoic Shock (Neutral Deadpan Face + Panicked Tone & Shocked Exclamation)** | Face: Neutral | Voice: Surprise | Text: Surprise | `0.975` | **ALERT** | **Surprise** (61.87%) | Divergence detected: Face (Vision) expresses 'Neutral' but Speech (Acoustics) conveys 'Surprise' (discrepancy: 0.97) | Face (Vision) expresses 'Neutral' but Text (Semantics) conveys 'Surprise' (discrepancy: 0.98) |
 
 ---
 
@@ -92,11 +92,11 @@ Discrepancy Formula: $\delta_{ij} = 0.5 \sum |P_i(e) - P_j(e)|$
 
 | Sensory Condition | Active Modalities | Dynamic Weights Allocated | Output Emotion | Output Confidence | Operating Mode |
 | :--- | :---: | :--- | :---: | :---: | :--- |
-| **Dual-Modal (Vision + Acoustics; Text silent)** | 2 active | `Face: 53%, Speech: 46%` | **Happy** | 97.31% | `Dual-Modal Fused (Face (Vision) + Speech (Acoustics))` |
-| **Dual-Modal (Vision + Text; Mic muted)** | 2 active | `Face: 61%, Text: 38%` | **Happy** | 94.31% | `Dual-Modal Fused (Face (Vision) + Text (Semantics))` |
-| **Dual-Modal (Acoustics + Text; Camera off)** | 2 active | `Speech: 58%, Text: 41%` | **Happy** | 96.69% | `Dual-Modal Fused (Speech (Acoustics) + Text (Semantics))` |
-| **Unimodal Vision (Only Face detected)** | 1 active | `Face: 100%` | **Happy** | 95.34% | `Face (Vision)-Only Fallback` |
-| **Unimodal Acoustics (Only Speech active)** | 1 active | `Speech: 100%` | **Happy** | 99.57% | `Speech (Acoustics)-Only Fallback` |
+| **Dual-Modal (Vision + Acoustics; Text silent)** | 2 active | `Face: 55%, Speech: 45%` | **Happy** | 94.16% | `Dual-Modal Fused (Face (Vision) + Speech (Acoustics))` |
+| **Dual-Modal (Vision + Text; Mic muted)** | 2 active | `Face: 61%, Text: 38%` | **Happy** | 89.83% | `Dual-Modal Fused (Face (Vision) + Text (Semantics))` |
+| **Dual-Modal (Acoustics + Text; Camera off)** | 2 active | `Speech: 58%, Text: 41%` | **Happy** | 96.84% | `Dual-Modal Fused (Speech (Acoustics) + Text (Semantics))` |
+| **Unimodal Vision (Only Face detected)** | 1 active | `Face: 100%` | **Happy** | 88.05% | `Face (Vision)-Only Fallback` |
+| **Unimodal Acoustics (Only Speech active)** | 1 active | `Speech: 100%` | **Happy** | 99.81% | `Speech (Acoustics)-Only Fallback` |
 | **Unimodal Text (Only Text available)** | 1 active | `Text: 100%` | **Happy** | 92.66% | `Text (Semantics)-Only Fallback` |
 | **Idle Baseline (Zero inputs active)** | 0 active | `None (Uniform)` | **Neutral** | 20.0% | `No Active Modality (Idle)` |
 
@@ -105,8 +105,8 @@ Discrepancy Formula: $\delta_{ij} = 0.5 \sum |P_i(e) - P_j(e)|$
 ## ⏱️ 7. End-to-End 20-Second Continuous Assessment Simulation
 
 - **Dominant Recognized Emotion**: **😊 Happy** (50.0% of session)
-- **Mean Model Confidence**: **89.2%**
-- **Affective Valence ($V$)**: **+0.31** (Positive Affect (Engaged/Optimistic))
+- **Mean Model Confidence**: **86.7%**
+- **Affective Valence ($V$)**: **+0.29** (Positive Affect (Engaged/Optimistic))
 - **Emotional Stability Index**: **17%** (Dynamic (Frequent Emotional Shifts))
 - **Tri-Modal Concordance Rate**: **77.8%**
 - **Cross-Modality Conflict Rate**: **22.2%**
