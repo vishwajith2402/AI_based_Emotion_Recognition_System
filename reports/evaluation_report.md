@@ -37,11 +37,11 @@ Evaluation of the visual frontend cropping pipeline with real-time DSP acoustic 
 | Metric / Pipeline Component | Haar Cascade + CNN + DSP | YOLOv8-Face + CNN + DSP | Delta Gain |
 | :--- | :---: | :---: | :---: |
 | **Face Detection Rate (%)** | 81.3% | **94.7%** | +13.3% |
-| **Detector Latency (ms)** | 25.04 ms | 55.79 ms | +30.75 ms |
+| **Detector Latency (ms)** | 22.52 ms | 40.53 ms | +18.00 ms |
 | **Facial Emotion Accuracy (%)** | 65.33% | **68.00%** | **+2.67%** |
-| **Speech DSP Latency (ms)** | 13.63 ms | 13.63 ms | 0.00 ms (DSP Preserved) |
+| **Speech DSP Latency (ms)** | 10.29 ms | 10.29 ms | 0.00 ms (DSP Preserved) |
 | **End-to-End Multimodal Acc (%)** | 97.33% | **100.00%** | **+2.67%** |
-| **Total Pipeline Latency (ms)** | 45.85 ms | 76.59 ms | +30.75 ms |
-| **Effective Throughput (FPS)** | 21.8 FPS | **13.1 FPS** | Real-Time Feasible (>=30 FPS) |
+| **Total Pipeline Latency (ms)** | 40.02 ms | 58.03 ms | +18.00 ms |
+| **Effective Throughput (FPS)** | 25.0 FPS | **17.2 FPS** | Real-Time Feasible (>=30 FPS) |
 
-> **Engineering Verdict**: KEEP YOLOV8-FACE: YOLO yields 94.7% detection reliability (vs 81.3% for Haar) and increases emotion classification accuracy by +2.67%. At 76.59 ms total latency (13.1 FPS), it comfortably exceeds the 30 FPS real-time requirement.
+> **Engineering Verdict**: KEEP YOLOV8-FACE: YOLO yields 94.7% detection reliability (vs 81.3% for Haar) and increases emotion classification accuracy by +2.67%. At 58.03 ms total latency (17.2 FPS), it comfortably exceeds the 30 FPS real-time requirement.
