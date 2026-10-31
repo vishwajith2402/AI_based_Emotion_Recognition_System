@@ -135,11 +135,11 @@ class FacialStyleAnalyzer:
 
         if aspect >= 0.68:
             mouth_style = "Full Open"
-        elif (has_smile and curve >= 3.0) or curve > 3.8:
+        elif (has_smile and curve >= 4.0 and aspect >= 0.26) or curve >= 4.5:
             mouth_style = "Curved Up (Smiley)"
         elif is_depressed_from_baseline or curve <= -0.2:
             mouth_style = "Curved Down (Frown)"
-        elif aspect < 0.25 and glab_furrow >= 26.0:
+        elif aspect < 0.25 and glab_furrow >= 24.0:
             mouth_style = "Tense / Compressed"
         elif abs(curve) <= 3.2 and aspect < 0.55:
             mouth_style = "Neutral Horizontal"
@@ -435,28 +435,37 @@ class FacialStyleAnalyzer:
         # 2. SAD: Mouth curved down (frown) or drooping + squinted/partially closed
         # Frown mouth is the paramount marker of Sadness; wrinkles here indicate grief / brow knits (AU1+AU4)
         if m_style == "Curved Down (Frown)":
-            scores["Sad"] += 1.25
-            if e_style == "Partially Closed (Drooping)":
-                scores["Sad"] += 0.45
-            if f_style == "Shrunk / Wrinkles (Furrowed)":
-                scores["Sad"] += 0.35
-            if is_depressed or curve_drop <= -0.6:
-                scores["Sad"] += 0.40
-
-        # 3. ANGRY: Glabellar furrow + tight/compressed mouth OR furrowed brow with tense corners
-        if f_style == "Shrunk / Wrinkles (Furrowed)":
-            if m_style == "Tense / Compressed":
+            if e_style == "Wide Open":
+                # Wide open eyes contradict sadness (which features palpebral droop / downcast gaze)
+                scores["Sad"] += 0.30
                 scores["Angry"] += 1.10
+            else:
+                scores["Sad"] += 1.30
+                if e_style == "Partially Closed (Drooping)":
+                    scores["Sad"] += 0.55
+                if f_style == "Shrunk / Wrinkles (Furrowed)":
+                    scores["Sad"] += 0.35
+                if is_depressed or curve_drop <= -0.5:
+                    scores["Sad"] += 0.45
+
+        # 3. ANGRY: Glabellar furrow + tight/compressed mouth OR furrowed brow with tense corners / wide glaring eyes
+        if f_style == "Shrunk / Wrinkles (Furrowed)":
+            if e_style == "Wide Open":
+                scores["Angry"] += 0.90
+                scores["Sad"] = max(0.0, scores["Sad"] - 0.75)
+            if m_style == "Tense / Compressed":
+                scores["Angry"] += 1.25
             elif m_style == "Neutral Horizontal":
-                scores["Angry"] += 0.80
+                scores["Angry"] += 0.85
             elif m_style == "Full Open":
-                scores["Angry"] += 0.70
+                scores["Angry"] += 0.75
             elif m_style == "Curved Down (Frown)":
-                # Frown with furrow: Angry if mouth is thin/compressed (aspect < 0.30)
-                if mouth_aspect < 0.30:
-                    scores["Angry"] += 0.95
+                # Frown with furrow: Angry if mouth is thin/compressed (aspect < 0.28)
+                if mouth_aspect < 0.28:
+                    scores["Angry"] += 1.45
+                    scores["Sad"] = max(0.0, scores["Sad"] - 0.85)
                 else:
-                    scores["Angry"] += 0.30
+                    scores["Angry"] += 0.45
 
         # 4. SURPRISE: Strictly requires Full Open oral cavity (gaping O-mouth)
         if m_style == "Full Open":

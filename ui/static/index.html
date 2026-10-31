@@ -13156,25 +13156,29 @@
 
       // 5. AU4: Brow Lowerer / Corrugator Supercilii (Anger / Furrow)
       const innerBrowDist = dist3d(lm[107], lm[336]) / dEye;
-      const browCompression = Math.max(0, 0.22 - innerBrowDist);
+      const browCompression = Math.max(0, 0.235 - innerBrowDist);
       const browToEyeDist = ((rLeftInnerBrow.y - rLeftEyeTop.y) + (rRightInnerBrow.y - rRightEyeTop.y)) / (2 * dFaceH);
-      const browDepression = Math.max(0, 0.082 - browToEyeDist);
+      const browDepression = Math.max(0, 0.088 - browToEyeDist);
       let au4Furrow = 0;
       if (browCompression > 0 || browDepression > 0) {
-        au4Furrow = Math.min(100, Math.max(0, (browCompression * 900) + (browDepression * 700)));
+        au4Furrow = Math.min(100, Math.max(0, (browCompression * 950) + (browDepression * 750)));
       }
 
       // 6. AU1: Inner Brow Raiser (Grief / Sadness Slant)
       const innerBrowY = (rLeftInnerBrow.y + rRightInnerBrow.y) / 2;
       const outerBrowY = (rLeftOuterBrow.y + rRightOuterBrow.y) / 2;
       const griefSlant = (outerBrowY - innerBrowY) / dMidFace;
-      const trueGriefSlant = Math.max(0, griefSlant - 0.012);
-      const au1Grief = Math.min(100, Math.max(0, trueGriefSlant * 1600));
+      const trueGriefSlant = Math.max(0, griefSlant - 0.005);
+      const au1Grief = Math.min(100, Math.max(0, trueGriefSlant * 2200));
 
       // 7. AU15: Lip Corner Depressor (Sadness Frown)
       const cornerDepression = (cornerAvgY - stomionY) / dMidFace;
-      const trueCornerDep = Math.max(0, cornerDepression - 0.012);
-      const au15LipDep = Math.min(100, Math.max(0, trueCornerDep * 1600));
+      const trueCornerDep = Math.max(0, cornerDepression - 0.005);
+      const au15LipDep = Math.min(100, Math.max(0, trueCornerDep * 2200));
+
+      // AU43: Palpebral Fissure Slump / Eye Droop (Sadness marker)
+      const eyeDroop = Math.max(0, 0.270 - avgEAR);
+      const au43Droop = Math.min(100, Math.max(0, eyeDroop * 900));
 
       // 8. AU23/AU24: Lip Tightener / Pressor (Anger)
       const vermilionHeight = (dist3d(lm[0], lm[13]) + dist3d(lm[14], lm[17])) / dEye;
@@ -13185,13 +13189,13 @@
       const valence = Math.min(1.0, Math.max(-1.0, (au12Smile * 0.013) - (au4Furrow * 0.008) - (au15LipDep * 0.008) - (au1Grief * 0.005)));
       const arousal = Math.min(1.0, Math.max(-1.0, (au5EyeAperture * 0.009) + (au26JawDrop * 0.008) + (au4Furrow * 0.007) - (au15LipDep * 0.003) - 0.18));
 
-      // Balanced Multi-Class Evidentiary Logits with strong resting Neutral baseline
+      // Balanced Multi-Class Evidentiary Logits with calibrated resting Neutral baseline
       const logits = {
         Happy: 0.00 + (au12Smile * 0.10) + (au6Cheek * 0.05) - (au15LipDep * 0.04) - (au4Furrow * 0.04),
         Surprise: 0.00 + (au5EyeAperture * 0.08) + (au26JawDrop * 0.09) + (au1Grief * 0.02) - (au4Furrow * 0.03),
-        Sad: 0.00 + (au1Grief * 0.09) + (au15LipDep * 0.09) - (au12Smile * 0.08),
-        Angry: 0.00 + (au4Furrow * 0.10) + (au23LipTight * 0.05) - (au12Smile * 0.08),
-        Neutral: 1.50 - (au12Smile * 0.035) - (au5EyeAperture * 0.035) - (au26JawDrop * 0.035) - (au4Furrow * 0.035) - (au1Grief * 0.035) - (au15LipDep * 0.035)
+        Sad: 0.00 + (au1Grief * 0.10) + (au15LipDep * 0.11) + (au43Droop * 0.06) - (au12Smile * 0.09),
+        Angry: 0.00 + (au4Furrow * 0.10) + (au23LipTight * 0.06) - (au12Smile * 0.09),
+        Neutral: 1.40 - (au12Smile * 0.035) - (au5EyeAperture * 0.035) - (au26JawDrop * 0.035) - (au4Furrow * 0.035) - (au1Grief * 0.035) - (au15LipDep * 0.035)
       };
 
       // Softmax with temperature scaling (tau = 1.05)
@@ -13219,10 +13223,10 @@
       // Expressive Salience Calibration: evaluate all emotions fairly
       if (topEmo === 'Neutral') {
         const candidates = [
-          { emo: 'Happy', score: (au12Smile * 1.0) + (au6Cheek * 0.5), thresh: 28 },
-          { emo: 'Angry', score: (au4Furrow * 1.1) + (au23LipTight * 0.5), thresh: 28 },
-          { emo: 'Sad', score: (au1Grief * 1.1) + (au15LipDep * 1.1), thresh: 28 },
-          { emo: 'Surprise', score: (au5EyeAperture * 1.0) + (au26JawDrop * 1.0), thresh: 28 }
+          { emo: 'Happy', score: (au12Smile * 1.0) + (au6Cheek * 0.5), thresh: 24 },
+          { emo: 'Angry', score: (au4Furrow * 1.1) + (au23LipTight * 0.5), thresh: 24 },
+          { emo: 'Sad', score: (au1Grief * 1.1) + (au15LipDep * 1.1) + (au43Droop * 0.7), thresh: 18 },
+          { emo: 'Surprise', score: (au5EyeAperture * 1.0) + (au26JawDrop * 1.0), thresh: 24 }
         ];
         candidates.sort((a, b) => b.score - a.score);
         if (candidates[0].score >= candidates[0].thresh) {

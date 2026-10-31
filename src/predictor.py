@@ -74,6 +74,47 @@ class EmotionPredictor:
             smoothed = {k: v / total for k, v in smoothed.items()}
         return smoothed
 
+    def _blend_face_probabilities(
+        self,
+        raw_emotion: str,
+        raw_conf: float,
+        raw_probs: Dict[str, float],
+        style_info: Dict[str, Any]
+    ) -> Dict[str, float]:
+        """
+        Dynamically blends Deep Multiscale AffectNet CNN probabilities with
+        Morphological Computer Vision geometric Action Units.
+        Uses confidence-salience adaptation to achieve high precision and recall.
+        """
+        style_probs = style_info.get("probabilities", raw_probs) if style_info else raw_probs
+        style_top = max(style_probs, key=style_probs.get) if style_probs else "Neutral"
+        style_conf = style_probs.get(style_top, 0.20) if style_probs else 0.20
+
+        # Dynamic weighting based on confidence and modality concordance:
+        if raw_emotion == "Neutral" and style_top != "Neutral" and style_conf >= 0.50:
+            # Subtle micro-expression detected morphologically while CNN resting neutral is conservative
+            w_deep = 0.65
+            w_style = 0.35
+        elif raw_conf >= 0.70 and raw_emotion == style_top:
+            # High agreement between deep spatial features and geometric morphology
+            w_deep = 0.85
+            w_style = 0.15
+        elif raw_conf >= 0.85:
+            # Very decisive deep CNN pattern
+            w_deep = 0.88
+            w_style = 0.12
+        else:
+            w_deep = 0.78
+            w_style = 0.22
+
+        blended = {}
+        for emo in EMOTION_CLASSES:
+            blended[emo] = w_deep * raw_probs.get(emo, 0.0) + w_style * style_probs.get(emo, 0.0)
+        total = sum(blended.values())
+        if total > 0:
+            blended = {k: v / total for k, v in blended.items()}
+        return blended
+
     def predict_image(self, image_bgr: np.ndarray, use_yolo: Optional[bool] = None, apply_smoothing: bool = False) -> Dict[str, Any]:
         """
         Analyzes a single image or video frame for facial emotion,
@@ -100,13 +141,8 @@ class EmotionPredictor:
             style_info = self.style_analyzer.analyze_face_style(image_bgr)
             style_probs = style_info.get("probabilities", raw_probs)
 
-            # Ensemble blend: 82% Deep CNN + 18% Morphological Style Rules
-            blended = {}
-            for emo in EMOTION_CLASSES:
-                blended[emo] = 0.82 * raw_probs.get(emo, 0.0) + 0.18 * style_probs.get(emo, 0.0)
-            total = sum(blended.values())
-            if total > 0:
-                blended = {k: v / total for k, v in blended.items()}
+            # Dynamic Confidence-Aware Ensemble Blend
+            blended = self._blend_face_probabilities(raw_emotion, raw_conf, raw_probs, style_info)
 
             probs = self._apply_ema(blended, self.smoothed_face_probs) if apply_smoothing else blended
             if apply_smoothing:
@@ -115,7 +151,9 @@ class EmotionPredictor:
             if top_emotion == "Neutral":
                 non_neutral = {e: p for e, p in probs.items() if e != "Neutral"}
                 best_nn = max(non_neutral, key=non_neutral.get)
-                if non_neutral[best_nn] >= 0.22 and (probs["Neutral"] - non_neutral[best_nn]) < 0.15:
+                thresh = 0.20 if best_nn in ["Sad", "Angry"] else 0.25
+                margin = 0.18 if best_nn in ["Sad", "Angry"] else 0.14
+                if non_neutral[best_nn] >= thresh and (probs["Neutral"] - non_neutral[best_nn]) < margin:
                     top_emotion = best_nn
             conf = probs[top_emotion]
 
@@ -147,13 +185,8 @@ class EmotionPredictor:
         )
         style_probs = style_info.get("probabilities", raw_probs)
 
-        # Ensemble blend: 82% Deep CNN + 18% Morphological Style Rules
-        blended = {}
-        for emo in EMOTION_CLASSES:
-            blended[emo] = 0.82 * raw_probs.get(emo, 0.0) + 0.18 * style_probs.get(emo, 0.0)
-        total = sum(blended.values())
-        if total > 0:
-            blended = {k: v / total for k, v in blended.items()}
+        # Dynamic Confidence-Aware Ensemble Blend
+        blended = self._blend_face_probabilities(raw_emotion, raw_conf, raw_probs, style_info)
 
         probs = self._apply_ema(blended, self.smoothed_face_probs) if apply_smoothing else blended
         if apply_smoothing:
@@ -162,8 +195,8 @@ class EmotionPredictor:
         if top_emotion == "Neutral":
             non_neutral = {e: p for e, p in probs.items() if e != "Neutral"}
             best_nn = max(non_neutral, key=non_neutral.get)
-            thresh = 0.22 if best_nn == "Sad" else 0.28
-            margin = 0.16 if best_nn == "Sad" else 0.12
+            thresh = 0.20 if best_nn in ["Sad", "Angry"] else 0.25
+            margin = 0.18 if best_nn in ["Sad", "Angry"] else 0.14
             if non_neutral[best_nn] >= thresh and (probs["Neutral"] - non_neutral[best_nn]) < margin:
                 top_emotion = best_nn
         conf = probs[top_emotion]

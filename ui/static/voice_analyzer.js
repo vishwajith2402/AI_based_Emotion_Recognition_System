@@ -278,7 +278,21 @@ class VoiceAnalyzer {
       delta = 0.5 * (alpha - gamma) / denom;
     }
     const truePeriod = bestLag + delta;
-    const f0 = sampleRate / truePeriod;
+    let f0 = sampleRate / truePeriod;
+
+    // Dynamic Octave-Jump Suppression (prevents jumping to 2nd harmonic or subharmonic)
+    if (this.features.pitch > 0 && this.pitchHistory.length >= 3) {
+      const prevF0 = this.features.pitch;
+      if (f0 > 1.82 * prevF0 && prevF0 >= 75) {
+        if (Math.abs((f0 / 2) - prevF0) < 0.35 * prevF0) {
+          f0 = f0 / 2;
+        }
+      } else if (f0 < 0.55 * prevF0 && prevF0 >= 75) {
+        if (Math.abs((f0 * 2) - prevF0) < 0.35 * prevF0 && (f0 * 2) <= this.options.maxPitch) {
+          f0 = f0 * 2;
+        }
+      }
+    }
 
     if (f0 >= this.options.minPitch && f0 <= this.options.maxPitch) {
       this.features.isVoiced = true;
@@ -372,7 +386,7 @@ class VoiceAnalyzer {
         harmonic_stability: 0.3
       },
       Sad: {
-        bias: -0.9,
+        bias: -0.6,
         loudness_db: -3.2,
         pitch_semitones: -2.6,
         pitch_variance: -2.5,
@@ -434,8 +448,8 @@ class VoiceAnalyzer {
         }
 
         // 4. Indian subdued sadness: low acoustic energy, prolonged vowel cadence, and flat pitch contour
-        if (z.loudness_db < -0.25 && z.pitch_variance < -0.15) {
-          logits.Sad += 0.65;
+        if (z.loudness_db < -0.22 && z.pitch_variance < -0.12) {
+          logits.Sad += 0.85;
         }
       }
 
