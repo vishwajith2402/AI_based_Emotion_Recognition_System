@@ -549,14 +549,14 @@ class VoiceAnalyzer {
     const w = canvas.width;
     const h = canvas.height;
 
-    // 1. Clear background with Midnight Indigo Void
+    // 1. Clear background with Radiant White Surface
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = '#141628';
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, w, h);
 
-    // 2. Subtle Technical Cyber-Grid in Warm Vanilla
+    // 2. Subtle Technical Cyber-Grid in Radiant Indigo
     ctx.save();
-    ctx.strokeStyle = 'rgba(238, 235, 218, 0.05)';
+    ctx.strokeStyle = 'rgba(99, 102, 241, 0.08)';
     ctx.lineWidth = 1 * dpr;
 
     const gridStepX = 38 * dpr;
@@ -583,9 +583,9 @@ class VoiceAnalyzer {
     const maxBarH = h * 0.42;
 
     const barGrad = ctx.createLinearGradient(0, h, 0, h - maxBarH);
-    barGrad.addColorStop(0, '#818CF8');   // Iris Indigo
-    barGrad.addColorStop(0.5, '#A5B4FC'); // Soft Lavender
-    barGrad.addColorStop(1, '#38BDF8');   // Celestial Cyan
+    barGrad.addColorStop(0, '#6366F1');   // Vibrant Indigo
+    barGrad.addColorStop(0.5, '#0284C7'); // Radiant Cyan
+    barGrad.addColorStop(1, '#EC4899');   // Neon Rose
 
     ctx.fillStyle = barGrad;
 
@@ -609,9 +609,9 @@ class VoiceAnalyzer {
     const sliceWidth = w / bufferLen;
 
     ctx.save();
-    ctx.strokeStyle = '#00f2fe';
+    ctx.strokeStyle = '#4F46E5';
     ctx.lineWidth = 2.5 * dpr;
-    ctx.shadowColor = '#00f2fe';
+    ctx.shadowColor = 'rgba(79, 70, 229, 0.40)';
     ctx.shadowBlur = 8 * dpr;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -666,8 +666,8 @@ class VoiceAnalyzer {
     ctx.save();
     for (const p of pills) {
       // Rounded pill backdrop
-      ctx.fillStyle = 'rgba(11, 17, 32, 0.82)';
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.16)';
+      ctx.fillStyle = 'rgba(248, 250, 252, 0.94)';
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.22)';
       ctx.lineWidth = 1 * dpr;
 
       ctx.beginPath();
@@ -675,16 +675,16 @@ class VoiceAnalyzer {
       ctx.fill();
       ctx.stroke();
 
-      // Top label (small gray caps)
+      // Top label (small slate caps)
       ctx.font = `600 ${8.5 * dpr}px "SF Mono", "Fira Code", monospace, sans-serif`;
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#64748B';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillText(p.label, p.x + pillW / 2, pillY + 6 * dpr);
 
-      // Bottom value (violet/cyan accent font)
+      // Bottom value (vibrant indigo accent font)
       ctx.font = `700 ${12 * dpr}px "SF Mono", "Fira Code", monospace, sans-serif`;
-      ctx.fillStyle = '#a78bfa';
+      ctx.fillStyle = '#4F46E5';
       ctx.textBaseline = 'bottom';
       ctx.fillText(p.val, p.x + pillW / 2, pillY + pillH - 5 * dpr);
     }

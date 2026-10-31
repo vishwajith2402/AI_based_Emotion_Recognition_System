@@ -8,7 +8,7 @@
   <link rel="shortcut icon" href="./assets/favicon.ico">
   <link rel="apple-touch-icon" href="./assets/app_icon.png">
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#121324">
+  <meta name="theme-color" content="#F8FAFD">
   
   <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,54 +35,54 @@
        Harmonized with Celestial Aqua, Iris Violet, and Sandstone
        ======================================================== */
     :root {
-      /* 🌌 1. Background Hierarchy — Rich Midnight Indigo Void & Frosted Indigo Glass */
-      --bg-primary: #121324;        /* Deep Midnight Void (#121324) */
-      --bg-secondary: #1A1C33;      /* Matte Midnight Indigo Carbon (#1A1C33) */
-      --bg-card: rgba(40, 43, 74, 0.78); /* Signature Midnight Indigo Glass (#282B4A at 78%) */
-      --bg-card-solid: #282B4A;     /* Solid Signature Midnight Indigo Surface (#282B4A) */
-      --bg-elevated: #32365C;       /* Elevated Midnight Command Deck (#32365C) */
-      --bg-surface-hover: #3E4370;  /* Luminous Interactive Indigo Hover (#3E4370) */
-      --bg-input: #16182B;         /* Recessed High-Contrast Indigo Well (#16182B) */
+      /* 🌟 1. Background Hierarchy — Radiant Light Porcelain Canvas & Frosted Glass Surfaces */
+      --bg-primary: #F8FAFD;        /* Radiant Light Porcelain Canvas (#F8FAFD) */
+      --bg-secondary: #EDF2F7;      /* Clean Cool Slate Underlay (#EDF2F7) */
+      --bg-card: rgba(255, 255, 255, 0.92); /* Signature Frosted Pure White Glass */
+      --bg-card-solid: #FFFFFF;     /* Solid Crisp Pure White Surface (#FFFFFF) */
+      --bg-elevated: #FFFFFF;       /* Elevated Radiant White Surface (#FFFFFF) */
+      --bg-surface-hover: #EEF2FF;  /* Luminous Interactive Soft Indigo Tint (#EEF2FF) */
+      --bg-input: #F1F5F9;          /* Recessed Clean Contrast Well (#F1F5F9) */
       
-      /* ⚡ 2. Vanilla Hairline Borders & High-Contrast Edge Rings */
-      --border-subtle: rgba(238, 235, 218, 0.12);   /* Crisp 1px Hairline Vanilla Border */
-      --border-medium: rgba(238, 235, 218, 0.22);   /* Pronounced Structural Edge */
-      --border-glass: rgba(238, 235, 218, 0.16);    /* Frosted Glass Perimeter */
-      --border-contrast: rgba(238, 235, 218, 0.35); /* Ultra-Crisp Vanilla Boundary */
-      --border-active: rgba(165, 180, 252, 0.85);   /* Luminous Iris Focus Ring */
-      --shadow-subtle: 0 18px 45px -10px rgba(10, 11, 20, 0.90);
-      --shadow-active-card: 0 0 35px rgba(165, 180, 252, 0.18), inset 0 1px 0 0 rgba(238, 235, 218, 0.14);
+      /* ⚡ 2. Vibrant Modern Hairline Borders & High-Contrast Edge Rings */
+      --border-subtle: rgba(99, 102, 241, 0.16);   /* Crisp Modern Indigo Hairline */
+      --border-medium: rgba(99, 102, 241, 0.28);   /* Pronounced Structural Edge */
+      --border-glass: rgba(226, 232, 240, 0.90);   /* Frosted Glass Perimeter */
+      --border-contrast: rgba(79, 70, 229, 0.38);  /* Ultra-Crisp Vibrant Boundary */
+      --border-active: #6366F1;                    /* Radiant Electric Violet Focus Ring */
+      --shadow-subtle: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(99, 102, 241, 0.06);
+      --shadow-active-card: 0 14px 40px -8px rgba(99, 102, 241, 0.22), 0 0 0 1.5px rgba(99, 102, 241, 0.35);
       
-      /* 👁️ Vision Accent (Celestial Cyan) & 🎙️ Voice Accent (Electric Iris Indigo) */
-      --cyan: #38BDF8;              /* Celestial Aqua Cyan - Vision 👁️ (#38BDF8) */
-      --cyan-dim: rgba(56, 189, 248, 0.15);
-      --violet: #818CF8;            /* Electric Iris Violet - Voice 🎙️ (#818CF8) */
-      --violet-dim: rgba(129, 140, 248, 0.18);
-      --vanilla: #EEEBDA;           /* Pure Vanilla Token (#EEEBDA) */
-      --vanilla-dim: rgba(238, 235, 218, 0.14);
+      /* 👁️ Vision Accent (Vivid Sky Blue) & 🎙️ Voice Accent (Electric Indigo Violet) */
+      --cyan: #0284C7;              /* Vivid Celestial Sky Blue - Vision 👁️ (#0284C7) */
+      --cyan-dim: rgba(2, 132, 199, 0.12);
+      --violet: #6366F1;            /* Electric Iris Violet - Voice 🎙️ (#6366F1) */
+      --violet-dim: rgba(99, 102, 241, 0.14);
+      --vanilla: #0F172A;           /* High-Contrast Deep Navy Token (#0F172A) */
+      --vanilla-dim: rgba(15, 23, 42, 0.08);
       
-      /* 💎 Quantum Biometric Gradient: Celestial Aqua -> Electric Iris over Midnight */
-      --grad-fusion: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
-      --grad-fusion-subtle: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(129, 140, 248, 0.35));
-      --grad-vanilla: linear-gradient(135deg, #EEEBDA 0%, #C7C4B7 100%);
+      /* 💎 Quantum Biometric Gradient: Vibrant Electric Cyan -> Royal Indigo -> Neon Rose */
+      --grad-fusion: linear-gradient(135deg, #0284C7 0%, #6366F1 50%, #EC4899 100%);
+      --grad-fusion-subtle: linear-gradient(135deg, rgba(2, 132, 199, 0.14), rgba(99, 102, 241, 0.14));
+      --grad-vanilla: linear-gradient(135deg, #0F172A 0%, #334155 100%);
       
-      /* 😊 Emotion-Specific Accents — High-Contrast Luminescence against Midnight Indigo */
-      --accent-happy: #34D399;      /* Luminous Emerald Mint (Joy) */
-      --accent-sad: #818CF8;        /* Soft Electric Iris (Sorrow) */
-      --accent-angry: #FB7185;      /* Laser Coral Scarlet (Alert / Anger) */
-      --accent-surprise: #FBBF24;   /* Solar Amber (Surprise) */
-      --accent-neutral: #EEEBDA;    /* Warm Vanilla (Equanimity / Neutral) */
+      /* 😊 Emotion-Specific Accents — High-Vibrancy Saturated Palette */
+      --accent-happy: #10B981;      /* Radiant Emerald Mint (Joy) */
+      --accent-sad: #2563EB;        /* Radiant Cobalt Blue (Sorrow) */
+      --accent-angry: #EF4444;      /* Vivid Coral Scarlet (Alert / Anger) */
+      --accent-surprise: #F59E0B;   /* Solar Golden Amber (Surprise) */
+      --accent-neutral: #64748B;    /* Balanced Cool Slate (Equanimity / Neutral) */
       
       /* Status Palette */
-      --status-harmony: #34D399;    /* Luminous Emerald - Harmony ✓ */
-      --status-warning: #FBBF24;    /* High-Voltage Amber */
-      --status-conflict: #FB7185;   /* Laser Scarlet - Conflict ⚠️ */
+      --status-harmony: #10B981;    /* Radiant Emerald - Harmony ✓ */
+      --status-warning: #F59E0B;    /* Vivid Solar Amber */
+      --status-conflict: #EF4444;   /* Laser Scarlet - Conflict ⚠️ */
       
-      /* 🔤 Contrast-Engineered Typography: Warm Vanilla Palette */
-      --text-primary: #EEEBDA;      /* Signature Warm Vanilla (#EEEBDA - Max Legibility) */
-      --text-secondary: #C7C4B7;    /* Soft Sandstone Cream (#C7C4B7) */
-      --text-muted: #9592A6;        /* Subtle Indigo Slate (#9592A6) */
-      --text-faint: #676579;        /* Discreet Metadata (#676579) */
+      /* 🔤 Contrast-Engineered Typography: Deep Slate High-Legibility Palette */
+      --text-primary: #0F172A;      /* Signature Deep Slate Navy (#0F172A - 100% Maximum Legibility) */
+      --text-secondary: #334155;    /* Crisp Slate Navy Charcoal (#334155) */
+      --text-muted: #64748B;        /* Cool Slate Muted (#64748B) */
+      --text-faint: #94A3B8;        /* Soft Slate Metadata (#94A3B8) */
       --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
@@ -118,9 +118,9 @@
       font-family: var(--font-main);
       background-color: var(--bg-primary);
       background-image: 
-        radial-gradient(ellipse 70% 40% at 50% -5%, rgba(129, 140, 248, 0.12), transparent 70%),
-        radial-gradient(ellipse 50% 35% at 90% 90%, rgba(56, 189, 248, 0.08), transparent 60%),
-        radial-gradient(ellipse 60% 40% at 10% 80%, rgba(40, 43, 74, 0.45), transparent 70%);
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(99, 102, 241, 0.14), transparent 70%),
+        radial-gradient(ellipse 55% 40% at 92% 90%, rgba(2, 132, 199, 0.12), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 8% 80%, rgba(236, 72, 153, 0.10), transparent 70%);
       background-attachment: fixed;
       color: var(--text-primary);
       min-height: 100vh;
@@ -134,8 +134,8 @@
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
-    ::-webkit-scrollbar-thumb { background: rgba(238, 235, 218, 0.20); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(165, 180, 252, 0.55); }
+    ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.25); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.55); }
 
     /* ========================================================
        TOP WORKSPACE HEADER (Live Analysis & Media Upload Studio)
@@ -550,11 +550,12 @@
       max-height: 380px;
       border-radius: var(--radius-md);
       overflow: hidden;
-      background: #020204;
-      border: 1px solid var(--border-subtle);
+      background: #0F172A;
+      border: 1.5px solid rgba(2, 132, 199, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.12);
     }
 
     video#webcamVideo {
@@ -949,10 +950,10 @@
       justify-content: space-between;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(rgba(10, 10, 15, 0.88), rgba(10, 10, 15, 0.88)) padding-box,
-                  var(--grad-fusion-subtle) border-box;
-      border: 1px solid transparent;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.10), 0 20px 45px -10px rgba(0, 0, 0, 0.95), var(--shadow-active-card);
+      background: linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)) padding-box,
+                  var(--grad-fusion) border-box;
+      border: 1.5px solid transparent;
+      box-shadow: 0 16px 45px -8px rgba(99, 102, 241, 0.20), 0 0 0 1px rgba(99, 102, 241, 0.18);
     }
 
     /* Subtle Radial Ambient Hero Glow */
@@ -979,8 +980,8 @@
       font-weight: 700;
       letter-spacing: 1.2px;
       text-transform: uppercase;
-      background: #000000;
-      border: 1.5px solid var(--cyan);
+      background: linear-gradient(135deg, #0284C7 0%, #6366F1 50%, #EC4899 100%);
+      border: none;
       color: #FFFFFF;
       border-radius: var(--radius-md);
       cursor: pointer;
@@ -989,7 +990,7 @@
       justify-content: center;
       gap: 0.65rem;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 24px -4px rgba(0, 245, 255, 0.30);
+      box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.45);
       position: relative;
       z-index: 2;
     }
@@ -1220,11 +1221,11 @@
       width: 100%;
       height: 135px;
       border-radius: var(--radius-sm);
-      background: #020204;
-      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.22);
       position: relative;
       overflow: hidden;
-      box-shadow: inset 0 2px 14px rgba(0, 0, 0, 0.9);
+      box-shadow: inset 0 1px 4px rgba(99, 102, 241, 0.08);
     }
 
     canvas#waveCanvas {
@@ -1382,13 +1383,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: #030307;
-      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.18);
       border-radius: var(--radius-sm);
       padding: 0.65rem 0.75rem;
       position: relative;
       overflow: hidden;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
     }
 
     .circumplex-live-widget::before {
@@ -1678,8 +1679,8 @@
     }
 
     .modal-window {
-      background: #090d16;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.25);
       border-radius: var(--radius-lg);
       max-width: 720px;
       width: 100%;
@@ -1687,11 +1688,12 @@
       display: flex;
       flex-direction: column;
       gap: 1.15rem;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 45px rgba(6, 182, 212, 0.15);
+      box-shadow: 0 25px 70px -15px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(99, 102, 241, 0.15);
       max-height: 90vh;
       overflow-y: auto;
       animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       transform-origin: center center;
+      color: #0F172A;
     }
 
     .modal-header {
@@ -1795,13 +1797,14 @@
     }
 
     .report-stt-box {
-      background: #020204;
-      border: 1px solid var(--border-subtle);
+      background: #F8FAFD;
+      border: 1.5px solid rgba(99, 102, 241, 0.20);
       border-radius: var(--radius-sm);
       padding: 0.85rem;
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
+      color: #0F172A;
     }
 
     .report-stt-header {
@@ -1860,8 +1863,9 @@
       margin-top: 0.5rem;
       position: relative;
       overflow: hidden;
-      border: 1px solid var(--border-glass);
-      background: linear-gradient(rgba(17, 24, 39, 0.75), rgba(11, 17, 32, 0.85));
+      border: 1.5px solid rgba(99, 102, 241, 0.20);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
     }
 
     .about-lead-text {
@@ -1937,8 +1941,8 @@
     }
 
     .team-member-card {
-      background: rgba(11, 17, 32, 0.75);
-      border: 1px solid rgba(148, 163, 184, 0.14);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(99, 102, 241, 0.18);
       border-radius: var(--radius-md);
       padding: 1.3rem 1rem;
       display: flex;
@@ -1948,6 +1952,7 @@
       position: relative;
       overflow: hidden;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
@@ -1957,7 +1962,7 @@
       position: absolute;
       inset: -1px;
       border-radius: var(--radius-md);
-      background: linear-gradient(135deg, rgba(34, 211, 238, 0.5), rgba(37, 99, 235, 0.5));
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.4), rgba(99, 102, 241, 0.4));
       opacity: 0;
       transition: opacity 0.35s ease;
       z-index: 0;
@@ -1968,7 +1973,7 @@
       position: absolute;
       inset: 1px;
       border-radius: calc(var(--radius-md) - 1px);
-      background: rgba(11, 17, 32, 0.92);
+      background: #FFFFFF;
       z-index: 0;
     }
 
@@ -2731,9 +2736,9 @@
       position: relative;
       width: 100%;
       height: 190px;
-      background: #030712;
+      background: #F1F5F9;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border-subtle);
+      border: 1.5px solid rgba(99, 102, 241, 0.20);
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -3219,13 +3224,14 @@
 
     /* Animated Analysis Progress */
     .media-lab-progress-container {
-      background: #020204;
-      border: 1px solid var(--border-subtle);
+      background: #F8FAFD;
+      border: 1.5px solid rgba(99, 102, 241, 0.20);
       border-radius: var(--radius-sm);
       padding: 0.65rem 0.85rem;
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
+      color: #0F172A;
     }
 
     .progress-bar-track {
@@ -3397,13 +3403,14 @@
 
     /* AI Diagnostic Box */
     .media-diagnostic-box {
-      background: #020204;
-      border: 1px solid var(--border-subtle);
+      background: #F8FAFD;
+      border: 1.5px solid rgba(99, 102, 241, 0.20);
       border-radius: var(--radius-sm);
       padding: 0.85rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
+      color: #0F172A;
     }
 
     .diagnostic-title {
@@ -4005,7 +4012,7 @@
     .intro-tagline {
       font-size: clamp(1.05rem, 2.2vw, 1.4rem);
       font-weight: 700;
-      color: #F8FAFC;
+      color: #0F172A;
       margin: 0;
       letter-spacing: 0.6px;
     }
@@ -4329,7 +4336,7 @@
 
     /* ---------------- VIEW 2: MODE SELECTION HUB ---------------- */
     #viewModeSelect {
-      background-color: #000000 !important;
+      background-color: #F8FAFD !important;
       transition: background-color 0.45s ease;
     }
 
@@ -4341,34 +4348,34 @@
       align-items: center;
       padding: calc(var(--titlebar-h, 38px) + 2.4rem) 1.5rem 3.5rem;
       box-sizing: border-box;
-      background-color: #000000;
-      background: radial-gradient(circle at 50% 35%, rgba(37, 99, 235, 0.12) 0%, rgba(34, 211, 238, 0.06) 50%, #000000 85%);
+      background-color: #F8FAFD;
+      background: radial-gradient(circle at 50% 35%, rgba(99, 102, 241, 0.10) 0%, rgba(2, 132, 199, 0.08) 50%, #EDF2F7 85%);
       transition: background 0.45s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.45s ease, box-shadow 0.45s ease;
       position: relative;
     }
 
-    /* Dynamic Pitch Black Screen Switch with Radiant Mode Illuminations (Neon Violet & Neon Green) */
+    /* Dynamic Radiant Mode Illuminations on Clean Light Canvas */
     .mode-select-wrapper:has(#btnSelectLiveMode:hover),
     .mode-select-wrapper.hover-live-purple {
-      background-color: #000000 !important;
-      background: radial-gradient(circle at 35% 50%, rgba(176, 38, 255, 0.60) 0%, rgba(126, 34, 206, 0.25) 24%, rgba(35, 8, 55, 0.10) 48%, #000000 70%) !important;
-      box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
+      background-color: #F8FAFD !important;
+      background: radial-gradient(circle at 35% 50%, rgba(147, 51, 234, 0.18) 0%, rgba(99, 102, 241, 0.10) 35%, #F8FAFD 75%) !important;
+      box-shadow: none !important;
     }
 
     .mode-select-wrapper:has(#btnSelectMediaMode:hover),
     .mode-select-wrapper.hover-media-green,
     .mode-select-wrapper.hover-media-lemongreen {
-      background-color: #000000 !important;
-      background: radial-gradient(circle at 65% 50%, rgba(0, 255, 157, 0.60) 0%, rgba(16, 229, 153, 0.25) 24%, rgba(3, 50, 30, 0.10) 48%, #000000 70%) !important;
-      box-shadow: inset 0 0 160px rgba(0, 0, 0, 1) !important;
+      background-color: #F8FAFD !important;
+      background: radial-gradient(circle at 65% 50%, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.10) 35%, #F8FAFD 75%) !important;
+      box-shadow: none !important;
     }
 
-    /* Cinematic Contrast: Unhovered card dims into black so illuminated card pops with supreme vibrancy */
+    /* Cinematic Focus: Unhovered card softly dims so illuminated card pops with supreme vibrancy */
     .mode-cards-grid:hover .mode-card:not(:hover) {
-      opacity: 0.28 !important;
-      filter: grayscale(50%) brightness(0.60) !important;
-      transform: scale(0.975) !important;
-      border-color: rgba(255, 255, 255, 0.04) !important;
+      opacity: 0.50 !important;
+      filter: grayscale(35%) brightness(0.95) !important;
+      transform: scale(0.98) !important;
+      border-color: rgba(99, 102, 241, 0.10) !important;
       box-shadow: none !important;
     }
 
@@ -4385,7 +4392,7 @@
       font-size: clamp(1.8rem, 4vw, 2.8rem);
       font-weight: 800;
       letter-spacing: 1px;
-      color: #F8FAFC;
+      color: #0F172A;
       margin: 0;
     }
 
@@ -4436,47 +4443,47 @@
       transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* 🟣 Mode Option 1: Live Cam — Proper Neon Violet Hover Illumination */
+    /* 🟣 Mode Option 1: Live Cam — Radiant Iris Indigo Hover */
     .mode-card.visual-mode:hover,
     #btnSelectLiveMode:hover {
-      transform: translateY(-10px) scale(1.025);
-      background: linear-gradient(145deg, rgba(176, 38, 255, 0.38) 0%, rgba(126, 34, 206, 0.22) 50%, rgba(12, 4, 24, 0.98) 100%) !important;
-      border-color: #B026FF !important;
-      box-shadow: 0 25px 65px -10px rgba(176, 38, 255, 0.85), 0 0 60px rgba(168, 85, 247, 0.65), inset 0 1px 3px rgba(233, 213, 255, 0.95) !important;
+      transform: translateY(-8px) scale(1.025);
+      background: linear-gradient(145deg, #FFFFFF 0%, #F5F3FF 100%) !important;
+      border-color: #8B5CF6 !important;
+      box-shadow: 0 20px 50px -10px rgba(139, 92, 246, 0.30), 0 0 30px rgba(139, 92, 246, 0.15) !important;
     }
 
     .mode-card.visual-mode:hover .mode-card-badge,
     #btnSelectLiveMode:hover .mode-card-badge {
-      background: rgba(176, 38, 255, 0.32) !important;
-      border-color: #B026FF !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 0 24px rgba(176, 38, 255, 0.85);
+      background: rgba(139, 92, 246, 0.14) !important;
+      border-color: #8B5CF6 !important;
+      color: #6D28D9 !important;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.35);
     }
 
     .mode-card.visual-mode:hover .btn-mode-cta,
     #btnSelectLiveMode:hover .btn-mode-cta {
-      background: linear-gradient(135deg, #B026FF 0%, #7E22CE 100%) !important;
-      border-color: #D946EF !important;
-      box-shadow: 0 0 38px rgba(176, 38, 255, 0.90) !important;
+      background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%) !important;
+      border-color: #7C3AED !important;
+      box-shadow: 0 6px 25px rgba(139, 92, 246, 0.45) !important;
       color: #FFFFFF !important;
       font-weight: 800 !important;
     }
 
-    /* 🌿 Mode Option 2: Media Upload — Proper Neon Glow Green Hover Illumination */
+    /* 🌿 Mode Option 2: Media Upload — Radiant Emerald Mint Hover */
     .mode-card.vocal-mode:hover,
     #btnSelectMediaMode:hover {
-      transform: translateY(-10px) scale(1.025);
-      background: linear-gradient(145deg, rgba(0, 255, 157, 0.38) 0%, rgba(16, 229, 153, 0.24) 50%, rgba(2, 24, 15, 0.98) 100%) !important;
-      border-color: #00FF9D !important;
-      box-shadow: 0 25px 65px -10px rgba(0, 255, 157, 0.88), 0 0 60px rgba(0, 255, 157, 0.68), inset 0 1px 3px rgba(180, 255, 220, 0.95) !important;
+      transform: translateY(-8px) scale(1.025);
+      background: linear-gradient(145deg, #FFFFFF 0%, #ECFDF5 100%) !important;
+      border-color: #10B981 !important;
+      box-shadow: 0 20px 50px -10px rgba(16, 185, 129, 0.30), 0 0 30px rgba(16, 185, 129, 0.15) !important;
     }
 
     .mode-card.vocal-mode:hover .mode-card-badge,
     #btnSelectMediaMode:hover .mode-card-badge {
-      background: rgba(0, 255, 157, 0.32) !important;
-      border-color: #00FF9D !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 0 25px rgba(0, 255, 157, 0.90);
+      background: rgba(16, 185, 129, 0.14) !important;
+      border-color: #10B981 !important;
+      color: #047857 !important;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
     }
 
     .mode-card.vocal-mode:hover .btn-mode-cta,
@@ -5300,10 +5307,10 @@
       left: 0;
       right: 0;
       height: var(--titlebar-h, 38px);
-      background: rgba(18, 19, 36, 0.98);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.16);
       display: flex;
       align-items: center;
       padding: 0 16px;
@@ -5340,17 +5347,17 @@
       font-weight: 800;
       font-size: 13px;
       letter-spacing: 0.8px;
-      color: #00F5FF;
-      text-shadow: 0 0 10px rgba(0, 245, 255, 0.4);
+      color: #4F46E5;
+      text-shadow: none;
     }
     .emotix-titlebar-sep {
-      color: rgba(255, 255, 255, 0.2);
+      color: rgba(99, 102, 241, 0.35);
       font-size: 12px;
     }
     .emotix-titlebar-title {
       font-size: 11.5px;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.7);
+      font-weight: 600;
+      color: #334155;
       letter-spacing: 0.3px;
     }
     .emotix-titlebar-right {
@@ -5364,23 +5371,23 @@
       align-items: center;
       gap: 6px;
       padding: 3px 10px;
-      background: rgba(0, 245, 255, 0.06);
-      border: 1px solid rgba(0, 245, 255, 0.22);
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.22);
       border-radius: 999px;
     }
     .titlebar-pulse-node {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #00FF9D;
-      box-shadow: 0 0 8px #00FF9D;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
       animation: pulseGreen 1.8s infinite ease-in-out;
     }
     .titlebar-telemetry-text {
       font-family: 'JetBrains Mono', monospace;
       font-size: 9px;
-      font-weight: 600;
-      color: #00F5FF;
+      font-weight: 700;
+      color: #4F46E5;
       letter-spacing: 0.8px;
     }
   </style>
@@ -6420,7 +6427,7 @@
       </div>
 
       <!-- Diagnostic Telemetry -->
-      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); background: #020204; border-radius: var(--radius-sm); padding: 0.75rem; border: 1px solid var(--border-subtle); line-height: 1.45;" id="repDiagnostic">
+      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); background: #F8FAFD; border-radius: var(--radius-sm); padding: 0.75rem; border: 1.5px solid rgba(99, 102, 241, 0.20); line-height: 1.45; color: #0F172A;" id="repDiagnostic">
         Diagnostic telemetry initialized.
       </div>
 
@@ -7164,7 +7171,7 @@
       </div>
 
       <!-- Other Details: AI Clinical Diagnostic Analysis Explanation -->
-      <div style="background: #020204; border-radius: var(--radius-sm); padding: 0.9rem; border: 1px solid var(--border-subtle); line-height: 1.5;">
+      <div style="background: #F8FAFD; border-radius: var(--radius-sm); padding: 0.9rem; border: 1.5px solid rgba(99, 102, 241, 0.20); line-height: 1.5; color: #0F172A;">
         <div style="display: flex; align-items: center; gap: 0.45rem; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: var(--cyan); margin-bottom: 0.4rem; letter-spacing: 0.6px;">
           <span>🧠</span> AI CLINICAL & FORENSIC DIAGNOSTIC ANALYSIS:
         </div>
@@ -9426,21 +9433,21 @@
 
       // 1. Clear & Background
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#030307';
+      ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, w, h);
 
-      // 2. Subtle Quadrant Backdrop Tinting
-      ctx.fillStyle = 'rgba(245, 199, 107, 0.035)'; // Q1 top-right
+      // 2. Subtle Vibrant Quadrant Backdrop Tinting
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.06)'; // Q1 top-right (Joy)
       ctx.fillRect(cx, 0, cx, cy);
-      ctx.fillStyle = 'rgba(251, 113, 133, 0.035)'; // Q2 top-left
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.06)';  // Q2 top-left (Anger)
       ctx.fillRect(0, 0, cx, cy);
-      ctx.fillStyle = 'rgba(96, 165, 250, 0.035)';  // Q3 bottom-left
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.06)';  // Q3 bottom-left (Sad)
       ctx.fillRect(0, cy, cx, cy);
-      ctx.fillStyle = 'rgba(52, 211, 153, 0.035)';  // Q4 bottom-right
+      ctx.fillStyle = 'rgba(168, 85, 247, 0.06)'; // Q4 bottom-right (Calm)
       ctx.fillRect(cx, cy, cx, cy);
 
       // 3. Grid Rings
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
       ctx.lineWidth = 1;
       ctx.setLineDash([]);
       ctx.beginPath();
@@ -9453,7 +9460,7 @@
 
       // 4. Hairline Crosshairs (Dashed)
       ctx.setLineDash([3, 3]);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.25)';
       ctx.beginPath();
       ctx.moveTo(12, cy);
       ctx.lineTo(w - 12, cy);
@@ -9464,7 +9471,7 @@
 
       // 5. Quadrant Labels (High-contrast, subtle mono)
       ctx.font = '600 7px "JetBrains Mono", monospace';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
       ctx.textAlign = 'left';
       ctx.fillText('+V / +A  JOY', cx + 18, 13);
       ctx.textAlign = 'right';
@@ -11515,15 +11522,15 @@
       const W = canvas.width;
       const H = canvas.height;
 
-      // Midnight Indigo telemetry background
-      ctx.fillStyle = '#141628';
+      // Radiant White telemetry background
+      ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, W, H);
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.25)';
       ctx.lineWidth = 2;
       ctx.strokeRect(1, 1, W - 2, H - 2);
 
-      // Title in Warm Vanilla
-      ctx.fillStyle = '#EEEBDA';
+      // Title in High-Contrast Deep Slate
+      ctx.fillStyle = '#0F172A';
       ctx.font = 'bold 13px "JetBrains Mono", monospace';
       ctx.textAlign = 'left';
       ctx.fillText('8-ACTION-UNIT FACS BIOMETRIC MESH MATRIX', 16, 26);
@@ -11649,15 +11656,15 @@
       const W = canvas.width;
       const H = canvas.height;
 
-      // Midnight Indigo telemetry background
-      ctx.fillStyle = '#141628';
+      // Radiant White telemetry background
+      ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, W, H);
-      ctx.strokeStyle = 'rgba(129, 140, 248, 0.35)';
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.25)';
       ctx.lineWidth = 2;
       ctx.strokeRect(1, 1, W - 2, H - 2);
 
-      // Title in Warm Vanilla
-      ctx.fillStyle = '#EEEBDA';
+      // Title in High-Contrast Deep Slate
+      ctx.fillStyle = '#0F172A';
       ctx.font = 'bold 13px "JetBrains Mono", monospace';
       ctx.textAlign = 'left';
       ctx.fillText('2D CIRCUMPLEX AFFECT SPACE (RUSSELL MODEL)', 16, 26);
@@ -11799,7 +11806,7 @@
       snapCanvas.height = 360;
       const sCtx = snapCanvas.getContext('2d');
 
-      sCtx.fillStyle = '#141628';
+      sCtx.fillStyle = '#F8FAFD';
       sCtx.fillRect(0, 0, 480, 360);
 
       let drawn = false;
