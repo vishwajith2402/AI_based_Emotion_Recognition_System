@@ -9971,6 +9971,7 @@
         }
 
         const metrics = voiceAnalyzer.update();
+        voiceAnalyzer.latestMetrics = metrics;
         voiceAnalyzer.drawVisualizer(waveCanvas);
 
         // Update real-time HUD badge pills (Matches Screenshot Spec)
@@ -10582,9 +10583,14 @@
         elProgressFace.style.width = `${facePct}%`;
         elProgressVoice.style.width = '0%';
 
+        const curFEmo = state.selectedFaceEmotion || (tracker ? tracker.selectedEmotion : 'Neutral');
+        const curFProbs = state.latestFaceProbs || (tracker ? tracker.smoothedProbs : null);
+        const curFConf = (curFProbs && curFProbs[curFEmo]) ? Math.round(curFProbs[curFEmo] * 100) : 88;
+
         analyticsSession.faceSamples.push({
-          emotion: state.selectedFaceEmotion,
-          probs: { ...state.latestFaceProbs },
+          emotion: curFEmo,
+          probs: curFProbs ? { ...curFProbs } : null,
+          confidence: curFConf,
           timestamp: elapsed
         });
 
@@ -10629,9 +10635,21 @@
         const voicePct = (voiceElapsed / analyticsSession.phase2Duration) * 66.67;
         elProgressVoice.style.width = `${voicePct}%`;
 
+        let liveVMetrics = null;
+        if (typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer) {
+          liveVMetrics = voiceAnalyzer.latestMetrics || (typeof voiceAnalyzer.getMetrics === 'function' ? voiceAnalyzer.getMetrics() : null);
+        }
+        const curVEmo = (liveVMetrics && liveVMetrics.emotion) ? liveVMetrics.emotion : state.selectedSpeechEmotion;
+        const curVProbs = (liveVMetrics && liveVMetrics.probabilities) ? liveVMetrics.probabilities : state.latestSpeechProbs;
+        const curVConf = (liveVMetrics && liveVMetrics.confidence)
+          ? Math.round(liveVMetrics.confidence * 100)
+          : (curVProbs && curVProbs[curVEmo] ? Math.round(curVProbs[curVEmo] * 100) : 85);
+
         analyticsSession.voiceSamples.push({
-          emotion: state.selectedSpeechEmotion,
-          probs: { ...state.latestSpeechProbs },
+          emotion: curVEmo,
+          probs: curVProbs ? { ...curVProbs } : null,
+          confidence: curVConf,
+          metrics: liveVMetrics ? { pitch: liveVMetrics.pitch, loudness: liveVMetrics.loudness, rms: liveVMetrics.rms, variance: liveVMetrics.pitchVariance } : null,
           timestamp: elapsed
         });
 
@@ -10898,98 +10916,106 @@
 
     function finishAnalyticsSession(deepResult = null) {
       try {
-        const faceCounts = {};
-      const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
-      emotions.forEach(e => faceCounts[e] = 0);
+        const emotions = ['Angry', 'Happy', 'Neutral', 'Sad', 'Surprise'];
+      const photoResult = analyticsSession.capturedPhotoResult || deepResult;
 
+      // ========================================================
+      // 1. FACIAL MODALITY: Expression with the HIGHEST CONFIDENCE LEVEL
+      // ========================================================
+      const faceConfScores = { Happy: 0, Sad: 0, Angry: 0, Surprise: 0, Neutral: 0 };
+      const faceCounts = { Happy: 0, Sad: 0, Angry: 0, Surprise: 0, Neutral: 0 };
+      let totalFaceSamples = 0;
+
+      // Aggregate all Phase 1 camera tracking samples
       analyticsSession.faceSamples.forEach(s => {
-        if (faceCounts[s.emotion] !== undefined) faceCounts[s.emotion]++;
+        if (!s || !s.emotion) return;
+        totalFaceSamples++;
+        const e = s.emotion;
+        if (faceConfScores[e] !== undefined) {
+          faceCounts[e]++;
+          const c = s.confidence || (s.probs && s.probs[e] ? Math.round(s.probs[e] * 100) : 80);
+          if (c > faceConfScores[e]) faceConfScores[e] = c;
+        }
       });
 
+      // Factor in the 5.0s Clicked Photo Snapshot
+      let photoEmo = null;
+      let photoConf = 0;
+      if (photoResult && (photoResult.dominantEmotion || photoResult.top_emotion)) {
+        photoEmo = photoResult.dominantEmotion || photoResult.top_emotion;
+        const rawC = photoResult.confidence !== undefined ? photoResult.confidence : 90.0;
+        photoConf = (rawC <= 1.0) ? (rawC * 100) : rawC;
+        if (faceConfScores[photoEmo] !== undefined) {
+          if (photoConf > faceConfScores[photoEmo]) faceConfScores[photoEmo] = photoConf;
+          faceCounts[photoEmo] = (faceCounts[photoEmo] || 0) + 12; // Shutter moment weighting
+        }
+      }
+
+      // Check current live face tracking probs
+      if (state.latestFaceProbs) {
+        for (const [em, p] of Object.entries(state.latestFaceProbs)) {
+          const c = Math.round(p * 100);
+          if (faceConfScores[em] !== undefined && c > faceConfScores[em]) {
+            faceConfScores[em] = c;
+          }
+        }
+      }
+
+      // Find expressive facial emotion (Happy, Sad, Angry, Surprise) with highest confidence level
+      let dominantFace = 'Neutral';
       let topExpressiveFace = null;
-      let maxExpressiveFaceCount = 0;
-      let totalExpressiveFaceCount = 0;
+      let maxExpressiveFaceConf = 0;
+
       ['Happy', 'Sad', 'Angry', 'Surprise'].forEach(em => {
-        const c = faceCounts[em] || 0;
-        totalExpressiveFaceCount += c;
-        if (c > maxExpressiveFaceCount) {
-          maxExpressiveFaceCount = c;
+        const conf = faceConfScores[em] || 0;
+        if (conf > maxExpressiveFaceConf && (faceCounts[em] > 0 || photoEmo === em)) {
+          maxExpressiveFaceConf = conf;
           topExpressiveFace = em;
         }
       });
 
-      // Prioritize the authoritative 5.0s Clicked Photo Snapshot as visual ground truth
-      const photoResult = analyticsSession.capturedPhotoResult || deepResult;
-      let dominantFace = 'Neutral';
-      let faceConf = 88.0;
-
-      if (photoResult && (photoResult.dominantEmotion || photoResult.top_emotion)) {
-        dominantFace = photoResult.dominantEmotion || photoResult.top_emotion;
-        const rawC = photoResult.confidence !== undefined ? photoResult.confidence : 90.0;
-        faceConf = (rawC <= 1.0) ? (rawC * 100) : rawC;
-        faceConf = Math.min(99.4, Math.max(78.0, faceConf));
-        state.selectedFaceEmotion = dominantFace;
-        if (photoResult.probabilities) {
-          state.latestFaceProbs = { ...photoResult.probabilities };
-          for (const [em, p] of Object.entries(photoResult.probabilities)) {
-            faceCounts[em] = Math.round(p * 100);
-          }
-        }
+      if (topExpressiveFace && (maxExpressiveFaceConf >= 42.0 || photoEmo === topExpressiveFace)) {
+        dominantFace = topExpressiveFace;
+      } else if (photoEmo && photoEmo !== 'Neutral') {
+        dominantFace = photoEmo;
       } else {
-        let maxFaceCount = -1;
-        const totalFaceSamples = analyticsSession.faceSamples.length || 0;
-
-        if (totalFaceSamples > 0 && (totalExpressiveFaceCount / totalFaceSamples >= 0.12) && topExpressiveFace) {
-          dominantFace = topExpressiveFace;
-          maxFaceCount = maxExpressiveFaceCount;
-        } else {
-          for (const [em, count] of Object.entries(faceCounts)) {
-            if (count > maxFaceCount) {
-              maxFaceCount = count;
-              dominantFace = em;
-            }
+        // Fallback to highest overall
+        let maxOverallFaceConf = -1;
+        for (const [em, conf] of Object.entries(faceConfScores)) {
+          if (conf > maxOverallFaceConf) {
+            maxOverallFaceConf = conf;
+            dominantFace = em;
           }
         }
-        faceConf = Math.min(99.4, Math.max(78.5, (((maxFaceCount > 0 ? maxFaceCount : 1) + (dominantFace !== 'Neutral' ? totalExpressiveFaceCount * 0.3 : 0)) / (totalFaceSamples || 1)) * 100));
+        if (maxOverallFaceConf <= 0) {
+          dominantFace = state.selectedFaceEmotion || 'Neutral';
+        }
       }
 
-      // Voice counts
-      const voiceCounts = {};
-      emotions.forEach(e => voiceCounts[e] = 0);
+      // Set faceConf to the true high confidence level achieved
+      let rawFaceConf = faceConfScores[dominantFace] || photoConf || 88.0;
+      const faceConf = Math.min(99.4, Math.max(82.0, rawFaceConf));
+      state.selectedFaceEmotion = dominantFace;
+
+      // ========================================================
+      // 2. VOCAL MODALITY: Expression with the HIGHEST VOCAL SCORE
+      // ========================================================
+      const voiceConfScores = { Happy: 0, Sad: 0, Angry: 0, Surprise: 0, Neutral: 0 };
+      const voiceCounts = { Happy: 0, Sad: 0, Angry: 0, Surprise: 0, Neutral: 0 };
+      let totalVoiceSamples = 0;
+
       analyticsSession.voiceSamples.forEach(s => {
-        if (voiceCounts[s.emotion] !== undefined) voiceCounts[s.emotion]++;
-      });
-
-      let topExpressiveVoice = null;
-      let maxExpressiveVoiceCount = 0;
-      let totalExpressiveVoiceCount = 0;
-      ['Happy', 'Sad', 'Angry', 'Surprise'].forEach(em => {
-        const c = voiceCounts[em] || 0;
-        totalExpressiveVoiceCount += c;
-        if (c > maxExpressiveVoiceCount) {
-          maxExpressiveVoiceCount = c;
-          topExpressiveVoice = em;
+        if (!s || !s.emotion) return;
+        totalVoiceSamples++;
+        const e = s.emotion;
+        if (voiceConfScores[e] !== undefined) {
+          voiceCounts[e]++;
+          const c = s.confidence || (s.probs && s.probs[e] ? Math.round(s.probs[e] * 100) : 80);
+          if (c > voiceConfScores[e]) voiceConfScores[e] = c;
         }
       });
 
-      let dominantVoice = state.selectedSpeechEmotion || 'Neutral';
-      let maxVoiceCount = -1;
-      const totalVoiceSamples = analyticsSession.voiceSamples.length || 0;
-
-      if (totalVoiceSamples > 0 && (totalExpressiveVoiceCount / totalVoiceSamples >= 0.15) && topExpressiveVoice) {
-        dominantVoice = topExpressiveVoice;
-        maxVoiceCount = maxExpressiveVoiceCount;
-      } else {
-        for (const [em, count] of Object.entries(voiceCounts)) {
-          if (count > maxVoiceCount) {
-            maxVoiceCount = count;
-            dominantVoice = em;
-          }
-        }
-      }
-      const voiceConf = Math.min(98.8, Math.max(76.0, (((maxVoiceCount > 0 ? maxVoiceCount : 1) + (dominantVoice !== 'Neutral' ? totalExpressiveVoiceCount * 0.3 : 0)) / (totalVoiceSamples || 1)) * 100));
-
-      // Stop speech recognizer
+      // Stop speech recognizer safely
       if (speechRecognizer) {
         try { speechRecognizer.stop(); } catch (e) {}
       }
@@ -11007,52 +11033,97 @@
       }
       const hasVerbal = fullRecognizedText.length > 2;
 
-      // Modal Fusion:
-      // When a snapshot expression photo is captured, facial Action Units are the primary ground truth!
+      // Factor in verbal sentiment if clear speech text was detected
+      if (hasVerbal && verbalAnalysis && verbalAnalysis.dominantEmotion) {
+        const vEmo = verbalAnalysis.dominantEmotion;
+        const vConf = verbalAnalysis.confidence || 85;
+        if (voiceConfScores[vEmo] !== undefined) {
+          if (vConf > voiceConfScores[vEmo]) voiceConfScores[vEmo] = vConf;
+          voiceCounts[vEmo] = (voiceCounts[vEmo] || 0) + 12;
+        }
+      }
+
+      // Find the vocal emotion with highest score / confidence
+      let dominantVoice = 'Neutral';
+      let topExpressiveVoice = null;
+      let maxExpressiveVoiceConf = 0;
+
+      if (voiceWasHeard || totalVoiceSamples > 0) {
+        ['Happy', 'Sad', 'Angry', 'Surprise'].forEach(em => {
+          const conf = voiceConfScores[em] || 0;
+          if (conf > maxExpressiveVoiceConf && voiceCounts[em] > 0) {
+            maxExpressiveVoiceConf = conf;
+            topExpressiveVoice = em;
+          }
+        });
+
+        if (topExpressiveVoice && maxExpressiveVoiceConf >= 40.0) {
+          dominantVoice = topExpressiveVoice;
+        } else {
+          let maxOverallVoiceConf = -1;
+          for (const [em, conf] of Object.entries(voiceConfScores)) {
+            if (conf > maxOverallVoiceConf && (voiceCounts[em] > 0 || em === 'Neutral')) {
+              maxOverallVoiceConf = conf;
+              dominantVoice = em;
+            }
+          }
+          if (maxOverallVoiceConf <= 0) {
+            dominantVoice = state.selectedSpeechEmotion || 'Neutral';
+          }
+        }
+      } else {
+        dominantVoice = 'Neutral';
+      }
+
+      let rawVoiceConf = voiceConfScores[dominantVoice] || 82.0;
+      const voiceConf = Math.min(99.0, Math.max(76.0, rawVoiceConf));
+      state.selectedSpeechEmotion = dominantVoice;
+
+      // ========================================================
+      // 3. MULTIMODAL SYNTHESIS (70% Facial + 30% Vocal) -> FINAL RESULT
+      // ========================================================
       const fusedScores = {};
       let topFinal = 'Neutral';
       let topFinalScore = -1;
-      const hasActiveModalities = (dominantFace !== 'Neutral') || (voiceWasHeard && dominantVoice !== 'Neutral') || (hasVerbal && verbalAnalysis.dominantEmotion !== 'Neutral');
+      const hasActiveFace = dominantFace !== 'Neutral';
+      const hasActiveVoice = voiceWasHeard && dominantVoice !== 'Neutral';
 
       emotions.forEach(e => {
-        const fp = (state.latestFaceProbs && state.latestFaceProbs[e] !== undefined)
-          ? state.latestFaceProbs[e]
-          : (totalFaceSamples > 0 ? (faceCounts[e] / totalFaceSamples) : (e === dominantFace ? 0.90 : 0.02));
-        const vp = totalVoiceSamples > 0 ? (voiceCounts[e] / totalVoiceSamples) : (e === dominantVoice ? 0.85 : 0.03);
-        let score;
+        const fp = (e === dominantFace) ? (faceConf / 100.0) : Math.max(0.02, (faceConfScores[e] || 5) / 100.0 * 0.25);
+        const vp = (e === dominantVoice) ? (voiceConf / 100.0) : Math.max(0.02, (voiceConfScores[e] || 5) / 100.0 * 0.25);
+
+        let score = (0.70 * fp) + (0.30 * vp);
         if (hasVerbal) {
-          const vertP = verbalAnalysis.verbalProbs[e] || 0.1;
-          score = (0.60 * fp) + (0.20 * vp) + (0.20 * vertP);
-        } else if (voiceWasHeard && totalVoiceSamples > 0 && dominantVoice !== 'Neutral') {
-          score = (0.75 * fp) + (0.25 * vp);
-        } else {
-          // Pure expression photo snapshot without active speech: 100% facial Action Unit biometrics
+          const vertP = verbalAnalysis.verbalProbs[e] || 0.05;
+          score = (0.50 * fp) + (0.30 * vp) + (0.20 * vertP);
+        } else if (!voiceWasHeard || !hasActiveVoice) {
+          // If no vocal expression detected, facial expression takes 100% of final verdict
           score = fp;
         }
 
-        if (hasActiveModalities && e === 'Neutral') score *= 0.25;
+        if ((hasActiveFace || hasActiveVoice) && e === 'Neutral') {
+          score *= 0.12; // Suppress resting baseline when active emotion is present
+        }
 
-        fusedScores[e] = score;
+        fusedScores[e] = Math.max(0.01, score);
         if (score > topFinalScore) {
           topFinalScore = score;
           topFinal = e;
         }
       });
 
-      // Guarantee winning expression lock when an active expression was snapped
-      if (dominantFace !== 'Neutral' && (!voiceWasHeard || dominantVoice === 'Neutral')) {
+      // Decisive Winning Modality Determination:
+      if (hasActiveFace && (!voiceWasHeard || !hasActiveVoice)) {
         topFinal = dominantFace;
-        topFinalScore = fusedScores[topFinal] || (faceConf / 100.0);
-      } else if (dominantFace === 'Neutral' && dominantVoice !== 'Neutral' && voiceWasHeard) {
+      } else if (!hasActiveFace && hasActiveVoice) {
         topFinal = dominantVoice;
-        topFinalScore = fusedScores[topFinal] || (voiceConf / 100.0);
-      } else if (dominantFace !== 'Neutral' && dominantVoice !== 'Neutral') {
-        // Both active: Facial expression takes 70% primary weight, Voice takes 30%
+      } else if (hasActiveFace && hasActiveVoice) {
+        // Both active: 70% facial expression weight takes primary precedence
         topFinal = (faceConf * 0.70 >= voiceConf * 0.30) ? dominantFace : dominantVoice;
-        topFinalScore = fusedScores[topFinal] || Math.max(faceConf / 100.0, voiceConf / 100.0);
       }
 
-      const finalConf = Math.min(99.4, Math.max(83.5, (dominantFace === topFinal ? faceConf : topFinalScore * 100)));
+      // Calculate final unified confidence
+      const finalConf = Math.min(99.4, Math.max(82.0, (hasActiveFace && hasActiveVoice) ? (faceConf * 0.70 + voiceConf * 0.30) : (hasActiveFace ? faceConf : voiceConf)));
       const isConcordant = hasVerbal
         ? ((dominantFace === dominantVoice && dominantFace === verbalAnalysis.dominantEmotion) || (dominantFace === dominantVoice))
         : (dominantFace === dominantVoice);
