@@ -392,6 +392,7 @@ class VoiceAnalyzer {
     const currentProbs = {};
 
     if (isVoiced && rms >= this.options.rmsSilenceThreshold) {
+      this.lastVoicedTimestamp = Date.now();
       // Calculate Feature Z-Scores relative to empirical RAVDESS dataset statistics
       const z = {
         pitch_semitones: (pitchSemitones - stats.pitch_semitones.m) / stats.pitch_semitones.s,
@@ -458,12 +459,23 @@ class VoiceAnalyzer {
         currentProbs[em] = expScores[em] / sumExp;
       }
     } else {
-      // Unvoiced or silent frame defaults cleanly to Neutral baseline
-      currentProbs.Neutral = 0.82;
-      currentProbs.Happy = 0.045;
-      currentProbs.Sad = 0.055;
-      currentProbs.Angry = 0.035;
-      currentProbs.Surprise = 0.040;
+      // Voice Activity Detection (VAD) Hangover Protection:
+      // In conversational speech, brief 150-600ms pauses between words/syllables are natural.
+      // Retaining the active speech prosody during inter-word micro-pauses prevents voice emotion
+      // from prematurely collapsing to Neutral baseline in the middle of sentences.
+      const silenceDuration = Date.now() - (this.lastVoicedTimestamp || 0);
+      if (silenceDuration < 950 && this.dominantEmotion && this.dominantEmotion !== 'Neutral') {
+        for (const em of this.emotions) {
+          currentProbs[em] = this.smoothedProbs[em] || 0.20;
+        }
+      } else {
+        // Sustained silence (>950ms): smoothly return to resting Neutral baseline
+        currentProbs.Neutral = 0.82;
+        currentProbs.Happy = 0.045;
+        currentProbs.Sad = 0.055;
+        currentProbs.Angry = 0.035;
+        currentProbs.Surprise = 0.040;
+      }
     }
 
     // Adaptive EMA temporal smoothing: responsive on fast shifts, stable on sustained tones

@@ -12314,13 +12314,37 @@
         elLabVideoPreview.currentTime = originalTime;
         if (wasPlaying) elLabVideoPreview.play();
 
-        // Render Heatmap Timeline
+        // Render Heatmap Timeline and lock Apex Emotional Expression
         window.labState.videoHeatmapSamples = samples;
         if (samples.length > 0) {
           renderVideoAffectHeatmap(samples, duration);
           if (elVideoAffectHeatmapContainer) {
             elVideoAffectHeatmapContainer.style.display = 'block';
             elVideoAffectHeatmapContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+
+          // Identify the Apex Affective Frame (highest emotional intensity/conviction across video)
+          const nonNeutralSamples = samples.filter(s => s.emotion && s.emotion !== 'Neutral');
+          const candidatePool = nonNeutralSamples.length > 0 ? nonNeutralSamples : samples;
+          const apexSample = candidatePool.reduce((best, cur) => (cur.confidence > best.confidence ? cur : best), candidatePool[0]);
+
+          if (apexSample && apexSample.probabilities) {
+            window.labState.visualEmotion = apexSample.emotion;
+            window.labState.visualConfidence = apexSample.confidence;
+            window.labState.visualProbs = { ...apexSample.probabilities };
+            window.labState.visualMetrics = { ...apexSample.actionUnits };
+            if (typeof updateVisualResultsUI === 'function') {
+              updateVisualResultsUI({
+                dominantEmotion: apexSample.emotion,
+                confidence: apexSample.confidence,
+                probabilities: apexSample.probabilities,
+                actionUnits: apexSample.actionUnits,
+                forensicInsight: `Apex affective expression captured at ${apexSample.time.toFixed(2)}s (${apexSample.confidence}% certainty).`
+              }, `● VIDEO APEX LOCKED (${apexSample.time.toFixed(1)}s)`);
+            }
+            if (typeof runMediaLabFusion === 'function') {
+              runMediaLabFusion(false);
+            }
           }
         }
       }
@@ -13626,11 +13650,14 @@
 
         let meanPitch = 150;
         let pitchVariance = 15;
+        let medianPitch = 150;
         if (pitches.length > 0) {
           const sum = pitches.reduce((a, b) => a + b, 0);
           meanPitch = Math.round(sum / pitches.length);
           const variance = pitches.reduce((a, b) => a + Math.pow(b - meanPitch, 2), 0) / pitches.length;
           pitchVariance = Math.round(Math.sqrt(variance) * 10) / 10;
+          const sortedP = [...pitches].sort((a, b) => a - b);
+          medianPitch = sortedP[Math.floor(sortedP.length / 2)];
         }
 
         window.labState.audioMetrics = {
@@ -13660,9 +13687,9 @@
           window.labState.audioConfidence = Math.round(b.probs[presetKey] * 100);
           updateVocalResultsUI('● PRESET PROSODY LOCKED (' + presetKey.toUpperCase() + ')');
         } else {
-          // Vocal Emotion Classification via Local Calibrated DSP Rules
-          classifyVocalProsody(meanPitch, loudness, pitchVariance);
-          updateVocalResultsUI('● AUDIO DECODED & LOCKED');
+          // Vocal Emotion Classification via Speaker-Adaptive Calibrated DSP Rules
+          classifyVocalProsody(meanPitch, loudness, pitchVariance, medianPitch);
+          updateVocalResultsUI('● AUDIO DECODED & LOCKED (ADAPTIVE F0)');
         }
 
         // Trigger Multimodal Fusion update if visual channel is already populated and dashboard active
@@ -13789,7 +13816,7 @@
       ctx.shadowBlur = 0;
     }
 
-    function classifyVocalProsody(pitch, loudness, variance) {
+    function classifyVocalProsody(pitch, loudness, variance, speakerBaseline = 150) {
       // RAVDESS & EMO-DB Empirical Benchmark Norms (Mean & Std-Dev)
       const stats = {
         pitch_semitones: { m: 0.0, s: 3.5 },
@@ -13797,7 +13824,8 @@
         pitch_variance: { m: 45.0, s: 25.0 }
       };
 
-      const baselinePitch = 150;
+      // Speaker-adaptive baseline pitch: anchors pitch semitones to individual speaker F0 center
+      const baselinePitch = (speakerBaseline && speakerBaseline >= 70 && speakerBaseline <= 350) ? speakerBaseline : 150;
       const pitchSemitones = (pitch > 50) ? (12 * Math.log2(pitch / baselinePitch)) : 0;
 
       // Clamp Z-scores between -2.5 and 2.5 to prevent numerical explosion
@@ -14158,8 +14186,15 @@
       let wFace = 0;
       let wVoice = 0;
       if (window.labState.hasVisual && window.labState.hasVocal) {
-        wFace = 0.70;
-        wVoice = 0.30;
+        // Dynamic Bayesian Evidence-Weighted Fusion:
+        // Modulates the 70/30 base weighting proportionally to each channel's certainty
+        const faceConf = Math.min(1.0, Math.max(0.40, (window.labState.visualConfidence || 80) / 100));
+        const voiceConf = Math.min(1.0, Math.max(0.40, (window.labState.audioConfidence || 80) / 100));
+        const rawFaceW = 0.70 * faceConf;
+        const rawVoiceW = 0.30 * voiceConf;
+        const sumW = rawFaceW + rawVoiceW;
+        wFace = rawFaceW / sumW;
+        wVoice = rawVoiceW / sumW;
       } else if (window.labState.hasVisual) {
         wFace = 1.0;
         wVoice = 0.0;
