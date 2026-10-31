@@ -593,14 +593,16 @@
       transform: translateY(-50%);
       font-family: var(--font-mono);
       font-size: 0.75rem;
-      color: var(--text-secondary);
-      background: rgba(7, 10, 15, 0.85);
+      font-weight: 700;
+      color: #0F172A;
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(8px);
       padding: 0.6rem 1.1rem;
       border-radius: var(--radius-pill);
-      border: 1px solid var(--border-subtle);
+      border: 1.5px solid #CBD5E1;
       pointer-events: none;
       z-index: 8;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
     }
 
     .hud-metrics-overlay {
@@ -687,11 +689,11 @@
       top: 12px;
       right: 12px;
       z-index: 15;
-      background: rgba(17, 24, 39, 0.85);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(34, 211, 238, 0.45);
-      color: var(--cyan);
+      border: 1.5px solid #CBD5E1;
+      color: #0284C7;
       padding: 0.35rem 0.75rem;
       border-radius: var(--radius-pill);
       font-family: var(--font-mono);
@@ -726,11 +728,11 @@
       top: 12px;
       right: 136px;
       z-index: 15;
-      background: rgba(17, 24, 39, 0.85);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(168, 85, 247, 0.45);
-      color: #c084fc;
+      border: 1.5px solid #CBD5E1;
+      color: #6366F1;
       padding: 0.35rem 0.75rem;
       border-radius: var(--radius-pill);
       font-family: var(--font-mono);
@@ -1581,8 +1583,8 @@
 
     .expandable-content {
       padding: 1.1rem 1.25rem;
-      border-top: 1px solid var(--border-subtle);
-      background: rgba(7, 10, 15, 0.40);
+      border-top: 1.5px solid #E2E8F0;
+      background: #F8FAFD;
     }
 
     /* Diagnostics Data Grid */
@@ -1767,13 +1769,14 @@
     }
 
     .report-phase-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
       border-radius: var(--radius-sm);
       padding: 0.9rem;
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .report-phase-label {
@@ -2799,16 +2802,17 @@
       left: 8px;
       font-family: var(--font-mono);
       font-size: 0.62rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.5px;
-      padding: 0.2rem 0.5rem;
+      padding: 0.25rem 0.6rem;
       border-radius: 4px;
-      background: rgba(3, 7, 18, 0.88);
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1.5px solid #CBD5E1;
+      color: #0F172A;
       z-index: 10;
       pointer-events: none;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
     }
 
     .stage-overlay-chip.amber {
@@ -2863,19 +2867,20 @@
     }
 
     .telemetry-pill {
-      background: rgba(11, 17, 32, 0.85);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 0.35rem 0.4rem;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 0.45rem 0.5rem;
       text-align: center;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .t-lbl {
       display: block;
       font-family: var(--font-mono);
-      font-size: 0.56rem;
-      font-weight: 600;
-      color: var(--text-muted);
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #475569;
       text-transform: uppercase;
       letter-spacing: 0.4px;
       margin-bottom: 2px;
@@ -2884,9 +2889,9 @@
     .t-val {
       display: block;
       font-family: var(--font-mono);
-      font-size: 0.76rem;
-      font-weight: 700;
-      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #4338CA;
     }
 
     /* Modality Single Result Pill */
@@ -2894,27 +2899,27 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.45rem 0.75rem;
-      background: rgba(15, 23, 42, 0.85);
-      border-radius: 6px;
-      border: 1px solid var(--border-subtle);
+      padding: 0.55rem 0.85rem;
+      background: #F8FAFD;
+      border-radius: 8px;
+      border: 1.5px solid #E2E8F0;
       font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.75rem;
     }
 
     .res-lbl {
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .res-val {
-      color: var(--text-primary);
+      color: #475569;
       font-weight: 700;
     }
 
+    .res-val {
+      color: #0F172A;
+      font-weight: 800;
+    }
+
     .res-conf {
-      color: var(--cyan);
-      font-weight: 600;
+      color: #4338CA;
+      font-weight: 800;
     }
 
     /* Visual Stage Toolbar & Overlay Modes */
@@ -2926,20 +2931,21 @@
       align-items: center;
       gap: 0.3rem;
       z-index: 15;
-      background: rgba(3, 7, 18, 0.85);
-      border: 1px solid rgba(0, 242, 254, 0.35);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1.5px solid #CBD5E1;
       border-radius: 6px;
-      padding: 0.2rem 0.35rem;
+      padding: 0.25rem 0.4rem;
       backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
     }
 
     .btn-stage-tool {
       background: transparent;
       border: 1px solid transparent;
-      color: var(--text-muted);
+      color: #334155;
       font-family: var(--font-mono);
       font-size: 0.62rem;
-      font-weight: 600;
+      font-weight: 700;
       padding: 0.22rem 0.45rem;
       border-radius: 4px;
       cursor: pointer;
@@ -2950,16 +2956,17 @@
     }
 
     .btn-stage-tool:hover {
-      color: var(--text-primary);
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
+      color: #0F172A;
+      background: #F1F5F9;
+      border-color: #CBD5E1;
     }
 
     .btn-stage-tool.active {
-      color: var(--cyan);
-      background: rgba(0, 242, 254, 0.18);
-      border-color: rgba(0, 242, 254, 0.5);
-      box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+      color: #4338CA;
+      background: #EEF2FF;
+      border-color: #6366F1;
+      font-weight: 800;
+      box-shadow: 0 1px 4px rgba(99, 102, 241, 0.2);
     }
 
     /* Quick Test Face Carousel / Pills */
@@ -2968,17 +2975,17 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 0.4rem;
-      padding: 0.5rem 0.65rem;
-      background: rgba(11, 17, 32, 0.65);
-      border: 1px dashed rgba(0, 242, 254, 0.3);
-      border-radius: 6px;
+      padding: 0.55rem 0.75rem;
+      background: #F8FAFD;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
     }
 
     .test-strip-label {
       font-family: var(--font-mono);
-      font-size: 0.62rem;
-      font-weight: 700;
-      color: var(--cyan);
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #0F172A;
       letter-spacing: 0.5px;
       margin-right: 0.2rem;
       display: flex;
@@ -3030,18 +3037,20 @@
     }
 
     .telemetry-metric-box {
-      background: rgba(11, 17, 32, 0.9);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 0.4rem 0.5rem;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 0.45rem 0.6rem;
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
-      transition: border-color 0.2s ease;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      transition: all 0.2s ease;
     }
 
     .telemetry-metric-box:hover {
-      border-color: rgba(0, 242, 254, 0.35);
+      border-color: #6366F1;
+      box-shadow: 0 3px 10px rgba(99, 102, 241, 0.12);
     }
 
     .tmb-head {
@@ -3049,24 +3058,24 @@
       justify-content: space-between;
       align-items: center;
       font-family: var(--font-mono);
-      font-size: 0.58rem;
+      font-size: 0.60rem;
     }
 
     .tmb-label {
-      color: var(--text-muted);
-      font-weight: 600;
+      color: #475569;
+      font-weight: 700;
       letter-spacing: 0.3px;
     }
 
     .tmb-val {
-      color: var(--cyan);
-      font-weight: 700;
+      color: #0F172A;
+      font-weight: 800;
     }
 
     .tmb-bar {
       width: 100%;
       height: 4px;
-      background: rgba(255, 255, 255, 0.08);
+      background: #F1F5F9;
       border-radius: 2px;
       overflow: hidden;
     }
@@ -3089,13 +3098,14 @@
 
     /* Dedicated Standalone Visual Intelligence Card */
     .visual-intel-card {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 0.75rem 0.9rem;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.65rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     }
 
     .visual-intel-head {
@@ -3112,20 +3122,20 @@
       gap: 0.45rem;
       font-family: var(--font-main);
       font-weight: 800;
-      font-size: 0.95rem;
-      letter-spacing: 0.5px;
-      color: var(--text-primary);
+      font-size: 0.98rem;
+      letter-spacing: 0.4px;
+      color: #0F172A;
     }
 
     .visual-verdict-badge {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      padding: 0.2rem 0.55rem;
-      border-radius: 4px;
-      background: rgba(0, 242, 254, 0.15);
-      border: 1px solid var(--cyan);
-      color: var(--cyan);
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-pill);
+      background: #EEF2FF;
+      border: 1px solid #C7D2FE;
+      color: #4338CA;
       letter-spacing: 0.4px;
     }
 
@@ -3146,13 +3156,19 @@
     .v-mini-header {
       display: flex;
       justify-content: space-between;
-      color: var(--text-muted);
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .v-mini-header b {
+      color: #0F172A;
+      font-weight: 700;
     }
 
     .v-mini-track {
       width: 100%;
       height: 4px;
-      background: rgba(255, 255, 255, 0.08);
+      background: #F1F5F9;
       border-radius: 2px;
       overflow: hidden;
     }
@@ -3160,19 +3176,21 @@
     .v-mini-fill {
       height: 100%;
       width: 0%;
-      background: var(--cyan);
+      background: #4F46E5;
       border-radius: 2px;
       transition: width 0.3s ease;
     }
 
     .visual-forensic-text {
-      font-size: 0.72rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-      background: rgba(3, 7, 18, 0.5);
-      border-left: 3px solid var(--cyan);
-      padding: 0.45rem 0.65rem;
-      border-radius: 0 4px 4px 0;
+      font-size: 0.74rem;
+      color: #334155;
+      line-height: 1.5;
+      background: #F8FAFD;
+      border: 1px solid #E2E8F0;
+      border-left: 3.5px solid #4F46E5;
+      padding: 0.55rem 0.75rem;
+      border-radius: 0 6px 6px 0;
+      font-weight: 500;
     }
 
     /* Action Control Bar */
@@ -3245,7 +3263,7 @@
     .progress-bar-track {
       width: 100%;
       height: 6px;
-      background: rgba(15, 23, 42, 0.9);
+      background: #F1F5F9;
       border-radius: var(--radius-pill);
       overflow: hidden;
     }
@@ -3269,14 +3287,14 @@
     /* Fusion Results Dashboard */
     .media-fusion-dashboard,
     .media-fusion-engine-card {
-      background: rgba(11, 17, 32, 0.85);
-      border: 1px solid var(--border-glass);
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
       border-radius: var(--radius-lg);
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
       margin-top: 1.25rem;
       position: relative;
       overflow: hidden;
@@ -3286,8 +3304,8 @@
       display: grid;
       grid-template-columns: 1fr 1.35fr;
       gap: 1.25rem;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-subtle);
+      background: #F8FAFD;
+      border: 1.5px solid #E2E8F0;
       border-radius: var(--radius-sm);
       padding: 1.15rem;
       align-items: center;
@@ -3341,15 +3359,16 @@
     }
 
     .modality-chip {
-      background: rgba(7, 10, 15, 0.75);
-      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
       border-radius: 6px;
-      padding: 0.4rem 0.6rem;
+      padding: 0.45rem 0.65rem;
       font-family: var(--font-mono);
       font-size: 0.68rem;
       display: flex;
       flex-direction: column;
       gap: 2px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .modality-chip .m-icon {
@@ -3397,7 +3416,7 @@
     .dist-bar-track {
       width: 100%;
       height: 6px;
-      background: rgba(15, 23, 42, 0.8);
+      background: #F1F5F9;
       border-radius: 3px;
       overflow: hidden;
     }
@@ -4141,20 +4160,22 @@
     }
 
     .install-card {
-      background: rgba(12, 13, 20, 0.75);
-      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
       border-radius: var(--radius-md);
       padding: 1.4rem;
       display: flex;
       flex-direction: column;
       gap: 0.85rem;
       position: relative;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
       transition: all 0.25s ease;
     }
 
     .install-card:hover {
-      border-color: rgba(34, 211, 238, 0.45);
-      background: rgba(16, 18, 28, 0.85);
+      border-color: #6366F1;
+      background: #FFFFFF;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
       transform: translateY(-2px);
     }
 
@@ -4272,8 +4293,8 @@
     }
 
     .install-steps-list {
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: #F8FAFD;
+      border: 1.5px solid #E2E8F0;
       border-radius: var(--radius-sm);
       padding: 0.75rem 0.85rem;
       display: flex;
@@ -4621,23 +4642,24 @@
       gap: 0.4rem;
       font-family: var(--font-mono);
       font-size: 0.74rem;
-      font-weight: 600;
+      font-weight: 700;
       padding: 0.4rem 0.85rem;
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
       border-radius: var(--radius-pill);
-      color: var(--text-secondary);
+      color: #0F172A;
       cursor: pointer;
       transition: all 0.2s ease;
       text-decoration: none;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
     }
 
     .nav-switch-btn:hover {
-      color: var(--cyan);
-      border-color: var(--cyan);
-      background: rgba(34, 211, 238, 0.1);
+      color: #4338CA;
+      border-color: #6366F1;
+      background: #EEF2FF;
     }
 
     .nav-switch-btn:active {
@@ -5080,15 +5102,16 @@
     /* ---------------- MEDIA STUDIO: VIDEO AFFECT HEATMAP & SCANNER ---------------- */
     .video-scan-progress-box {
       margin-top: 0.45rem;
-      background: rgba(11, 17, 32, 0.95);
-      border: 1px solid rgba(34, 211, 238, 0.25);
-      border-radius: 6px;
-      padding: 0.45rem 0.65rem;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     }
     .video-scan-progress-box .vsp-track {
       width: 100%;
       height: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      background: #F1F5F9;
       border-radius: 3px;
       overflow: hidden;
       margin-bottom: 0.35rem;
@@ -5096,25 +5119,26 @@
     .video-scan-progress-box .vsp-fill {
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg, var(--cyan), var(--violet));
-      box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+      background: linear-gradient(90deg, #4F46E5, #0284C7);
+      box-shadow: 0 0 10px rgba(79, 70, 229, 0.35);
       transition: width 0.15s ease;
     }
     .video-scan-progress-box .vsp-label {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--cyan);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #0F172A;
       display: flex;
       justify-content: space-between;
     }
 
     .video-affect-heatmap-container {
       margin-top: 0.55rem;
-      background: rgba(11, 17, 32, 0.92);
-      border: 1px solid rgba(34, 211, 238, 0.25);
-      border-radius: 8px;
-      padding: 0.55rem 0.75rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     }
     .heatmap-header {
       display: flex;
@@ -5127,35 +5151,36 @@
       align-items: center;
       gap: 0.45rem;
       font-family: var(--font-mono);
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--cyan);
+      font-size: 0.70rem;
+      font-weight: 800;
+      color: #0F172A;
       letter-spacing: 0.6px;
     }
     .heatmap-pulse-dot {
       width: 7px;
       height: 7px;
-      background: var(--cyan);
+      background: #4F46E5;
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--cyan);
+      box-shadow: 0 0 8px #4F46E5;
       animation: pulseGlow 1.8s infinite;
     }
     .heatmap-summary-badge {
       font-family: var(--font-mono);
-      font-size: 0.62rem;
-      color: var(--text-primary);
-      background: rgba(34, 211, 238, 0.12);
-      border: 1px solid rgba(34, 211, 238, 0.3);
-      padding: 2px 7px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #4338CA;
+      background: #EEF2FF;
+      border: 1px solid #C7D2FE;
+      padding: 2px 8px;
       border-radius: 10px;
     }
     .heatmap-canvas-wrapper {
       position: relative;
       width: 100%;
       height: 64px;
-      background: rgba(3, 7, 18, 0.85);
+      background: #F8FAFD;
       border-radius: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.15);
+      border: 1.5px solid #E2E8F0;
       overflow: hidden;
       cursor: pointer;
     }
@@ -5221,89 +5246,97 @@
     /* ---------------- VERBAL SPEECH-TO-TEXT LAYER CARD ---------------- */
     .verbal-stt-layer-card {
       margin-top: 0.55rem;
-      background: rgba(11, 17, 32, 0.85);
-      border: 1px solid rgba(167, 139, 250, 0.25);
-      border-radius: 8px;
-      padding: 0.55rem 0.75rem;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     }
     .verbal-layer-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.45rem;
     }
     .verbal-layer-head .v-title-wrap {
       display: flex;
       align-items: center;
       gap: 0.35rem;
       font-family: var(--font-mono);
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: #C4B5FD;
+      color: #0F172A;
     }
     .verbal-layer-head .v-weight-badge {
       font-family: var(--font-mono);
-      font-size: 0.58rem;
+      font-size: 0.62rem;
       font-weight: 700;
-      color: #A78BFA;
-      background: rgba(167, 139, 250, 0.15);
-      border: 1px solid rgba(167, 139, 250, 0.3);
-      padding: 1px 6px;
-      border-radius: 4px;
+      color: #4338CA;
+      background: #EEF2FF;
+      border: 1px solid #C7D2FE;
+      padding: 2px 8px;
+      border-radius: 9999px;
     }
     .verbal-input-row {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.45rem;
       align-items: center;
-      margin-top: 0.25rem;
+      margin-top: 0.35rem;
     }
     .verbal-input-field {
       flex: 1;
-      background: rgba(3, 7, 18, 0.8);
-      border: 1px solid rgba(167, 139, 250, 0.25);
-      color: var(--text-primary);
+      background: #F8FAFD;
+      border: 1.5px solid #CBD5E1;
+      color: #0F172A;
       font-family: var(--font-sans);
       font-size: 0.75rem;
-      padding: 0.35rem 0.6rem;
-      border-radius: 5px;
+      font-weight: 500;
+      padding: 0.45rem 0.7rem;
+      border-radius: 6px;
       outline: none;
       transition: all 0.2s;
     }
     .verbal-input-field:focus {
-      border-color: #A78BFA;
-      box-shadow: 0 0 10px rgba(167, 139, 250, 0.3);
+      border-color: #6366F1;
+      background: #FFFFFF;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    .verbal-input-field::placeholder {
+      color: #94A3B8;
     }
     .btn-verbal-eval {
-      background: rgba(167, 139, 250, 0.15);
-      border: 1px solid rgba(167, 139, 250, 0.35);
-      color: #C4B5FD;
+      background: #4F46E5;
+      border: none;
+      color: #FFFFFF !important;
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      padding: 0.35rem 0.65rem;
-      border-radius: 5px;
+      font-size: 0.70rem;
+      font-weight: 700;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
     }
     .btn-verbal-eval:hover {
-      background: rgba(167, 139, 250, 0.25);
-      border-color: #A78BFA;
-      color: #FFFFFF;
+      background: #4338CA;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
     }
     .verbal-sentiment-result {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.35rem;
+      margin-top: 0.4rem;
       font-family: var(--font-mono);
-      font-size: 0.62rem;
+      font-size: 0.65rem;
     }
     .v-stat-tag {
-      color: var(--text-muted);
+      color: #475569;
+      font-weight: 600;
     }
     .v-tone-tag {
-      color: #A78BFA;
-      font-weight: 600;
+      color: #4338CA;
+      font-weight: 700;
     }
     .cyan-glow-sm {
       background: rgba(34, 211, 238, 0.15) !important;
@@ -6432,7 +6465,7 @@
       </div>
 
       <!-- Multimodal Probability Spectrum (All 5 classes) -->
-      <div style="background: rgba(10, 14, 26, 0.65); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.8rem;">
+      <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: var(--radius-sm); padding: 0.8rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: center;">
           <span style="font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.6px;">MULTIMODAL PROBABILITY SPECTRUM</span>
           <span style="font-family: var(--font-mono); font-size: 0.66rem; color: var(--cyan);">CALIBRATED 5-CLASS FUSION</span>
@@ -7124,14 +7157,14 @@
       <div class="report-phase-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;" id="mediaModalChannelsGrid">
         
         <!-- Left: Facial Expression Analysis (70% Weight) -->
-        <div class="report-phase-card" style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); border-left: 3px solid var(--cyan); border-radius: var(--radius-sm); padding: 0.9rem;">
+        <div class="report-phase-card" style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-left: 3.5px solid var(--cyan); border-radius: var(--radius-sm); padding: 0.9rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
             <div style="font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; color: var(--cyan);">
               👁️ Facial Expression (70% Weight)
             </div>
             <span style="font-size: 0.64rem; font-family: var(--font-mono); color: var(--cyan); background: rgba(6,182,212,0.14); padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 700;">VISUAL</span>
           </div>
-          <div id="mediaModalFaceEmotion" style="font-size: 1.2rem; font-weight: 800; color: #FFFFFF; margin: 0.3rem 0;">
+          <div id="mediaModalFaceEmotion" style="font-size: 1.2rem; font-weight: 800; color: #0F172A; margin: 0.3rem 0;">
             😊 Happy (99%)
           </div>
           <div id="mediaModalFaceSub" style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.45rem;">
@@ -7146,14 +7179,14 @@
         </div>
 
         <!-- Right: Voice Prosody Analysis (30% Weight) -->
-        <div class="report-phase-card" style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); border-left: 3px solid var(--violet); border-radius: var(--radius-sm); padding: 0.9rem;">
+        <div class="report-phase-card" style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-left: 3.5px solid var(--violet); border-radius: var(--radius-sm); padding: 0.9rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
             <div style="font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; color: #A78BFA;">
               🎙️ Voice Prosody (30% Weight)
             </div>
             <span style="font-size: 0.64rem; font-family: var(--font-mono); color: #A78BFA; background: rgba(139,92,246,0.14); padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 700;">ACOUSTIC</span>
           </div>
-          <div id="mediaModalVoiceEmotion" style="font-size: 1.2rem; font-weight: 800; color: #FFFFFF; margin: 0.3rem 0;">
+          <div id="mediaModalVoiceEmotion" style="font-size: 1.2rem; font-weight: 800; color: #0F172A; margin: 0.3rem 0;">
             ✨ Surprise (91%)
           </div>
           <div id="mediaModalVoiceSub" style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.45rem;">
@@ -7170,7 +7203,7 @@
       </div>
 
       <!-- Other Details: Multimodal Decision Probability Spectrum -->
-      <div style="background: rgba(10, 14, 26, 0.75); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.9rem;">
+      <div style="background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: var(--radius-sm); padding: 0.9rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
         <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem; align-items: center;">
           <span style="font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.8px; font-weight: 700;">
             MULTIMODAL DECISION PROBABILITY SPECTRUM (ALL 5 EMOTIONS)
@@ -7195,12 +7228,12 @@
       </div>
 
       <!-- Other Details: Forensic Metric Quick-Table -->
-      <div style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem;">
+      <div style="background: #F8FAFD; border: 1.5px solid #E2E8F0; border-radius: var(--radius-sm); padding: 0.75rem;">
         <div style="font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.6px;">
           BIOMETRIC & ACOUSTIC TELEMETRY MATRIX:
         </div>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; font-family: var(--font-mono); font-size: 0.68rem;">
-          <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
+          <div style="background: #FFFFFF; padding: 0.35rem 0.5rem; border-radius: 6px; border: 1.5px solid #E2E8F0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);">
             <span style="color: var(--text-muted);">Pitch F₀:</span> <b id="tblPitch" style="color: var(--cyan);">268 Hz</b>
           </div>
           <div style="background: rgba(255,255,255,0.03); padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle);">
@@ -11442,7 +11475,7 @@
 
       if (repHeroBox) {
         repHeroBox.style.borderColor = `${color}45`;
-        repHeroBox.style.background = `linear-gradient(135deg, rgba(17, 24, 39, 0.85) 0%, ${color}14 100%)`;
+        repHeroBox.style.background = `linear-gradient(135deg, #FFFFFF 0%, ${color}18 100%)`;
         repHeroBox.style.boxShadow = `0 4px 25px ${color}20`;
       }
 
