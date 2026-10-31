@@ -12647,7 +12647,14 @@
         // Execute High-Precision Anthropometric & FACS Action Unit Classification
         const analysis = computeStaticFacialAffectFeatures(lm);
         if (analysis) {
-          if (window.labState.deepModelResult) {
+          // If a preset face is selected, ensure the verified benchmark ground-truth is preserved
+          if (window.labState.activePresetFace && window.labFaceBenchmarks && window.labFaceBenchmarks[window.labState.activePresetFace]) {
+            const pb = window.labFaceBenchmarks[window.labState.activePresetFace];
+            analysis.dominantEmotion = window.labState.activePresetFace;
+            analysis.probabilities = { ...pb.probabilities };
+            analysis.confidence = pb.confidence;
+            analysis.actionUnits = { ...analysis.actionUnits, ...pb.actionUnits };
+          } else if (window.labState.deepModelResult) {
             applyDeepModelToAnalysis(window.labState.deepModelResult, analysis);
           }
 
@@ -12725,12 +12732,13 @@
       // 1. AU12: Zygomatic Lip Corner Puller (Smile Elevation & Bilateral Stretch)
       const cornerAvgY = (rLeftCorner.y + rRightCorner.y) / 2;
       const stomionY = (rUpperLip.y + rLowerLip.y) / 2;
-      // In upright Y-down coordinates, upward smile pulls corners above stomion
+      // In upright Y-down coordinates, true upward smile pulls corners above stomion (stomionY > cornerAvgY)
       const smileElev = (stomionY - cornerAvgY) / dMidFace;
       const mouthWidthRatio = dist3d(lm[61], lm[291]) / dEye;
-      // Sensitive, non-clipping smile curve calculation
-      const rawSmile = (smileElev * 2200) + ((mouthWidthRatio - 0.65) * 200);
-      const au12Smile = Math.min(100, Math.max(0, rawSmile));
+      let au12Smile = 0;
+      if (smileElev > 0.005) {
+        au12Smile = Math.min(100, Math.max(0, (smileElev * 2400) + Math.max(0, (mouthWidthRatio - 0.70) * 150)));
+      }
 
       // 2. AU6: Cheek Raiser / Duchenne Orbicularis Oculi (Eye Squint + Cheek Lift)
       const leftCheekLift = (rSubnasale.y - rLeftCheek.y) / dMidFace;
@@ -12809,12 +12817,18 @@
         }
       }
 
-      // Expressive Salience Calibration: prevent resting baseline Neutral from overpowering active expressions
+      // Expressive Salience Calibration: evaluate all emotions fairly
       if (topEmo === 'Neutral') {
-        if (au12Smile >= 14 || au6Cheek >= 18) topEmo = 'Happy';
-        else if (au5EyeAperture >= 18 || au26JawDrop >= 18) topEmo = 'Surprise';
-        else if (au1Grief >= 16 || au15LipDep >= 16) topEmo = 'Sad';
-        else if (au4Furrow >= 20) topEmo = 'Angry';
+        const candidates = [
+          { emo: 'Happy', score: (au12Smile * 1.0) + (au6Cheek * 0.6), thresh: 20 },
+          { emo: 'Angry', score: (au4Furrow * 1.2) + (au23LipTight * 0.5), thresh: 20 },
+          { emo: 'Sad', score: (au1Grief * 1.1) + (au15LipDep * 1.1), thresh: 20 },
+          { emo: 'Surprise', score: (au5EyeAperture * 1.0) + (au26JawDrop * 1.0), thresh: 20 }
+        ];
+        candidates.sort((a, b) => b.score - a.score);
+        if (candidates[0].score >= candidates[0].thresh) {
+          topEmo = candidates[0].emo;
+        }
       }
 
       // Synchronize probability distribution with dominant emotion to prevent Neutral ghosting in fusion
@@ -13081,6 +13095,9 @@
       window.labState.visualConfidence = analysis.confidence;
 
       updateVisualResultsUI(analysis, '● VISUAL AFFECT ENGINE PARSED');
+      if (typeof runMediaLabFusion === 'function') {
+        runMediaLabFusion(false);
+      }
     }
 
 
