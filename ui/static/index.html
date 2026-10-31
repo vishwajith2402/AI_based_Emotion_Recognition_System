@@ -9917,14 +9917,17 @@
     });
 
     async function initMicAudio() {
-      if (voiceAnalyzer && voiceAnalyzer.isRunning && !voiceAnalyzer.isSimulating) {
-        return;
-      }
-      try {
-        await voiceAnalyzer.start();
-        console.log('[VoiceAnalyzer] Connected to user microphone');
-      } catch (err) {
-        console.warn('[VoiceAnalyzer] Microphone initialization notice:', err);
+      if (typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer) {
+        voiceAnalyzer.isExplicitlyStopped = false;
+        if (voiceAnalyzer.isRunning && !voiceAnalyzer.isSimulating) {
+          return;
+        }
+        try {
+          await voiceAnalyzer.start();
+          console.log('[VoiceAnalyzer] Connected to user microphone');
+        } catch (err) {
+          console.warn('[VoiceAnalyzer] Microphone initialization notice:', err);
+        }
       }
     }
 
@@ -9935,6 +9938,27 @@
 
       if (timestamp - lastWaveTime >= waveInterval) {
         lastWaveTime = timestamp;
+
+        // If explicitly stopped after analysis, do not simulate or run!
+        if (typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer && voiceAnalyzer.isExplicitlyStopped) {
+          const ctx = waveCanvas ? waveCanvas.getContext('2d') : null;
+          if (ctx && waveCanvas) {
+            ctx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, waveCanvas.height / 2);
+            ctx.lineTo(waveCanvas.width, waveCanvas.height / 2);
+            ctx.stroke();
+          }
+          const elHudPitch = document.getElementById('hudPitch');
+          const elHudLoudness = document.getElementById('hudLoudness');
+          const elHudEnergy = document.getElementById('hudEnergy');
+          if (elHudPitch) elHudPitch.innerText = '0 Hz';
+          if (elHudLoudness) elHudLoudness.innerText = '-80 dB';
+          if (elHudEnergy) elHudEnergy.innerText = '0.00';
+          return;
+        }
 
         // Auto-run smooth simulation until active microphone input starts
         if (!voiceAnalyzer.isRunning) {
@@ -10280,6 +10304,7 @@
       if (modal) {
         modal.classList.add('active');
         modal.style.display = 'flex';
+        modal.style.zIndex = '2000000';
         modal.scrollTop = 0;
         document.body.style.overflow = 'hidden';
       }
@@ -10385,7 +10410,15 @@
       if (overlay) overlay.style.display = 'none';
 
       if (!state.isCameraRunning) {
-        document.getElementById('btnToggleCam').click();
+        try {
+          const btn = document.getElementById('btnToggleCam');
+          if (btn) btn.click();
+          let waited = 0;
+          while (!state.isCameraRunning && waited < 1200) {
+            await new Promise(r => setTimeout(r, 100));
+            waited += 100;
+          }
+        } catch (e) {}
       }
 
       await initMicAudio();
@@ -10651,11 +10684,14 @@
 
     function stopCameraStream() {
       const vid = document.getElementById('webcamVideo');
-      if (vid && vid.srcObject) {
-        try {
-          vid.srcObject.getTracks().forEach(t => t.stop());
-        } catch (e) {}
-        vid.srcObject = null;
+      if (vid) {
+        try { vid.pause(); } catch (e) {}
+        if (vid.srcObject) {
+          try {
+            vid.srcObject.getTracks().forEach(t => t.stop());
+          } catch (e) {}
+          vid.srcObject = null;
+        }
       }
       state.isCameraRunning = false;
       const btn = document.getElementById('btnToggleCam');
@@ -10667,7 +10703,10 @@
         faceCtx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
       }
       const tip = document.getElementById('camTipText');
-      if (tip) tip.style.display = 'block';
+      if (tip) {
+        tip.style.display = 'block';
+        tip.innerHTML = '<span>📷</span> Camera Off &mdash; Click Start Camera to reactivate';
+      }
       const hud = document.getElementById('camHudOverlay');
       if (hud) hud.style.display = 'none';
       const hudTop = document.getElementById('camHudTopTelemetry');
@@ -10685,10 +10724,12 @@
 
     function stopMicAudioStream() {
       if (typeof voiceAnalyzer !== 'undefined' && voiceAnalyzer) {
+        voiceAnalyzer.isExplicitlyStopped = true;
+        voiceAnalyzer.isSimulating = false;
+        voiceAnalyzer.isRunning = false;
         try {
           voiceAnalyzer.stop();
         } catch (e) {}
-        voiceAnalyzer.isRunning = false;
       }
       if (typeof speechRecognizer !== 'undefined' && speechRecognizer) {
         try {
@@ -10698,6 +10739,27 @@
       const elLivePrev = document.getElementById('liveTranscriptPreview');
       const elLiveStat = document.getElementById('liveTranscriptStatus');
       if (elLiveStat) elLiveStat.innerText = 'Off';
+      if (elLivePrev) elLivePrev.innerText = '"Microphone Off — Assessment Concluded"';
+
+      const c = document.getElementById('waveformCanvas');
+      if (c) {
+        const ctx = c.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(0, c.height / 2);
+          ctx.lineTo(c.width, c.height / 2);
+          ctx.stroke();
+        }
+      }
+      const elHudPitch = document.getElementById('hudPitch');
+      const elHudLoudness = document.getElementById('hudLoudness');
+      const elHudEnergy = document.getElementById('hudEnergy');
+      if (elHudPitch) elHudPitch.innerText = '0 Hz';
+      if (elHudLoudness) elHudLoudness.innerText = '-80 dB';
+      if (elHudEnergy) elHudEnergy.innerText = '0.00';
     }
 
     function stopAnalyticsSession() {

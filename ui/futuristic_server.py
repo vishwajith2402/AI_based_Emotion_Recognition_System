@@ -49,6 +49,11 @@ app.add_middleware(
 predictor = EmotionPredictor()
 recorder = AudioRecorder()
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+# Prefer live static directory from current workspace if present
+for cand in [Path.cwd() / "ui" / "static", Path.cwd().parent / "ui" / "static", PROJECT_ROOT / "ui" / "static"]:
+    if (cand / "index.html").exists():
+        STATIC_DIR = cand
+        break
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 
 
