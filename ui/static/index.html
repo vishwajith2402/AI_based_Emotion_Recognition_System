@@ -8,7 +8,7 @@
   <link rel="shortcut icon" href="./assets/favicon.ico">
   <link rel="apple-touch-icon" href="./assets/app_icon.png">
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#F8FAFD">
+  <meta name="theme-color" content="#D2D3DB">
   
   <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,12 +35,12 @@
        Harmonized with Celestial Aqua, Iris Violet, and Sandstone
        ======================================================== */
     :root {
-      /* 🌟 1. Background Hierarchy — Radiant Light Porcelain Canvas & Frosted Glass Surfaces */
-      --bg-primary: #F8FAFD;        /* Radiant Light Porcelain Canvas (#F8FAFD) */
-      --bg-secondary: #EDF2F7;      /* Clean Cool Slate Underlay (#EDF2F7) */
-      --bg-card: rgba(255, 255, 255, 0.92); /* Signature Frosted Pure White Glass */
-      --bg-card-solid: #FFFFFF;     /* Solid Crisp Pure White Surface (#FFFFFF) */
-      --bg-elevated: #FFFFFF;       /* Elevated Radiant White Surface (#FFFFFF) */
+      /* 🌟 1. Background Hierarchy — Cool Slate Gray Canvas (#D2D3DB) & Crisp Pure White Surfaces */
+      --bg-primary: #D2D3DB;        /* Exact Cool Slate Gray Canvas (#D2D3DB) */
+      --bg-secondary: #C5C7D0;      /* Underlay Slate Tone (#C5C7D0) */
+      --bg-card: #FFFFFF;           /* Crisp Solid Pure White (#FFFFFF) */
+      --bg-card-solid: #FFFFFF;     /* Crisp Solid Pure White (#FFFFFF) */
+      --bg-elevated: #FFFFFF;       /* Crisp Solid Pure White (#FFFFFF) */
       --bg-surface-hover: #EEF2FF;  /* Luminous Interactive Soft Indigo Tint (#EEF2FF) */
       --bg-input: #F1F5F9;          /* Recessed Clean Contrast Well (#F1F5F9) */
       
@@ -116,13 +116,13 @@
 
     body {
       font-family: var(--font-main);
-      background-color: #EDF2F7;
+      background-color: #D2D3DB;
       background-image: 
-        radial-gradient(ellipse 85% 55% at 50% -10%, rgba(99, 102, 241, 0.35), transparent 70%),
-        radial-gradient(ellipse 65% 50% at 95% 85%, rgba(14, 165, 233, 0.32), transparent 65%),
-        radial-gradient(ellipse 70% 55% at 5% 75%, rgba(236, 72, 153, 0.28), transparent 70%),
-        radial-gradient(ellipse 55% 45% at 85% 15%, rgba(16, 185, 129, 0.26), transparent 60%),
-        radial-gradient(ellipse 60% 45% at 15% 20%, rgba(245, 158, 11, 0.20), transparent 65%);
+        radial-gradient(ellipse 90% 60% at 50% -10%, rgba(99, 102, 241, 0.09), transparent 70%),
+        radial-gradient(ellipse 70% 50% at 95% 85%, rgba(14, 165, 233, 0.07), transparent 65%),
+        radial-gradient(ellipse 70% 55% at 5% 75%, rgba(139, 92, 246, 0.07), transparent 70%),
+        radial-gradient(ellipse 55% 45% at 85% 15%, rgba(16, 185, 129, 0.05), transparent 60%),
+        radial-gradient(ellipse 60% 45% at 15% 20%, rgba(245, 158, 11, 0.05), transparent 65%);
       background-attachment: fixed;
       color: var(--text-primary);
       min-height: 100vh;
@@ -146,7 +146,7 @@
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(240, 249, 255, 0.96) 50%, rgba(245, 243, 255, 0.96) 100%);
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-bottom: 2.5px solid transparent;
@@ -453,24 +453,24 @@
     }
 
     .cam-view-col .glass-card {
-      background: linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 40%, #F8FAFD 100%);
+      background: #FFFFFF !important;
       border: 1.5px solid #BAE6FD;
       border-top: 4.5px solid #0284C7;
-      box-shadow: 0 22px 50px -10px rgba(2, 132, 199, 0.26), 0 8px 22px -4px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 20px 48px -10px rgba(2, 132, 199, 0.24), 0 8px 20px -4px rgba(15, 23, 42, 0.10);
     }
 
     .stacked-right-col .glass-card:first-child {
-      background: linear-gradient(180deg, #F5F3FF 0%, #FFFFFF 40%, #F8FAFD 100%);
+      background: #FFFFFF !important;
       border: 1.5px solid #DDD6FE;
       border-top: 4.5px solid #8B5CF6;
-      box-shadow: 0 22px 50px -10px rgba(139, 92, 246, 0.26), 0 8px 22px -4px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 20px 48px -10px rgba(139, 92, 246, 0.24), 0 8px 20px -4px rgba(15, 23, 42, 0.10);
     }
 
     .stacked-right-col .glass-card.live-affect-hub {
-      background: linear-gradient(180deg, #EEF2FF 0%, #FFFFFF 40%, #F8FAFD 100%);
+      background: #FFFFFF !important;
       border: 1.5px solid #C7D2FE;
       border-top: 4.5px solid #4F46E5;
-      box-shadow: 0 22px 50px -10px rgba(79, 70, 229, 0.28), 0 8px 22px -4px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 20px 48px -10px rgba(79, 70, 229, 0.26), 0 8px 20px -4px rgba(15, 23, 42, 0.10);
     }
 
     .cam-view-col .camera-viewport {
@@ -504,7 +504,7 @@
 
     /* 🪟 10. Glass Card Styling — Modern High-Contrast Obsidian */
     .glass-card {
-      background: var(--bg-card);
+      background: #FFFFFF !important;
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border-subtle);
@@ -514,7 +514,7 @@
       display: flex;
       flex-direction: column;
       transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), var(--shadow-subtle);
+      box-shadow: 0 14px 38px -6px rgba(15, 23, 42, 0.12), 0 4px 14px rgba(15, 23, 42, 0.06);
     }
 
     .glass-card:hover {
@@ -2047,8 +2047,8 @@
       border: 2px solid #6366F1;
       border-top: 5px solid #6366F1;
       border-radius: var(--radius-lg);
-      background: linear-gradient(180deg, #FFFFFF 0%, #F5F3FF 40%, #EEF2FF 100%);
-      box-shadow: 0 14px 40px -10px rgba(99, 102, 241, 0.20), 0 4px 12px rgba(15, 23, 42, 0.05);
+      background: #FFFFFF !important;
+      box-shadow: 0 16px 42px -10px rgba(99, 102, 241, 0.22), 0 6px 16px rgba(15, 23, 42, 0.08);
     }
 
     .about-highlights-row > :nth-child(1) {
@@ -3011,14 +3011,14 @@
     }
 
     .media-input-card.visual-card {
-      background: linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 40%, #F8FAFD 100%);
+      background: #FFFFFF !important;
       border: 1.5px solid #BAE6FD;
       border-top: 4.5px solid #0284C7;
       box-shadow: 0 20px 48px -10px rgba(2, 132, 199, 0.25), 0 8px 20px -4px rgba(15, 23, 42, 0.08);
     }
 
     .media-input-card.vocal-card {
-      background: linear-gradient(180deg, #F5F3FF 0%, #FFFFFF 40%, #F8FAFD 100%);
+      background: #FFFFFF !important;
       border: 1.5px solid #DDD6FE;
       border-top: 4.5px solid #8B5CF6;
       box-shadow: 0 20px 48px -10px rgba(139, 92, 246, 0.25), 0 8px 20px -4px rgba(15, 23, 42, 0.08);
@@ -3873,7 +3873,7 @@
     /* Fusion Results Dashboard */
     .media-fusion-dashboard,
     .media-fusion-engine-card {
-      background: linear-gradient(180deg, #FFFFFF 0%, #F0FDF4 40%, #EFF6FF 100%);
+      background: #FFFFFF !important;
       border: 2px solid #6366F1;
       border-top: 5px solid #6366F1;
       border-radius: var(--radius-lg);
@@ -3881,7 +3881,7 @@
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
-      box-shadow: 0 16px 40px -10px rgba(99, 102, 241, 0.22), 0 4px 16px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 18px 44px -10px rgba(99, 102, 241, 0.22), 0 6px 18px rgba(15, 23, 42, 0.08);
       margin-top: 1.25rem;
       position: relative;
       overflow: hidden;
@@ -4144,7 +4144,7 @@
       font-size: 0.7rem;
       font-weight: 600;
       color: #4338CA;
-      background: linear-gradient(90deg, #F0F9FF 0%, #EEF2FF 50%, #FAF5FF 100%);
+      background: rgba(255, 255, 255, 0.96);
       box-shadow: 0 -2px 10px rgba(99, 102, 241, 0.05);
     }
 
@@ -4510,7 +4510,7 @@
     #viewIntro {
       position: relative;
       overflow: hidden;
-      background: var(--bg-primary);
+      background: #D2D3DB !important;
       /* Futuristic Neon Cyan Precision Cursor */
       cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2 2L9.5 21.5L13 14L20.5 10.5L2 2Z' fill='%2300F2FE' stroke='%23020617' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M5 5L10 17.5L12.5 12.5L17.5 10L5 5Z' fill='%23FFFFFF' fill-opacity='0.45'/%3E%3Ccircle cx='3' cy='3' r='1.5' fill='%23FFFFFF'/%3E%3C/svg%3E") 2 2, auto;
     }
@@ -5018,7 +5018,7 @@
 
     /* ---------------- VIEW 2: MODE SELECTION HUB ---------------- */
     #viewModeSelect {
-      background-color: #F8FAFD !important;
+      background-color: #D2D3DB !important;
       transition: background-color 0.45s ease;
     }
 
@@ -5030,25 +5030,25 @@
       align-items: center;
       padding: calc(var(--titlebar-h, 38px) + 2.4rem) 1.5rem 3.5rem;
       box-sizing: border-box;
-      background-color: #F8FAFD;
-      background: radial-gradient(circle at 50% 35%, rgba(99, 102, 241, 0.10) 0%, rgba(2, 132, 199, 0.08) 50%, #EDF2F7 85%);
+      background-color: #D2D3DB !important;
+      background: radial-gradient(circle at 50% 35%, rgba(99, 102, 241, 0.09) 0%, rgba(2, 132, 199, 0.07) 50%, #D2D3DB 85%) !important;
       transition: background 0.45s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.45s ease, box-shadow 0.45s ease;
       position: relative;
     }
 
-    /* Dynamic Radiant Mode Illuminations on Clean Light Canvas */
+    /* Dynamic Radiant Mode Illuminations on Clean Gray Canvas */
     .mode-select-wrapper:has(#btnSelectLiveMode:hover),
     .mode-select-wrapper.hover-live-purple {
-      background-color: #F8FAFD !important;
-      background: radial-gradient(circle at 35% 50%, rgba(147, 51, 234, 0.18) 0%, rgba(99, 102, 241, 0.10) 35%, #F8FAFD 75%) !important;
+      background-color: #D2D3DB !important;
+      background: radial-gradient(circle at 35% 50%, rgba(147, 51, 234, 0.16) 0%, rgba(99, 102, 241, 0.08) 35%, #D2D3DB 75%) !important;
       box-shadow: none !important;
     }
 
     .mode-select-wrapper:has(#btnSelectMediaMode:hover),
     .mode-select-wrapper.hover-media-green,
     .mode-select-wrapper.hover-media-lemongreen {
-      background-color: #F8FAFD !important;
-      background: radial-gradient(circle at 65% 50%, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.10) 35%, #F8FAFD 75%) !important;
+      background-color: #D2D3DB !important;
+      background: radial-gradient(circle at 65% 50%, rgba(16, 185, 129, 0.16) 0%, rgba(5, 150, 105, 0.08) 35%, #D2D3DB 75%) !important;
       box-shadow: none !important;
     }
 
@@ -5115,7 +5115,7 @@
     /* 💠 Unified Resting Architecture: Live Cam & Media Uploads Cards */
     .mode-card.visual-mode,
     #btnSelectLiveMode {
-      background: linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 100%) !important;
+      background: #FFFFFF !important;
       border: 2px solid #BAE6FD !important;
       border-top: 4.5px solid #0284C7 !important;
       box-shadow: 0 22px 50px -10px rgba(2, 132, 199, 0.28), 0 8px 24px -4px rgba(15, 23, 42, 0.10) !important;
@@ -5127,7 +5127,7 @@
     }
     .mode-card.vocal-mode,
     #btnSelectMediaMode {
-      background: linear-gradient(180deg, #FFFFFF 0%, #F5F3FF 100%) !important;
+      background: #FFFFFF !important;
       border: 2px solid #DDD6FE !important;
       border-top: 4.5px solid #8B5CF6 !important;
       box-shadow: 0 22px 50px -10px rgba(139, 92, 246, 0.28), 0 8px 24px -4px rgba(15, 23, 42, 0.10) !important;
@@ -7087,7 +7087,7 @@
         <div style="display: flex; align-items: center; gap: 0.65rem;">
           <span style="font-size: 1.35rem;">📊</span>
           <div>
-            <h2 style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">
+            <h2 style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #0F172A;">
               Overall Multimodal Model Result
             </h2>
             <p style="font-size: 0.72rem; color: var(--cyan); margin: 0; font-family: var(--font-mono); letter-spacing: 0.5px;">
@@ -7308,7 +7308,7 @@
     <div class="media-studio-page-container">
       
       <!-- Studio Header Card -->
-      <div class="media-lab-header" style="background: linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 50%, #FAF5FF 100%); border: 2px solid #BAE6FD; border-top: 4.5px solid #0284C7; border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.12); backdrop-filter: blur(20px);">
+      <div class="media-lab-header" style="background: #FFFFFF !important; border: 2px solid #BAE6FD; border-top: 4.5px solid #0284C7; border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 16px 38px -8px rgba(2, 132, 199, 0.20), 0 4px 14px rgba(15, 23, 42, 0.08);">
         <div class="media-lab-title-group">
           <div class="media-lab-badge">
             <span class="pulse-dot-cyan"></span> OFFLINE MULTIMODAL MEDIA STUDIO
@@ -7694,7 +7694,7 @@
           <div class="card-title-group">
             <div style="display: flex; align-items: center; gap: 0.55rem;">
               <span style="font-size: 1.3rem; color: var(--cyan);">⚡</span>
-              <h2 style="font-size: 1.12rem; font-weight: 800; letter-spacing: 0.8px; margin: 0; color: #FFFFFF;">
+              <h2 style="font-size: 1.12rem; font-weight: 800; letter-spacing: 0.8px; margin: 0; color: #0F172A;">
                 MULTIMODAL FUSION RESULT ENGINE
               </h2>
             </div>
@@ -7812,7 +7812,7 @@
         <div style="display: flex; align-items: center; gap: 0.75rem;">
           <span style="font-size: 1.5rem;">⚡</span>
           <div>
-            <h2 style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #FFFFFF;">
+            <h2 style="font-size: 1.15rem; font-weight: 800; letter-spacing: 0.6px; margin: 0; color: #0F172A;">
               Overall Multimodal Model Result
             </h2>
             <p style="font-size: 0.72rem; color: var(--cyan); margin: 0; font-family: var(--font-mono); letter-spacing: 0.5px;">
