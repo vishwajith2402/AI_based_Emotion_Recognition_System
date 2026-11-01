@@ -2373,45 +2373,52 @@
       transition: all 0.3s ease;
     }
 
-    /* ✨ Luminous Signature Effect on Team Names with Interactive Colored Background Glow */
+    /* ✨ Luminous Signature Effect on Team Names with Permanent & Interactive Background Neon Glow */
     .team-name {
-      font-size: 1.1rem;
+      font-size: 1.08rem;
       font-weight: 800;
       letter-spacing: 0.5px;
       line-height: 1.25;
       margin-bottom: 0.35rem;
-      padding: 0.28rem 0.95rem;
+      padding: 0.3rem 1.05rem;
       border-radius: 999px;
-      color: #0F172A !important;
-      background: transparent;
-      border: 1.5px solid transparent;
-      -webkit-text-fill-color: #0F172A !important;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       user-select: none;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* Precision Telemetry Dot on Team Member Name */
     .team-name::after {
       content: '';
-      width: 6px;
-      height: 6px;
+      width: 6.5px;
+      height: 6.5px;
       border-radius: 50%;
       margin-left: 0.45rem;
       display: inline-block;
       vertical-align: middle;
       background: #00F2FE;
       box-shadow: 0 0 6px rgba(0, 242, 254, 0.6);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* ========================================================
-       🟢 1. Vishwajith &rarr; Emerald Mint / Neon Green Glow
+       🟢 1. Vishwajith &rarr; Neon Emerald Mint Background Glow
        ======================================================== */
+    .team-member-card.member-vishwajith .team-name,
+    .team-grid > :nth-child(1) .team-name,
+    .intro-team-grid > :nth-child(1) .team-name {
+      background: rgba(34, 197, 94, 0.15) !important;
+      border: 1.5px solid rgba(34, 197, 94, 0.55) !important;
+      color: #047857 !important;
+      -webkit-text-fill-color: #047857 !important;
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.35), 0 0 6px rgba(16, 185, 129, 0.25), inset 0 0 10px rgba(34, 197, 94, 0.15) !important;
+      animation: neonPulseGreen 3s infinite alternate ease-in-out;
+    }
+
     .team-grid > :nth-child(1) .team-name::after,
     .intro-team-grid > :nth-child(1) .team-name::after,
     .member-vishwajith .team-name::after {
@@ -2461,35 +2468,21 @@
       box-shadow: 0 0 24px rgba(34, 197, 94, 0.6);
     }
 
-    /* Ambient illumination when card is active */
+    /* 🟢 INTENSE NEON BEAM HOVER ON VISHWAJITH'S NAME */
     .team-member-card.member-vishwajith:hover .team-name,
-    .team-member-card.member-vishwajith:focus .team-name,
-    .team-member-card.member-vishwajith.active-tap .team-name,
-    .team-grid > :nth-child(1):hover .team-name,
-    .team-grid > :nth-child(1):focus .team-name,
-    .team-grid > :nth-child(1).active-tap .team-name,
-    .intro-team-grid > :nth-child(1):hover .team-name,
-    .intro-team-grid > :nth-child(1):focus .team-name,
-    .intro-team-grid > :nth-child(1).active-tap .team-name {
-      background: rgba(16, 185, 129, 0.12) !important;
-      border-color: rgba(34, 197, 94, 0.40) !important;
-      color: #047857 !important;
-      -webkit-text-fill-color: #047857 !important;
-      box-shadow: 0 0 16px rgba(34, 197, 94, 0.35) !important;
-      transform: scale(1.03);
-    }
-
-    /* 🟢 DIRECT POINTER HOVER ON VISHWAJITH'S NAME — RADIANT EMERALD BACKGROUND GLOW */
     .team-member-card.member-vishwajith .team-name:hover,
+    .team-grid > :nth-child(1):hover .team-name,
     .team-grid > :nth-child(1) .team-name:hover,
+    .intro-team-grid > :nth-child(1):hover .team-name,
     .intro-team-grid > :nth-child(1) .team-name:hover {
-      background: radial-gradient(ellipse at center, rgba(34, 197, 94, 0.30) 0%, rgba(16, 185, 129, 0.18) 65%, rgba(16, 185, 129, 0.08) 100%) !important;
-      border-color: rgba(34, 197, 94, 0.75) !important;
+      background: radial-gradient(ellipse at center, rgba(34, 197, 94, 0.32) 0%, rgba(16, 185, 129, 0.20) 70%, rgba(16, 185, 129, 0.10) 100%) !important;
+      border-color: #22C55E !important;
       color: #047857 !important;
       -webkit-text-fill-color: #047857 !important;
-      box-shadow: 0 0 26px rgba(34, 197, 94, 0.65), 0 0 12px rgba(16, 185, 129, 0.50), inset 0 0 14px rgba(34, 197, 94, 0.25) !important;
+      box-shadow: 0 0 28px rgba(34, 197, 94, 0.75), 0 0 12px rgba(16, 185, 129, 0.60), inset 0 0 14px rgba(34, 197, 94, 0.28) !important;
       text-shadow: 0 0 12px rgba(34, 197, 94, 0.50);
       transform: scale(1.08);
+      animation: none !important;
     }
     .team-member-card.member-vishwajith .team-name:hover::after,
     .team-grid > :nth-child(1) .team-name:hover::after,
@@ -2499,8 +2492,19 @@
     }
 
     /* ========================================================
-       🟡 2. Wilson &rarr; Radiant Neon Gold / Amber Glow
+       🟡 2. Wilson &rarr; Neon Solar Gold / Amber Background Glow
        ======================================================== */
+    .team-member-card.member-wilson .team-name,
+    .team-grid > :nth-child(2) .team-name,
+    .intro-team-grid > :nth-child(2) .team-name {
+      background: rgba(245, 158, 11, 0.15) !important;
+      border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
+      color: #B45309 !important;
+      -webkit-text-fill-color: #B45309 !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.35), 0 0 6px rgba(217, 119, 6, 0.25), inset 0 0 10px rgba(245, 158, 11, 0.15) !important;
+      animation: neonPulseGold 3s infinite alternate ease-in-out;
+    }
+
     .team-grid > :nth-child(2) .team-name::after,
     .intro-team-grid > :nth-child(2) .team-name::after,
     .member-wilson .team-name::after {
@@ -2550,35 +2554,21 @@
       box-shadow: 0 0 24px rgba(245, 158, 11, 0.6);
     }
 
-    /* Ambient illumination when card is active */
+    /* 🟡 INTENSE NEON BEAM HOVER ON WILSON'S NAME */
     .team-member-card.member-wilson:hover .team-name,
-    .team-member-card.member-wilson:focus .team-name,
-    .team-member-card.member-wilson.active-tap .team-name,
-    .team-grid > :nth-child(2):hover .team-name,
-    .team-grid > :nth-child(2):focus .team-name,
-    .team-grid > :nth-child(2).active-tap .team-name,
-    .intro-team-grid > :nth-child(2):hover .team-name,
-    .intro-team-grid > :nth-child(2):focus .team-name,
-    .intro-team-grid > :nth-child(2).active-tap .team-name {
-      background: rgba(245, 158, 11, 0.12) !important;
-      border-color: rgba(245, 158, 11, 0.40) !important;
-      color: #B45309 !important;
-      -webkit-text-fill-color: #B45309 !important;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.35) !important;
-      transform: scale(1.03);
-    }
-
-    /* 🟡 DIRECT POINTER HOVER ON WILSON'S NAME — RADIANT SOLAR GOLD BACKGROUND GLOW */
     .team-member-card.member-wilson .team-name:hover,
+    .team-grid > :nth-child(2):hover .team-name,
     .team-grid > :nth-child(2) .team-name:hover,
+    .intro-team-grid > :nth-child(2):hover .team-name,
     .intro-team-grid > :nth-child(2) .team-name:hover {
-      background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.30) 0%, rgba(217, 119, 6, 0.18) 65%, rgba(245, 158, 11, 0.08) 100%) !important;
-      border-color: rgba(245, 158, 11, 0.75) !important;
+      background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.32) 0%, rgba(217, 119, 6, 0.20) 70%, rgba(245, 158, 11, 0.10) 100%) !important;
+      border-color: #F59E0B !important;
       color: #B45309 !important;
       -webkit-text-fill-color: #B45309 !important;
-      box-shadow: 0 0 26px rgba(245, 158, 11, 0.65), 0 0 12px rgba(217, 119, 6, 0.50), inset 0 0 14px rgba(245, 158, 11, 0.25) !important;
+      box-shadow: 0 0 28px rgba(245, 158, 11, 0.75), 0 0 12px rgba(217, 119, 6, 0.60), inset 0 0 14px rgba(245, 158, 11, 0.28) !important;
       text-shadow: 0 0 12px rgba(245, 158, 11, 0.50);
       transform: scale(1.08);
+      animation: none !important;
     }
     .team-member-card.member-wilson .team-name:hover::after,
     .team-grid > :nth-child(2) .team-name:hover::after,
@@ -2588,8 +2578,19 @@
     }
 
     /* ========================================================
-       🌸 3. Vadivazhagi &rarr; Vivid Luminescent Pink Glow
+       🌸 3. Vadivazhagi &rarr; Neon Vivid Rose Pink Background Glow
        ======================================================== */
+    .team-member-card.member-vadivazhagi .team-name,
+    .team-grid > :nth-child(3) .team-name,
+    .intro-team-grid > :nth-child(3) .team-name {
+      background: rgba(236, 72, 153, 0.15) !important;
+      border: 1.5px solid rgba(236, 72, 153, 0.55) !important;
+      color: #BE185D !important;
+      -webkit-text-fill-color: #BE185D !important;
+      box-shadow: 0 0 16px rgba(236, 72, 153, 0.35), 0 0 6px rgba(219, 39, 119, 0.25), inset 0 0 10px rgba(236, 72, 153, 0.15) !important;
+      animation: neonPulsePink 3s infinite alternate ease-in-out;
+    }
+
     .team-grid > :nth-child(3) .team-name::after,
     .intro-team-grid > :nth-child(3) .team-name::after,
     .member-vadivazhagi .team-name::after {
@@ -2639,35 +2640,21 @@
       box-shadow: 0 0 24px rgba(236, 72, 153, 0.6);
     }
 
-    /* Ambient illumination when card is active */
+    /* 🌸 INTENSE NEON BEAM HOVER ON VADIVAZHAGI'S NAME */
     .team-member-card.member-vadivazhagi:hover .team-name,
-    .team-member-card.member-vadivazhagi:focus .team-name,
-    .team-member-card.member-vadivazhagi.active-tap .team-name,
-    .team-grid > :nth-child(3):hover .team-name,
-    .team-grid > :nth-child(3):focus .team-name,
-    .team-grid > :nth-child(3).active-tap .team-name,
-    .intro-team-grid > :nth-child(3):hover .team-name,
-    .intro-team-grid > :nth-child(3):focus .team-name,
-    .intro-team-grid > :nth-child(3).active-tap .team-name {
-      background: rgba(236, 72, 153, 0.12) !important;
-      border-color: rgba(236, 72, 153, 0.40) !important;
-      color: #BE185D !important;
-      -webkit-text-fill-color: #BE185D !important;
-      box-shadow: 0 0 16px rgba(236, 72, 153, 0.35) !important;
-      transform: scale(1.03);
-    }
-
-    /* 🌸 DIRECT POINTER HOVER ON VADIVAZHAGI'S NAME — RADIANT ROSE PINK BACKGROUND GLOW */
     .team-member-card.member-vadivazhagi .team-name:hover,
+    .team-grid > :nth-child(3):hover .team-name,
     .team-grid > :nth-child(3) .team-name:hover,
+    .intro-team-grid > :nth-child(3):hover .team-name,
     .intro-team-grid > :nth-child(3) .team-name:hover {
-      background: radial-gradient(ellipse at center, rgba(236, 72, 153, 0.30) 0%, rgba(219, 39, 119, 0.18) 65%, rgba(236, 72, 153, 0.08) 100%) !important;
-      border-color: rgba(236, 72, 153, 0.75) !important;
+      background: radial-gradient(ellipse at center, rgba(236, 72, 153, 0.32) 0%, rgba(219, 39, 119, 0.20) 70%, rgba(236, 72, 153, 0.10) 100%) !important;
+      border-color: #EC4899 !important;
       color: #BE185D !important;
       -webkit-text-fill-color: #BE185D !important;
-      box-shadow: 0 0 26px rgba(236, 72, 153, 0.65), 0 0 12px rgba(219, 39, 119, 0.50), inset 0 0 14px rgba(236, 72, 153, 0.25) !important;
+      box-shadow: 0 0 28px rgba(236, 72, 153, 0.75), 0 0 12px rgba(219, 39, 119, 0.60), inset 0 0 14px rgba(236, 72, 153, 0.28) !important;
       text-shadow: 0 0 12px rgba(236, 72, 153, 0.50);
       transform: scale(1.08);
+      animation: none !important;
     }
     .team-member-card.member-vadivazhagi .team-name:hover::after,
     .team-grid > :nth-child(3) .team-name:hover::after,
@@ -2677,8 +2664,19 @@
     }
 
     /* ========================================================
-       🔴 4. Viseka &rarr; Fiery Crimson Scarlet Neon Glow
+       🔴 4. Viseka &rarr; Neon Fiery Crimson Scarlet Background Glow
        ======================================================== */
+    .team-member-card.member-viseka .team-name,
+    .team-grid > :nth-child(4) .team-name,
+    .intro-team-grid > :nth-child(4) .team-name {
+      background: rgba(239, 68, 68, 0.15) !important;
+      border: 1.5px solid rgba(239, 68, 68, 0.55) !important;
+      color: #B91C1C !important;
+      -webkit-text-fill-color: #B91C1C !important;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35), 0 0 6px rgba(220, 38, 38, 0.25), inset 0 0 10px rgba(239, 68, 68, 0.15) !important;
+      animation: neonPulseRed 3s infinite alternate ease-in-out;
+    }
+
     .team-grid > :nth-child(4) .team-name::after,
     .intro-team-grid > :nth-child(4) .team-name::after,
     .member-viseka .team-name::after {
@@ -2728,41 +2726,44 @@
       box-shadow: 0 0 24px rgba(239, 68, 68, 0.6);
     }
 
-    /* Ambient illumination when card is active */
+    /* 🔴 INTENSE NEON BEAM HOVER ON VISEKA'S NAME */
     .team-member-card.member-viseka:hover .team-name,
-    .team-member-card.member-viseka:focus .team-name,
-    .team-member-card.member-viseka.active-tap .team-name,
-    .team-grid > :nth-child(4):hover .team-name,
-    .team-grid > :nth-child(4):focus .team-name,
-    .team-grid > :nth-child(4).active-tap .team-name,
-    .intro-team-grid > :nth-child(4):hover .team-name,
-    .intro-team-grid > :nth-child(4):focus .team-name,
-    .intro-team-grid > :nth-child(4).active-tap .team-name {
-      background: rgba(239, 68, 68, 0.12) !important;
-      border-color: rgba(239, 68, 68, 0.40) !important;
-      color: #B91C1C !important;
-      -webkit-text-fill-color: #B91C1C !important;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35) !important;
-      transform: scale(1.03);
-    }
-
-    /* 🔴 DIRECT POINTER HOVER ON VISEKA'S NAME — RADIANT CRIMSON SCARLET BACKGROUND GLOW */
     .team-member-card.member-viseka .team-name:hover,
+    .team-grid > :nth-child(4):hover .team-name,
     .team-grid > :nth-child(4) .team-name:hover,
+    .intro-team-grid > :nth-child(4):hover .team-name,
     .intro-team-grid > :nth-child(4) .team-name:hover {
-      background: radial-gradient(ellipse at center, rgba(239, 68, 68, 0.30) 0%, rgba(220, 38, 38, 0.18) 65%, rgba(239, 68, 68, 0.08) 100%) !important;
-      border-color: rgba(239, 68, 68, 0.75) !important;
+      background: radial-gradient(ellipse at center, rgba(239, 68, 68, 0.32) 0%, rgba(220, 38, 38, 0.20) 70%, rgba(239, 68, 68, 0.10) 100%) !important;
+      border-color: #EF4444 !important;
       color: #B91C1C !important;
       -webkit-text-fill-color: #B91C1C !important;
-      box-shadow: 0 0 26px rgba(239, 68, 68, 0.65), 0 0 12px rgba(220, 38, 38, 0.50), inset 0 0 14px rgba(239, 68, 68, 0.25) !important;
+      box-shadow: 0 0 28px rgba(239, 68, 68, 0.75), 0 0 12px rgba(220, 38, 38, 0.60), inset 0 0 14px rgba(239, 68, 68, 0.28) !important;
       text-shadow: 0 0 12px rgba(239, 68, 68, 0.50);
       transform: scale(1.08);
+      animation: none !important;
     }
     .team-member-card.member-viseka .team-name:hover::after,
     .team-grid > :nth-child(4) .team-name:hover::after,
     .intro-team-grid > :nth-child(4) .team-name:hover::after {
       transform: scale(1.4);
       box-shadow: 0 0 14px #EF4444, 0 0 6px #EF4444 !important;
+    }
+
+    @keyframes neonPulseGreen {
+      0% { box-shadow: 0 0 14px rgba(34, 197, 94, 0.28), inset 0 0 8px rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.45); }
+      100% { box-shadow: 0 0 24px rgba(34, 197, 94, 0.55), inset 0 0 12px rgba(34, 197, 94, 0.25); border-color: rgba(34, 197, 94, 0.75); }
+    }
+    @keyframes neonPulseGold {
+      0% { box-shadow: 0 0 14px rgba(245, 158, 11, 0.28), inset 0 0 8px rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.45); }
+      100% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.55), inset 0 0 12px rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.75); }
+    }
+    @keyframes neonPulsePink {
+      0% { box-shadow: 0 0 14px rgba(236, 72, 153, 0.28), inset 0 0 8px rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.45); }
+      100% { box-shadow: 0 0 24px rgba(236, 72, 153, 0.55), inset 0 0 12px rgba(236, 72, 153, 0.25); border-color: rgba(236, 72, 153, 0.75); }
+    }
+    @keyframes neonPulseRed {
+      0% { box-shadow: 0 0 14px rgba(239, 68, 68, 0.28), inset 0 0 8px rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.45); }
+      100% { box-shadow: 0 0 24px rgba(239, 68, 68, 0.55), inset 0 0 12px rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.75); }
     }
 
     @keyframes teamDotPulse {
