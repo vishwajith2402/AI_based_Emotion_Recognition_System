@@ -13,3 +13,12 @@ __pycache__/
 !ui/static/**
 !ui/static/assets/**
 !ui/static/demo_samples/**
+
+# Exclude heavy desktop binaries (153 MB) and dist from Vercel deployment builds
+ui/static/downloads/**
+ui/static/downloads/
+ui/static/downloads
+*.exe
+*.zip
+dist/
+dist/**

@@ -10,19 +10,23 @@
   "routes": [
     {
       "src": "/dist/EmotiSync-Windows.zip",
-      "dest": "/ui/static/downloads/EmotiSync-Windows.zip"
+      "dest": "https://github.com/vishwajith2402/AI_based_Emotion_Recognition_System/raw/main/ui/static/downloads/EmotiSync-Windows.zip",
+      "status": 302
     },
     {
       "src": "/downloads/EmotiSync-Windows.zip",
-      "dest": "/ui/static/downloads/EmotiSync-Windows.zip"
+      "dest": "https://github.com/vishwajith2402/AI_based_Emotion_Recognition_System/raw/main/ui/static/downloads/EmotiSync-Windows.zip",
+      "status": 302
     },
     {
       "src": "/dist/EmotiSync.exe",
-      "dest": "/ui/static/downloads/EmotiSync.exe"
+      "dest": "https://github.com/vishwajith2402/AI_based_Emotion_Recognition_System/raw/main/ui/static/downloads/EmotiSync.exe",
+      "status": 302
     },
     {
       "src": "/downloads/EmotiSync.exe",
-      "dest": "/ui/static/downloads/EmotiSync.exe"
+      "dest": "https://github.com/vishwajith2402/AI_based_Emotion_Recognition_System/raw/main/ui/static/downloads/EmotiSync.exe",
+      "status": 302
     },
     {
       "src": "/manifest.json",
