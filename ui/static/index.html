@@ -7198,6 +7198,247 @@
       }
     }
 
+
+    /* ========================================================
+       🌌 TITLE PAGE VIEW STYLES (#viewTitle)
+       Palette: Frosted Pearl Canvas (#EEF2F6), Solid Crisp White (#FFFFFF),
+       Electric Indigo (#4F46E5 / #6366F1) & Celestial Sky Blue (#0284C7)
+       ======================================================== */
+    #viewTitle {
+      min-height: calc(100vh - var(--titlebar-h));
+      display: none;
+      padding: 3rem 1.5rem 4rem 1.5rem;
+      background: #EEF2F6;
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 60%),
+        radial-gradient(circle at 15% 85%, rgba(2, 132, 199, 0.14) 0%, transparent 55%),
+        radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.08) 0%, transparent 55%);
+      position: relative;
+      overflow-x: hidden;
+    }
+    #viewTitle.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .title-page-wrapper {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+    .title-top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1.25rem;
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.28);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #4F46E5;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.10);
+      margin-bottom: 2rem;
+    }
+    .title-emblem-halo {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .title-emblem-halo::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(2, 132, 199, 0.15) 50%, transparent 70%);
+      animation: titleHaloPulse 3s infinite ease-in-out;
+    }
+    .title-emblem-halo::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px dashed rgba(99, 102, 241, 0.45);
+      animation: titleRingRotate 18s linear infinite;
+    }
+    @keyframes titleHaloPulse {
+      0%, 100% { transform: scale(0.95); opacity: 0.65; }
+      50% { transform: scale(1.12); opacity: 1; }
+    }
+    @keyframes titleRingRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .title-crest-img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+    }
+    .title-main-heading {
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 0.65rem;
+      color: var(--text-primary);
+    }
+    .title-tagline {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #4F46E5;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .title-subtagline {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.6;
+      margin-bottom: 2.2rem;
+    }
+    .title-features-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 860px;
+      margin-bottom: 2.5rem;
+    }
+    .title-feature-card {
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.22);
+      border-top: 4px solid #6366F1;
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.15rem;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      text-align: left;
+      transition: all 0.25s ease;
+    }
+    .title-feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.16);
+      border-color: #6366F1;
+    }
+    .title-feature-icon {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+    .title-feature-card h4 {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+    .title-feature-card p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .title-action-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .btn-title-proceed {
+      padding: 1.15rem 3.5rem;
+      font-family: var(--font-main);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #0284C7 100%);
+      border: none;
+      color: #FFFFFF !important;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: 0 10px 30px rgba(79, 70, 229, 0.45), 0 3px 10px rgba(2, 132, 199, 0.25);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-title-proceed:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 14px 40px rgba(79, 70, 229, 0.65), 0 5px 15px rgba(2, 132, 199, 0.35);
+      background: linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #0284C7 100%);
+    }
+    .btn-title-guest {
+      background: transparent;
+      border: none;
+      color: #6366F1;
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.15s ease;
+    }
+    .btn-title-guest:hover {
+      color: #4338CA;
+      text-decoration: underline;
+    }
+    .title-pipeline-tracker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      background: #FFFFFF;
+      border: 1px solid rgba(99, 102, 241, 0.20);
+      padding: 0.55rem 1.15rem;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .pipeline-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+    }
+    .pipeline-step.active {
+      color: #4F46E5;
+      font-weight: 800;
+      background: rgba(99, 102, 241, 0.12);
+      padding: 0.2rem 0.65rem;
+      border-radius: var(--radius-pill);
+    }
+    .pipeline-arrow {
+      color: #CBD5E1;
+      font-weight: 700;
+    }
+    @media (max-width: 860px) {
+      .title-features-row {
+        grid-template-columns: 1fr;
+      }
+      .title-main-heading {
+        font-size: 2.5rem;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -7223,10 +7464,90 @@
   </header>
 
   <!-- ========================================================
-       VIEW 1: INTRO LANDING PAGE
+       VIEW 0: TITLE PAGE (INITIAL GATEWAY)
+       Pipeline Step 1: Title page -> Login page -> Intro page -> Let's Start -> Mode Selection
+       ======================================================== -->
+  <section class="app-view active" id="viewTitle">
+    <div class="title-page-wrapper">
+      
+      <!-- Top Cyber Pill Badge -->
+      <div class="title-top-badge">
+        <span class="pulse-dot-cyan"></span> MULTIMODAL AFFECTIVE INTELLIGENCE PLATFORM
+      </div>
+
+      <!-- Breathing Orbital Emblem -->
+      <div class="title-emblem-halo">
+        <img src="./assets/emotisync_medallion.png" alt="EmotiSync Emblem" class="title-crest-img" onerror="this.onerror=null;this.src='./demo_samples/emotisync_medallion.png';">
+      </div>
+
+      <!-- Main Title & Tagline -->
+      <h1 class="title-main-heading">
+        <span class="tech-bracket">[</span>
+        <span class="title-shimmer-text">EmotiSync</span>
+        <span class="tech-bracket">]</span>
+      </h1>
+      <p class="title-tagline">EMOTION RECOGNITION SYSTEM &bull; FACIAL | VOICE</p>
+      <p class="title-subtagline">
+        State-of-the-art multimodal fusion combining 468-point 3D facial landmark geometry (70% decision weight) and acoustic vocal prosodic modulation (30% decision weight) for robust affective intelligence.
+      </p>
+
+      <!-- 3 Key Architectural Pillars -->
+      <div class="title-features-row">
+        <div class="title-feature-card">
+          <div class="title-feature-icon">👁️</div>
+          <h4>Facial Action Units (70%)</h4>
+          <p>Real-time 468-point 3D landmark mesh analyzing micro-expressions and FACS geometry.</p>
+        </div>
+
+        <div class="title-feature-card">
+          <div class="title-feature-icon">🎙️</div>
+          <h4>Vocal Prosody (30%)</h4>
+          <p>Dual-layer acoustic waveform visualizer extracting pitch contours, energy, and inflection.</p>
+        </div>
+
+        <div class="title-feature-card">
+          <div class="title-feature-icon">🛡️</div>
+          <h4>Zero-Knowledge Privacy</h4>
+          <p>In-memory biometric edge inference. Zero server transmission with complete researcher privacy.</p>
+        </div>
+      </div>
+
+      <!-- Primary Action: Proceed to Login -->
+      <div class="title-action-box">
+        <button class="btn-title-proceed" id="btnTitleProceedLogin">
+          <span>🔐</span>
+          <span id="titleProceedBtnText">PROCEED TO LOGIN</span>
+          <span class="btn-proceed-arrow">&rarr;</span>
+        </button>
+
+        <div class="title-quick-links">
+          <button type="button" class="btn-title-guest" id="btnTitleGuestQuick">
+            <span>👤</span> Quick Guest Exploration &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- Architectural Pipeline Tracker -->
+      <div class="title-pipeline-tracker">
+        <span class="pipeline-step active"><span>1</span> Title Page</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step"><span>2</span> Login Page</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step"><span>3</span> Intro Hero</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step"><span>4</span> Let's Start</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step"><span>5</span> Mode Selection</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================
+       VIEW 1: INTRO LANDING PAGE (PROTECTED: ACCESSIBLE ONLY AFTER LOGIN)
        Title, Tagline, "Let's Start" CTA, and Team Members at Bottom
        ======================================================== -->
-  <section class="app-view active" id="viewIntro">
+  <section class="app-view" id="viewIntro">
     <!-- Interactive Background Canvas & Cursor Tracking Halo (Intro Page Only) -->
     <canvas id="introInteractiveCanvas" class="intro-bg-canvas"></canvas>
     <div class="intro-cursor-glow" id="introCursorGlow"></div>
@@ -7343,7 +7664,7 @@
       <!-- Top Return Bar -->
       <div class="auth-top-nav-bar">
         <button class="auth-return-btn" id="btnAuthReturnHome">
-          <span>&larr;</span> Return to Home
+          <span>&larr;</span> Return to Title Page
         </button>
         <div class="auth-status-chip">
           <span>🛡️</span> ZERO-KNOWLEDGE AFFECTIVE GATEWAY
@@ -17393,11 +17714,22 @@
     // 🌐 MULTI-PAGE / MULTI-VIEW SPA NAVIGATION CONTROLLER
     // ========================================================
     function switchView(viewId, updateHash = true) {
+      // 🔒 STRICT ROUTE GUARD: Only after logging in should the user enter intro, let's start & mode selection
+      const protectedViews = ['viewIntro', 'viewModeSelect', 'viewLiveApp', 'viewMediaUpload'];
+      const currentUser = typeof AuthEngine !== 'undefined' ? AuthEngine.getCurrentUser() : null;
+
+      if (protectedViews.includes(viewId) && !currentUser) {
+        viewId = 'viewAuth';
+        if (typeof AuthEngine !== 'undefined' && typeof AuthEngine.showToast === 'function') {
+          AuthEngine.showToast('Authentication Required', 'Please log in first to enter the Intro workspace.', 'info');
+        }
+      }
+
       const views = document.querySelectorAll('.app-view');
       let targetView = document.getElementById(viewId);
       if (!targetView) {
-        targetView = document.getElementById('viewIntro');
-        viewId = 'viewIntro';
+        targetView = document.getElementById('viewTitle') || document.getElementById('viewIntro');
+        viewId = targetView.id;
       }
 
       views.forEach(v => {
@@ -17411,7 +17743,9 @@
         if (viewId === 'viewLiveApp') history.pushState(null, '', '#live');
         else if (viewId === 'viewMediaUpload') history.pushState(null, '', '#media');
         else if (viewId === 'viewModeSelect') history.pushState(null, '', '#select-mode');
+        else if (viewId === 'viewIntro') history.pushState(null, '', '#intro');
         else if (viewId === 'viewAuth') history.pushState(null, '', '#auth');
+        else if (viewId === 'viewTitle') history.pushState(null, '', '#title');
         else history.pushState(null, '', '#');
       }
 
@@ -17694,20 +18028,31 @@
     // Deep linking / hash-based routing support
     function initViewRouting() {
       const hash = window.location.hash.toLowerCase();
+      const currentUser = typeof AuthEngine !== 'undefined' ? AuthEngine.getCurrentUser() : null;
+
       if (hash === '#live' || hash === '#liveapp') {
-        switchView('viewLiveApp', false);
+        if (currentUser) switchView('viewLiveApp', false);
+        else switchView('viewTitle', false);
       } else if (hash === '#media' || hash === '#mediaupload') {
-        switchView('viewMediaUpload', false);
-        if (typeof autoDetectMediaData === 'function') {
-          setTimeout(() => { autoDetectMediaData(false); }, 150);
+        if (currentUser) {
+          switchView('viewMediaUpload', false);
+          if (typeof autoDetectMediaData === 'function') {
+            setTimeout(() => { autoDetectMediaData(false); }, 150);
+          }
+        } else {
+          switchView('viewTitle', false);
         }
       } else if (hash === '#select-mode' || hash === '#modes') {
-        switchView('viewModeSelect', false);
+        if (currentUser) switchView('viewModeSelect', false);
+        else switchView('viewTitle', false);
+      } else if (hash === '#intro' || hash === '#home') {
+        if (currentUser) switchView('viewIntro', false);
+        else switchView('viewTitle', false);
       } else if (hash === '#auth' || hash === '#login' || hash === '#signin' || hash === '#signup') {
         switchView('viewAuth', false);
       } else {
-        // Default on opening site: Intro landing page
-        switchView('viewIntro', false);
+        // Default on visiting site: Title Page
+        switchView('viewTitle', false);
       }
     }
 
@@ -18213,6 +18558,16 @@
           }
         }
 
+        // Update Title Page Proceed Button text based on user session
+        const titleProceedBtnText = document.getElementById('titleProceedBtnText');
+        if (titleProceedBtnText) {
+          if (user) {
+            titleProceedBtnText.textContent = `ENTER INTRO WORKSPACE (${user.name.split(' ')[0].toUpperCase()})`;
+          } else {
+            titleProceedBtnText.textContent = 'PROCEED TO LOGIN';
+          }
+        }
+
         // 4. Update Hero Button Badge in Intro
         const heroAuthBtn = document.getElementById('btnHeroAuth');
         const heroAuthText = document.getElementById('heroAuthBtnText');
@@ -18329,11 +18684,46 @@
           });
         }
 
-        // Return button from Auth view
+        // Return button from Auth view back to Title Page
         const btnAuthReturnHome = document.getElementById('btnAuthReturnHome');
         if (btnAuthReturnHome) {
           btnAuthReturnHome.addEventListener('click', () => {
-            switchView('viewIntro');
+            switchView('viewTitle');
+          });
+        }
+
+        // Title Page: Proceed to Login CTA
+        const btnTitleProceedLogin = document.getElementById('btnTitleProceedLogin');
+        if (btnTitleProceedLogin) {
+          btnTitleProceedLogin.addEventListener('click', () => {
+            const user = getCurrentUser();
+            if (user) {
+              switchView('viewIntro');
+            } else {
+              switchView('viewAuth');
+            }
+          });
+        }
+
+        // Title Page: Instant Guest Access
+        const btnTitleGuestQuick = document.getElementById('btnTitleGuestQuick');
+        if (btnTitleGuestQuick) {
+          btnTitleGuestQuick.addEventListener('click', () => {
+            const guestUser = {
+              id: 'usr_guest',
+              name: 'Guest Observer',
+              email: 'guest@emotisync.local',
+              role: 'Guest Observer',
+              avatar: 'GO',
+              joinedDate: 'Session Only',
+              tier: 'Evaluation Sandbox',
+              isGuest: true
+            };
+            setCurrentUser(guestUser, false);
+            showToast('Guest Session Started', 'Entering research workspace...', 'info');
+            setTimeout(() => {
+              switchView('viewIntro');
+            }, 400);
           });
         }
 
@@ -18481,8 +18871,8 @@
             setCurrentUser(found, remember);
             showToast('Authenticated', `Welcome back, ${found.name}!`, 'success');
             setTimeout(() => {
-              switchView('viewModeSelect');
-            }, 600);
+              switchView('viewIntro');
+            }, 500);
           });
         }
 
@@ -18545,8 +18935,8 @@
 
             showToast('Account Created', `Welcome to EmotiSync, ${newUser.name}!`, 'success');
             setTimeout(() => {
-              switchView('viewModeSelect');
-            }, 600);
+              switchView('viewIntro');
+            }, 500);
           });
         }
 
@@ -18565,9 +18955,9 @@
               isGuest: true
             };
             setCurrentUser(guestUser, false);
-            showToast('Guest Session Started', 'Exploring in sandbox evaluation mode', 'info');
+            showToast('Guest Session Started', 'Entering research workspace...', 'info');
             setTimeout(() => {
-              switchView('viewModeSelect');
+              switchView('viewIntro');
             }, 400);
           });
         }
@@ -18634,7 +19024,7 @@
         logout: function() {
           clearCurrentUser();
           showToast('Signed Out', 'You have been safely signed out.', 'info');
-          switchView('viewIntro');
+          switchView('viewTitle');
         }
       };
     })();
