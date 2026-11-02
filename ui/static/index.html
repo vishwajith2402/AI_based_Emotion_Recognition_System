@@ -8670,7 +8670,7 @@
                 <label class="auth-form-label" for="signUpName">Full Name</label>
                 <div class="auth-input-wrapper">
                   <span class="auth-input-icon">👤</span>
-                  <input type="text" id="signUpName" class="auth-input-field" placeholder="Dr. Vishwajith Prem" required autocomplete="name">
+                  <input type="text" id="signUpName" class="auth-input-field" placeholder="Vishwajith" required autocomplete="name">
                 </div>
               </div>
 
@@ -8995,10 +8995,10 @@
 
       <div class="about-team-grid">
         
-        <!-- Team Member 1: Vishwajith Prem -->
+        <!-- Team Member 1: Vishwajith -->
         <div class="about-member-card member-vishwa">
-          <div class="about-avatar-circle" style="background: linear-gradient(135deg, #16A34A 0%, #22C55E 100%);">VP</div>
-          <h5>Vishwajith Prem</h5>
+          <div class="about-avatar-circle" style="background: linear-gradient(135deg, #16A34A 0%, #22C55E 100%);">VJ</div>
+          <h5>Vishwajith</h5>
           <div class="about-member-role">Lead AI &amp; Multimodal System Architect</div>
           <p class="about-member-bio">
             Spearheaded end-to-end system architecture, 70/30 multimodal fusion mathematical modeling, sequential pipeline routing, and cross-platform desktop integration.
@@ -9011,10 +9011,10 @@
           </div>
         </div>
 
-        <!-- Team Member 2: Wilson Arul -->
+        <!-- Team Member 2: Wilson -->
         <div class="about-member-card member-wilson">
-          <div class="about-avatar-circle" style="background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);">WA</div>
-          <h5>Wilson Arul</h5>
+          <div class="about-avatar-circle" style="background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);">WL</div>
+          <h5>Wilson</h5>
           <div class="about-member-role">Computer Vision &amp; 3D Face Geometry Specialist</div>
           <p class="about-member-bio">
             Engineered the 468-point 3D landmark mesh extraction pipeline, Facial Action Unit (FACS) geometric normalizations, and live biometric landmark registration filters.
@@ -10852,7 +10852,7 @@
       <div style="display: flex; align-items: center; gap: 0.65rem; background: #F8FAFC; border: 1.5px solid #E2E8F0; padding: 0.55rem 1rem; border-radius: var(--radius-pill); margin-bottom: 1.25rem; width: 100%;">
         <div class="user-pill-avatar" id="lockAvatar">VP</div>
         <div style="text-align: left; flex: 1;">
-          <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary);" id="lockUserName">Vishwajith Prem</div>
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary);" id="lockUserName">Vishwajith</div>
           <div style="font-size: 0.65rem; color: #6366F1;" id="lockUserRole">Lead AI Researcher</div>
         </div>
       </div>
@@ -19673,7 +19673,7 @@
     // 🔐 COMPREHENSIVE USER AUTHENTICATION & SESSION ENGINE
     // ========================================================
     const AuthEngine = (function() {
-      const USERS_STORAGE_KEY = 'emotisync_auth_users';
+      const USERS_STORAGE_KEY = 'emotisync_auth_users_v2';
       const SESSION_STORAGE_KEY = 'emotisync_auth_current_user';
       const AUDIT_LOG_KEY = 'emotisync_auth_audit_log';
 
@@ -19722,33 +19722,43 @@
       const DEFAULT_USERS = [
         {
           id: 'usr_lead_01',
-          name: 'Vishwajith Prem',
+          name: 'Vishwajith',
           email: 'researcher@emotisync.ai',
           password: 'Research@2026',
-          role: 'Lead AI & Multimodal Researcher',
-          avatar: 'VP',
+          role: 'Lead AI & Multimodal Architect',
+          avatar: 'VJ',
           joinedDate: 'Oct 2026',
           tier: 'Enterprise AI Suite'
         },
         {
           id: 'usr_clin_02',
-          name: 'Dr. Wilson Arul',
+          name: 'Wilson',
           email: 'clinician@emotisync.ai',
           password: 'Clinic@2026',
-          role: 'Clinical Psychologist',
-          avatar: 'WA',
+          role: 'Computer Vision & 3D Geometry Specialist',
+          avatar: 'WL',
           joinedDate: 'Oct 2026',
-          tier: 'Clinical Diagnostics Pro'
+          tier: 'Computer Vision Pro'
         },
         {
-          id: 'usr_stud_03',
-          name: 'Vadivazhagi & Viseka',
+          id: 'usr_dsp_03',
+          name: 'Vadivazhagi',
+          email: 'vadiva@emotisync.ai',
+          password: 'Vadiva@2026',
+          role: 'Acoustic Signal & Prosody Engineer',
+          avatar: 'VD',
+          joinedDate: 'Oct 2026',
+          tier: 'Audio DSP Suite'
+        },
+        {
+          id: 'usr_ux_04',
+          name: 'Viseka',
           email: 'student@emotisync.ai',
           password: 'Student@2026',
-          role: 'Academic Scholar & HCI',
-          avatar: 'VV',
+          role: 'Decision Fusion & Forensic UX Specialist',
+          avatar: 'VS',
           joinedDate: 'Oct 2026',
-          tier: 'Academic Scholar Tier'
+          tier: 'Forensic UX Tier'
         }
       ];
 
@@ -20519,10 +20529,10 @@
             const currentUser = getCurrentUser();
             const enrolledData = {
               descriptor: desc,
-              name: currentUser ? currentUser.name : 'Vishwajith Prem',
+              name: currentUser ? currentUser.name : 'Vishwajith',
               email: currentUser ? currentUser.email : 'researcher@emotisync.ai',
               role: currentUser ? currentUser.role : 'Lead AI & Multimodal Researcher',
-              avatar: currentUser ? currentUser.avatar : 'VP',
+              avatar: currentUser ? currentUser.avatar : 'VJ',
               enrolledAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             };
 
@@ -20712,7 +20722,7 @@
             inPass.value = 'Research@2026';
             document.querySelectorAll('.quick-demo-pill').forEach(p => p.classList.remove('active-chip'));
             demoResearcher.classList.add('active-chip');
-            showToast('Demo Loaded', 'Pre-filled Lead AI Researcher credentials', 'info');
+            showToast('Demo Loaded', 'Pre-filled Vishwajith credentials', 'info');
           });
         }
 
@@ -20722,7 +20732,7 @@
             inPass.value = 'Clinic@2026';
             document.querySelectorAll('.quick-demo-pill').forEach(p => p.classList.remove('active-chip'));
             demoClinician.classList.add('active-chip');
-            showToast('Demo Loaded', 'Pre-filled Clinical Psychologist credentials', 'info');
+            showToast('Demo Loaded', 'Pre-filled Wilson credentials', 'info');
           });
         }
 
@@ -20732,7 +20742,7 @@
             inPass.value = 'Student@2026';
             document.querySelectorAll('.quick-demo-pill').forEach(p => p.classList.remove('active-chip'));
             demoStudent.classList.add('active-chip');
-            showToast('Demo Loaded', 'Pre-filled Student Evaluator credentials', 'info');
+            showToast('Demo Loaded', 'Pre-filled Viseka & Vadivazhagi credentials', 'info');
           });
         }
 
