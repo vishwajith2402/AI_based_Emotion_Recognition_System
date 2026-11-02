@@ -583,9 +583,11 @@ class VoiceAnalyzer {
     const maxBarH = h * 0.42;
 
     const barGrad = ctx.createLinearGradient(0, h, 0, h - maxBarH);
-    barGrad.addColorStop(0, '#6366F1');   // Vibrant Indigo
-    barGrad.addColorStop(0.5, '#0284C7'); // Radiant Cyan
-    barGrad.addColorStop(1, '#EC4899');   // Neon Rose
+    barGrad.addColorStop(0, '#10B981');   // Radiant Emerald Mint
+    barGrad.addColorStop(0.25, '#0284C7'); // Electric Sky Cyan
+    barGrad.addColorStop(0.50, '#6366F1'); // Vivid Iris Indigo
+    barGrad.addColorStop(0.75, '#EC4899'); // Radiant Neon Rose
+    barGrad.addColorStop(1, '#F59E0B');   // Solar Golden Amber
 
     ctx.fillStyle = barGrad;
 
@@ -609,10 +611,15 @@ class VoiceAnalyzer {
     const sliceWidth = w / bufferLen;
 
     ctx.save();
-    ctx.strokeStyle = '#4F46E5';
-    ctx.lineWidth = 2.5 * dpr;
-    ctx.shadowColor = 'rgba(79, 70, 229, 0.40)';
-    ctx.shadowBlur = 8 * dpr;
+    const waveGrad = ctx.createLinearGradient(0, 0, w, 0);
+    waveGrad.addColorStop(0, '#00F2FE');   // Cyan Sky
+    waveGrad.addColorStop(0.35, '#6366F1'); // Electric Violet
+    waveGrad.addColorStop(0.70, '#EC4899'); // Neon Rose
+    waveGrad.addColorStop(1, '#10B981');   // Radiant Emerald
+    ctx.strokeStyle = waveGrad;
+    ctx.lineWidth = 2.8 * dpr;
+    ctx.shadowColor = 'rgba(99, 102, 241, 0.55)';
+    ctx.shadowBlur = 10 * dpr;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
@@ -664,11 +671,18 @@ class VoiceAnalyzer {
     ];
 
     ctx.save();
-    for (const p of pills) {
+    const pillColors = [
+      { stroke: 'rgba(2, 132, 199, 0.45)', text: '#0284C7', bg: 'rgba(240, 249, 255, 0.96)' }, // Pitch: Cyan
+      { stroke: 'rgba(99, 102, 241, 0.45)', text: '#4F46E5', bg: 'rgba(245, 243, 255, 0.96)' }, // Loudness: Indigo
+      { stroke: 'rgba(236, 72, 153, 0.45)', text: '#DB2777', bg: 'rgba(253, 242, 248, 0.96)' }  // Energy: Rose
+    ];
+
+    pills.forEach((p, idx) => {
+      const col = pillColors[idx] || pillColors[0];
       // Rounded pill backdrop
-      ctx.fillStyle = 'rgba(248, 250, 252, 0.94)';
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.22)';
-      ctx.lineWidth = 1 * dpr;
+      ctx.fillStyle = col.bg;
+      ctx.strokeStyle = col.stroke;
+      ctx.lineWidth = 1.5 * dpr;
 
       ctx.beginPath();
       ctx.roundRect(p.x, pillY, pillW, pillH, radius);
@@ -676,18 +690,18 @@ class VoiceAnalyzer {
       ctx.stroke();
 
       // Top label (small slate caps)
-      ctx.font = `600 ${8.5 * dpr}px "SF Mono", "Fira Code", monospace, sans-serif`;
-      ctx.fillStyle = '#64748B';
+      ctx.font = `700 ${8.5 * dpr}px "SF Mono", "Fira Code", monospace, sans-serif`;
+      ctx.fillStyle = '#475569';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillText(p.label, p.x + pillW / 2, pillY + 6 * dpr);
 
-      // Bottom value (vibrant indigo accent font)
-      ctx.font = `700 ${12 * dpr}px "SF Mono", "Fira Code", monospace, sans-serif`;
-      ctx.fillStyle = '#4F46E5';
+      // Bottom value (color-coded accent font)
+      ctx.font = `800 ${12 * dpr}px "SF Mono", "Fira Code", monospace, sans-serif`;
+      ctx.fillStyle = col.text;
       ctx.textBaseline = 'bottom';
       ctx.fillText(p.val, p.x + pillW / 2, pillY + pillH - 5 * dpr);
-    }
+    });
     ctx.restore();
   }
 
