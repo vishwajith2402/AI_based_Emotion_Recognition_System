@@ -7698,6 +7698,56 @@
       border: 1px solid #A7F3D0;
     }
 
+
+    /* Biometric Action Buttons in Sign In Pane */
+    .btn-face-register-cta {
+      padding: 0.85rem 1.15rem;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%);
+      border: 1.5px solid rgba(99, 102, 241, 0.35);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: left;
+    }
+    .btn-face-register-cta:hover {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.16) 0%, rgba(2, 132, 199, 0.16) 100%);
+      border-color: #6366F1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
+    }
+    .bio-mode-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 0.65rem;
+      display: inline-block;
+      text-transform: uppercase;
+    }
+    .bio-mode-badge.unlock-mode {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .bio-mode-badge.register-mode {
+      background: rgba(99, 102, 241, 0.15);
+      color: #A5B4FC;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+    }
+    .biometric-canvas-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(-1);
+      pointer-events: none;
+    }
+
   </style>
 </head>
 <body>
@@ -8009,32 +8059,24 @@
               <p class="auth-header-subtitle">Enter your researcher credentials to access the multimodal workstation.</p>
             </div>
 
-            <!-- Biometric Face Unlock Option -->
+                        <!-- Biometric Face Unlock & Registration Option -->
             <div class="auth-face-unlock-box">
-              <button type="button" class="btn-face-unlock-cta" id="btnTriggerFaceUnlock" title="Scan face to authenticate instantly via 3D facial landmarks">
-                <span class="face-scan-icon">👁️</span>
-                <span class="face-scan-text">
-                  <strong>BIOMETRIC FACE UNLOCK</strong>
-                  <small>Instant 468-Point AI Landmark Scan</small>
-                </span>
-                <span class="face-scan-pill">AI SCAN</span>
-              </button>
-            </div>
-
-            <!-- Quick Demo One-Click Fill -->
-            <div class="quick-demo-box">
-              <div class="quick-demo-header">
-                <span>⚡</span> One-Click Demo Accounts (Instant Fill):
-              </div>
-              <div class="quick-demo-pills-row">
-                <button type="button" class="quick-demo-pill" id="demoPillResearcher" title="Autofill Lead AI Researcher Credentials">
-                  <span>👤</span> Lead Researcher
+              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+                <button type="button" class="btn-face-unlock-cta" id="btnTriggerFaceUnlock" style="flex: 1.2; min-width: 170px;" title="Scan face to unlock if enrolled">
+                  <span class="face-scan-icon">👁️</span>
+                  <span class="face-scan-text">
+                    <strong>BIOMETRIC UNLOCK</strong>
+                    <small id="bioUnlockSubtext">Requires registered face</small>
+                  </span>
+                  <span class="face-scan-pill" id="bioUnlockPill">UNLOCK</span>
                 </button>
-                <button type="button" class="quick-demo-pill" id="demoPillClinician" title="Autofill Clinical Psychologist Credentials">
-                  <span>🩺</span> Clinician
-                </button>
-                <button type="button" class="quick-demo-pill" id="demoPillStudent" title="Autofill Student Evaluator Credentials">
-                  <span>🎓</span> Student
+                <button type="button" class="btn-face-register-cta" id="btnTriggerFaceRegister" style="flex: 1; min-width: 150px;" title="Enroll your face landmarks to enable biometric unlock">
+                  <span class="face-scan-icon" style="font-size: 1.25rem;">📸</span>
+                  <span class="face-scan-text">
+                    <strong>REGISTER FACE</strong>
+                    <small id="bioRegisterSubtext">Enroll 3D Biometrics</small>
+                  </span>
+                  <span class="face-scan-pill" style="background: #E0E7FF; color: #4338CA;">ENROLL</span>
                 </button>
               </div>
             </div>
@@ -9933,34 +9975,46 @@
 
 
 
-  <!-- ========================================================
-       MODAL 1: BIOMETRIC FACIAL SCANNER OVERLAY
-       Webcam FaceMesh landmark acquisition with laser HUD
+    <!-- ========================================================
+       MODAL 1: GENUINE BIOMETRIC FACIAL DETECTOR & ENROLLMENT OVERLAY
+       Real-time MediaPipe 468-point landmark acquisition & template matching
        ======================================================== -->
   <div id="authBiometricModal" class="biometric-modal-overlay">
     <div class="biometric-scanner-card">
+      <div id="bioModeBadge" class="bio-mode-badge unlock-mode">MODE: BIOMETRIC FACE UNLOCK</div>
       <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <span style="font-size: 1.3rem;">👁️</span>
-        <h3 style="font-size: 1.2rem; font-weight: 800; color: #FFFFFF;">AI Biometric Face Unlock</h3>
+        <span style="font-size: 1.3rem;" id="bioHeaderIcon">👁️</span>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: #FFFFFF;" id="bioModalTitle">AI Biometric Face Verification</h3>
       </div>
-      <p style="font-size: 0.75rem; color: #94A3B8; margin-top: 0.35rem;">
-        Look directly at your camera. Aligning 468-point 3D facial action unit mesh.
+      <p style="font-size: 0.75rem; color: #94A3B8; margin-top: 0.35rem;" id="bioModalSubtitle">
+        Position your face inside the scanner. 468-point 3D landmark mesh will be validated in real time.
       </p>
 
       <div class="biometric-scanner-viewport">
         <video id="bioVideoPreview" class="biometric-video-stream" autoplay playsinline muted></video>
+        <canvas id="bioCanvasOverlay" class="biometric-canvas-overlay" width="280" height="280"></canvas>
         <div class="biometric-hud-reticle"></div>
-        <div class="biometric-laser-line"></div>
+        <div class="biometric-laser-line" id="bioLaserLine"></div>
       </div>
 
       <div class="biometric-telemetry-status" id="bioScanStatus">
-        ● ACQUIRING OPTICAL BIOMETRIC FEED...
+        ● ACQUIRING OPTICAL FEED...
       </div>
 
-      <div style="display: flex; gap: 0.75rem;">
-        <button type="button" class="btn-cancel-scan" id="btnCancelFaceScan">
-          Cancel Scan
+      <!-- Action buttons -->
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 0.65rem; width: 100%;">
+        <button type="button" class="auth-btn-primary" id="btnCaptureEnrollFace" style="display: none; height: 42px; max-width: 320px; font-size: 0.84rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%); box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);">
+          <span>📸 CAPTURE &amp; REGISTER FACE</span>
         </button>
+
+        <div style="display: flex; gap: 0.65rem; align-items: center;">
+          <button type="button" class="btn-cancel-scan" id="btnCancelFaceScan">
+            Cancel Scan
+          </button>
+          <button type="button" class="btn-cancel-scan" id="btnToggleBioMode" style="border-color: rgba(99, 102, 241, 0.4); color: #A5B4FC;">
+            Switch to Register Face
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -10868,6 +10922,11 @@
     // MediaPipe 468-Point FaceMesh Callback
     function onFaceMeshResults(results) {
       try {
+        // Intercept frames if Biometric Authentication / Registration Scanner is active
+        if (typeof window.handleBiometricModalResults === 'function' && window.isBiometricScanActive) {
+          window.handleBiometricModalResults(results);
+          return;
+        }
         if (typeof handleMediaLabVisualResults === 'function' && window.labState && window.labState.isAnalyzingVisual) {
           handleMediaLabVisualResults(results);
           return;
@@ -19053,6 +19112,9 @@
             <button class="dropdown-menu-item" onclick="switchView('viewMediaUpload')">
               <span>📁</span> Media Studio &amp; Audio Lab
             </button>
+            <button class="dropdown-menu-item" onclick="AuthEngine.openFaceEnrollment()">
+              <span>📸</span> Register / Update Face Biometrics
+            </button>
             <button class="dropdown-menu-item" onclick="AuthEngine.openAuditLog()">
               <span>🛡️</span> Security &amp; Session Audit Log
             </button>
@@ -19141,73 +19203,389 @@
         recordAuditLog('Session Unlocked', 'Passphrase Re-verification', 'PASS');
       }
 
-      function startBiometricFaceScan() {
+      const ENROLLED_FACE_KEY = 'emotisync_enrolled_face_template';
+      let currentBioMode = 'unlock'; // 'unlock' or 'register'
+      let bioAnimFrameId = null;
+      let bioIsSending = false;
+      let consecutiveMatches = 0;
+      let stableDetectedLandmarks = null;
+
+      function getEnrolledFace() {
+        try {
+          const raw = localStorage.getItem(ENROLLED_FACE_KEY);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveEnrolledFace(data) {
+        try {
+          localStorage.setItem(ENROLLED_FACE_KEY, JSON.stringify(data));
+          updateBioUIIndicators();
+        } catch (e) {
+          console.error('[AuthEngine] Error saving enrolled face:', e);
+        }
+      }
+
+      function updateBioUIIndicators() {
+        const enrolled = getEnrolledFace();
+        const sub = document.getElementById('bioUnlockSubtext');
+        const pill = document.getElementById('bioUnlockPill');
+        const regSub = document.getElementById('bioRegisterSubtext');
+        if (sub && pill) {
+          if (enrolled) {
+            sub.textContent = `Enrolled: ${enrolled.name.split(' ')[0]}`;
+            sub.style.color = '#059669';
+            pill.textContent = 'READY';
+            pill.style.background = '#D1FAE5';
+            pill.style.color = '#047857';
+          } else {
+            sub.textContent = 'No face registered yet';
+            sub.style.color = '#D97706';
+            pill.textContent = 'UNENROLLED';
+            pill.style.background = '#FEF3C7';
+            pill.style.color = '#B45309';
+          }
+        }
+        if (regSub) {
+          regSub.textContent = enrolled ? 'Update Template' : 'Enroll 3D Template';
+        }
+      }
+
+      // Mathematical extraction of scale & translation invariant 12-dimensional facial ratio descriptor
+      function extractFaceDescriptor(lm) {
+        if (!lm || lm.length < 468) return null;
+        function dist(i1, i2) {
+          const p1 = lm[i1], p2 = lm[i2];
+          const dx = p1.x - p2.x, dy = p1.y - p2.y, dz = (p1.z || 0) - (p2.z || 0);
+          return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        }
+        // Base reference: Inter-ocular distance (outer corners 33 to 263)
+        const eyeBase = dist(33, 263);
+        if (eyeBase <= 0.001) return null;
+
+        // Eye center
+        const pL = lm[33], pR = lm[263];
+        const eyeCenter = { x: (pL.x + pR.x) / 2, y: (pL.y + pR.y) / 2, z: ((pL.z || 0) + (pR.z || 0)) / 2 };
+        function distToPoint(idx, pt) {
+          const p = lm[idx];
+          const dx = p.x - pt.x, dy = p.y - pt.y, dz = (p.z || 0) - pt.z;
+          return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        }
+
+        return [
+          distToPoint(1, eyeCenter) / eyeBase,  // 1. Eye center to nose tip
+          dist(1, 152) / eyeBase,               // 2. Nose tip to chin tip
+          distToPoint(152, eyeCenter) / eyeBase,// 3. Eye center to chin tip
+          dist(61, 291) / eyeBase,              // 4. Lip width (mouth corners)
+          dist(234, 454) / eyeBase,             // 5. Jaw / cheek width
+          dist(10, 1) / eyeBase,                // 6. Forehead center to nose tip
+          dist(33, 61) / eyeBase,               // 7. Left eye to left mouth corner
+          dist(263, 291) / eyeBase,             // 8. Right eye to right mouth corner
+          dist(0, 17) / eyeBase,                // 9. Lip vertical thickness
+          dist(234, 1) / eyeBase,               // 10. Left cheek to nose tip
+          dist(454, 1) / eyeBase,               // 11. Right cheek to nose tip
+          dist(10, 152) / eyeBase               // 12. Total facial vertical span
+        ];
+      }
+
+      function compareDescriptors(d1, d2) {
+        if (!d1 || !d2 || d1.length !== d2.length) return { euclidean: 999, similarity: 0 };
+        let sumSq = 0;
+        for (let i = 0; i < d1.length; i++) {
+          const diff = d1[i] - d2[i];
+          sumSq += diff * diff;
+        }
+        const euclidean = Math.sqrt(sumSq);
+        // Normalized similarity score: Euclidean distance < 0.12 is extremely identical (~95%), > 0.35 is different face
+        const similarity = Math.max(0, Math.min(100, Math.round((1 - euclidean / 0.35) * 100)));
+        return { euclidean, similarity };
+      }
+
+      // Draw real-time facial landmark points on canvas overlay
+      function drawBiometricLandmarks(landmarks, ctx, W, H, isMatch) {
+        ctx.clearRect(0, 0, W, H);
+        if (!landmarks || landmarks.length === 0) return;
+
+        // Draw key feature rings
+        ctx.lineWidth = 1.5;
+        const color = isMatch ? '#10B981' : '#38BDF8';
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+
+        // Draw eyes, nose, mouth landmarks
+        const keyIndices = [
+          33, 133, 159, 145, // Left eye
+          362, 263, 386, 374, // Right eye
+          1, 2, 98, 327, // Nose
+          61, 291, 0, 17, 14, 13, // Lips
+          10, 152, 234, 454 // Forehead, chin, cheeks
+        ];
+
+        keyIndices.forEach(idx => {
+          const pt = landmarks[idx];
+          if (!pt) return;
+          const x = pt.x * W;
+          const y = pt.y * H;
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+          ctx.fill();
+        });
+
+        // Connect eye centers and facial midline
+        const pNose = landmarks[1];
+        const pChin = landmarks[152];
+        const pForehead = landmarks[10];
+        if (pNose && pChin && pForehead) {
+          ctx.beginPath();
+          ctx.moveTo(pForehead.x * W, pForehead.y * H);
+          ctx.lineTo(pNose.x * W, pNose.y * H);
+          ctx.lineTo(pChin.x * W, pChin.y * H);
+          ctx.setLineDash([3, 3]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      // Dispatched by MediaPipe onFaceMeshResults when isBiometricScanActive is true
+      window.handleBiometricModalResults = function(results) {
+        const overlay = document.getElementById('bioCanvasOverlay');
+        const status = document.getElementById('bioScanStatus');
+        const laser = document.getElementById('bioLaserLine');
+        const btnCapture = document.getElementById('btnCaptureEnrollFace');
+        if (!overlay) return;
+
+        const ctx = overlay.getContext('2d');
+        const W = overlay.width;
+        const H = overlay.height;
+
+        // CASE 1: CAMERA COVERED, DARK, OR NO FACE DETECTED
+        if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
+          ctx.clearRect(0, 0, W, H);
+          if (status) {
+            status.textContent = '● ⚠️ NO FACE DETECTED: Remove camera cover & position face in frame.';
+            status.style.color = '#EF4444';
+            status.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            status.style.background = 'rgba(239, 68, 68, 0.12)';
+          }
+          if (laser) {
+            laser.style.background = '#EF4444';
+            laser.style.boxShadow = '0 0 15px #EF4444';
+          }
+          if (btnCapture) btnCapture.style.display = 'none';
+          consecutiveMatches = 0;
+          stableDetectedLandmarks = null;
+          return;
+        }
+
+        // CASE 2: REAL FACE DETECTED
+        const landmarks = results.multiFaceLandmarks[0];
+        stableDetectedLandmarks = landmarks;
+        const liveDescriptor = extractFaceDescriptor(landmarks);
+
+        // Check Mode: REGISTRATION vs UNLOCK
+        if (currentBioMode === 'register') {
+          drawBiometricLandmarks(landmarks, ctx, W, H, false);
+          if (laser) {
+            laser.style.background = '#6366F1';
+            laser.style.boxShadow = '0 0 15px #6366F1, 0 0 30px #818CF8';
+          }
+          if (status) {
+            status.textContent = '● ✓ FACE DETECTED: 468 landmarks acquired. Click below to register!';
+            status.style.color = '#818CF8';
+            status.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+            status.style.background = 'rgba(99, 102, 241, 0.12)';
+          }
+          if (btnCapture) btnCapture.style.display = 'block';
+        } else {
+          // UNLOCK MODE: Compare with enrolled template
+          const enrolled = getEnrolledFace();
+          if (!enrolled) {
+            drawBiometricLandmarks(landmarks, ctx, W, H, false);
+            if (status) {
+              status.textContent = '● ⚠️ NO FACE REGISTERED YET. Please click "Switch to Register Face" first!';
+              status.style.color = '#F59E0B';
+              status.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+              status.style.background = 'rgba(245, 158, 11, 0.12)';
+            }
+            if (laser) {
+              laser.style.background = '#F59E0B';
+              laser.style.boxShadow = '0 0 15px #F59E0B';
+            }
+            return;
+          }
+
+          const { euclidean, similarity } = compareDescriptors(liveDescriptor, enrolled.descriptor);
+
+          if (similarity >= 75) {
+            consecutiveMatches++;
+            drawBiometricLandmarks(landmarks, ctx, W, H, true);
+            if (laser) {
+              laser.style.background = '#10B981';
+              laser.style.boxShadow = '0 0 15px #10B981, 0 0 30px #34D399';
+            }
+            if (status) {
+              status.textContent = `● VERIFYING: ${similarity}% Match (Confirmed: ${consecutiveMatches}/3 frames)...`;
+              status.style.color = '#10B981';
+              status.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+              status.style.background = 'rgba(16, 185, 129, 0.15)';
+            }
+
+            if (consecutiveMatches >= 3) {
+              // Successfully verified!
+              window.isBiometricScanActive = false;
+              if (status) {
+                status.textContent = `✓ BIOMETRIC MATCH CONFIRMED: ${enrolled.name} (${similarity}% Confidence)!`;
+              }
+
+              setTimeout(() => {
+                stopBiometricScan();
+                const modal = document.getElementById('authBiometricModal');
+                if (modal) modal.classList.remove('open');
+
+                // Log in as enrolled user
+                const users = getUsers();
+                const target = users.find(u => u.email === enrolled.email) || users[0] || {
+                  name: enrolled.name,
+                  email: enrolled.email || 'researcher@emotisync.ai',
+                  role: enrolled.role || 'Lead AI & Multimodal Researcher',
+                  avatar: enrolled.avatar || 'VP'
+                };
+
+                setCurrentUser(target, true);
+                recordAuditLog('Biometric Face Unlock', `468-Pt Landmark Mesh (${similarity}% Match)`, 'PASS');
+                showToast('Biometric Match Confirmed', `Welcome back, ${target.name}!`, 'success');
+
+                const lockOverlay = document.getElementById('sessionLockOverlay');
+                if (lockOverlay) lockOverlay.classList.remove('active');
+
+                setTimeout(() => {
+                  switchView('viewIntro');
+                }, 400);
+              }, 600);
+            }
+          } else {
+            // Face does not match enrolled template!
+            consecutiveMatches = 0;
+            drawBiometricLandmarks(landmarks, ctx, W, H, false);
+            if (laser) {
+              laser.style.background = '#EF4444';
+              laser.style.boxShadow = '0 0 15px #EF4444';
+            }
+            if (status) {
+              status.textContent = `● ✕ FACE MISMATCH: Unrecognized geometry (${similarity}% similarity, required 75%). Access Denied.`;
+              status.style.color = '#EF4444';
+              status.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+              status.style.background = 'rgba(239, 68, 68, 0.12)';
+            }
+          }
+        }
+      };
+
+      function startBiometricFaceScan(mode = 'unlock') {
+        currentBioMode = mode;
+        consecutiveMatches = 0;
+        stableDetectedLandmarks = null;
+        window.isBiometricScanActive = true;
+
         const modal = document.getElementById('authBiometricModal');
         const video = document.getElementById('bioVideoPreview');
         const status = document.getElementById('bioScanStatus');
+        const badge = document.getElementById('bioModeBadge');
+        const title = document.getElementById('bioModalTitle');
+        const subtitle = document.getElementById('bioModalSubtitle');
+        const btnToggle = document.getElementById('btnToggleBioMode');
+        const btnCapture = document.getElementById('btnCaptureEnrollFace');
 
         if (!modal) return;
         modal.classList.add('open');
-        if (status) status.textContent = '● ACQUIRING OPTICAL BIOMETRIC FEED...';
 
-        // Attempt real camera stream
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 320, height: 320 } })
-            .then(stream => {
-              bioStream = stream;
-              if (video) video.srcObject = stream;
-            })
-            .catch(() => {
-              if (status) status.textContent = '● CAMERA IN USE - RUNNING HARDWARE SIMULATION...';
-            });
+        // Configure UI for mode
+        if (mode === 'register') {
+          if (badge) {
+            badge.textContent = 'MODE: FACE BIOMETRIC REGISTRATION';
+            badge.className = 'bio-mode-badge register-mode';
+          }
+          if (title) title.textContent = 'Register Face Biometrics';
+          if (subtitle) subtitle.textContent = 'Look at the camera. Position your face in the reticle to capture your 3D biometric template.';
+          if (btnToggle) btnToggle.textContent = 'Switch to Face Unlock';
+          if (btnCapture) btnCapture.style.display = 'none';
+        } else {
+          if (badge) {
+            badge.textContent = 'MODE: BIOMETRIC FACE UNLOCK';
+            badge.className = 'bio-mode-badge unlock-mode';
+          }
+          if (title) title.textContent = 'AI Biometric Face Verification';
+          if (subtitle) subtitle.textContent = 'Look at the camera. 468-point 3D facial action unit mesh will be matched against your enrolled profile.';
+          if (btnToggle) btnToggle.textContent = 'Switch to Register Face';
+          if (btnCapture) btnCapture.style.display = 'none';
         }
 
-        // Animated scan telemetry progression
-        setTimeout(() => {
-          if (status) status.textContent = '● DETECTED: 468-POINT CANONICAL LANDMARK MESH';
-        }, 700);
+        if (status) {
+          status.textContent = '● STARTING CAMERA & NEURAL MESH...';
+          status.style.color = '#34D399';
+        }
 
-        setTimeout(() => {
-          if (status) status.textContent = '● ANALYZING ACTION UNITS: AU1, AU4, AU12...';
-        }, 1400);
+        // Ensure MediaPipe is loaded
+        if (typeof initMediaPipe === 'function') {
+          initMediaPipe();
+        }
 
-        setTimeout(() => {
-          if (status) status.textContent = '✓ TEMPLATE MATCH: 99.7% BIOMETRIC CONFIDENCE!';
-        }, 2100);
+        // Start Real Webcam Stream
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 480 }, height: { ideal: 480 } } })
+            .then(stream => {
+              bioStream = stream;
+              if (video) {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                  video.play();
+                  startMediaPipeFeedLoop(video);
+                };
+              }
+            })
+            .catch(err => {
+              console.warn('[Biometric] Camera access error:', err);
+              if (status) {
+                status.textContent = '● ⚠️ CAMERA ACCESS BLOCKED: Please allow camera permissions.';
+                status.style.color = '#EF4444';
+              }
+            });
+        }
+      }
 
-        setTimeout(() => {
-          stopBiometricScan();
-          modal.classList.remove('open');
-
-          // Log in as registered primary researcher
-          const users = getUsers();
-          const target = users[0] || {
-            name: 'Vishwajith Prem',
-            email: 'researcher@emotisync.ai',
-            role: 'Lead AI & Multimodal Researcher',
-            avatar: 'VP'
-          };
-          setCurrentUser(target, true);
-          recordAuditLog('User Sign-In', 'Biometric FaceMesh Scan (99.7%)', 'PASS');
-          showToast('Biometric Match Verified', `Welcome back, ${target.name}!`, 'success');
-
-          // If lock screen is open, close it
-          const lockOverlay = document.getElementById('sessionLockOverlay');
-          if (lockOverlay) lockOverlay.classList.remove('active');
-
-          setTimeout(() => {
-            switchView('viewIntro');
-          }, 500);
-        }, 2600);
+      function startMediaPipeFeedLoop(video) {
+        if (!window.isBiometricScanActive) return;
+        if (video && video.readyState >= 2 && !bioIsSending && typeof faceMesh !== 'undefined' && faceMesh) {
+          bioIsSending = true;
+          faceMesh.send({ image: video })
+            .catch(() => {})
+            .finally(() => {
+              bioIsSending = false;
+            });
+        }
+        bioAnimFrameId = requestAnimationFrame(() => startMediaPipeFeedLoop(video));
       }
 
       function stopBiometricScan() {
+        window.isBiometricScanActive = false;
+        if (bioAnimFrameId) {
+          cancelAnimationFrame(bioAnimFrameId);
+          bioAnimFrameId = null;
+        }
         if (bioStream) {
           bioStream.getTracks().forEach(track => track.stop());
           bioStream = null;
         }
         const video = document.getElementById('bioVideoPreview');
         if (video) video.srcObject = null;
+        const overlay = document.getElementById('bioCanvasOverlay');
+        if (overlay) {
+          const ctx = overlay.getContext('2d');
+          ctx.clearRect(0, 0, overlay.width, overlay.height);
+        }
       }
 
       function renderAuditTable() {
@@ -19238,7 +19616,76 @@
         const btnFaceUnlock = document.getElementById('btnTriggerFaceUnlock');
         if (btnFaceUnlock) {
           btnFaceUnlock.addEventListener('click', () => {
-            startBiometricFaceScan();
+            const enrolled = getEnrolledFace();
+            if (!enrolled) {
+              showToast('No Face Enrolled', 'Please register your face first before using Face Unlock.', 'info');
+              startBiometricFaceScan('register');
+            } else {
+              startBiometricFaceScan('unlock');
+            }
+          });
+        }
+
+        // Trigger Face Register / Enrollment button in Sign In Pane
+        const btnFaceRegister = document.getElementById('btnTriggerFaceRegister');
+        if (btnFaceRegister) {
+          btnFaceRegister.addEventListener('click', () => {
+            startBiometricFaceScan('register');
+          });
+        }
+
+        // Capture & Register Face Button inside Modal
+        const btnCaptureEnroll = document.getElementById('btnCaptureEnrollFace');
+        if (btnCaptureEnroll) {
+          btnCaptureEnroll.addEventListener('click', () => {
+            if (!stableDetectedLandmarks) {
+              showToast('No Face in Frame', 'Please position your face clearly in the camera view.', 'error');
+              return;
+            }
+            const desc = extractFaceDescriptor(stableDetectedLandmarks);
+            if (!desc) {
+              showToast('Landmark Error', 'Could not compute facial ratios. Please look directly at camera.', 'error');
+              return;
+            }
+
+            const currentUser = getCurrentUser();
+            const enrolledData = {
+              descriptor: desc,
+              name: currentUser ? currentUser.name : 'Vishwajith Prem',
+              email: currentUser ? currentUser.email : 'researcher@emotisync.ai',
+              role: currentUser ? currentUser.role : 'Lead AI & Multimodal Researcher',
+              avatar: currentUser ? currentUser.avatar : 'VP',
+              enrolledAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            };
+
+            saveEnrolledFace(enrolledData);
+            recordAuditLog('Face Biometrics Enrolled', `User: ${enrolledData.name} (468-Pt Landmark Mesh)`, 'PASS');
+
+            const status = document.getElementById('bioScanStatus');
+            if (status) {
+              status.textContent = `✓ SUCCESS: Face enrolled for ${enrolledData.name}! You can now unlock anytime.`;
+              status.style.color = '#10B981';
+            }
+
+            showToast('Face Registered', `Biometric profile saved for ${enrolledData.name}!`, 'success');
+
+            setTimeout(() => {
+              stopBiometricScan();
+              const modal = document.getElementById('authBiometricModal');
+              if (modal) modal.classList.remove('open');
+            }, 1200);
+          });
+        }
+
+        // Toggle between Unlock & Register mode inside Modal
+        const btnToggleBio = document.getElementById('btnToggleBioMode');
+        if (btnToggleBio) {
+          btnToggleBio.addEventListener('click', () => {
+            if (currentBioMode === 'unlock') {
+              startBiometricFaceScan('register');
+            } else {
+              startBiometricFaceScan('unlock');
+            }
           });
         }
 
@@ -19667,6 +20114,7 @@
         getUsers(); // Ensures default demo users are initialized in localStorage
         setupEventListeners();
         updateAllHeaderProfiles();
+        updateBioUIIndicators();
       }
 
       return {
@@ -19674,6 +20122,9 @@
         getCurrentUser: getCurrentUser,
         showToast: showToast,
         lockSession: lockSession,
+        openFaceEnrollment: function() {
+          startBiometricFaceScan('register');
+        },
         openAuditLog: function() {
           renderAuditTable();
           const modal = document.getElementById('authAuditModal');
