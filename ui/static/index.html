@@ -6234,6 +6234,970 @@
       color: #4F46E5;
       letter-spacing: 0.8px;
     }
+
+    /* ========================================================
+       💎 PROFESSIONAL USER AUTHENTICATION SYSTEM STYLES
+       Palette: Frosted Pearl Canvas (#EEF2F6), Solid Crisp White (#FFFFFF),
+       Electric Indigo (#4F46E5 / #6366F1) & Celestial Sky Blue (#0284C7)
+       ======================================================== */
+    
+    /* Top Titlebar Auth Profile Slot */
+    .emotix-titlebar-auth-slot {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 0.5rem;
+    }
+
+    .btn-titlebar-signin {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.45);
+      color: #EEF2FF;
+      font-family: var(--font-main);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      padding: 0.22rem 0.65rem;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+    .btn-titlebar-signin:hover {
+      background: rgba(99, 102, 241, 0.35);
+      border-color: #818CF8;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+      transform: translateY(-1px);
+    }
+
+    /* Workspace Header Auth Profile Pill */
+    .header-auth-slot {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .user-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.25);
+      padding: 0.28rem 0.75rem 0.28rem 0.35rem;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+      transition: all 0.22s ease;
+      user-select: none;
+    }
+    .user-pill-badge:hover {
+      border-color: #6366F1;
+      box-shadow: 0 6px 18px rgba(99, 102, 241, 0.20);
+      transform: translateY(-1px);
+    }
+    .user-pill-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4F46E5 0%, #0284C7 100%);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #FFFFFF;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+      flex-shrink: 0;
+    }
+    .user-pill-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+      text-align: left;
+    }
+    .user-pill-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      max-width: 110px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-pill-role {
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: #6366F1;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .user-pill-caret {
+      font-size: 0.65rem;
+      color: #94A3B8;
+      transition: transform 0.2s ease;
+      margin-left: 0.15rem;
+    }
+    .user-pill-badge:hover .user-pill-caret {
+      transform: translateY(1.5px);
+      color: #4F46E5;
+    }
+
+    /* Floating User Profile Dropdown Menu */
+    .user-profile-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 290px;
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-md);
+      box-shadow: 0 18px 45px -8px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(99, 102, 241, 0.1);
+      padding: 1rem;
+      z-index: 10000;
+      display: none;
+      animation: dropdownFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .user-profile-dropdown.open {
+      display: block;
+    }
+    @keyframes dropdownFadeIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .dropdown-header-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid #E2E8F0;
+      margin-bottom: 0.75rem;
+    }
+    .dropdown-avatar-lg {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4F46E5 0%, #0284C7 100%);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+      flex-shrink: 0;
+    }
+    .dropdown-meta-name {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .dropdown-meta-email {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+    .dropdown-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+    .dropdown-role-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-pill);
+      background: rgba(99, 102, 241, 0.12);
+      color: #4F46E5;
+    }
+    .dropdown-security-status {
+      font-size: 0.68rem;
+      color: #059669;
+      background: #ECFDF5;
+      padding: 0.45rem 0.65rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid #A7F3D0;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+    }
+    .dropdown-menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .dropdown-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .dropdown-menu-item:hover {
+      background: #F1F5F9;
+      color: var(--text-primary);
+    }
+    .dropdown-menu-item.logout-btn {
+      color: #DC2626;
+      border-top: 1px solid #E2E8F0;
+      margin-top: 0.4rem;
+      padding-top: 0.65rem;
+    }
+    .dropdown-menu-item.logout-btn:hover {
+      background: #FEF2F2;
+      color: #B91C1C;
+    }
+
+    /* Hero Sign In / Account CTA Button */
+    .btn-hero-auth {
+      padding: 0.95rem 2.2rem;
+      font-family: var(--font-main);
+      font-size: 0.96rem;
+      font-weight: 800;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      background: #FFFFFF;
+      border: 2px solid rgba(99, 102, 241, 0.45);
+      color: #4F46E5 !important;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.15);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-hero-auth:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 28px rgba(99, 102, 241, 0.30);
+      background: #EEF2FF;
+      border-color: #6366F1;
+    }
+    .auth-btn-icon {
+      font-size: 1.15rem;
+    }
+    .auth-btn-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      background: rgba(99, 102, 241, 0.12);
+      color: #4F46E5;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.8px;
+    }
+
+    /* ========================================================
+       AUTH VIEW: MAIN CONTAINER & DUAL-PANE SHOWCASE
+       ======================================================== */
+    #viewAuth {
+      min-height: calc(100vh - var(--titlebar-h));
+      display: none;
+      padding: 2.5rem 1.5rem 4rem 1.5rem;
+      background: #EEF2F6;
+      background-image: 
+        radial-gradient(circle at 12% 18%, rgba(99, 102, 241, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.14) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 55%);
+      position: relative;
+    }
+    #viewAuth.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-view-wrapper {
+      width: 100%;
+      max-width: 1060px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Top Return Bar */
+    .auth-top-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .auth-return-btn {
+      background: #FFFFFF;
+      border: 1.5px solid rgba(99, 102, 241, 0.25);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.5rem 1.15rem;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      transition: all 0.2s ease;
+    }
+    .auth-return-btn:hover {
+      border-color: #6366F1;
+      background: #EEF2FF;
+      color: #4F46E5;
+      transform: translateX(-3px);
+    }
+    .auth-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #0284C7;
+      background: #E0F2FE;
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid #BAE6FD;
+      letter-spacing: 0.6px;
+    }
+
+    /* Master Dual-Panel Card */
+    .auth-card-master {
+      display: grid;
+      grid-template-columns: 4.8fr 6.2fr;
+      background: #FFFFFF;
+      border-radius: 22px;
+      box-shadow: 
+        0 25px 60px -12px rgba(15, 23, 42, 0.16),
+        0 0 0 1px rgba(99, 102, 241, 0.22);
+      overflow: hidden;
+      min-height: 640px;
+    }
+
+    /* LEFT SHOWCASE PANEL: Deep Cyber Indigo Vault */
+    .auth-showcase-panel {
+      background: linear-gradient(145deg, #0F172A 0%, #1E1B4B 60%, #312E81 100%);
+      padding: 3rem 2.2rem;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-showcase-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(rgba(99, 102, 241, 0.25) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .auth-showcase-panel::after {
+      content: '';
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(2, 132, 199, 0.3) 0%, transparent 70%);
+      top: -60px;
+      right: -60px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .auth-showcase-content {
+      position: relative;
+      z-index: 2;
+    }
+    .auth-brand-emblem-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 2rem;
+    }
+    .auth-brand-logo-img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(2, 132, 199, 0.6));
+    }
+    .auth-brand-name-group h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #FFFFFF;
+      line-height: 1.1;
+    }
+    .auth-brand-name-group p {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #38BDF8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .auth-showcase-tagline {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.4px;
+      margin-bottom: 1rem;
+      color: #FFFFFF;
+    }
+    .auth-showcase-tagline span {
+      background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #F472B6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .auth-showcase-desc {
+      font-size: 0.85rem;
+      color: #94A3B8;
+      line-height: 1.6;
+      margin-bottom: 2.2rem;
+    }
+
+    .auth-feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      margin-bottom: 2.5rem;
+    }
+    .auth-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .auth-feature-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
+    }
+    .auth-feature-text h4 {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #F8FAFC;
+      margin-bottom: 0.15rem;
+    }
+    .auth-feature-text p {
+      font-size: 0.72rem;
+      color: #94A3B8;
+      line-height: 1.4;
+    }
+
+    .auth-showcase-footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding-top: 1.25rem;
+    }
+    .auth-security-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: #34D399;
+      letter-spacing: 0.5px;
+    }
+
+    /* RIGHT FORM PANEL: Crisp Modern Auth Center */
+    .auth-form-panel {
+      padding: 3rem 2.8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #FFFFFF;
+    }
+
+    /* Segmented Tab Controller */
+    .auth-tab-segment {
+      display: flex;
+      background: #F1F5F9;
+      padding: 0.3rem;
+      border-radius: var(--radius-pill);
+      margin-bottom: 2rem;
+      border: 1px solid #E2E8F0;
+    }
+    .auth-tab-btn {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      border: none;
+      background: transparent;
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .auth-tab-btn.active {
+      background: #FFFFFF;
+      color: #4F46E5;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Tab Content Panes */
+    .auth-pane {
+      display: none;
+      flex-direction: column;
+    }
+    .auth-pane.active {
+      display: flex;
+      animation: paneSlide 0.25s ease-out;
+    }
+    @keyframes paneSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-header-block {
+      margin-bottom: 1.5rem;
+    }
+    .auth-header-title {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.4px;
+      margin-bottom: 0.35rem;
+    }
+    .auth-header-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Quick Demo Logins Box */
+    .quick-demo-box {
+      background: #F8FAFC;
+      border: 1px dashed #CBD5E1;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+    .quick-demo-header {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #64748B;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 0.55rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .quick-demo-pills-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .quick-demo-pill {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      padding: 0.32rem 0.65rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      transition: all 0.2s ease;
+    }
+    .quick-demo-pill:hover {
+      border-color: #6366F1;
+      color: #4F46E5;
+      background: #EEF2FF;
+      transform: translateY(-1px);
+    }
+    .quick-demo-pill.active-chip {
+      background: #EEF2FF;
+      border-color: #6366F1;
+      color: #4F46E5;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Input Controls */
+    .auth-form-group {
+      margin-bottom: 1.15rem;
+      position: relative;
+    }
+    .auth-form-label {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 0.45rem;
+      letter-spacing: 0.3px;
+    }
+    .auth-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .auth-input-icon {
+      position: absolute;
+      left: 1rem;
+      font-size: 0.95rem;
+      color: #94A3B8;
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+    .auth-input-field {
+      width: 100%;
+      height: 46px;
+      padding: 0 2.6rem 0 2.65rem;
+      font-family: var(--font-main);
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .auth-input-field:focus {
+      background: #FFFFFF;
+      border-color: #6366F1;
+      box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.16);
+    }
+    .auth-input-field:focus + .auth-input-icon,
+    .auth-input-wrapper:focus-within .auth-input-icon {
+      color: #4F46E5;
+    }
+    .auth-password-toggle {
+      position: absolute;
+      right: 0.85rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #94A3B8;
+      padding: 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+    }
+    .auth-password-toggle:hover {
+      color: #4F46E5;
+    }
+
+    /* Select Dropdown */
+    .auth-select-field {
+      width: 100%;
+      height: 46px;
+      padding: 0 1rem 0 2.65rem;
+      font-family: var(--font-main);
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .auth-select-field:focus {
+      background: #FFFFFF;
+      border-color: #6366F1;
+      box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.16);
+    }
+
+    /* Options Row: Remember Me & Forgot Password */
+    .auth-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.35rem;
+      font-size: 0.78rem;
+    }
+    .auth-checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    .auth-checkbox-label input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #6366F1;
+      cursor: pointer;
+    }
+    .auth-forgot-link {
+      color: #4F46E5;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .auth-forgot-link:hover {
+      color: #3730A3;
+      text-decoration: underline;
+    }
+
+    /* Password Strength Meter */
+    .password-strength-container {
+      margin-top: 0.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .password-strength-bar {
+      height: 4.5px;
+      width: 100%;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      gap: 3px;
+    }
+    .strength-segment {
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      transition: background-color 0.25s ease;
+      border-radius: 999px;
+    }
+    .password-strength-text {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #64748B;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Primary Submit CTA Button */
+    .auth-btn-primary {
+      width: 100%;
+      height: 48px;
+      font-family: var(--font-main);
+      font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #0284C7 100%);
+      border: none;
+      color: #FFFFFF;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.32);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 0.5rem;
+    }
+    .auth-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(79, 70, 229, 0.45);
+      background: linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #0284C7 100%);
+    }
+    .auth-btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Divider & Guest Action */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0 1.15rem 0;
+      color: #94A3B8;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #E2E8F0;
+    }
+    .auth-divider span {
+      padding: 0 0.85rem;
+    }
+
+    .auth-btn-guest {
+      width: 100%;
+      height: 44px;
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      color: var(--text-secondary);
+      font-family: var(--font-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .auth-btn-guest:hover {
+      background: #EEF2FF;
+      border-color: #6366F1;
+      color: #4F46E5;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.12);
+    }
+
+    /* Floating Toast Notifications */
+    .auth-toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .auth-toast {
+      pointer-events: auto;
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      box-shadow: 0 14px 35px -6px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(99, 102, 241, 0.18);
+      padding: 0.85rem 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 290px;
+      max-width: 420px;
+      animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.25s ease;
+    }
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(40px) scale(0.95); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    .auth-toast.toast-success {
+      border-left: 4.5px solid #10B981;
+    }
+    .auth-toast.toast-error {
+      border-left: 4.5px solid #EF4444;
+    }
+    .auth-toast.toast-info {
+      border-left: 4.5px solid #6366F1;
+    }
+    .toast-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .toast-body {
+      flex: 1;
+    }
+    .toast-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
+    .toast-message {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Forgot Password Modal */
+    .auth-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      z-index: 100000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .auth-modal-overlay.open {
+      display: flex;
+      animation: modalFadeIn 0.22s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .auth-modal-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      width: 100%;
+      max-width: 440px;
+      padding: 2rem;
+      position: relative;
+    }
+    .auth-modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      color: #94A3B8;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .auth-modal-close:hover {
+      color: #0F172A;
+    }
+
+    /* Responsive Media Queries */
+    @media (max-width: 860px) {
+      .auth-card-master {
+        grid-template-columns: 1fr;
+      }
+      .auth-showcase-panel {
+        padding: 2rem 1.5rem;
+      }
+      .auth-form-panel {
+        padding: 2.2rem 1.5rem;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -6252,6 +7216,8 @@
           <span class="titlebar-pulse-node"></span>
           <span class="titlebar-telemetry-text">NEURAL ENGINE ACTIVE</span>
         </div>
+        <!-- User Authentication & Profile Slot -->
+        <div class="emotix-titlebar-auth-slot" id="titlebarAuthSlot"></div>
       </div>
     </div>
   </header>
@@ -6297,6 +7263,13 @@
             <span>🚀</span>
             <span>LET'S START</span>
             <span class="btn-start-arrow">&rarr;</span>
+          </button>
+
+          <!-- User Authentication Portal CTA -->
+          <button class="btn-hero-auth" id="btnHeroAuth" title="Sign In or Access Research Portal">
+            <span class="auth-btn-icon">🔐</span>
+            <span id="heroAuthBtnText">SIGN IN / ACCOUNT</span>
+            <span class="auth-btn-badge" id="heroAuthBtnBadge">SECURE</span>
           </button>
 
           <button class="btn-install-software" id="btnHeroInstallSoftware" title="Install EmotiSync as Mobile App or Desktop PC Software">
@@ -6357,6 +7330,262 @@
 
     </div>
   </section>
+
+
+  <!-- ========================================================
+       VIEW: USER AUTHENTICATION & RESEARCHER GATEWAY
+       Dedicated professional authentication system with demo logins,
+       password strength telemetry & local zero-trust session management
+       ======================================================== -->
+  <section class="app-view" id="viewAuth">
+    <div class="auth-view-wrapper">
+      
+      <!-- Top Return Bar -->
+      <div class="auth-top-nav-bar">
+        <button class="auth-return-btn" id="btnAuthReturnHome">
+          <span>&larr;</span> Return to Home
+        </button>
+        <div class="auth-status-chip">
+          <span>🛡️</span> ZERO-KNOWLEDGE AFFECTIVE GATEWAY
+        </div>
+      </div>
+
+      <!-- Master Dual-Panel Card -->
+      <div class="auth-card-master">
+        
+        <!-- LEFT SHOWCASE PANEL: Deep Cyber Vault -->
+        <div class="auth-showcase-panel">
+          <div class="auth-showcase-content">
+            
+            <div class="auth-brand-emblem-wrap">
+              <img src="./assets/emotisync_medallion.png" alt="EmotiSync" class="auth-brand-logo-img" onerror="this.onerror=null;this.src='./demo_samples/emotisync_medallion.png';">
+              <div class="auth-brand-name-group">
+                <h3>EmotiSync</h3>
+                <p>Affective AI Platform</p>
+              </div>
+            </div>
+
+            <h2 class="auth-showcase-tagline">
+              Decentralized Affective <span>Intelligence</span>
+            </h2>
+
+            <p class="auth-showcase-desc">
+              Authenticate to unlock high-fidelity 468-point 3D facial action unit geometry and vocal prosodic harmonics with calibrated 70/30 cross-modal decision fusion.
+            </p>
+
+            <div class="auth-feature-list">
+              <div class="auth-feature-item">
+                <div class="auth-feature-icon-box">🔒</div>
+                <div class="auth-feature-text">
+                  <h4>Client-Side Edge Privacy</h4>
+                  <p>Landmark vectors are analyzed 100% in local memory. Zero video or voice data leaves your browser.</p>
+                </div>
+              </div>
+
+              <div class="auth-feature-item">
+                <div class="auth-feature-icon-box">🧠</div>
+                <div class="auth-feature-text">
+                  <h4>Dual-Stream Biometric Fusion</h4>
+                  <p>FACS facial geometry (70%) and acoustic vocal frequency (30%) yield comprehensive affective scores.</p>
+                </div>
+              </div>
+
+              <div class="auth-feature-item">
+                <div class="auth-feature-icon-box">📊</div>
+                <div class="auth-feature-text">
+                  <h4>Session Persistence &amp; Exports</h4>
+                  <p>Generate forensic PDF biometric dossiers and longitudinal affective tracking reports.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="auth-showcase-footer">
+            <div class="auth-security-badge">
+              <span>●</span> NIST 800-53 &amp; HIPAA RESEARCH COMPLIANT &bull; v2.5
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT FORM PANEL: Crisp Modern Auth Center -->
+        <div class="auth-form-panel">
+          
+          <!-- Segmented Tab Switcher -->
+          <div class="auth-tab-segment">
+            <button class="auth-tab-btn active" id="btnTabSignIn">
+              <span>🔑</span> Sign In
+            </button>
+            <button class="auth-tab-btn" id="btnTabSignUp">
+              <span>✨</span> Create Account
+            </button>
+          </div>
+
+          <!-- TAB 1: SIGN IN PANE -->
+          <div class="auth-pane active" id="paneSignIn">
+            
+            <div class="auth-header-block">
+              <h3 class="auth-header-title">Welcome Back</h3>
+              <p class="auth-header-subtitle">Enter your researcher credentials to access the multimodal workstation.</p>
+            </div>
+
+            <!-- Quick Demo One-Click Fill -->
+            <div class="quick-demo-box">
+              <div class="quick-demo-header">
+                <span>⚡</span> One-Click Demo Accounts (Instant Fill):
+              </div>
+              <div class="quick-demo-pills-row">
+                <button type="button" class="quick-demo-pill" id="demoPillResearcher" title="Autofill Lead AI Researcher Credentials">
+                  <span>👤</span> Lead Researcher
+                </button>
+                <button type="button" class="quick-demo-pill" id="demoPillClinician" title="Autofill Clinical Psychologist Credentials">
+                  <span>🩺</span> Clinician
+                </button>
+                <button type="button" class="quick-demo-pill" id="demoPillStudent" title="Autofill Student Evaluator Credentials">
+                  <span>🎓</span> Student
+                </button>
+              </div>
+            </div>
+
+            <form id="formSignIn" onsubmit="return false;">
+              <div class="auth-form-group">
+                <label class="auth-form-label" for="signInEmail">Work / Research Email</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">✉️</span>
+                  <input type="email" id="signInEmail" class="auth-input-field" placeholder="researcher@emotisync.ai" required autocomplete="email">
+                </div>
+              </div>
+
+              <div class="auth-form-group">
+                <label class="auth-form-label" for="signInPassword">Password</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">🔒</span>
+                  <input type="password" id="signInPassword" class="auth-input-field" placeholder="••••••••••••" required autocomplete="current-password">
+                  <button type="button" class="auth-password-toggle" id="btnToggleSignInPass" title="Show / Hide Password">👁️</button>
+                </div>
+              </div>
+
+              <div class="auth-options-row">
+                <label class="auth-checkbox-label">
+                  <input type="checkbox" id="chkRememberMe" checked>
+                  <span>Remember this workstation</span>
+                </label>
+                <a class="auth-forgot-link" id="linkForgotPassword">Forgot password?</a>
+              </div>
+
+              <button type="submit" class="auth-btn-primary" id="btnSubmitSignIn">
+                <span>Sign In to Workstation</span>
+                <span>&rarr;</span>
+              </button>
+            </form>
+
+            <div class="auth-divider">
+              <span>OR</span>
+            </div>
+
+            <button type="button" class="auth-btn-guest" id="btnContinueAsGuest">
+              <span>👤</span> Continue as Guest (Exploration Mode) &rarr;
+            </button>
+
+          </div>
+
+          <!-- TAB 2: SIGN UP PANE -->
+          <div class="auth-pane" id="paneSignUp">
+            
+            <div class="auth-header-block">
+              <h3 class="auth-header-title">Create Verified Profile</h3>
+              <p class="auth-header-subtitle">Register your institutional identity for customized emotion analytics and export privileges.</p>
+            </div>
+
+            <form id="formSignUp" onsubmit="return false;">
+              <div class="auth-form-group">
+                <label class="auth-form-label" for="signUpName">Full Name</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">👤</span>
+                  <input type="text" id="signUpName" class="auth-input-field" placeholder="Dr. Vishwajith Prem" required autocomplete="name">
+                </div>
+              </div>
+
+              <div class="auth-form-group">
+                <label class="auth-form-label" for="signUpEmail">Institutional Email</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">✉️</span>
+                  <input type="email" id="signUpEmail" class="auth-input-field" placeholder="vishwajith@institute.edu" required autocomplete="email">
+                </div>
+              </div>
+
+              <div class="auth-form-group">
+                <label class="auth-form-label" for="signUpRole">Research / Professional Discipline</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">💼</span>
+                  <select id="signUpRole" class="auth-select-field" required>
+                    <option value="Lead AI Researcher" selected>Lead AI &amp; Multimodal Researcher</option>
+                    <option value="Affective Computing Specialist">Affective Computing Specialist</option>
+                    <option value="Clinical Psychologist">Clinical Psychologist / Behavioral Analyst</option>
+                    <option value="HCI &amp; UX Researcher">HCI &amp; User Experience Evaluator</option>
+                    <option value="Academic Scholar / Student">Academic Scholar / Student Observer</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="auth-form-group">
+                <label class="auth-form-label" for="signUpPassword">Password</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">🔒</span>
+                  <input type="password" id="signUpPassword" class="auth-input-field" placeholder="Create strong passphrase" required autocomplete="new-password">
+                  <button type="button" class="auth-password-toggle" id="btnToggleSignUpPass" title="Show / Hide Password">👁️</button>
+                </div>
+                
+                <!-- Live Password Strength Meter -->
+                <div class="password-strength-container">
+                  <div class="password-strength-bar">
+                    <div class="strength-segment" id="strSeg1"></div>
+                    <div class="strength-segment" id="strSeg2"></div>
+                    <div class="strength-segment" id="strSeg3"></div>
+                    <div class="strength-segment" id="strSeg4"></div>
+                  </div>
+                  <div class="password-strength-text">
+                    <span id="strengthLabel">Enter password (min 8 characters)</span>
+                    <span id="strengthScore">0 / 4</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="auth-form-group">
+                <label class="auth-form-label" for="signUpConfirmPassword">Confirm Password</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">🔐</span>
+                  <input type="password" id="signUpConfirmPassword" class="auth-input-field" placeholder="Repeat passphrase" required autocomplete="new-password">
+                </div>
+                <div id="passwordMatchIndicator" style="font-size: 0.68rem; font-weight: 700; margin-top: 0.35rem; display: none;"></div>
+              </div>
+
+              <div class="auth-options-row" style="margin-bottom: 1.25rem;">
+                <label class="auth-checkbox-label">
+                  <input type="checkbox" id="chkAgreeEthics" required checked>
+                  <span style="font-size: 0.72rem; line-height: 1.35;">I agree to Affective AI Ethical Guidelines &amp; Local Landmark Processing terms.</span>
+                </label>
+              </div>
+
+              <button type="submit" class="auth-btn-primary" id="btnSubmitSignUp">
+                <span>Create Verified Account</span>
+                <span>&rarr;</span>
+              </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.15rem; font-size: 0.78rem; color: var(--text-muted);">
+              Already have an account? <a id="linkSwitchToSignIn" style="color: #4F46E5; font-weight: 700; cursor: pointer;">Sign In here</a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
 
   <!-- ========================================================
        VIEW 2: MODE SELECTION HUB
@@ -6460,6 +7689,9 @@
         <button class="nav-switch-btn" id="btnNavMediaFromLive" title="Go to Media Uploads Studio">
           <span>📁</span> Media Uploads
         </button>
+
+        <!-- User Profile Slot in Live Workspace -->
+        <div class="header-auth-slot" id="liveHeaderAuthSlot"></div>
 
         <div class="system-status-pill" id="sysStatusPill">
           <div class="pulse-dot" id="sysStatusDot"></div>
@@ -7386,6 +8618,9 @@
           <span>🔴</span> Live Analysis
         </button>
 
+        <!-- User Profile Slot in Media Studio -->
+        <div class="header-auth-slot" id="mediaHeaderAuthSlot"></div>
+
         <div class="system-status-pill">
           <div class="pulse-dot"></div>
           <span>OFFLINE LAB READY</span>
@@ -8060,6 +9295,47 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+
+
+  <!-- Toast Notification Container -->
+  <div id="authToastContainer" class="auth-toast-container" aria-live="polite"></div>
+
+  <!-- Forgot Password Recovery Modal -->
+  <div id="authForgotModal" class="auth-modal-overlay">
+    <div class="auth-modal-card">
+      <button class="auth-modal-close" id="btnCloseForgotModal" aria-label="Close Modal">&times;</button>
+      <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.85rem;">
+        <span style="font-size: 1.5rem;">🔑</span>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Reset Credentials</h3>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.25rem;">
+        Enter your registered institutional email address. We will verify your credentials and issue an instant local recovery token.
+      </p>
+      
+      <form id="formForgotPassword" onsubmit="return false;">
+        <div class="auth-form-group">
+          <label class="auth-form-label" for="forgotEmail">Email Address</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">✉️</span>
+            <input type="email" id="forgotEmail" class="auth-input-field" placeholder="researcher@emotisync.ai" required>
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label class="auth-form-label" for="forgotNewPass">New Password</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">🔒</span>
+            <input type="password" id="forgotNewPass" class="auth-input-field" placeholder="Enter new strong password" required>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-btn-primary" id="btnSubmitResetPass" style="margin-top: 0.75rem;">
+          <span>Update Password &amp; Unlock</span>
+        </button>
+      </form>
     </div>
   </div>
 
@@ -16135,6 +17411,7 @@
         if (viewId === 'viewLiveApp') history.pushState(null, '', '#live');
         else if (viewId === 'viewMediaUpload') history.pushState(null, '', '#media');
         else if (viewId === 'viewModeSelect') history.pushState(null, '', '#select-mode');
+        else if (viewId === 'viewAuth') history.pushState(null, '', '#auth');
         else history.pushState(null, '', '#');
       }
 
@@ -16426,6 +17703,8 @@
         }
       } else if (hash === '#select-mode' || hash === '#modes') {
         switchView('viewModeSelect', false);
+      } else if (hash === '#auth' || hash === '#login' || hash === '#signin' || hash === '#signup') {
+        switchView('viewAuth', false);
       } else {
         // Default on opening site: Intro landing page
         switchView('viewIntro', false);
@@ -16721,7 +18000,647 @@
       });
     }
 
+
+    // ========================================================
+    // 🔐 COMPREHENSIVE USER AUTHENTICATION & SESSION ENGINE
+    // ========================================================
+    const AuthEngine = (function() {
+      const USERS_STORAGE_KEY = 'emotisync_auth_users';
+      const SESSION_STORAGE_KEY = 'emotisync_auth_current_user';
+
+      // Pre-seeded professional research accounts
+      const DEFAULT_USERS = [
+        {
+          id: 'usr_lead_01',
+          name: 'Vishwajith Prem',
+          email: 'researcher@emotisync.ai',
+          password: 'Research@2026',
+          role: 'Lead AI & Multimodal Researcher',
+          avatar: 'VP',
+          joinedDate: 'Oct 2026',
+          tier: 'Enterprise AI Suite'
+        },
+        {
+          id: 'usr_clin_02',
+          name: 'Dr. Wilson Arul',
+          email: 'clinician@emotisync.ai',
+          password: 'Clinic@2026',
+          role: 'Clinical Psychologist',
+          avatar: 'WA',
+          joinedDate: 'Oct 2026',
+          tier: 'Clinical Diagnostics Pro'
+        },
+        {
+          id: 'usr_stud_03',
+          name: 'Vadivazhagi & Viseka',
+          email: 'student@emotisync.ai',
+          password: 'Student@2026',
+          role: 'Academic Scholar & HCI',
+          avatar: 'VV',
+          joinedDate: 'Oct 2026',
+          tier: 'Academic Scholar Tier'
+        }
+      ];
+
+      function getUsers() {
+        try {
+          const raw = localStorage.getItem(USERS_STORAGE_KEY);
+          if (!raw) {
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_USERS));
+            return DEFAULT_USERS;
+          }
+          return JSON.parse(raw);
+        } catch (e) {
+          return DEFAULT_USERS;
+        }
+      }
+
+      function saveUsers(users) {
+        try {
+          localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+        } catch (e) {
+          console.error('[AuthEngine] Error saving users:', e);
+        }
+      }
+
+      function getCurrentUser() {
+        try {
+          const raw = localStorage.getItem(SESSION_STORAGE_KEY) || sessionStorage.getItem(SESSION_STORAGE_KEY);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function setCurrentUser(user, remember = true) {
+        try {
+          const serialized = JSON.stringify(user);
+          if (remember) {
+            localStorage.setItem(SESSION_STORAGE_KEY, serialized);
+          } else {
+            sessionStorage.setItem(SESSION_STORAGE_KEY, serialized);
+          }
+          updateAllHeaderProfiles();
+        } catch (e) {
+          console.error('[AuthEngine] Error saving session:', e);
+        }
+      }
+
+      function clearCurrentUser() {
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        updateAllHeaderProfiles();
+      }
+
+      function showToast(title, message, type = 'info') {
+        const container = document.getElementById('authToastContainer');
+        if (!container) return;
+
+        const icons = {
+          success: '✓',
+          error: '✕',
+          info: 'ℹ️'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `auth-toast toast-${type}`;
+        toast.innerHTML = `
+          <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
+          <div class="toast-body">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(50px)';
+          setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, 300);
+        }, 4000);
+      }
+
+      function updateAllHeaderProfiles() {
+        const user = getCurrentUser();
+
+        // 1. Titlebar Auth Slot
+        const titlebarSlot = document.getElementById('titlebarAuthSlot');
+        if (titlebarSlot) {
+          if (user) {
+            titlebarSlot.innerHTML = `
+              <div class="user-pill-badge" id="btnTitlebarUserPill" title="Account: ${user.name} (${user.role})">
+                <div class="user-pill-avatar">${user.avatar || 'US'}</div>
+                <div class="user-pill-info">
+                  <span class="user-pill-name">${user.name}</span>
+                  <span class="user-pill-role">${user.role.split('&')[0].trim()}</span>
+                </div>
+                <span class="user-pill-caret">▾</span>
+              </div>
+              <div class="user-profile-dropdown" id="dropdownTitlebarMenu">
+                ${buildDropdownContent(user)}
+              </div>
+            `;
+            wireDropdown('btnTitlebarUserPill', 'dropdownTitlebarMenu');
+          } else {
+            titlebarSlot.innerHTML = `
+              <button class="btn-titlebar-signin" id="btnHeaderSignIn">
+                <span>🔐</span> Sign In
+              </button>
+            `;
+            const btn = document.getElementById('btnHeaderSignIn');
+            if (btn) btn.addEventListener('click', () => switchView('viewAuth'));
+          }
+        }
+
+        // 2. Live Workspace Header Slot
+        const liveSlot = document.getElementById('liveHeaderAuthSlot');
+        if (liveSlot) {
+          if (user) {
+            liveSlot.innerHTML = `
+              <div class="user-pill-badge" id="btnLiveUserPill">
+                <div class="user-pill-avatar">${user.avatar || 'US'}</div>
+                <div class="user-pill-info">
+                  <span class="user-pill-name">${user.name}</span>
+                  <span class="user-pill-role">${user.role.split('&')[0].trim()}</span>
+                </div>
+                <span class="user-pill-caret">▾</span>
+              </div>
+              <div class="user-profile-dropdown" id="dropdownLiveMenu">
+                ${buildDropdownContent(user)}
+              </div>
+            `;
+            wireDropdown('btnLiveUserPill', 'dropdownLiveMenu');
+          } else {
+            liveSlot.innerHTML = `
+              <button class="nav-switch-btn" id="btnLiveSignIn" title="Sign In">
+                <span>🔐</span> Sign In
+              </button>
+            `;
+            const btn = document.getElementById('btnLiveSignIn');
+            if (btn) btn.addEventListener('click', () => switchView('viewAuth'));
+          }
+        }
+
+        // 3. Media Studio Workspace Header Slot
+        const mediaSlot = document.getElementById('mediaHeaderAuthSlot');
+        if (mediaSlot) {
+          if (user) {
+            mediaSlot.innerHTML = `
+              <div class="user-pill-badge" id="btnMediaUserPill">
+                <div class="user-pill-avatar">${user.avatar || 'US'}</div>
+                <div class="user-pill-info">
+                  <span class="user-pill-name">${user.name}</span>
+                  <span class="user-pill-role">${user.role.split('&')[0].trim()}</span>
+                </div>
+                <span class="user-pill-caret">▾</span>
+              </div>
+              <div class="user-profile-dropdown" id="dropdownMediaMenu">
+                ${buildDropdownContent(user)}
+              </div>
+            `;
+            wireDropdown('btnMediaUserPill', 'dropdownMediaMenu');
+          } else {
+            mediaSlot.innerHTML = `
+              <button class="nav-switch-btn" id="btnMediaSignIn" title="Sign In">
+                <span>🔐</span> Sign In
+              </button>
+            `;
+            const btn = document.getElementById('btnMediaSignIn');
+            if (btn) btn.addEventListener('click', () => switchView('viewAuth'));
+          }
+        }
+
+        // 4. Update Hero Button Badge in Intro
+        const heroAuthBtn = document.getElementById('btnHeroAuth');
+        const heroAuthText = document.getElementById('heroAuthBtnText');
+        const heroAuthBadge = document.getElementById('heroAuthBtnBadge');
+        if (heroAuthBtn && heroAuthText && heroAuthBadge) {
+          if (user) {
+            heroAuthText.textContent = user.name.toUpperCase();
+            heroAuthBadge.textContent = 'ACTIVE';
+            heroAuthBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+            heroAuthBadge.style.color = '#059669';
+          } else {
+            heroAuthText.textContent = 'SIGN IN / ACCOUNT';
+            heroAuthBadge.textContent = 'SECURE';
+            heroAuthBadge.style.background = 'rgba(99, 102, 241, 0.12)';
+            heroAuthBadge.style.color = '#4F46E5';
+          }
+        }
+      }
+
+      function buildDropdownContent(user) {
+        return `
+          <div class="dropdown-header-card">
+            <div class="dropdown-avatar-lg">${user.avatar || 'US'}</div>
+            <div style="flex: 1; min-width: 0;">
+              <div class="dropdown-meta-name">${user.name}</div>
+              <div class="dropdown-meta-email">${user.email}</div>
+              <div class="dropdown-badge-row">
+                <span class="dropdown-role-tag">${user.role}</span>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-security-status">
+            <span>🛡️</span> Zero-Knowledge Biometric Session Active
+          </div>
+          <div class="dropdown-menu-list">
+            <button class="dropdown-menu-item" onclick="switchView('viewModeSelect')">
+              <span>🔀</span> Switch Workspace Mode
+            </button>
+            <button class="dropdown-menu-item" onclick="switchView('viewLiveApp')">
+              <span>📷</span> Real-Time Face &amp; Voice
+            </button>
+            <button class="dropdown-menu-item" onclick="switchView('viewMediaUpload')">
+              <span>📁</span> Media Studio &amp; Audio Lab
+            </button>
+            <button class="dropdown-menu-item logout-btn" onclick="AuthEngine.logout()">
+              <span>🚪</span> Sign Out of Session
+            </button>
+          </div>
+        `;
+      }
+
+      function wireDropdown(triggerId, menuId) {
+        const trigger = document.getElementById(triggerId);
+        const menu = document.getElementById(menuId);
+        if (!trigger || !menu) return;
+
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = menu.classList.contains('open');
+          document.querySelectorAll('.user-profile-dropdown').forEach(m => m.classList.remove('open'));
+          if (!isOpen) menu.classList.add('open');
+        });
+      }
+
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.user-profile-dropdown').forEach(m => m.classList.remove('open'));
+      });
+
+      function calculatePasswordStrength(pass) {
+        let score = 0;
+        if (!pass) return { score: 0, label: 'Enter password (min 8 characters)', color: '#CBD5E1' };
+        if (pass.length >= 8) score++;
+        if (/[A-Z]/.test(pass) && /[a-z]/.test(pass)) score++;
+        if (/[0-9]/.test(pass)) score++;
+        if (/[^A-Za-z0-9]/.test(pass)) score++;
+
+        const tiers = [
+          { score: 1, label: 'Weak (add numbers & symbols)', color: '#EF4444' },
+          { score: 2, label: 'Fair (add capital letters & symbols)', color: '#F59E0B' },
+          { score: 3, label: 'Good (secure for research)', color: '#6366F1' },
+          { score: 4, label: 'Strong / Enterprise Grade ✓', color: '#10B981' }
+        ];
+
+        return tiers[Math.max(0, score - 1)] || tiers[0];
+      }
+
+      function setupEventListeners() {
+        // Tab switching
+        const btnTabSignIn = document.getElementById('btnTabSignIn');
+        const btnTabSignUp = document.getElementById('btnTabSignUp');
+        const paneSignIn = document.getElementById('paneSignIn');
+        const paneSignUp = document.getElementById('paneSignUp');
+
+        if (btnTabSignIn && btnTabSignUp) {
+          btnTabSignIn.addEventListener('click', () => {
+            btnTabSignIn.classList.add('active');
+            btnTabSignUp.classList.remove('active');
+            paneSignIn.classList.add('active');
+            paneSignUp.classList.remove('active');
+          });
+
+          btnTabSignUp.addEventListener('click', () => {
+            btnTabSignUp.classList.add('active');
+            btnTabSignIn.classList.remove('active');
+            paneSignUp.classList.add('active');
+            paneSignIn.classList.remove('active');
+          });
+        }
+
+        const linkSwitchToSignIn = document.getElementById('linkSwitchToSignIn');
+        if (linkSwitchToSignIn) {
+          linkSwitchToSignIn.addEventListener('click', () => {
+            if (btnTabSignIn) btnTabSignIn.click();
+          });
+        }
+
+        // Return button from Auth view
+        const btnAuthReturnHome = document.getElementById('btnAuthReturnHome');
+        if (btnAuthReturnHome) {
+          btnAuthReturnHome.addEventListener('click', () => {
+            switchView('viewIntro');
+          });
+        }
+
+        // Hero CTA button for Auth
+        const btnHeroAuth = document.getElementById('btnHeroAuth');
+        if (btnHeroAuth) {
+          btnHeroAuth.addEventListener('click', () => {
+            const user = getCurrentUser();
+            if (user) {
+              switchView('viewModeSelect');
+            } else {
+              switchView('viewAuth');
+            }
+          });
+        }
+
+        // Quick Demo One-Click Pills
+        const demoResearcher = document.getElementById('demoPillResearcher');
+        const demoClinician = document.getElementById('demoPillClinician');
+        const demoStudent = document.getElementById('demoPillStudent');
+        const inEmail = document.getElementById('signInEmail');
+        const inPass = document.getElementById('signInPassword');
+
+        if (demoResearcher && inEmail && inPass) {
+          demoResearcher.addEventListener('click', () => {
+            inEmail.value = 'researcher@emotisync.ai';
+            inPass.value = 'Research@2026';
+            document.querySelectorAll('.quick-demo-pill').forEach(p => p.classList.remove('active-chip'));
+            demoResearcher.classList.add('active-chip');
+            showToast('Demo Loaded', 'Pre-filled Lead AI Researcher credentials', 'info');
+          });
+        }
+
+        if (demoClinician && inEmail && inPass) {
+          demoClinician.addEventListener('click', () => {
+            inEmail.value = 'clinician@emotisync.ai';
+            inPass.value = 'Clinic@2026';
+            document.querySelectorAll('.quick-demo-pill').forEach(p => p.classList.remove('active-chip'));
+            demoClinician.classList.add('active-chip');
+            showToast('Demo Loaded', 'Pre-filled Clinical Psychologist credentials', 'info');
+          });
+        }
+
+        if (demoStudent && inEmail && inPass) {
+          demoStudent.addEventListener('click', () => {
+            inEmail.value = 'student@emotisync.ai';
+            inPass.value = 'Student@2026';
+            document.querySelectorAll('.quick-demo-pill').forEach(p => p.classList.remove('active-chip'));
+            demoStudent.classList.add('active-chip');
+            showToast('Demo Loaded', 'Pre-filled Student Evaluator credentials', 'info');
+          });
+        }
+
+        // Password Show/Hide Toggle
+        const btnToggleSignInPass = document.getElementById('btnToggleSignInPass');
+        if (btnToggleSignInPass && inPass) {
+          btnToggleSignInPass.addEventListener('click', () => {
+            const isPassword = inPass.type === 'password';
+            inPass.type = isPassword ? 'text' : 'password';
+            btnToggleSignInPass.textContent = isPassword ? '🙈' : '👁️';
+          });
+        }
+
+        const signUpPass = document.getElementById('signUpPassword');
+        const btnToggleSignUpPass = document.getElementById('btnToggleSignUpPass');
+        if (btnToggleSignUpPass && signUpPass) {
+          btnToggleSignUpPass.addEventListener('click', () => {
+            const isPassword = signUpPass.type === 'password';
+            signUpPass.type = isPassword ? 'text' : 'password';
+            btnToggleSignUpPass.textContent = isPassword ? '🙈' : '👁️';
+          });
+        }
+
+        // Real-Time Password Strength Meter
+        const strSeg1 = document.getElementById('strSeg1');
+        const strSeg2 = document.getElementById('strSeg2');
+        const strSeg3 = document.getElementById('strSeg3');
+        const strSeg4 = document.getElementById('strSeg4');
+        const strengthLabel = document.getElementById('strengthLabel');
+        const strengthScore = document.getElementById('strengthScore');
+        const segments = [strSeg1, strSeg2, strSeg3, strSeg4];
+
+        if (signUpPass && strSeg1) {
+          signUpPass.addEventListener('input', () => {
+            const val = signUpPass.value;
+            const res = calculatePasswordStrength(val);
+
+            segments.forEach((seg, idx) => {
+              if (idx < res.score) {
+                seg.style.backgroundColor = res.color;
+              } else {
+                seg.style.backgroundColor = 'transparent';
+              }
+            });
+
+            if (strengthLabel) strengthLabel.textContent = res.label;
+            if (strengthScore) strengthScore.textContent = `${res.score} / 4`;
+          });
+        }
+
+        // Confirm Password Match Indicator
+        const signUpConfirm = document.getElementById('signUpConfirmPassword');
+        const matchInd = document.getElementById('passwordMatchIndicator');
+        if (signUpConfirm && signUpPass && matchInd) {
+          function checkMatch() {
+            if (!signUpConfirm.value) {
+              matchInd.style.display = 'none';
+              return;
+            }
+            matchInd.style.display = 'block';
+            if (signUpConfirm.value === signUpPass.value) {
+              matchInd.textContent = '✓ Passwords match perfectly';
+              matchInd.style.color = '#10B981';
+            } else {
+              matchInd.textContent = '✕ Passwords do not match';
+              matchInd.style.color = '#EF4444';
+            }
+          }
+          signUpConfirm.addEventListener('input', checkMatch);
+          signUpPass.addEventListener('input', checkMatch);
+        }
+
+        // Sign In Form Submission
+        const formSignIn = document.getElementById('formSignIn');
+        if (formSignIn) {
+          formSignIn.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = (document.getElementById('signInEmail').value || '').trim();
+            const password = document.getElementById('signInPassword').value || '';
+            const remember = document.getElementById('chkRememberMe').checked;
+
+            if (!email || !password) {
+              showToast('Missing Fields', 'Please enter both email and password', 'error');
+              return;
+            }
+
+            const users = getUsers();
+            const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+            if (!found || found.password !== password) {
+              showToast('Authentication Failed', 'Invalid email or password. Try a Quick Demo account.', 'error');
+              return;
+            }
+
+            setCurrentUser(found, remember);
+            showToast('Authenticated', `Welcome back, ${found.name}!`, 'success');
+            setTimeout(() => {
+              switchView('viewModeSelect');
+            }, 600);
+          });
+        }
+
+        // Sign Up Form Submission
+        const formSignUp = document.getElementById('formSignUp');
+        if (formSignUp) {
+          formSignUp.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = (document.getElementById('signUpName').value || '').trim();
+            const email = (document.getElementById('signUpEmail').value || '').trim();
+            const role = document.getElementById('signUpRole').value;
+            const password = document.getElementById('signUpPassword').value || '';
+            const confirmPass = document.getElementById('signUpConfirmPassword').value || '';
+            const agree = document.getElementById('chkAgreeEthics').checked;
+
+            if (!name || !email || !password) {
+              showToast('Incomplete Form', 'Please complete all required fields.', 'error');
+              return;
+            }
+
+            if (password !== confirmPass) {
+              showToast('Password Mismatch', 'Your confirm password does not match.', 'error');
+              return;
+            }
+
+            if (password.length < 6) {
+              showToast('Weak Password', 'Password must be at least 6 characters.', 'error');
+              return;
+            }
+
+            if (!agree) {
+              showToast('Ethics Agreement', 'Please accept the Affective AI Ethical Guidelines.', 'error');
+              return;
+            }
+
+            const users = getUsers();
+            const exists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
+            if (exists) {
+              showToast('Account Exists', 'An account with this email is already registered. Please sign in.', 'error');
+              return;
+            }
+
+            // Generate initials avatar
+            const initials = name.split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || 'AI';
+
+            const newUser = {
+              id: 'usr_' + Date.now(),
+              name: name,
+              email: email,
+              password: password,
+              role: role,
+              avatar: initials,
+              joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+              tier: 'Verified Affective Researcher'
+            };
+
+            users.push(newUser);
+            saveUsers(users);
+            setCurrentUser(newUser, true);
+
+            showToast('Account Created', `Welcome to EmotiSync, ${newUser.name}!`, 'success');
+            setTimeout(() => {
+              switchView('viewModeSelect');
+            }, 600);
+          });
+        }
+
+        // Guest Access Button
+        const btnContinueAsGuest = document.getElementById('btnContinueAsGuest');
+        if (btnContinueAsGuest) {
+          btnContinueAsGuest.addEventListener('click', () => {
+            const guestUser = {
+              id: 'usr_guest',
+              name: 'Guest Observer',
+              email: 'guest@emotisync.local',
+              role: 'Guest Observer',
+              avatar: 'GO',
+              joinedDate: 'Session Only',
+              tier: 'Evaluation Sandbox',
+              isGuest: true
+            };
+            setCurrentUser(guestUser, false);
+            showToast('Guest Session Started', 'Exploring in sandbox evaluation mode', 'info');
+            setTimeout(() => {
+              switchView('viewModeSelect');
+            }, 400);
+          });
+        }
+
+        // Forgot Password Modal Interactions
+        const linkForgot = document.getElementById('linkForgotPassword');
+        const modalForgot = document.getElementById('authForgotModal');
+        const btnCloseForgot = document.getElementById('btnCloseForgotModal');
+        const formForgot = document.getElementById('formForgotPassword');
+
+        if (linkForgot && modalForgot) {
+          linkForgot.addEventListener('click', () => {
+            modalForgot.classList.add('open');
+          });
+        }
+
+        if (btnCloseForgot && modalForgot) {
+          btnCloseForgot.addEventListener('click', () => {
+            modalForgot.classList.remove('open');
+          });
+        }
+
+        if (formForgot && modalForgot) {
+          formForgot.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = (document.getElementById('forgotEmail').value || '').trim();
+            const newPass = document.getElementById('forgotNewPass').value || '';
+
+            if (!email || !newPass) {
+              showToast('Error', 'Please fill in both email and new password.', 'error');
+              return;
+            }
+
+            const users = getUsers();
+            const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+            if (!user) {
+              showToast('Not Found', 'No account found with this email address.', 'error');
+              return;
+            }
+
+            user.password = newPass;
+            saveUsers(users);
+            modalForgot.classList.remove('open');
+            showToast('Credentials Updated', 'Password reset successfully! You may now sign in.', 'success');
+
+            const inEmail = document.getElementById('signInEmail');
+            const inPass = document.getElementById('signInPassword');
+            if (inEmail) inEmail.value = email;
+            if (inPass) inPass.value = newPass;
+          });
+        }
+      }
+
+      function init() {
+        getUsers(); // Ensures default demo users are initialized in localStorage
+        setupEventListeners();
+        updateAllHeaderProfiles();
+      }
+
+      return {
+        init: init,
+        getCurrentUser: getCurrentUser,
+        logout: function() {
+          clearCurrentUser();
+          showToast('Signed Out', 'You have been safely signed out.', 'info');
+          switchView('viewIntro');
+        }
+      };
+    })();
+
     window.addEventListener('DOMContentLoaded', () => {
+      AuthEngine.init();
       initViewRouting();
       initIntroBackground();
       initTeamCardInteractions();
