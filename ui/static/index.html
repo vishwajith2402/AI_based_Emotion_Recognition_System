@@ -6219,7 +6219,7 @@
       color: var(--cyan) !important;
     }
     /* ========================================================
-       SEAMLESS DARK CYBER TITLE BAR / DRAG REGION
+       FROSTED PEARL & ELECTRIC INDIGO TITLE BAR / DRAG REGION
        Blends smoothly with Electron titleBarOverlay & Browser HUD
        ======================================================== */
     .emotix-titlebar,
@@ -6229,10 +6229,11 @@
       left: 0;
       right: 0;
       height: var(--titlebar-h, 38px);
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(99, 102, 241, 0.16);
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1.5px solid rgba(99, 102, 241, 0.22);
+      box-shadow: 0 1px 8px rgba(15, 23, 42, 0.04);
       display: flex;
       align-items: center;
       padding: 0 16px;
@@ -6292,14 +6293,15 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 3px 10px;
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.22);
+      padding: 3.5px 11px;
+      background: #EEF2FF;
+      border: 1.5px solid #C7D2FE;
       border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
     .titlebar-pulse-node {
-      width: 6px;
-      height: 6px;
+      width: 6.5px;
+      height: 6.5px;
       border-radius: 50%;
       background: #10B981;
       box-shadow: 0 0 8px #10B981;
@@ -6307,9 +6309,9 @@
     }
     .titlebar-telemetry-text {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      font-weight: 700;
-      color: #4F46E5;
+      font-size: 9.5px;
+      font-weight: 800;
+      color: #3730A3;
       letter-spacing: 0.8px;
     }
 
@@ -6327,26 +6329,28 @@
     }
 
     .btn-titlebar-signin {
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.45);
-      color: #EEF2FF;
+      background: #EEF2FF;
+      border: 1.5px solid #C7D2FE;
+      color: #4338CA;
       font-family: var(--font-main);
       font-size: 0.72rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.6px;
-      padding: 0.22rem 0.65rem;
+      padding: 0.28rem 0.75rem;
       border-radius: var(--radius-pill);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      transition: all 0.2s ease;
+      gap: 0.4rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       text-transform: uppercase;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
     }
     .btn-titlebar-signin:hover {
-      background: rgba(99, 102, 241, 0.35);
-      border-color: #818CF8;
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+      background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+      border-color: #4338CA;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
       transform: translateY(-1px);
     }
 
