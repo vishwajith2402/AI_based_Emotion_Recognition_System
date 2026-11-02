@@ -1,27 +1,21 @@
 @echo off
-title EmotiX - Emotion Recognition System
+title EmotiSync - Multimodal Emotion Recognition Software
 echo =====================================================================
-echo    Launching EmotiX (Multimodal Emotion Recognition Software)...
+echo    Launching EmotiSync (Multimodal Emotion Recognition Software)...
 echo =====================================================================
 cd /d "%~dp0"
 
-if exist "dist\EmotiX.exe" (
-    echo Launching EmotiX standalone software...
-    start "" "dist\EmotiX.exe"
-    exit /b 0
-)
-if exist "dist\EmotiX - Emotion Recognition System 1.0.0.exe" (
-    echo Launching EmotiX standalone software...
-    start "" "dist\EmotiX - Emotion Recognition System 1.0.0.exe"
+if exist "dist\EmotiSync.exe" (
+    echo Launching EmotiSync standalone executable...
+    start "" "dist\EmotiSync.exe"
     exit /b 0
 )
 
 where npx >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [ERROR] Node.js and npm are required to run this software.
-    echo Please install Node.js from https://nodejs.org/
-    pause
-    exit /b 1
+    echo [INFO] Node.js not detected in PATH. Launching via Python Desktop Launcher...
+    python launch_software.py
+    exit /b 0
 )
 
 if not exist "node_modules\electron" (
@@ -29,5 +23,5 @@ if not exist "node_modules\electron" (
     call npm install electron --save-dev
 )
 
-echo Starting desktop application window...
+echo Starting EmotiSync desktop application window...
 call npx electron .

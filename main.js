@@ -4,19 +4,19 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 
-// Force dark mode globally across all OS chrome, context menus, and native title bars
+// Apply system theme matching EmotiSync Frosted Pearl & Electric Indigo
 if (nativeTheme) {
-  nativeTheme.themeSource = 'dark';
+  nativeTheme.themeSource = 'light';
 }
 
 let mainWindow = null;
 let server = null;
 let serverPort = 0;
 
-// Production Cloud URL (Synced to GitHub main branch via Vercel)
+// Production Cloud URL (Live synced with GitHub repository via Vercel)
 const CLOUD_PRODUCTION_URL = 'https://ai-based-emotion-recognition-system.vercel.app';
 
-// MIME types for embedded local server
+// Comprehensive MIME type mapping for embedded offline HTTP engine
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -32,12 +32,13 @@ const MIME_TYPES = {
   '.webm': 'video/webm',
   '.wav': 'audio/wav',
   '.mp3': 'audio/mpeg',
-  '.ogg': 'audio/ogg'
+  '.ogg': 'audio/ogg',
+  '.wasm': 'application/wasm'
 };
 
 /**
  * Embedded Local Offline Server
- * Guarantees 100% offline functionality whenever no internet is present
+ * Guarantees 100% offline functionality if internet is disconnected
  */
 function startLocalServer() {
   return new Promise((resolve, reject) => {
@@ -73,6 +74,7 @@ function startLocalServer() {
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
+        // Support HTTP Range requests for video and audio scrubbing
         const range = req.headers.range;
         if (range && (contentType.startsWith('video/') || contentType.startsWith('audio/'))) {
           const totalSize = stats.size;
@@ -107,7 +109,7 @@ function startLocalServer() {
 
     server.listen(0, '127.0.0.1', () => {
       serverPort = server.address().port;
-      console.log(`[AIPS Offline Engine] Local fallback server active on http://127.0.0.1:${serverPort}`);
+      console.log(`[EmotiSync] Local offline server listening on http://127.0.0.1:${serverPort}`);
       resolve(serverPort);
     });
 
@@ -149,15 +151,15 @@ function createMainWindow(port) {
     height: 860,
     minWidth: 1024,
     minHeight: 680,
-    title: 'EmotiSync — Emotion Recognition System (Facial | Voice)',
-    backgroundColor: '#040406',
+    title: 'EmotiSync — Emotion Recognition System (Facial • Voice)',
+    backgroundColor: '#EEF2F6',
     icon: fs.existsSync(iconPath) ? iconPath : undefined,
     autoHideMenuBar: true,
     show: false,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#040406',
-      symbolColor: '#00F5FF',
+      color: '#FFFFFF',
+      symbolColor: '#0F172A',
       height: 38
     },
     webPreferences: {
@@ -170,7 +172,7 @@ function createMainWindow(port) {
 
   Menu.setApplicationMenu(null);
 
-  // Permanent Media Stream Approvals (Camera & Microphone)
+  // Auto-grant persistent camera & microphone hardware access without browser prompts
   session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
     const allowed = ['media', 'mediaKeySystem', 'notifications', 'accessibilityEvents'];
     callback(allowed.includes(permission) || true);
@@ -178,27 +180,27 @@ function createMainWindow(port) {
 
   session.defaultSession.setPermissionCheckHandler(() => true);
 
-  // Determine Target URL (Cloud Live-Sync vs Local Offline)
+  // Live Cloud-Sync vs Local Offline Strategy
   checkCloudAvailability(CLOUD_PRODUCTION_URL).then((isOnline) => {
     const offlineUrl = `http://127.0.0.1:${port}/index.html`;
 
     if (isOnline) {
-      console.log('[AIPS Software] Cloud Live-Sync Active: Connected to latest GitHub release');
+      console.log('[EmotiSync] Cloud Live-Sync Active: Connected to live deployment.');
       mainWindow.loadURL(CLOUD_PRODUCTION_URL).catch(() => {
-        console.warn('[AIPS Software] Cloud load failed, falling back to local offline bundle');
+        console.warn('[EmotiSync] Cloud load failed, falling back to bundled offline engine.');
         mainWindow.loadURL(offlineUrl);
       });
     } else {
-      console.log('[AIPS Software] Offline Mode: Running bundled offline local engine');
+      console.log('[EmotiSync] Offline Mode Active: Running bundled local engine.');
       mainWindow.loadURL(offlineUrl);
     }
   });
 
-  // Fail-safe fallback: If any page load fails, auto-route to local offline bundle
+  // Fail-safe fallback: If remote navigation fails, instantly revert to local offline server
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
     const offlineUrl = `http://127.0.0.1:${port}/index.html`;
     if (validatedURL !== offlineUrl) {
-      console.warn(`[AIPS Software] Navigation error (${errorCode}: ${errorDescription}). Re-routing to offline bundle...`);
+      console.warn(`[EmotiSync] Network fail (${errorCode}: ${errorDescription}). Reverting to offline engine.`);
       mainWindow.loadURL(offlineUrl);
     }
   });
@@ -219,15 +221,30 @@ app.whenReady().then(async () => {
     const port = await startLocalServer();
     createMainWindow(port);
 
+    // Development / presentation shortcuts: F5 reload, F11 fullscreen
+    globalShortcut.register('F5', () => {
+      if (mainWindow) mainWindow.reload();
+    });
+    globalShortcut.register('CommandOrControl+R', () => {
+      if (mainWindow) mainWindow.reload();
+    });
+    globalShortcut.register('F11', () => {
+      if (mainWindow) mainWindow.setFullScreen(!mainWindow.isFullScreen());
+    });
+
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {
         createMainWindow(port);
       }
     });
   } catch (err) {
-    console.error('[AIPS Software] Initialization error:', err);
+    console.error('[EmotiSync] Initialization error:', err);
     app.quit();
   }
+});
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
 });
 
 app.on('window-all-closed', () => {
