@@ -101,7 +101,20 @@
       --grad-aurora: linear-gradient(135deg, #0284C7 0%, #6366F1 35%, #EC4899 70%, #10B981 100%);
       --grad-cyan-indigo: linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #6366F1 100%);
       --grad-sunset: linear-gradient(135deg, #F59E0B 0%, #EF4444 50%, #EC4899 100%);
-      --grad-emerald-mint: linear-gradient(135deg, #10B981 0%, #14B8A6 50%, #0284C7 100%);
+            --grad-emerald-mint: linear-gradient(135deg, #10B981 0%, #14B8A6 50%, #0284C7 100%);
+      
+      /* ========================================================
+         Affective Chroma-Sync Dynamic Spectral Variables
+         (Live emotion mutations update these properties in real time)
+         ======================================================== */
+      --chroma-color: #6366F1;
+      --chroma-glow: rgba(99, 102, 241, 0.38);
+      --chroma-subtle: rgba(99, 102, 241, 0.10);
+      --chroma-border: rgba(99, 102, 241, 0.28);
+      --chroma-gradient: linear-gradient(135deg, #0284C7 0%, #6366F1 50%, #EC4899 100%);
+      --chroma-halo: rgba(2, 132, 199, 0.16);
+      --chroma-topbar-aura: linear-gradient(90deg, #0284C7 0%, #6366F1 50%, #EC4899 100%);
+      --chroma-pulse: #10B981;
       
       /* Status Palette */
       --status-harmony: #10B981;    /* Radiant Emerald - Harmony ✓ */
@@ -534,43 +547,93 @@
     }
 
     /* 🪟 10. Glass Card Styling — Modern High-Contrast Obsidian */
+    /* ========================================================
+       APPLE VisionOS / macOS Sequoia Iridescent Glassmorphism
+       ======================================================== */
     .glass-card {
-      background: #FFFFFF !important;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1.5px solid rgba(99, 102, 241, 0.16);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.90) 100%) !important;
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1.5px solid var(--chroma-border, rgba(99, 102, 241, 0.18));
       border-radius: var(--radius-lg);
       padding: 1.5rem;
       position: relative;
       display: flex;
       flex-direction: column;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
-      box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.08), 0 4px 16px -2px rgba(99, 102, 241, 0.06);
+      transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                  box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                  transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      /* VisionOS Double-Bevel Rim + Specular Top Ridge + Chroma Halo */
+      box-shadow: 
+        inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.98),
+        inset 0 -1.5px 2px 0 rgba(99, 102, 241, 0.04),
+        0 16px 40px -8px rgba(15, 23, 42, 0.08), 
+        0 4px 16px -2px rgba(99, 102, 241, 0.05),
+        0 0 28px -6px var(--chroma-halo, rgba(99, 102, 241, 0.12));
+      overflow: hidden;
+    }
+
+    /* VisionOS Specular Iridescent Reflection Following Cursor */
+    .glass-card::before,
+    .mode-card::before,
+    .team-member-card::before,
+    .about-spec-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(550px circle at var(--mouse-x, 50%) var(--mouse-y, 0px), rgba(255, 255, 255, 0.55), transparent 55%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+    }
+
+    .glass-card:hover::before,
+    .mode-card:hover::before,
+    .team-member-card:hover::before,
+    .about-spec-card:hover::before {
+      opacity: 1;
     }
 
     .glass-card:hover {
-      border-color: rgba(99, 102, 241, 0.35);
-      box-shadow: 0 22px 50px -10px rgba(99, 102, 241, 0.24), 0 0 24px rgba(2, 132, 199, 0.14);
-      transform: translateY(-2px);
+      border-color: var(--chroma-color, #6366F1);
+      box-shadow: 
+        inset 0 1.5px 2px 0 #FFFFFF,
+        inset 0 0 18px rgba(255, 255, 255, 0.6),
+        0 24px 55px -10px var(--chroma-glow, rgba(99, 102, 241, 0.28)), 
+        0 0 32px -4px var(--chroma-halo, rgba(2, 132, 199, 0.20));
+      transform: translateY(-3px);
     }
 
     /* Distinct Chromatic Top Accents for Key Live Cards */
     .glass-card.live-facial-card,
     #cardVision {
       border-top: 4.5px solid #0284C7 !important;
-      box-shadow: 0 16px 40px -8px rgba(2, 132, 199, 0.18), 0 4px 16px -2px rgba(99, 102, 241, 0.08) !important;
+      box-shadow: 
+        inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.98),
+        0 18px 45px -8px rgba(2, 132, 199, 0.22), 
+        0 4px 16px -2px rgba(99, 102, 241, 0.08) !important;
     }
     .glass-card.live-voice-card,
     #cardVoice {
       border-top: 4.5px solid #6366F1 !important;
-      box-shadow: 0 16px 40px -8px rgba(99, 102, 241, 0.20), 0 4px 16px -2px rgba(139, 92, 246, 0.10) !important;
+      box-shadow: 
+        inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.98),
+        0 18px 45px -8px rgba(99, 102, 241, 0.22), 
+        0 4px 16px -2px rgba(139, 92, 246, 0.10) !important;
     }
     .glass-card.fusion-card,
     #fusedHero {
-      border: 2px solid rgba(99, 102, 241, 0.28) !important;
-      border-top: 5px solid transparent !important;
-      border-image: linear-gradient(90deg, #0284C7 0%, #6366F1 35%, #EC4899 70%, #10B981 100%) 1 !important;
-      box-shadow: 0 20px 52px -10px rgba(99, 102, 241, 0.24), 0 6px 20px -2px rgba(236, 72, 153, 0.14) !important;
+      border: 2px solid var(--chroma-border, rgba(99, 102, 241, 0.28)) !important;
+      border-top: 5px solid var(--chroma-color, #6366F1) !important;
+      box-shadow: 
+        inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.98),
+        0 24px 58px -10px var(--chroma-glow, rgba(99, 102, 241, 0.28)), 
+        0 6px 24px -2px var(--chroma-halo, rgba(236, 72, 153, 0.18)) !important;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* Card Header */
@@ -6244,6 +6307,20 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       box-sizing: border-box;
     }
+    /* Affective Chroma-Sync Ambient Lightband Under Titlebar */
+    .emotix-titlebar::after {
+      content: '';
+      position: absolute;
+      bottom: -1.5px;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: var(--chroma-topbar-aura, linear-gradient(90deg, #0284C7 0%, #6366F1 50%, #EC4899 100%));
+      box-shadow: 0 1px 12px var(--chroma-glow, rgba(99, 102, 241, 0.45));
+      transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+      z-index: 100001;
+      pointer-events: none;
+    }
     .emotix-titlebar-drag {
       display: flex;
       align-items: center;
@@ -6300,12 +6377,26 @@
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
     .titlebar-pulse-node {
-      width: 6.5px;
-      height: 6.5px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: #10B981;
-      box-shadow: 0 0 8px #10B981;
-      animation: pulseGreen 1.8s infinite ease-in-out;
+      background: var(--chroma-color, #10B981);
+      box-shadow: 0 0 10px var(--chroma-color, #10B981);
+      animation: pulseChromaNode 2s infinite ease-in-out;
+      transition: background 0.45s ease, box-shadow 0.45s ease;
+    }
+
+    @keyframes pulseChromaNode {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.85;
+        box-shadow: 0 0 6px var(--chroma-color, #10B981);
+      }
+      50% {
+        transform: scale(1.35);
+        opacity: 1;
+        box-shadow: 0 0 14px var(--chroma-color, #10B981), 0 0 20px var(--chroma-glow, rgba(16, 185, 129, 0.6));
+      }
     }
     .titlebar-telemetry-text {
       font-family: 'JetBrains Mono', monospace;
@@ -10969,12 +11060,90 @@
 
     // 😊 6. Final Emotion-Specific Accents
     const EMOTION_COLORS = {
-      Happy: '#10B981',      // Emerald Biosignal
-      Sad: '#6366F1',        // Indigo Deep
-      Angry: '#EF4444',      // Laser Crimson Alert
-      Surprise: '#00F2FE',   // High-Frequency Cyan
-      Neutral: '#94A3B8'     // Precision Titanium
+      Happy: '#10B981',      // Radiant Emerald Mint
+      Sad: '#2563EB',        // Radiant Cobalt Blue
+      Angry: '#EF4444',      // Vivid Coral Scarlet
+      Surprise: '#F59E0B',   // Solar Golden Amber
+      Neutral: '#6366F1'     // Electric Iris Indigo
     };
+
+    const CHROMA_PALETTE = {
+      Happy: {
+        color: '#10B981',
+        glow: 'rgba(16, 185, 129, 0.45)',
+        subtle: 'rgba(16, 185, 129, 0.12)',
+        border: 'rgba(16, 185, 129, 0.38)',
+        gradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+        halo: 'rgba(16, 185, 129, 0.22)',
+        topBarAura: 'linear-gradient(90deg, #10B981 0%, #34D399 50%, #059669 100%)'
+      },
+      Sad: {
+        color: '#2563EB',
+        glow: 'rgba(37, 99, 235, 0.45)',
+        subtle: 'rgba(37, 99, 235, 0.12)',
+        border: 'rgba(37, 99, 235, 0.38)',
+        gradient: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+        halo: 'rgba(37, 99, 235, 0.22)',
+        topBarAura: 'linear-gradient(90deg, #2563EB 0%, #60A5FA 50%, #1D4ED8 100%)'
+      },
+      Angry: {
+        color: '#EF4444',
+        glow: 'rgba(239, 68, 68, 0.48)',
+        subtle: 'rgba(239, 68, 68, 0.14)',
+        border: 'rgba(239, 68, 68, 0.42)',
+        gradient: 'linear-gradient(135deg, #F43F5E 0%, #DC2626 100%)',
+        halo: 'rgba(239, 68, 68, 0.25)',
+        topBarAura: 'linear-gradient(90deg, #EF4444 0%, #F43F5E 50%, #DC2626 100%)'
+      },
+      Surprise: {
+        color: '#F59E0B',
+        glow: 'rgba(245, 158, 11, 0.45)',
+        subtle: 'rgba(245, 158, 11, 0.14)',
+        border: 'rgba(245, 158, 11, 0.40)',
+        gradient: 'linear-gradient(135deg, #FBBF24 0%, #D97706 100%)',
+        halo: 'rgba(245, 158, 11, 0.24)',
+        topBarAura: 'linear-gradient(90deg, #F59E0B 0%, #FBBF24 50%, #D97706 100%)'
+      },
+      Neutral: {
+        color: '#6366F1',
+        glow: 'rgba(99, 102, 241, 0.38)',
+        subtle: 'rgba(99, 102, 241, 0.10)',
+        border: 'rgba(99, 102, 241, 0.30)',
+        gradient: 'linear-gradient(135deg, #0284C7 0%, #6366F1 50%, #EC4899 100%)',
+        halo: 'rgba(2, 132, 199, 0.18)',
+        topBarAura: 'linear-gradient(90deg, #0284C7 0%, #6366F1 50%, #EC4899 100%)'
+      }
+    };
+
+    let _lastChromaEmotion = null;
+    function applyAffectiveChromaSync(emotion, confidence = 1.0) {
+      if (!emotion) return;
+      if (emotion === _lastChromaEmotion) return;
+      _lastChromaEmotion = emotion;
+
+      const c = CHROMA_PALETTE[emotion] || CHROMA_PALETTE.Neutral;
+      const root = document.documentElement;
+      root.style.setProperty('--chroma-color', c.color);
+      root.style.setProperty('--chroma-glow', c.glow);
+      root.style.setProperty('--chroma-subtle', c.subtle);
+      root.style.setProperty('--chroma-border', c.border);
+      root.style.setProperty('--chroma-gradient', c.gradient);
+      root.style.setProperty('--chroma-halo', c.halo);
+      root.style.setProperty('--chroma-topbar-aura', c.topBarAura);
+
+      document.body.setAttribute('data-affective-state', emotion);
+
+      const pulseNode = document.querySelector('.titlebar-pulse-node');
+      if (pulseNode) {
+        pulseNode.style.background = c.color;
+        pulseNode.style.boxShadow = `0 0 12px ${c.color}`;
+      }
+
+      const heroGlow = document.getElementById('heroGlow');
+      if (heroGlow) {
+        heroGlow.style.background = `radial-gradient(circle, ${c.glow} 0%, transparent 72%)`;
+      }
+    }
 
     const STYLE_MAP = {
       Happy: { mouth: 'Curved Up 🙂', eyes: 'Smiling Eye Crease', brow: 'Relaxed / Arched', desc: 'Smile Curvature Active' },
@@ -13499,6 +13668,9 @@
         heroGlow.style.background = `radial-gradient(circle, ${accentColor}14 0%, transparent 70%)`;
       }
 
+      // Affective Chroma-Sync Ambient Illumination
+      applyAffectiveChromaSync(topEmotion, maxP);
+
       // Concordance Banner (Level 2: Emerald Harmony vs Coral Conflict vs Purple Masking)
       const banner = document.getElementById('concordanceBanner');
       const concordanceText = document.getElementById('concordanceText');
@@ -14885,6 +15057,9 @@
       if (heroGlow) {
         heroGlow.style.background = `radial-gradient(circle, ${color}14 0%, transparent 70%)`;
       }
+
+      // Affective Chroma-Sync Ambient Illumination
+      applyAffectiveChromaSync(topFinal, finalConf / 100.0);
 
       // Two-Channel Breakdown Grid On Screen
       const elFaceMiniVal = document.getElementById('faceMiniVal');
@@ -21022,6 +21197,17 @@
     })();
 
     window.addEventListener('DOMContentLoaded', () => {
+      // Apple VisionOS / macOS Specular Mouse Tracking for Iridescent Glass Cards
+      document.addEventListener('mousemove', (e) => {
+        const target = e.target.closest('.glass-card, .mode-card, .team-member-card, .about-spec-card, .report-phase-card');
+        if (target) {
+          const rect = target.getBoundingClientRect();
+          target.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+          target.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        }
+      }, { passive: true });
+
+      applyAffectiveChromaSync('Neutral');
       AuthEngine.init();
       initViewRouting();
       initIntroBackground();
